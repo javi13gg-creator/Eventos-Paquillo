@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paquillo Events</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#f3f0ff;--card:#fff;--ink:#1d1b4f;--mut:#5c5a8a;--pk:#e6246b;--yl:#ffc933;--mint:#12a97a;--ln:#cfc9f5;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14123a;--card:#1f1c57;--ink:#f2efff;--mut:#b5b0ee;--pk:#ff4f93;--yl:#ffd23f;--mint:#3ddc97;--ln:#3a3690;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14123a;--card:#1f1c57;--ink:#f2efff;--mut:#b5b0ee;--pk:#ff4f93;--yl:#ffd23f;--mint:#3ddc97;--ln:#3a3690;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(circle 420px at 96% 700px,rgba(255,201,51,.34),transparent),radial-gradient(circle 460px at 2% 1450px,rgba(230,36,107,.22),transparent),radial-gradient(circle 420px at 98% 2250px,rgba(18,169,122,.24),transparent),radial-gradient(circle 460px at 2% 3000px,rgba(230,36,107,.2),transparent),radial-gradient(rgba(120,100,220,.24) 1.3px,transparent 1.8px);background-size:auto,auto,auto,auto,24px 24px;color:var(--ink);font:400 1rem/1.55 "Bricolage Grotesque",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:0 1rem 3rem}
+h1,h2,h3{line-height:1.1;margin:0}
+h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;display:inline-block;background:linear-gradient(transparent 62%,rgba(230,36,107,.38) 62%);padding:0 .2em}
+.sub{color:var(--mut);margin:0 0 1.2rem}
+.flags{height:44px;background:
+ linear-gradient(135deg,var(--pk) 50%,transparent 50%) 0 0/44px 44px,
+ linear-gradient(225deg,var(--yl) 50%,transparent 50%) 22px 0/44px 44px;
+ -webkit-mask:linear-gradient(#000,#000);opacity:.95}
+.hero{--h:clamp(260px,58vw,460px);position:relative;overflow:hidden;text-align:center;color:#fff;background:linear-gradient(160deg,#2a1f7a,#b4146a 65%,#ff6b4a);clip-path:ellipse(130% 100% at 50% 0);padding:var(--h) 1rem 4.4rem}
+.hero-img{position:absolute;top:0;left:0;width:100%;height:var(--h);object-fit:cover;object-position:center top;-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
+.hero .flags{position:absolute;top:0;left:0;right:0}
+.hero-in{position:relative}
+.hero h1{font-size:clamp(2.8rem,13vw,5.6rem);font-weight:800;letter-spacing:-.03em;text-shadow:0 3px 18px rgba(20,18,58,.6)}
+.hero h1 span{display:inline-block;background:var(--yl);color:#1d1b4f;text-shadow:none;padding:0 .18em;border-radius:.12em;transform:rotate(-2deg)}
+.tag{max-width:30rem;margin:.8rem auto 1.2rem;color:rgba(255,255,255,.95);text-shadow:0 1px 8px rgba(20,18,58,.7)}
+.c{text-align:center}
+.count{display:inline-block;background:var(--yl);color:#1d1b4f;font:inherit;font-weight:600;cursor:pointer;padding:.6rem 1.1rem;border-radius:99px;border:2px solid var(--ink)}
+.cal{max-width:320px;margin:0 auto;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:.7rem .8rem;box-shadow:4px 4px 0 var(--ink)}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.calh b{font-size:1.05rem;font-weight:800}
+.calh button{font:inherit;font-weight:800;width:2rem;height:2rem;border-radius:50%;border:2px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.dow{font-size:.78rem;color:var(--mut);font-weight:600}
+.day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font:inherit;font-size:.85rem;border:2px solid transparent;background:none;color:var(--ink);padding:0}
+.day.today{border-color:var(--mut)}
+.day.ev{cursor:pointer;font-weight:800;background:var(--pk);color:#fff}
+.day.ev.tent{background:transparent;color:var(--ink);border:2px dashed var(--yl);box-shadow:inset 0 0 0 2px var(--yl)}
+.count:focus-visible,.day:focus-visible,.btn:focus-visible,.calh button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;font-size:.78rem;color:var(--mut);margin-top:.7rem}
+.legend i{display:inline-block;width:.9rem;height:.9rem;border-radius:50%;vertical-align:-.1rem;margin-right:.3rem;background:var(--pk)}
+.legend i.t{background:none;border:2px dashed var(--yl)}
+#pick{margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.chip{font:inherit;font-weight:600;border:2px solid var(--ink);background:var(--yl);color:#1d1b4f;border-radius:99px;padding:.3rem .9rem;cursor:pointer}
+.yr{font-size:1.1rem;font-weight:800;color:var(--pk);margin:1.6rem 0 .6rem}
+.ev-card{background:var(--card);border:2px solid var(--ink);border-left:12px solid var(--mint);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1.3rem;display:grid;gap:.8rem;scroll-margin-top:1rem;box-shadow:5px 5px 0 var(--ink)}
+.ev-card.tent{border-left-color:var(--yl)}
+.ev-card.flash{animation:fl 1.6s}
+@keyframes fl{0%,60%{box-shadow:0 0 0 6px var(--pk)}100%{box-shadow:0 0 0 0 transparent}}
+.ev-card h3{font-size:1.45rem;font-weight:800}
+.badge{display:inline-block;font-size:.8rem;font-weight:600;border-radius:99px;padding:.1rem .7rem;background:var(--mint);color:#06281d;margin-bottom:.4rem}
+.tent .badge{background:var(--yl);color:#1d1b4f}
+.meta{margin:.2rem 0 0;color:var(--mut)}
+.poster{border:2px dashed var(--ln);border-radius:12px;padding:1rem;text-align:center;color:var(--mut);font-size:.9rem}
+.poster img{max-width:100%;border-radius:8px;display:block;margin:0 auto}
+.btn{display:inline-block;font:inherit;font-weight:600;text-decoration:none;color:#fff;background:var(--pk);border:2px solid var(--ink);border-radius:10px;padding:.4rem .9rem}
+.build{border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--card)}
+.stripe{height:26px;background:repeating-linear-gradient(-45deg,var(--yl) 0 16px,#1d1b4f 16px 32px)}
+.build div.in{padding:1.4rem 1rem;text-align:center}
+.build h3{font-size:1.5rem;font-weight:800}
+.build .em{font-size:2.6rem;display:inline-block;animation:wob 2.4s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(-10deg)}}
+.soon{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.soon div{background:var(--card);border:2px dashed var(--ln);border-radius:14px;padding:1rem}
+.soon b{display:block;font-size:1.05rem}
+.soon p{margin:.3rem 0 0;color:var(--mut);font-size:.92rem}
+footer{text-align:center;color:var(--mut);padding:1rem}
+@media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="hero">
+<img class="hero-img" src="/_blob/ab18d68f616b070300bbcdca94c2b2ca" alt="Foto del grupo Paquillo">
+<div class="hero-in">
+<h1>Paquillo <span>Events</span></h1>
+<p class="tag">Donde los planes se proponen, votan, vuelven a votar, discuten y a veces incluso ocurren.</p>
+<button type="button" class="count" id="count">Contando los días…</button>
+</div>
+</header>
+<main>
+
+<div class="c"><h2>Calendario</h2>
+<p class="sub">Toca un día marcado y te llevo al plan.</p></div>
+<div class="cal">
+<div class="calh"><button id="prev" aria-label="Mes anterior">‹</button><b id="mname"></b><button id="next" aria-label="Mes siguiente">›</button></div>
+<div class="grid" id="cg"></div>
+<div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span></div>
+<div id="pick"></div>
+</div>
+
+<h2>Próximos planes</h2>
+<p class="sub">Apunta las fechas y avisa si no vas a poder.</p>
+<div id="events"></div>
+
+<h2>Planes pasados</h2>
+<div class="build">
+<div class="stripe"></div>
+<div class="in">
+<span class="em" aria-hidden="true">🚧</span>
+<h3>En construcción</h3>
+<p class="sub" style="margin:.4rem 0 0">Estamos desenterrando fotos del archivo. Si sales mal en alguna, es pura casualidad.</p>
+</div>
+<div class="stripe"></div>
+</div>
+
+<h2>En el horno</h2>
+<p class="sub">Secciones que llegarán cuando alguien tenga un rato libre.</p>
+<div class="soon">
+<div><b>🗳️ Votaciones</b><p>Fechas y asistencia, para dejar de decir «ya veremos» en el grupo.</p></div>
+<div><b>⏰ Ranking de impuntuales</b><p>Datos objetivos. Reclamaciones, por escrito.</p></div>
+<div><b>🏆 Salón de la fama</b><p>Las mejores anécdotas, citas y desastres de cada plan.</p></div>
+</div>
+</main>
+<footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
+
+<script>
+const EV=[
+{id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richi y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'/_blob/40313936ec09b007efa6a4b008500d8e'},
+{id:'san-miguel',e:'🍺',t:'Visita a la San Miguel',y:2026,by:'David y Richi',d:['2026-12-14'],ok:true,when:'14 de diciembre',where:'San Miguel',map:'https://maps.app.goo.gl/CFwwpB7dvevBk9mE6',desc:'Un nuevo plan para beber un lunes.'},
+{id:'pachanga',e:'🏀',t:'PaquiPachanga baloncesto, I edición',y:2026,by:'Iván y Sofía',d:['2026-12-19'],ok:true,when:'19 de diciembre (hora por confirmar)',where:'Talamillo',map:'https://maps.app.goo.gl/bieEhCVe8vLLVcLY8',desc:'Un puñado de gente que no sabe botar, ni driblar, ni cuántos pasos se pueden dar con el balón, a punto de jugar un partido de verdad. Se admiten dobles, pasos, canastas en propia y tiros que no tocan ni el aro. Las agujetas del día siguiente van de regalo.'},
+{id:'cena-navidad',e:'🎄',t:'Cena de Navidad 2026',y:2026,by:'Paquillo’s events in progress',d:['2026-12-19'],ok:true,when:'19 de diciembre, de 20:00 a 2:00',where:'Bibeme',map:'https://maps.app.goo.gl/QVhvjR26Cckd7DD37',desc:'Un nuevo evento navideño para los Paquillos, con catas y nuevas actividades.'},
+{id:'sidreria',e:'🍏',t:'Sidrería 2027',y:2027,by:'Por determinar',d:[],ok:false,when:'Fecha por determinar',where:'Sitio por determinar',map:'',desc:'Una sidrería nueva que visitar para generar anécdotas nuevas y seguir llenando el calendario. Fecha y sitio, muy pronto.'}
+];
+const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
+const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
+const today=new Date();today.setHours(0,0,0,0);
+const nxt=EV.filter(e=>e.d.length).map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
+let cur=nxt?new Date(nxt.t.getFullYear(),nxt.t.getMonth(),1):new Date(today.getFullYear(),today.getMonth(),1);
+
+if(nxt){const n=Math.round((nxt.t-today)/864e5);
+ $('count').textContent=n===0?'¡Hoy es '+nxt.e.t+'!':'Faltan '+n+(n===1?' día':' días')+' para '+nxt.e.t+(nxt.e.ok?'':' (fecha por confirmar)');
+$('count').onclick=()=>go(nxt.e.id);
+}else{$('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';$('count').disabled=true;$('count').style.cursor='default'}
+
+function go(id){const el=$(id);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+
+function cal(){
+ const y=cur.getFullYear(),m=cur.getMonth();
+ $('mname').textContent=MES[m]+' '+y;
+ let h=['L','M','X','J','V','S','D'].map(d=>'<div class="dow">'+d+'</div>').join('');
+ const off=(new Date(y,m,1).getDay()+6)%7, n=new Date(y,m+1,0).getDate();
+ for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=n;d++){
+  const k=y+'-'+p2(m+1)+'-'+p2(d), ev=byDay[k];
+  const isT=new Date(y,m,d).getTime()===today.getTime();
+  if(ev){const tent=ev.every(e=>!e.ok);
+   h+='<button class="day ev'+(tent?' tent':'')+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+': '+ev.map(e=>e.t).join(', ')+'">'+d+'</button>';
+  }else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
+ }
+ $('cg').innerHTML=h;$('pick').innerHTML='';
+}
+$('cg').addEventListener('click',x=>{const b=x.target.closest('[data-k]');if(!b)return;
+ const ev=byDay[b.dataset.k];
+ if(ev.length===1){$('pick').innerHTML='';go(ev[0].id)}
+ else{$('pick').innerHTML='<span class="sub" style="margin:0">Ese día hay plan doble:</span>'+ev.map(e=>'<button class="chip" data-g="'+e.id+'">'+e.e+' '+e.t+'</button>').join('')}
+});
+$('pick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b)go(b.dataset.g)});
+$('prev').onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);cal()};
+$('next').onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);cal()};
+
+let out='',yr=0;
+EV.forEach(e=>{
+ if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
+ out+='<article class="ev-card'+(e.ok?'':' tent')+'" id="'+e.id+'"><div><span class="badge">'+(e.ok?'Confirmado':'Por confirmar')+'</span><h3>'+e.e+' '+e.t+'</h3>'
+ +'<p class="meta"><b>Cuándo:</b> '+e.when+'<br><b>Dónde:</b> '+e.where+'<br><b>Organiza:</b> '+e.by+'</p></div>'
+ +'<p style="margin:0">'+e.desc+'</p>'
+ +'<div class="poster">'+(e.poster?'<img src="'+e.poster+'" alt="Cartel de '+e.t+'">':'El cartel está en la imprenta.')+'</div>'
+ +(e.map?'<div><a class="btn" href="'+e.map+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'</article>';
+});
+$('events').innerHTML=out;cal();
+</script>
+</body>
+</html>
