@@ -67,6 +67,19 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .soon div{background:var(--card);border:2px dashed var(--ln);border-radius:14px;padding:1rem}
 .soon b{display:block;font-size:1.05rem}
 .soon p{margin:.3rem 0 0;color:var(--mut);font-size:.92rem}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:.5rem;overflow-x:auto;padding:.7rem max(1rem,calc((100% - 860px)/2));background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:2px solid var(--ink);scrollbar-width:none}
+.tabs button{flex:none;font:inherit;font-weight:600;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.45rem 1rem;cursor:pointer}
+.tabs button.on{background:var(--pk);color:#fff;box-shadow:3px 3px 0 var(--ink)}
+.tabs button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.panel[hidden]{display:none}
+.stk{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.stk figure{margin:0;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.7rem;text-align:center;box-shadow:4px 4px 0 var(--ink)}
+.stk img{width:100%;aspect-ratio:1;object-fit:contain}
+.stk figcaption{font-weight:600;margin:.3rem 0 .5rem}
+.empty{grid-column:1/-1;border:2px dashed var(--ln);border-radius:14px;padding:1.6rem 1rem;text-align:center;color:var(--mut);background:var(--card)}
+.how{margin-top:1.2rem;border-radius:14px;background:var(--card);border:2px solid var(--ink);padding:.9rem 1rem}
+.how p{margin:.3rem 0 0;color:var(--mut)}
 footer{text-align:center;color:var(--mut);padding:1rem}
 @media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
 </style>
@@ -80,8 +93,14 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <button type="button" class="count" id="count">Contando los días…</button>
 </div>
 </header>
+<nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
+<button type="button" role="tab" data-t="proximos" class="on">📅 Próximos planes</button>
+<button type="button" role="tab" data-t="pasados">📸 Planes pasados</button>
+<button type="button" role="tab" data-t="stickers">😂 Stickers</button>
+<button type="button" role="tab" data-t="horno">🔥 En el horno</button>
+</nav>
 <main>
-
+<section class="panel" id="p-proximos">
 <div class="c"><h2>Calendario</h2>
 <p class="sub">Toca un día marcado y te llevo al plan.</p></div>
 <div class="cal">
@@ -95,6 +114,8 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <p class="sub">Apunta las fechas y avisa si no vas a poder.</p>
 <div id="events"></div>
 
+</section>
+<section class="panel" id="p-pasados" hidden>
 <h2>Planes pasados</h2>
 <div class="build">
 <div class="stripe"></div>
@@ -106,6 +127,14 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <div class="stripe"></div>
 </div>
 
+</section>
+<section class="panel" id="p-stickers" hidden>
+<h2>Stickers del grupo</h2>
+<p class="sub">El archivo oficial de caras, gestos y desastres del grupo. Descárgalos y úsalos en WhatsApp.</p>
+<div class="stk" id="stk"></div>
+<div class="how"><b>Cómo llevarlos a WhatsApp</b><p>Descarga el sticker y ábrelo con una app de stickers, como Sticker Maker, para montar tu pack. Los preparo en WebP de 512 × 512 px, el formato que pide WhatsApp.</p></div>
+</section>
+<section class="panel" id="p-horno" hidden>
 <h2>En el horno</h2>
 <p class="sub">Secciones que llegarán cuando alguien tenga un rato libre.</p>
 <div class="soon">
@@ -113,17 +142,19 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <div><b>⏰ Ranking de impuntuales</b><p>Datos objetivos. Reclamaciones, por escrito.</p></div>
 <div><b>🏆 Salón de la fama</b><p>Las mejores anécdotas, citas y desastres de cada plan.</p></div>
 </div>
+</section>
 </main>
 <footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
 
 <script>
 const EV=[
 {id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richi y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'img/cartel-cumple-sandra-2026.jpg'},
-{id:'san-miguel',e:'🍺',t:'Visita a la San Miguel',y:2026,by:'David y Richi',d:['2026-12-14'],ok:true,when:'14 de diciembre',where:'San Miguel',map:'https://maps.app.goo.gl/CFwwpB7dvevBk9mE6',desc:'Un nuevo plan para beber un lunes.'},
+{id:'san-miguel',e:'🍺',t:'Visita a la San Miguel',y:2026,by:'David y Richi',d:['2026-12-14'],ok:true,when:'14 de diciembre, a las 16:00',where:'San Miguel',map:'https://maps.app.goo.gl/CFwwpB7dvevBk9mE6',desc:'Un nuevo plan para beber un lunes.',poster:'img/cartel-san-miguel-2026.jpg'},
 {id:'pachanga',e:'🏀',t:'PaquiPachanga baloncesto, I edición',y:2026,by:'Iván y Sofía',d:['2026-12-19'],ok:true,when:'19 de diciembre (hora por confirmar)',where:'Talamillo',map:'https://maps.app.goo.gl/bieEhCVe8vLLVcLY8',desc:'Un puñado de gente que no sabe botar, ni driblar, ni cuántos pasos se pueden dar con el balón, a punto de jugar un partido de verdad. Se admiten dobles, pasos, canastas en propia y tiros que no tocan ni el aro. Las agujetas del día siguiente van de regalo.',poster:'img/cartel-pachanga-2026.jpg'},
 {id:'cena-navidad',e:'🎄',t:'Cena de Navidad 2026',y:2026,by:'Paquillo’s events in progress',d:['2026-12-19'],ok:true,when:'19 de diciembre, de 20:00 a 2:00',where:'Bibeme',map:'https://maps.app.goo.gl/QVhvjR26Cckd7DD37',desc:'Un nuevo evento navideño para los Paquillos, con catas y nuevas actividades.',poster:'img/cartel-cena-navidad-2026.jpg'},
 {id:'sidreria',e:'🍏',t:'Sidrería 2027',y:2027,by:'Por determinar',d:[],ok:false,when:'Fecha por determinar',where:'Sitio por determinar',map:'',desc:'Una sidrería nueva que visitar para generar anécdotas nuevas y seguir llenando el calendario. Fecha y sitio, muy pronto.'}
 ];
+const STK=[]; // cada sticker: {n:'nombre',src:'ruta'}
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
 const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
@@ -136,7 +167,7 @@ if(nxt){const n=Math.round((nxt.t-today)/864e5);
 $('count').onclick=()=>go(nxt.e.id);
 }else{$('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';$('count').disabled=true;$('count').style.cursor='default'}
 
-function go(id){const el=$(id);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+function go(id){showTab('proximos');const el=$(id);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
 
 function cal(){
  const y=cur.getFullYear(),m=cur.getMonth();
@@ -172,6 +203,11 @@ EV.forEach(e=>{
  +(e.map?'<div><a class="btn" href="'+e.map+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'</article>';
 });
 $('events').innerHTML=out;cal();
+$('stk').innerHTML=STK.length?STK.map(s=>'<figure><img src="'+s.src+'" alt="'+s.n+'" loading="lazy"><figcaption>'+s.n+'</figcaption><a class="btn" href="'+s.src+'" download="'+s.n+'.webp">Descargar</a></figure>').join(''):'<div class="empty">🫥 Aún no hay stickers. Mándame los primeros y aparecerán aquí.</div>';
+function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)})}
+$('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.hero').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
+addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
+showTab(location.hash.slice(1));
 </script>
 </body>
 </html>
