@@ -80,18 +80,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .empty{grid-column:1/-1;border:2px dashed var(--ln);border-radius:14px;padding:1.6rem 1rem;text-align:center;color:var(--mut);background:var(--card)}
 .how{margin-top:1.2rem;border-radius:14px;background:var(--card);border:2px solid var(--ink);padding:.9rem 1rem}
 .how p{margin:.3rem 0 0;color:var(--mut)}
+.top{text-align:center;padding:1.2rem 1rem 1.2rem}
+.banner{display:block;width:100%;max-width:620px;height:auto;margin:0 auto 1.1rem;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 footer{text-align:center;color:var(--mut);padding:1rem}
 @media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<header class="hero">
-<img class="hero-img" src="img/foto-grupo-paquillo.jpg" alt="Foto del grupo Paquillo">
-<div class="hero-in">
-<h1>Paquillo <span>Events</span></h1>
-<p class="tag">Donde los planes se proponen, votan, vuelven a votar, discuten y a veces incluso ocurren.</p>
+<header class="top">
+<h1 class="sr">Paquillo Events</h1>
+<img class="banner" src="img/banner-paquillo-events.jpg" alt="Paquillo Events. Donde los planes se proponen, votan, vuelven a votar, discuten y a veces incluso ocurren.">
 <button type="button" class="count" id="count">Contando los días…</button>
-</div>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
 <button type="button" role="tab" data-t="proximos" class="on">📅 Próximos planes</button>
@@ -205,7 +205,7 @@ EV.forEach(e=>{
 $('events').innerHTML=out;cal();
 $('stk').innerHTML=STK.length?STK.map(s=>'<figure><img src="'+s.src+'" alt="'+s.n+'" loading="lazy"><figcaption>'+s.n+'</figcaption><a class="btn" href="'+s.src+'" download="'+s.n+'.webp">Descargar</a></figure>').join(''):'<div class="empty">🫥 Aún no hay stickers. Mándame los primeros y aparecerán aquí.</div>';
 function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)})}
-$('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.hero').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
+$('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
 showTab(location.hash.slice(1));
 </script>
