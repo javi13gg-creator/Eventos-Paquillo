@@ -83,6 +83,20 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .top{text-align:center;padding:1.2rem 1rem 1.2rem}
 .banner{display:block;width:100%;max-width:620px;height:auto;margin:0 auto 1.1rem;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.count.b{background:var(--mint);color:#06281d}
+.av{width:1.9rem;height:1.9rem;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.4rem;border:2px solid #06281d}
+.av+.av{margin-left:-.9rem}
+.day.bd{padding:0;border:2px solid var(--pk);border-radius:50%;overflow:hidden;position:relative;cursor:pointer;background:none}
+.day.bd img{width:100%;height:100%;object-fit:cover;display:block}
+.day.bd .n{position:absolute;right:0;bottom:0;background:var(--yl);color:#1d1b4f;font-size:.65rem;font-weight:800;border-radius:99px;padding:0 .3rem}
+#bpick{margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;align-items:center}
+.bi{display:flex;align-items:center;gap:.8rem;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.6rem .8rem;margin-bottom:.7rem;box-shadow:3px 3px 0 var(--ink);scroll-margin-top:5rem}
+.bi.first{border-left:10px solid var(--mint)}
+.bi.flash{animation:fl 1.6s}
+.bi img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);flex:none}
+.bi .mut{color:var(--mut);font-size:.9rem}
+.bi .w{margin-left:auto;font-weight:600;background:var(--yl);color:#1d1b4f;border-radius:99px;padding:.15rem .75rem;font-size:.85rem;white-space:nowrap}
 footer{text-align:center;color:var(--mut);padding:1rem}
 @media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
 </style>
@@ -91,10 +105,14 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <header class="top">
 <h1 class="sr">Paquillo Events</h1>
 <img class="banner" src="img/banner-paquillo-events.jpg" alt="Paquillo Events. Donde los planes se proponen, votan, vuelven a votar, discuten y a veces incluso ocurren.">
+<div class="pills">
 <button type="button" class="count" id="count">Contando los días…</button>
+<button type="button" class="count b" id="bcount"></button>
+</div>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
 <button type="button" role="tab" data-t="proximos" class="on">📅 Próximos planes</button>
+<button type="button" role="tab" data-t="cumples">🎂 Cumples</button>
 <button type="button" role="tab" data-t="pasados">📸 Planes pasados</button>
 <button type="button" role="tab" data-t="stickers">😂 Stickers</button>
 <button type="button" role="tab" data-t="horno">🔥 En el horno</button>
@@ -114,6 +132,18 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <p class="sub">Apunta las fechas y avisa si no vas a poder.</p>
 <div id="events"></div>
 
+</section>
+<section class="panel" id="p-cumples" hidden>
+<div class="c"><h2>Cumpleaños</h2>
+<p class="sub">Toca un día con foto y te llevo a su cumple.</p></div>
+<div class="cal">
+<div class="calh"><button id="bprev" aria-label="Mes anterior">‹</button><b id="bmname"></b><button id="bnext" aria-label="Mes siguiente">›</button></div>
+<div class="grid" id="bcg"></div>
+<div id="bpick"></div>
+</div>
+<h2>Próximos cumples</h2>
+<p class="sub">Ordenados desde el que toca ahora.</p>
+<div id="blist"></div>
 </section>
 <section class="panel" id="p-pasados" hidden>
 <h2>Planes pasados</h2>
@@ -164,7 +194,7 @@ const nxt=EV.filter(e=>e.d.length).map(e=>({e,t:new Date(e.d[0]+'T00:00')})).fil
 let cur=nxt?new Date(nxt.t.getFullYear(),nxt.t.getMonth(),1):new Date(today.getFullYear(),today.getMonth(),1);
 
 if(nxt){const n=Math.round((nxt.t-today)/864e5);
- $('count').textContent=n===0?'¡Hoy es '+nxt.e.t+'!':'Faltan '+n+(n===1?' día':' días')+' para '+nxt.e.t+(nxt.e.ok?'':' (fecha por confirmar)');
+ $('count').textContent=n===0?'¡Hoy es '+nxt.e.t+'!':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para '+nxt.e.t+(nxt.e.ok?'':' (fecha por confirmar)');
 $('count').onclick=()=>go(nxt.e.id);
 }else{$('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';$('count').disabled=true;$('count').style.cursor='default'}
 
@@ -208,6 +238,36 @@ $('stk').innerHTML=STK.length?STK.map(s=>'<figure><img src="'+s.src+'" alt="'+s.
 function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)})}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
+const PEOPLE=[{n:'Leti',d:14,m:1,s:'leti',i:'img/cumples/leti.jpg'},{n:'Adri',d:22,m:7,s:'adri',i:'img/cumples/adri.jpg'},{n:'Alba',d:3,m:3,s:'alba',i:'img/cumples/alba.jpg'},{n:'Carla',d:30,m:4,s:'carla',i:'img/cumples/carla.jpg'},{n:'David',d:6,m:3,s:'david',i:'img/cumples/david.jpg'},{n:'Diego',d:22,m:4,s:'diego',i:'img/cumples/diego.jpg'},{n:'Ines',d:1,m:10,s:'ines',i:'img/cumples/ines.jpg'},{n:'Iván',d:28,m:9,s:'ivan',i:'img/cumples/ivan.jpg'},{n:'Joaquín',d:14,m:7,s:'joaquin',i:'img/cumples/joaquin.jpg'},{n:'JB',d:8,m:10,s:'jb',i:'img/cumples/jb.jpg'},{n:'Jorge R',d:24,m:9,s:'jorge-r',i:'img/cumples/jorge-r.jpg'},{n:'Julia',d:15,m:6,s:'julia',i:'img/cumples/julia.jpg'},{n:'Laura',d:20,m:5,s:'laura',i:'img/cumples/laura.jpg'},{n:'María',d:14,m:1,s:'maria',i:'img/cumples/maria.jpg'},{n:'Mireia',d:5,m:2,s:'mireia',i:'img/cumples/mireia.jpg'},{n:'Richy',d:26,m:2,s:'richy',i:'img/cumples/richy.jpg'},{n:'Román',d:1,m:12,s:'roman',i:'img/cumples/roman.jpg'},{n:'Rodri',d:27,m:4,s:'rodri',i:'img/cumples/rodri.jpg'},{n:'Sara',d:22,m:6,s:'sara',i:'img/cumples/sara.jpg'},{n:'Santi',d:16,m:2,s:'santi',i:'img/cumples/santi.jpg'},{n:'Sandra',d:2,m:11,s:'sandra',i:'img/cumples/sandra.jpg'},{n:'Sofía',d:16,m:1,s:'sofia',i:'img/cumples/sofia.jpg'},{n:'Javi',d:21,m:4,s:'javi',i:'img/cumples/javi.jpg'}];
+const bday={};PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(p)});
+const BD=PEOPLE.map(p=>{let t=new Date(today.getFullYear(),p.m-1,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m-1,p.d);return{p,t}}).sort((a,b)=>a.t-b.t||PEOPLE.indexOf(a.p)-PEOPLE.indexOf(b.p));
+let bcur=new Date(BD[0].t.getFullYear(),BD[0].t.getMonth(),1);
+function goB(s){showTab('cumples');const el=$('b-'+s);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+function bcal(){
+ const y=bcur.getFullYear(),m=bcur.getMonth();
+ $('bmname').textContent=MES[m]+' '+y;
+ let h=['L','M','X','J','V','S','D'].map(d=>'<div class="dow">'+d+'</div>').join('');
+ const off=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
+ for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=n;d++){
+  const ps=bday[(m+1)+'-'+d],isT=new Date(y,m,d).getTime()===today.getTime();
+  if(ps)h+='<button class="day bd'+(isT?' today':'')+'" data-b="'+(m+1)+'-'+d+'" aria-label="'+d+' de '+MES[m]+': '+ps.map(p=>p.n).join(', ')+'"><img src="'+ps[0].i+'" alt="">'+(ps.length>1?'<span class="n">'+ps.length+'</span>':'')+'</button>';
+  else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
+ }
+ $('bcg').innerHTML=h;$('bpick').innerHTML='';
+}
+$('bcg').addEventListener('click',x=>{const b=x.target.closest('[data-b]');if(!b)return;const ps=bday[b.dataset.b];
+ if(ps.length===1){$('bpick').innerHTML='';goB(ps[0].s)}
+ else $('bpick').innerHTML='<span class="sub" style="margin:0">Ese día cumplen:</span>'+ps.map(p=>'<button class="chip" data-g="'+p.s+'">'+p.n+'</button>').join('')});
+$('bpick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b)goB(b.dataset.g)});
+$('bprev').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()-1,1);bcal()};
+$('bnext').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()+1,1);bcal()};
+const when=n=>n===0?'¡Hoy!':n===1?'Mañana':'En '+n+' días';
+$('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+x.p.i+'" alt="'+x.p.n+'"><div><b>'+x.p.n+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
+{const g=BD.filter(x=>x.t.getTime()===BD[0].t.getTime()),n=Math.round((BD[0].t-today)/864e5),nm=g.map(x=>x.p.n).join(' y ');
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂');
+ $('bcount').onclick=()=>goB(g[0].p.s)}
+bcal();
 showTab(location.hash.slice(1));
 </script>
 </body>
