@@ -100,6 +100,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .bi img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);flex:none}
 .bi .mut{color:var(--mut);font-size:.9rem}
 .bi .w{margin-left:auto;font-weight:600;background:var(--yl);color:#1d1b4f;border-radius:99px;padding:.15rem .75rem;font-size:.85rem;white-space:nowrap}
+.stk{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:.55rem}
+.st{aspect-ratio:1;padding:.25rem;background:var(--card);border:2px solid var(--ink);border-radius:14px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+.st img{width:100%;height:100%;object-fit:contain;display:block}
+.st:focus-visible,.sv button:focus-visible,.sv a:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.sv{position:fixed;inset:0;z-index:50;background:rgba(20,18,58,.88);display:flex;align-items:center;justify-content:center;gap:.5rem;padding:max(1rem,env(safe-area-inset-top)) .6rem max(1rem,env(safe-area-inset-bottom))}
+.sv[hidden]{display:none}
+.sv-c{display:flex;flex-direction:column;align-items:center;gap:1rem;width:min(78vw,500px)}
+.sv-c img{width:100%;max-height:68vh;object-fit:contain;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:.6rem}
+.sv-n,.sv-x{font:inherit;font-weight:800;font-size:1.4rem;width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--ink);background:var(--yl);color:#1d1b4f;cursor:pointer;flex:none}
+.sv-x{position:absolute;top:max(.8rem,env(safe-area-inset-top));right:.8rem}
 footer{text-align:center;color:var(--mut);padding:1rem}
 @media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
 </style>
@@ -163,9 +173,10 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 </section>
 <section class="panel" id="p-stickers" hidden>
 <h2>Stickers del grupo</h2>
-<p class="sub">El archivo oficial de caras, gestos y desastres del grupo. Descárgalos y úsalos en WhatsApp.</p>
+<p class="sub">El archivo oficial de caras, gestos y desastres del grupo. Toca uno para verlo y descargarlo.</p>
+<p><a class="btn" id="dall" href="stickers.zip" download hidden>Descargar todos (zip)</a></p>
 <div class="stk" id="stk"></div>
-<div class="how"><b>Cómo llevarlos a WhatsApp</b><p>Descarga el sticker y ábrelo con una app de stickers, como Sticker Maker, para montar tu pack. Los preparo en WebP de 512 × 512 px, el formato que pide WhatsApp.</p></div>
+<div class="how"><b>Cómo llevarlos a WhatsApp</b><p>Descarga los que quieras y añádelos a un pack con una app de stickers, como Sticker Maker. Casi todos son WebP de 512 × 512 px, el formato que pide WhatsApp.</p></div>
 </section>
 <section class="panel" id="p-horno" hidden>
 <h2>En el horno</h2>
@@ -179,6 +190,13 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 </main>
 <footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
 
+<div class="sv" id="sv" hidden>
+<button type="button" class="sv-x" id="svx" aria-label="Cerrar">✕</button>
+<button type="button" class="sv-n" id="svp" aria-label="Anterior">‹</button>
+<div class="sv-c"><img id="svi" alt="Sticker"><a class="btn" id="svd" download>Descargar</a></div>
+<button type="button" class="sv-n" id="svn" aria-label="Siguiente">›</button>
+</div>
+
 <script>
 const EV=[
 {id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richi y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'img/cartel-cumple-sandra-2026.jpg'},
@@ -188,7 +206,7 @@ const EV=[
 {id:'sidreria',e:'🍏',t:'Sidrería 2027',y:2027,by:'Por determinar',d:[],ok:false,when:'Fecha por determinar',where:'Sitio por determinar',map:'',desc:'Una sidrería nueva que visitar para generar anécdotas nuevas y seguir llenando el calendario. Fecha y sitio, muy pronto.'},
 {id:'boda-ivan-sofia',e:'💍',t:'Boda Iván y Sofía',y:2027,by:'Iván y Sofía',d:['2027-07-03'],ok:true,when:'3 de julio de 2027',where:'Finca de Santa Rosalía',map:'https://maps.app.goo.gl/mreWd9JsBB69mkyQ7',desc:'Dos miembros más de Paquillo sellan su amor y se pasan al lado oscuro.',poster:'img/cartel-boda-ivan-sofia-2027.jpg'}
 ];
-const STK=[]; // cada sticker: {n:'nombre',src:'ruta'}
+const STK=[{t:'img/stickers/t/0a52a98a.webp',f:'img/stickers/0a52a98a.webp'},{t:'img/stickers/t/39947c71.webp',f:'img/stickers/39947c71.webp'},{t:'img/stickers/t/cb9ace0c.webp',f:'img/stickers/cb9ace0c.webp'},{t:'img/stickers/t/a7b0af9b.webp',f:'img/stickers/a7b0af9b.webp'},{t:'img/stickers/t/a288afef.webp',f:'img/stickers/a288afef.webp'},{t:'img/stickers/t/62846d09.webp',f:'img/stickers/62846d09.webp'},{t:'img/stickers/t/994b5e50.webp',f:'img/stickers/994b5e50.webp'},{t:'img/stickers/t/ceaa4a0d.webp',f:'img/stickers/ceaa4a0d.webp'},{t:'img/stickers/t/a42a37e5.webp',f:'img/stickers/a42a37e5.webp'},{t:'img/stickers/t/64821a99.webp',f:'img/stickers/64821a99.webp'},{t:'img/stickers/t/0b19f314.webp',f:'img/stickers/0b19f314.webp'},{t:'img/stickers/t/8689f568.webp',f:'img/stickers/8689f568.webp'},{t:'img/stickers/t/d55499cd.webp',f:'img/stickers/d55499cd.webp'},{t:'img/stickers/t/11a56d28.webp',f:'img/stickers/11a56d28.webp'},{t:'img/stickers/t/59a9c9fe.webp',f:'img/stickers/59a9c9fe.webp'},{t:'img/stickers/t/f5b75d0f.webp',f:'img/stickers/f5b75d0f.webp'},{t:'img/stickers/t/4d0487a3.webp',f:'img/stickers/4d0487a3.webp'},{t:'img/stickers/t/3c1cfdd6.webp',f:'img/stickers/3c1cfdd6.webp'},{t:'img/stickers/t/48a873ef.webp',f:'img/stickers/48a873ef.webp'},{t:'img/stickers/t/22a72af2.webp',f:'img/stickers/22a72af2.webp'},{t:'img/stickers/t/de22e9fc.webp',f:'img/stickers/de22e9fc.webp'},{t:'img/stickers/t/063f0ded.webp',f:'img/stickers/063f0ded.webp'},{t:'img/stickers/t/bfd0c2e9.webp',f:'img/stickers/bfd0c2e9.webp'},{t:'img/stickers/t/ef227170.webp',f:'img/stickers/ef227170.webp'},{t:'img/stickers/t/2d7c2475.webp',f:'img/stickers/2d7c2475.webp'},{t:'img/stickers/t/9d1ac7c5.webp',f:'img/stickers/9d1ac7c5.webp'},{t:'img/stickers/t/52df9dd4.webp',f:'img/stickers/52df9dd4.webp'},{t:'img/stickers/t/a01cec26.webp',f:'img/stickers/a01cec26.webp'},{t:'img/stickers/t/e8db23d6.webp',f:'img/stickers/e8db23d6.webp'},{t:'img/stickers/t/76a26b9d.webp',f:'img/stickers/76a26b9d.webp'},{t:'img/stickers/t/c6d27626.webp',f:'img/stickers/c6d27626.webp'},{t:'img/stickers/t/8dfb2e2a.webp',f:'img/stickers/8dfb2e2a.webp'},{t:'img/stickers/t/342e3179.webp',f:'img/stickers/342e3179.webp'},{t:'img/stickers/t/ab3339d9.webp',f:'img/stickers/ab3339d9.webp'},{t:'img/stickers/t/dc2d5e6e.webp',f:'img/stickers/dc2d5e6e.webp'},{t:'img/stickers/t/da4f1d3e.webp',f:'img/stickers/da4f1d3e.webp'},{t:'img/stickers/t/3dd86c0d.webp',f:'img/stickers/3dd86c0d.webp'},{t:'img/stickers/t/41f75960.webp',f:'img/stickers/41f75960.webp'},{t:'img/stickers/t/4607a583.webp',f:'img/stickers/4607a583.webp'},{t:'img/stickers/t/24dc0c0f.webp',f:'img/stickers/24dc0c0f.webp'},{t:'img/stickers/t/4f168d62.webp',f:'img/stickers/4f168d62.webp'},{t:'img/stickers/t/562f0595.webp',f:'img/stickers/562f0595.webp'},{t:'img/stickers/t/6209722f.webp',f:'img/stickers/6209722f.webp'},{t:'img/stickers/t/649dcc4f.webp',f:'img/stickers/649dcc4f.webp'},{t:'img/stickers/t/f8c0fa1e.webp',f:'img/stickers/f8c0fa1e.webp'},{t:'img/stickers/t/d67cdda2.webp',f:'img/stickers/d67cdda2.webp'},{t:'img/stickers/t/9ad467a7.webp',f:'img/stickers/9ad467a7.webp'},{t:'img/stickers/t/25f427b8.webp',f:'img/stickers/25f427b8.webp'},{t:'img/stickers/t/51debbaf.webp',f:'img/stickers/51debbaf.webp'},{t:'img/stickers/t/7484877b.webp',f:'img/stickers/7484877b.webp'},{t:'img/stickers/t/278adf28.webp',f:'img/stickers/278adf28.webp'},{t:'img/stickers/t/4e6e130d.webp',f:'img/stickers/4e6e130d.webp'},{t:'img/stickers/t/603cef43.webp',f:'img/stickers/603cef43.webp'},{t:'img/stickers/t/7b3082d1.webp',f:'img/stickers/7b3082d1.webp'},{t:'img/stickers/t/2a6e0805.webp',f:'img/stickers/2a6e0805.webp'},{t:'img/stickers/t/a57d6025.webp',f:'img/stickers/a57d6025.webp'},{t:'img/stickers/t/7aea45c5.webp',f:'img/stickers/7aea45c5.webp'},{t:'img/stickers/t/1223f6f3.webp',f:'img/stickers/1223f6f3.webp'},{t:'img/stickers/t/6cca4936.webp',f:'img/stickers/6cca4936.webp'},{t:'img/stickers/t/fa3957ed.webp',f:'img/stickers/fa3957ed.webp'},{t:'img/stickers/t/7c5ce8f3.webp',f:'img/stickers/7c5ce8f3.webp'},{t:'img/stickers/t/1758f672.webp',f:'img/stickers/1758f672.webp'},{t:'img/stickers/t/bdc0e71c.webp',f:'img/stickers/bdc0e71c.webp'},{t:'img/stickers/t/705719c5.webp',f:'img/stickers/705719c5.webp'},{t:'img/stickers/t/53db28f0.webp',f:'img/stickers/53db28f0.webp'},{t:'img/stickers/t/5c4e7f0d.webp',f:'img/stickers/5c4e7f0d.webp'},{t:'img/stickers/t/2f1ee012.webp',f:'img/stickers/2f1ee012.webp'},{t:'img/stickers/t/88e360b6.webp',f:'img/stickers/88e360b6.webp'},{t:'img/stickers/t/a90c39f4.webp',f:'img/stickers/a90c39f4.webp'},{t:'img/stickers/t/c2bcafac.webp',f:'img/stickers/c2bcafac.webp'},{t:'img/stickers/t/acdbe162.webp',f:'img/stickers/acdbe162.webp'},{t:'img/stickers/t/2a10443b.webp',f:'img/stickers/2a10443b.webp'},{t:'img/stickers/t/8ea3220b.webp',f:'img/stickers/8ea3220b.webp'},{t:'img/stickers/t/4c38833c.webp',f:'img/stickers/4c38833c.webp'},{t:'img/stickers/t/ea764f3d.webp',f:'img/stickers/ea764f3d.webp'},{t:'img/stickers/t/919f6a44.webp',f:'img/stickers/919f6a44.webp'},{t:'img/stickers/t/fae97be8.webp',f:'img/stickers/fae97be8.webp'},{t:'img/stickers/t/1f5e3f67.webp',f:'img/stickers/1f5e3f67.webp'},{t:'img/stickers/t/dc914b58.webp',f:'img/stickers/dc914b58.webp'},{t:'img/stickers/t/6467e888.webp',f:'img/stickers/6467e888.webp'},{t:'img/stickers/t/74f8d3e8.webp',f:'img/stickers/74f8d3e8.webp'},{t:'img/stickers/t/73ad0863.webp',f:'img/stickers/73ad0863.webp'},{t:'img/stickers/t/c3bbd11b.webp',f:'img/stickers/c3bbd11b.webp'},{t:'img/stickers/t/0b6028b1.webp',f:'img/stickers/0b6028b1.webp'},{t:'img/stickers/t/f98bfe78.webp',f:'img/stickers/f98bfe78.webp'},{t:'img/stickers/t/36c6351a.webp',f:'img/stickers/36c6351a.webp'},{t:'img/stickers/t/10e8bb36.webp',f:'img/stickers/10e8bb36.webp'},{t:'img/stickers/t/7e122e1d.webp',f:'img/stickers/7e122e1d.webp'},{t:'img/stickers/t/79cca47d.webp',f:'img/stickers/79cca47d.webp'},{t:'img/stickers/t/a66ba4c9.webp',f:'img/stickers/a66ba4c9.webp'},{t:'img/stickers/t/0ead9913.webp',f:'img/stickers/0ead9913.webp'},{t:'img/stickers/t/609bf7a4.webp',f:'img/stickers/609bf7a4.webp'},{t:'img/stickers/t/84544fb3.webp',f:'img/stickers/84544fb3.webp'},{t:'img/stickers/t/f7be7309.webp',f:'img/stickers/f7be7309.webp'},{t:'img/stickers/t/f6f69c15.webp',f:'img/stickers/f6f69c15.webp'},{t:'img/stickers/t/8b6d8900.webp',f:'img/stickers/8b6d8900.webp'},{t:'img/stickers/t/e666d9cf.webp',f:'img/stickers/e666d9cf.webp'},{t:'img/stickers/t/be600767.webp',f:'img/stickers/be600767.webp'},{t:'img/stickers/t/e8bdfb99.webp',f:'img/stickers/e8bdfb99.webp'},{t:'img/stickers/t/0ec7250f.webp',f:'img/stickers/0ec7250f.webp'},{t:'img/stickers/t/aa6891bc.webp',f:'img/stickers/aa6891bc.webp'},{t:'img/stickers/t/26bbbd3a.webp',f:'img/stickers/26bbbd3a.webp'},{t:'img/stickers/t/03c93dab.webp',f:'img/stickers/03c93dab.webp'},{t:'img/stickers/t/0ab8e657.webp',f:'img/stickers/0ab8e657.webp'}];
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
 const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
@@ -237,7 +255,14 @@ EV.forEach(e=>{
  +(e.map?'<div><a class="btn" href="'+e.map+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'</article>';
 });
 $('events').innerHTML=out;cal();
-$('stk').innerHTML=STK.length?STK.map(s=>'<figure><img src="'+s.src+'" alt="'+s.n+'" loading="lazy"><figcaption>'+s.n+'</figcaption><a class="btn" href="'+s.src+'" download="'+s.n+'.webp">Descargar</a></figure>').join(''):'<div class="empty">🫥 Aún no hay stickers. Mándame los primeros y aparecerán aquí.</div>';
+$('stk').innerHTML=STK.length?STK.map((s,i)=>'<button type="button" class="st" data-i="'+i+'" aria-label="Ver sticker '+(i+1)+'"><img src="'+s.t+'" alt="Sticker" loading="lazy"></button>').join(''):'<div class="empty">🫥 Aún no hay stickers. Mándame los primeros y aparecerán aquí.</div>';
+let si=0;
+function showSt(i){si=(i+STK.length)%STK.length;const s=STK[si],f=s.f||s.t;$('svi').src=f;$('svd').href=f;$('svd').download='paquillo-sticker-'+String(si+1).padStart(3,'0')+'.webp';$('sv').hidden=false}
+$('stk').addEventListener('click',x=>{const b=x.target.closest('[data-i]');if(b)showSt(+b.dataset.i)});
+$('svx').onclick=()=>{$('sv').hidden=true};
+$('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
+$('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
+addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
 function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)})}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
