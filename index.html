@@ -110,6 +110,27 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sv-c img{width:100%;max-height:68vh;object-fit:contain;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:.6rem}
 .sv-n,.sv-x{font:inherit;font-weight:800;font-size:1.4rem;width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--ink);background:var(--yl);color:#1d1b4f;cursor:pointer;flex:none}
 .sv-x{position:absolute;top:max(.8rem,env(safe-area-inset-top));right:.8rem}
+.party{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:1rem;background:radial-gradient(circle at 50% 30%,#e6246b,#2a1f7a 85%);overflow:hidden}
+.party[hidden]{display:none}
+.pconf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pconf i{position:absolute;top:-5vh;width:10px;height:16px;border-radius:2px;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.pbal{position:absolute;bottom:-3rem;font-size:2.2rem;font-weight:400;animation:rise linear infinite}
+@keyframes rise{to{transform:translate(var(--dx,0),-115vh) rotate(25deg)}}
+.pcard{position:relative;text-align:center;color:#fff;max-width:420px;animation:pop .7s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:scale(.3) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+.pph{display:flex;justify-content:center;margin:0 auto 1.1rem;padding-top:3.2rem}
+.pph .one{position:relative;animation:bnc 1.1s ease-in-out infinite}
+.pph .one+.one{margin-left:-26px;animation-delay:.25s}
+@keyframes bnc{50%{transform:translateY(-14px) rotate(3deg)}}
+.pph img{display:block;width:150px;height:150px;border-radius:50%;object-fit:cover;border:5px solid var(--yl);box-shadow:0 0 0 5px #fff,0 10px 30px rgba(0,0,0,.35)}
+.phat{position:absolute;top:-52px;left:50%;width:0;height:0;border-left:34px solid transparent;border-right:34px solid transparent;border-bottom:72px solid var(--mint);transform:translateX(-50%) rotate(14deg);filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))}
+.phat::after{content:"";position:absolute;top:-14px;left:-9px;width:18px;height:18px;border-radius:50%;background:#fff}
+.pcard h2{display:block;background:none;padding:0;margin:.2rem 0 .4rem;font-size:clamp(1.4rem,5.5vw,1.9rem);font-weight:800;line-height:1.15;text-shadow:0 3px 14px rgba(20,18,58,.5)}
+.pfel{margin:0;font-size:clamp(2rem,9vw,3rem);font-weight:800;line-height:1.1;color:var(--yl);text-shadow:0 3px 14px rgba(20,18,58,.5);animation:wob2 1.4s ease-in-out infinite}
+@keyframes wob2{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(2deg) scale(1.07)}}
+.pj{margin:.8rem 0 1.3rem;font-style:italic}
+@media (prefers-reduced-motion:reduce){.pconf,.pbal{display:none}.pcard,.pph .one,.pfel{animation:none}}
 footer{text-align:center;color:var(--mut);padding:1rem}
 @media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
 </style>
@@ -197,6 +218,16 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <button type="button" class="sv-n" id="svn" aria-label="Siguiente">›</button>
 </div>
 
+<div class="party" id="party" role="dialog" aria-modal="true" aria-labelledby="pt" hidden>
+<div class="pconf" id="pconf" aria-hidden="true"></div>
+<div class="pcard">
+<div class="pph" id="pph"></div>
+<h2 id="pt"></h2>
+<p class="pfel" id="pf"></p>
+<p class="pj" id="pj"></p>
+<button type="button" class="btn" id="pclose">¡A celebrar! 🥳</button>
+</div>
+</div>
 <script>
 const EV=[
 {id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richi y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'cartel-cumple-sandra-2026.jpg'},
@@ -206,7 +237,7 @@ const EV=[
 {id:'sidreria',e:'🍏',t:'Sidrería 2027',y:2027,by:'Por determinar',d:[],ok:false,when:'Fecha por determinar',where:'Sitio por determinar',map:'',desc:'Una sidrería nueva que visitar para generar anécdotas nuevas y seguir llenando el calendario. Fecha y sitio, muy pronto.'},
 {id:'boda-ivan-sofia',e:'💍',t:'Boda Iván y Sofía',y:2027,by:'Iván y Sofía',d:['2027-07-03'],ok:true,when:'3 de julio de 2027',where:'Finca de Santa Rosalía',map:'https://maps.app.goo.gl/mreWd9JsBB69mkyQ7',desc:'Dos miembros más de Paquillo sellan su amor y se pasan al lado oscuro.',poster:'cartel-boda-ivan-sofia-2027.jpg'}
 ];
-const STK=[{t:'t-0a52a98a.webp',f:'0a52a98a.webp'},{t:'t-39947c71.webp',f:'39947c71.webp'},{t:'t-cb9ace0c.webp',f:'cb9ace0c.webp'},{t:'t-a7b0af9b.webp',f:'a7b0af9b.webp'},{t:'t-a288afef.webp',f:'a288afef.webp'},{t:'t-62846d09.webp',f:'62846d09.webp'},{t:'t-994b5e50.webp',f:'994b5e50.webp'},{t:'t-ceaa4a0d.webp',f:'ceaa4a0d.webp'},{t:'t-a42a37e5.webp',f:'a42a37e5.webp'},{t:'t-64821a99.webp',f:'64821a99.webp'},{t:'t-0b19f314.webp',f:'0b19f314.webp'},{t:'t-8689f568.webp',f:'8689f568.webp'},{t:'t-d55499cd.webp',f:'d55499cd.webp'},{t:'t-11a56d28.webp',f:'11a56d28.webp'},{t:'t-59a9c9fe.webp',f:'59a9c9fe.webp'},{t:'t-f5b75d0f.webp',f:'f5b75d0f.webp'},{t:'t-4d0487a3.webp',f:'4d0487a3.webp'},{t:'t-3c1cfdd6.webp',f:'3c1cfdd6.webp'},{t:'t-48a873ef.webp',f:'48a873ef.webp'},{t:'t-22a72af2.webp',f:'22a72af2.webp'},{t:'t-de22e9fc.webp',f:'de22e9fc.webp'},{t:'t-063f0ded.webp',f:'063f0ded.webp'},{t:'t-bfd0c2e9.webp',f:'bfd0c2e9.webp'},{t:'t-ef227170.webp',f:'ef227170.webp'},{t:'t-2d7c2475.webp',f:'2d7c2475.webp'},{t:'t-9d1ac7c5.webp',f:'9d1ac7c5.webp'},{t:'t-52df9dd4.webp',f:'52df9dd4.webp'},{t:'t-a01cec26.webp',f:'a01cec26.webp'},{t:'t-e8db23d6.webp',f:'e8db23d6.webp'},{t:'t-76a26b9d.webp',f:'76a26b9d.webp'},{t:'t-c6d27626.webp',f:'c6d27626.webp'},{t:'t-8dfb2e2a.webp',f:'8dfb2e2a.webp'},{t:'t-342e3179.webp',f:'342e3179.webp'},{t:'t-ab3339d9.webp',f:'ab3339d9.webp'},{t:'t-dc2d5e6e.webp',f:'dc2d5e6e.webp'},{t:'t-da4f1d3e.webp',f:'da4f1d3e.webp'},{t:'t-3dd86c0d.webp',f:'3dd86c0d.webp'},{t:'t-41f75960.webp',f:'41f75960.webp'},{t:'t-4607a583.webp',f:'4607a583.webp'},{t:'t-24dc0c0f.webp',f:'24dc0c0f.webp'},{t:'t-4f168d62.webp',f:'4f168d62.webp'},{t:'t-562f0595.webp',f:'562f0595.webp'},{t:'t-6209722f.webp',f:'6209722f.webp'},{t:'t-649dcc4f.webp',f:'649dcc4f.webp'},{t:'t-f8c0fa1e.webp',f:'f8c0fa1e.webp'},{t:'t-d67cdda2.webp',f:'d67cdda2.webp'},{t:'t-9ad467a7.webp',f:'9ad467a7.webp'},{t:'t-25f427b8.webp',f:'25f427b8.webp'},{t:'t-51debbaf.webp',f:'51debbaf.webp'},{t:'t-7484877b.webp',f:'7484877b.webp'},{t:'t-278adf28.webp',f:'278adf28.webp'},{t:'t-4e6e130d.webp',f:'4e6e130d.webp'},{t:'t-603cef43.webp',f:'603cef43.webp'},{t:'t-7b3082d1.webp',f:'7b3082d1.webp'},{t:'t-2a6e0805.webp',f:'2a6e0805.webp'},{t:'t-a57d6025.webp',f:'a57d6025.webp'},{t:'t-7aea45c5.webp',f:'7aea45c5.webp'},{t:'t-1223f6f3.webp',f:'1223f6f3.webp'},{t:'t-6cca4936.webp',f:'6cca4936.webp'},{t:'t-fa3957ed.webp',f:'fa3957ed.webp'},{t:'t-7c5ce8f3.webp',f:'7c5ce8f3.webp'},{t:'t-1758f672.webp',f:'1758f672.webp'},{t:'t-bdc0e71c.webp',f:'bdc0e71c.webp'},{t:'t-705719c5.webp',f:'705719c5.webp'},{t:'t-53db28f0.webp',f:'53db28f0.webp'},{t:'t-5c4e7f0d.webp',f:'5c4e7f0d.webp'},{t:'t-2f1ee012.webp',f:'2f1ee012.webp'},{t:'t-88e360b6.webp',f:'88e360b6.webp'},{t:'t-a90c39f4.webp',f:'a90c39f4.webp'},{t:'t-c2bcafac.webp',f:'c2bcafac.webp'},{t:'t-acdbe162.webp',f:'acdbe162.webp'},{t:'t-2a10443b.webp',f:'2a10443b.webp'},{t:'t-8ea3220b.webp',f:'8ea3220b.webp'},{t:'t-4c38833c.webp',f:'4c38833c.webp'},{t:'t-ea764f3d.webp',f:'ea764f3d.webp'},{t:'t-919f6a44.webp',f:'919f6a44.webp'},{t:'t-fae97be8.webp',f:'fae97be8.webp'},{t:'t-1f5e3f67.webp',f:'1f5e3f67.webp'},{t:'t-dc914b58.webp',f:'dc914b58.webp'},{t:'t-6467e888.webp',f:'6467e888.webp'},{t:'t-74f8d3e8.webp',f:'74f8d3e8.webp'},{t:'t-73ad0863.webp',f:'73ad0863.webp'},{t:'t-c3bbd11b.webp',f:'c3bbd11b.webp'},{t:'t-0b6028b1.webp',f:'0b6028b1.webp'},{t:'t-f98bfe78.webp',f:'f98bfe78.webp'},{t:'t-36c6351a.webp',f:'36c6351a.webp'},{t:'t-10e8bb36.webp',f:'10e8bb36.webp'},{t:'t-7e122e1d.webp',f:'7e122e1d.webp'},{t:'t-79cca47d.webp',f:'79cca47d.webp'},{t:'t-a66ba4c9.webp',f:'a66ba4c9.webp'},{t:'t-0ead9913.webp',f:'0ead9913.webp'},{t:'t-609bf7a4.webp',f:'609bf7a4.webp'},{t:'t-84544fb3.webp',f:'84544fb3.webp'},{t:'t-f7be7309.webp',f:'f7be7309.webp'},{t:'t-f6f69c15.webp',f:'f6f69c15.webp'},{t:'t-8b6d8900.webp',f:'8b6d8900.webp'},{t:'t-e666d9cf.webp',f:'e666d9cf.webp'},{t:'t-be600767.webp',f:'be600767.webp'},{t:'t-e8bdfb99.webp',f:'e8bdfb99.webp'},{t:'t-0ec7250f.webp',f:'0ec7250f.webp'},{t:'t-aa6891bc.webp',f:'aa6891bc.webp'},{t:'t-26bbbd3a.webp',f:'26bbbd3a.webp'},{t:'t-03c93dab.webp',f:'03c93dab.webp'},{t:'t-0ab8e657.webp',f:'0ab8e657.webp'}];
+const STK=[{t:'t-0a52a98a.webp',f:'0a52a98a.webp'},{t:'t-39947c71.webp',f:'39947c71.webp'},{t:'t-cb9ace0c.webp',f:'cb9ace0c.webp'},{t:'t-a7b0af9b.webp',f:'a7b0af9b.webp'},{t:'t-a288afef.webp',f:'a288afef.webp'},{t:'t-62846d09.webp',f:'62846d09.webp'},{t:'t-994b5e50.webp',f:'994b5e50.webp'},{t:'t-ceaa4a0d.webp',f:'ceaa4a0d.webp'},{t:'t-a42a37e5.webp',f:'a42a37e5.webp'},{t:'t-64821a99.webp',f:'64821a99.webp'},{t:'t-0b19f314.webp',f:'0b19f314.webp'},{t:'t-8689f568.webp',f:'8689f568.webp'},{t:'t-d55499cd.webp',f:'d55499cd.webp'},{t:'t-11a56d28.webp',f:'11a56d28.webp'},{t:'t-59a9c9fe.webp',f:'59a9c9fe.webp'},{t:'t-f5b75d0f.webp',f:'f5b75d0f.webp'},{t:'t-4d0487a3.webp',f:'4d0487a3.webp'},{t:'t-3c1cfdd6.webp',f:'3c1cfdd6.webp'},{t:'t-48a873ef.webp',f:'48a873ef.webp'},{t:'t-22a72af2.webp',f:'22a72af2.webp'},{t:'t-de22e9fc.webp',f:'de22e9fc.webp'},{t:'t-063f0ded.webp',f:'063f0ded.webp'},{t:'t-bfd0c2e9.webp',f:'bfd0c2e9.webp'},{t:'t-ef227170.webp',f:'ef227170.webp'},{t:'t-2d7c2475.webp',f:'2d7c2475.webp'},{t:'t-52df9dd4.webp',f:'52df9dd4.webp'},{t:'t-a01cec26.webp',f:'a01cec26.webp'},{t:'t-e8db23d6.webp',f:'e8db23d6.webp'},{t:'t-76a26b9d.webp',f:'76a26b9d.webp'},{t:'t-c6d27626.webp',f:'c6d27626.webp'},{t:'t-8dfb2e2a.webp',f:'8dfb2e2a.webp'},{t:'t-ab3339d9.webp',f:'ab3339d9.webp'},{t:'t-dc2d5e6e.webp',f:'dc2d5e6e.webp'},{t:'t-da4f1d3e.webp',f:'da4f1d3e.webp'},{t:'t-3dd86c0d.webp',f:'3dd86c0d.webp'},{t:'t-41f75960.webp',f:'41f75960.webp'},{t:'t-4607a583.webp',f:'4607a583.webp'},{t:'t-24dc0c0f.webp',f:'24dc0c0f.webp'},{t:'t-4f168d62.webp',f:'4f168d62.webp'},{t:'t-562f0595.webp',f:'562f0595.webp'},{t:'t-6209722f.webp',f:'6209722f.webp'},{t:'t-649dcc4f.webp',f:'649dcc4f.webp'},{t:'t-f8c0fa1e.webp',f:'f8c0fa1e.webp'},{t:'t-d67cdda2.webp',f:'d67cdda2.webp'},{t:'t-9ad467a7.webp',f:'9ad467a7.webp'},{t:'t-25f427b8.webp',f:'25f427b8.webp'},{t:'t-51debbaf.webp',f:'51debbaf.webp'},{t:'t-7484877b.webp',f:'7484877b.webp'},{t:'t-278adf28.webp',f:'278adf28.webp'},{t:'t-4e6e130d.webp',f:'4e6e130d.webp'},{t:'t-603cef43.webp',f:'603cef43.webp'},{t:'t-7b3082d1.webp',f:'7b3082d1.webp'},{t:'t-2a6e0805.webp',f:'2a6e0805.webp'},{t:'t-a57d6025.webp',f:'a57d6025.webp'},{t:'t-7aea45c5.webp',f:'7aea45c5.webp'},{t:'t-1223f6f3.webp',f:'1223f6f3.webp'},{t:'t-6cca4936.webp',f:'6cca4936.webp'},{t:'t-fa3957ed.webp',f:'fa3957ed.webp'},{t:'t-7c5ce8f3.webp',f:'7c5ce8f3.webp'},{t:'t-1758f672.webp',f:'1758f672.webp'},{t:'t-bdc0e71c.webp',f:'bdc0e71c.webp'},{t:'t-705719c5.webp',f:'705719c5.webp'},{t:'t-53db28f0.webp',f:'53db28f0.webp'},{t:'t-5c4e7f0d.webp',f:'5c4e7f0d.webp'},{t:'t-2f1ee012.webp',f:'2f1ee012.webp'},{t:'t-88e360b6.webp',f:'88e360b6.webp'},{t:'t-a90c39f4.webp',f:'a90c39f4.webp'},{t:'t-c2bcafac.webp',f:'c2bcafac.webp'},{t:'t-acdbe162.webp',f:'acdbe162.webp'},{t:'t-2a10443b.webp',f:'2a10443b.webp'},{t:'t-8ea3220b.webp',f:'8ea3220b.webp'},{t:'t-4c38833c.webp',f:'4c38833c.webp'},{t:'t-ea764f3d.webp',f:'ea764f3d.webp'},{t:'t-919f6a44.webp',f:'919f6a44.webp'},{t:'t-fae97be8.webp',f:'fae97be8.webp'},{t:'t-1f5e3f67.webp',f:'1f5e3f67.webp'},{t:'t-dc914b58.webp',f:'dc914b58.webp'},{t:'t-6467e888.webp',f:'6467e888.webp'},{t:'t-73ad0863.webp',f:'73ad0863.webp'},{t:'t-c3bbd11b.webp',f:'c3bbd11b.webp'},{t:'t-0b6028b1.webp',f:'0b6028b1.webp'},{t:'t-f98bfe78.webp',f:'f98bfe78.webp'},{t:'t-36c6351a.webp',f:'36c6351a.webp'},{t:'t-10e8bb36.webp',f:'10e8bb36.webp'},{t:'t-7e122e1d.webp',f:'7e122e1d.webp'},{t:'t-79cca47d.webp',f:'79cca47d.webp'},{t:'t-a66ba4c9.webp',f:'a66ba4c9.webp'},{t:'t-0ead9913.webp',f:'0ead9913.webp'},{t:'t-609bf7a4.webp',f:'609bf7a4.webp'},{t:'t-84544fb3.webp',f:'84544fb3.webp'},{t:'t-f7be7309.webp',f:'f7be7309.webp'},{t:'t-f6f69c15.webp',f:'f6f69c15.webp'},{t:'t-8b6d8900.webp',f:'8b6d8900.webp'},{t:'t-e666d9cf.webp',f:'e666d9cf.webp'},{t:'t-be600767.webp',f:'be600767.webp'},{t:'t-e8bdfb99.webp',f:'e8bdfb99.webp'},{t:'t-0ec7250f.webp',f:'0ec7250f.webp'},{t:'t-aa6891bc.webp',f:'aa6891bc.webp'},{t:'t-26bbbd3a.webp',f:'26bbbd3a.webp'},{t:'t-03c93dab.webp',f:'03c93dab.webp'},{t:'t-0ab8e657.webp',f:'0ab8e657.webp'}];
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
 const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
@@ -296,6 +327,22 @@ $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return
  $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂');
  $('bcount').onclick=()=>goB(g[0].p.s)}
 bcal();
+function party(ps){
+ const nm=ps.length>1?ps.slice(0,-1).map(p=>p.n).join(', ')+' y '+ps[ps.length-1].n:ps[0].n;
+ const J=['Hoy manda el cumpleañero y nadie discute.','Tarta, confeti y cero dignidad.','Prohibido hablar de trabajo. Se admite brindar.','Que alguien avise al grupo: hay que montar plan.','Hoy la tarta no se comparte… bueno, un poquito.'];
+ const rnd=a=>a[Math.floor(Math.random()*a.length)],C=['#ff4f93','#ffd23f','#3ddc97','#ffffff','#7cc7ff'],E=['🎈','🎉','🥳','🎂','🍻','🎊'];
+ $('pph').innerHTML=ps.map(p=>'<div class="one"><span class="phat"></span><img src="'+p.i+'" alt="'+p.n+'"></div>').join('');
+ $('pt').textContent=(ps.length>1?'Hoy cumplen años ':'Hoy es el cumple de ')+nm;
+ $('pf').textContent='¡Felicidades, '+nm+'!';
+ $('pj').textContent=rnd(J);
+ $('pconf').innerHTML=Array.from({length:70},()=>'<i style="left:'+Math.random()*100+'%;background:'+rnd(C)+';animation-duration:'+(3+Math.random()*4)+'s;animation-delay:'+(-Math.random()*6)+'s"></i>').join('')+Array.from({length:12},()=>'<b class="pbal" style="left:'+Math.random()*100+'%;animation-duration:'+(6+Math.random()*6)+'s;animation-delay:'+(-Math.random()*8)+'s;--dx:'+((Math.random()-.5)*80)+'px">'+rnd(E)+'</b>').join('');
+ $('party').hidden=false;$('pclose').focus();
+}
+$('pclose').onclick=()=>{$('party').hidden=true};
+$('party').addEventListener('click',x=>{if(x.target===$('party'))$('party').hidden=true});
+addEventListener('keydown',x=>{if(x.key==='Escape')$('party').hidden=true});
+{const tod=BD.filter(x=>x.t.getTime()===today.getTime()).map(x=>x.p),pv=location.hash.match(/^#cumple-(.+)$/),tp=pv&&PEOPLE.find(p=>p.s===pv[1]);
+ if(tp)party([tp]);else if(tod.length)party(tod)}
 showTab(location.hash.slice(1));
 </script>
 </body>
