@@ -110,29 +110,31 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sv-c img{width:100%;max-height:68vh;object-fit:contain;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:.6rem}
 .sv-n,.sv-x{font:inherit;font-weight:800;font-size:1.4rem;width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--ink);background:var(--yl);color:#1d1b4f;cursor:pointer;flex:none}
 .sv-x{position:absolute;top:max(.8rem,env(safe-area-inset-top));right:.8rem}
-.party{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:1rem;background:radial-gradient(circle at 50% 30%,#e6246b,#2a1f7a 85%);overflow:hidden}
-.party[hidden]{display:none}
-.pconf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.pconf i{position:absolute;top:-5vh;width:10px;height:16px;border-radius:2px;animation:fall linear infinite}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-.pbal{position:absolute;bottom:-3rem;font-size:2.2rem;font-weight:400;animation:rise linear infinite}
-@keyframes rise{to{transform:translate(var(--dx,0),-115vh) rotate(25deg)}}
-.pcard{position:relative;text-align:center;color:#fff;max-width:420px;animation:pop .7s cubic-bezier(.2,1.6,.4,1) both}
-@keyframes pop{from{transform:scale(.3) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
-.pph{display:flex;justify-content:center;margin:0 auto 1.1rem;padding-top:3.2rem}
-.pph .one{position:relative;animation:bnc 1.1s ease-in-out infinite}
-.pph .one+.one{margin-left:-26px;animation-delay:.25s}
-@keyframes bnc{50%{transform:translateY(-14px) rotate(3deg)}}
-.pph img{display:block;width:150px;height:150px;border-radius:50%;object-fit:cover;border:5px solid var(--yl);box-shadow:0 0 0 5px #fff,0 10px 30px rgba(0,0,0,.35)}
-.phat{position:absolute;top:-52px;left:50%;width:0;height:0;border-left:34px solid transparent;border-right:34px solid transparent;border-bottom:72px solid var(--mint);transform:translateX(-50%) rotate(14deg);filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))}
-.phat::after{content:"";position:absolute;top:-14px;left:-9px;width:18px;height:18px;border-radius:50%;background:#fff}
-.pcard h2{display:block;background:none;padding:0;margin:.2rem 0 .4rem;font-size:clamp(1.4rem,5.5vw,1.9rem);font-weight:800;line-height:1.15;text-shadow:0 3px 14px rgba(20,18,58,.5)}
-.pfel{margin:0;font-size:clamp(2rem,9vw,3rem);font-weight:800;line-height:1.1;color:var(--yl);text-shadow:0 3px 14px rgba(20,18,58,.5);animation:wob2 1.4s ease-in-out infinite}
-@keyframes wob2{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(2deg) scale(1.07)}}
-.pj{margin:.8rem 0 1.3rem;font-style:italic}
-@media (prefers-reduced-motion:reduce){.pconf,.pbal{display:none}.pcard,.pph .one,.pfel{animation:none}}
 footer{text-align:center;color:var(--mut);padding:1rem}
 @media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
+
+/* Acceso y administración Paquillo Events */
+body.auth-locked{overflow:hidden}
+#loginGate{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:1rem;background:linear-gradient(145deg,#17143c,#30265e 60%,#51418a);color:#fff}
+#loginGate[hidden],#adminPanel[hidden],#birthdayGate[hidden]{display:none!important}
+.login-card{width:min(100%,420px);background:#fff;color:#24213f;border-radius:24px;padding:2rem;box-shadow:0 20px 70px #0006;text-align:center}
+.login-card img{width:min(100%,280px);max-height:110px;object-fit:contain;margin-bottom:1rem}
+.login-card h2{margin:.3rem 0 .5rem;font-size:1.65rem}.login-card p{color:#68657b}
+.login-card label{display:block;text-align:left;font-weight:800;margin:.9rem 0 .35rem}
+.login-card input{box-sizing:border-box;width:100%;padding:.85rem 1rem;border:2px solid #dedbea;border-radius:12px;font:inherit;color:#24213f}
+.login-card button,.admin-logout{border:0;border-radius:12px;padding:.85rem 1.2rem;font:inherit;font-weight:900;background:#f5d64c;color:#211d45;cursor:pointer}
+.login-card button{width:100%;margin-top:1.2rem}.login-error{color:#b42318!important;min-height:1.3em;font-weight:800}
+#adminPanel{max-width:1050px;margin:1rem auto;padding:1rem;background:var(--card);border:2px solid var(--ink);border-radius:18px}
+#adminPanel h2{margin-top:.2rem}.admin-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.admin-table{width:100%;border-collapse:collapse;margin-top:1rem}.admin-table th,.admin-table td{padding:.65rem;text-align:left;border-bottom:1px solid var(--line,#ddd);font-size:.95rem}
+.admin-table th{font-weight:900}.admin-note{font-size:.88rem;color:var(--mut);line-height:1.45}
+#birthdayGate{position:fixed;inset:0;z-index:9998;background:#16132dcc;display:grid;place-items:center;padding:1rem}
+.birthday-card{width:min(100%,480px);max-height:90vh;overflow:auto;background:#fff;color:#24213f;border-radius:24px;padding:1.5rem;text-align:center;box-shadow:0 20px 70px #0007}
+.birthday-card h2{margin:.2rem 0 .7rem}.birthday-person{display:flex;align-items:center;gap:.8rem;text-align:left;margin:.7rem 0;padding:.55rem;background:#f5f3fb;border-radius:14px}
+.birthday-person img{width:64px;height:64px;object-fit:cover;border-radius:50%}.birthday-person b{font-size:1.05rem}
+.birthday-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-top:1rem}.birthday-actions button{border:0;border-radius:12px;padding:.75rem 1rem;font:inherit;font-weight:800;cursor:pointer;background:#f5d64c;color:#211d45}.birthday-actions .secondary{background:#eeeaf7}
+@media(max-width:520px){.login-card{padding:1.35rem}.admin-table th,.admin-table td{font-size:.82rem;padding:.45rem}}
+
 </style>
 </head>
 <body>
@@ -218,16 +220,26 @@ footer{text-align:center;color:var(--mut);padding:1rem}
 <button type="button" class="sv-n" id="svn" aria-label="Siguiente">›</button>
 </div>
 
-<div class="party" id="party" role="dialog" aria-modal="true" aria-labelledby="pt" hidden>
-<div class="pconf" id="pconf" aria-hidden="true"></div>
-<div class="pcard">
-<div class="pph" id="pph"></div>
-<h2 id="pt"></h2>
-<p class="pfel" id="pf"></p>
-<p class="pj" id="pj"></p>
-<button type="button" class="btn" id="pclose">¡A celebrar! 🥳</button>
+
+<div id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+ <form class="login-card" id="loginForm">
+  <img src="banner-paquillo-events-2.jpg" alt="Paquillo Events" onerror="this.style.display='none'">
+  <h2 id="loginTitle">🔐 Acceso a Paquillo Events</h2>
+  <p>Identifícate para entrar en los planes del grupo.</p>
+  <label for="loginUser">Usuario</label><input id="loginUser" name="username" autocomplete="username" required list="memberNames" placeholder="Tu nombre tal como aparece en Cumples">
+  <datalist id="memberNames"></datalist>
+  <label for="loginPass">Contraseña</label><input id="loginPass" name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+  <p id="loginError" class="login-error" aria-live="polite"></p>
+  <button type="submit">Entrar 🎉</button>
+ </form>
 </div>
+<div id="birthdayGate" hidden role="dialog" aria-modal="true" aria-labelledby="birthdayTitle">
+ <div class="birthday-card"><h2 id="birthdayTitle">🎂 ¡Hoy hay cumpleaños!</h2><p id="birthdayIntro"></p><div id="birthdayPeople"></div>
+  <div class="birthday-actions"><button id="birthdayClose">¡A felicitar! 🥳</button><button id="birthdayToday" class="secondary">No volver a mostrar hoy</button></div>
+ </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const EV=[
 {id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richi y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'cartel-cumple-sandra-2026.jpg'},
@@ -237,7 +249,7 @@ const EV=[
 {id:'sidreria',e:'🍏',t:'Sidrería 2027',y:2027,by:'Por determinar',d:[],ok:false,when:'Fecha por determinar',where:'Sitio por determinar',map:'',desc:'Una sidrería nueva que visitar para generar anécdotas nuevas y seguir llenando el calendario. Fecha y sitio, muy pronto.'},
 {id:'boda-ivan-sofia',e:'💍',t:'Boda Iván y Sofía',y:2027,by:'Iván y Sofía',d:['2027-07-03'],ok:true,when:'3 de julio de 2027',where:'Finca de Santa Rosalía',map:'https://maps.app.goo.gl/mreWd9JsBB69mkyQ7',desc:'Dos miembros más de Paquillo sellan su amor y se pasan al lado oscuro.',poster:'cartel-boda-ivan-sofia-2027.jpg'}
 ];
-const STK=[{t:'t-0a52a98a.webp',f:'0a52a98a.webp'},{t:'t-39947c71.webp',f:'39947c71.webp'},{t:'t-cb9ace0c.webp',f:'cb9ace0c.webp'},{t:'t-a7b0af9b.webp',f:'a7b0af9b.webp'},{t:'t-a288afef.webp',f:'a288afef.webp'},{t:'t-62846d09.webp',f:'62846d09.webp'},{t:'t-994b5e50.webp',f:'994b5e50.webp'},{t:'t-ceaa4a0d.webp',f:'ceaa4a0d.webp'},{t:'t-a42a37e5.webp',f:'a42a37e5.webp'},{t:'t-64821a99.webp',f:'64821a99.webp'},{t:'t-0b19f314.webp',f:'0b19f314.webp'},{t:'t-8689f568.webp',f:'8689f568.webp'},{t:'t-d55499cd.webp',f:'d55499cd.webp'},{t:'t-11a56d28.webp',f:'11a56d28.webp'},{t:'t-59a9c9fe.webp',f:'59a9c9fe.webp'},{t:'t-f5b75d0f.webp',f:'f5b75d0f.webp'},{t:'t-4d0487a3.webp',f:'4d0487a3.webp'},{t:'t-3c1cfdd6.webp',f:'3c1cfdd6.webp'},{t:'t-48a873ef.webp',f:'48a873ef.webp'},{t:'t-22a72af2.webp',f:'22a72af2.webp'},{t:'t-de22e9fc.webp',f:'de22e9fc.webp'},{t:'t-063f0ded.webp',f:'063f0ded.webp'},{t:'t-bfd0c2e9.webp',f:'bfd0c2e9.webp'},{t:'t-ef227170.webp',f:'ef227170.webp'},{t:'t-2d7c2475.webp',f:'2d7c2475.webp'},{t:'t-52df9dd4.webp',f:'52df9dd4.webp'},{t:'t-a01cec26.webp',f:'a01cec26.webp'},{t:'t-e8db23d6.webp',f:'e8db23d6.webp'},{t:'t-76a26b9d.webp',f:'76a26b9d.webp'},{t:'t-c6d27626.webp',f:'c6d27626.webp'},{t:'t-8dfb2e2a.webp',f:'8dfb2e2a.webp'},{t:'t-ab3339d9.webp',f:'ab3339d9.webp'},{t:'t-dc2d5e6e.webp',f:'dc2d5e6e.webp'},{t:'t-da4f1d3e.webp',f:'da4f1d3e.webp'},{t:'t-3dd86c0d.webp',f:'3dd86c0d.webp'},{t:'t-41f75960.webp',f:'41f75960.webp'},{t:'t-4607a583.webp',f:'4607a583.webp'},{t:'t-24dc0c0f.webp',f:'24dc0c0f.webp'},{t:'t-4f168d62.webp',f:'4f168d62.webp'},{t:'t-562f0595.webp',f:'562f0595.webp'},{t:'t-6209722f.webp',f:'6209722f.webp'},{t:'t-649dcc4f.webp',f:'649dcc4f.webp'},{t:'t-f8c0fa1e.webp',f:'f8c0fa1e.webp'},{t:'t-d67cdda2.webp',f:'d67cdda2.webp'},{t:'t-9ad467a7.webp',f:'9ad467a7.webp'},{t:'t-25f427b8.webp',f:'25f427b8.webp'},{t:'t-51debbaf.webp',f:'51debbaf.webp'},{t:'t-7484877b.webp',f:'7484877b.webp'},{t:'t-278adf28.webp',f:'278adf28.webp'},{t:'t-4e6e130d.webp',f:'4e6e130d.webp'},{t:'t-603cef43.webp',f:'603cef43.webp'},{t:'t-7b3082d1.webp',f:'7b3082d1.webp'},{t:'t-2a6e0805.webp',f:'2a6e0805.webp'},{t:'t-a57d6025.webp',f:'a57d6025.webp'},{t:'t-7aea45c5.webp',f:'7aea45c5.webp'},{t:'t-1223f6f3.webp',f:'1223f6f3.webp'},{t:'t-6cca4936.webp',f:'6cca4936.webp'},{t:'t-fa3957ed.webp',f:'fa3957ed.webp'},{t:'t-7c5ce8f3.webp',f:'7c5ce8f3.webp'},{t:'t-1758f672.webp',f:'1758f672.webp'},{t:'t-bdc0e71c.webp',f:'bdc0e71c.webp'},{t:'t-705719c5.webp',f:'705719c5.webp'},{t:'t-53db28f0.webp',f:'53db28f0.webp'},{t:'t-5c4e7f0d.webp',f:'5c4e7f0d.webp'},{t:'t-2f1ee012.webp',f:'2f1ee012.webp'},{t:'t-88e360b6.webp',f:'88e360b6.webp'},{t:'t-a90c39f4.webp',f:'a90c39f4.webp'},{t:'t-c2bcafac.webp',f:'c2bcafac.webp'},{t:'t-acdbe162.webp',f:'acdbe162.webp'},{t:'t-2a10443b.webp',f:'2a10443b.webp'},{t:'t-8ea3220b.webp',f:'8ea3220b.webp'},{t:'t-4c38833c.webp',f:'4c38833c.webp'},{t:'t-ea764f3d.webp',f:'ea764f3d.webp'},{t:'t-919f6a44.webp',f:'919f6a44.webp'},{t:'t-fae97be8.webp',f:'fae97be8.webp'},{t:'t-1f5e3f67.webp',f:'1f5e3f67.webp'},{t:'t-dc914b58.webp',f:'dc914b58.webp'},{t:'t-6467e888.webp',f:'6467e888.webp'},{t:'t-73ad0863.webp',f:'73ad0863.webp'},{t:'t-c3bbd11b.webp',f:'c3bbd11b.webp'},{t:'t-0b6028b1.webp',f:'0b6028b1.webp'},{t:'t-f98bfe78.webp',f:'f98bfe78.webp'},{t:'t-36c6351a.webp',f:'36c6351a.webp'},{t:'t-10e8bb36.webp',f:'10e8bb36.webp'},{t:'t-7e122e1d.webp',f:'7e122e1d.webp'},{t:'t-79cca47d.webp',f:'79cca47d.webp'},{t:'t-a66ba4c9.webp',f:'a66ba4c9.webp'},{t:'t-0ead9913.webp',f:'0ead9913.webp'},{t:'t-609bf7a4.webp',f:'609bf7a4.webp'},{t:'t-84544fb3.webp',f:'84544fb3.webp'},{t:'t-f7be7309.webp',f:'f7be7309.webp'},{t:'t-f6f69c15.webp',f:'f6f69c15.webp'},{t:'t-8b6d8900.webp',f:'8b6d8900.webp'},{t:'t-e666d9cf.webp',f:'e666d9cf.webp'},{t:'t-be600767.webp',f:'be600767.webp'},{t:'t-e8bdfb99.webp',f:'e8bdfb99.webp'},{t:'t-0ec7250f.webp',f:'0ec7250f.webp'},{t:'t-aa6891bc.webp',f:'aa6891bc.webp'},{t:'t-26bbbd3a.webp',f:'26bbbd3a.webp'},{t:'t-03c93dab.webp',f:'03c93dab.webp'},{t:'t-0ab8e657.webp',f:'0ab8e657.webp'}];
+const STK=[{t:'t-0a52a98a.webp',f:'0a52a98a.webp'},{t:'t-39947c71.webp',f:'39947c71.webp'},{t:'t-cb9ace0c.webp',f:'cb9ace0c.webp'},{t:'t-a7b0af9b.webp',f:'a7b0af9b.webp'},{t:'t-a288afef.webp',f:'a288afef.webp'},{t:'t-62846d09.webp',f:'62846d09.webp'},{t:'t-994b5e50.webp',f:'994b5e50.webp'},{t:'t-ceaa4a0d.webp',f:'ceaa4a0d.webp'},{t:'t-a42a37e5.webp',f:'a42a37e5.webp'},{t:'t-64821a99.webp',f:'64821a99.webp'},{t:'t-0b19f314.webp',f:'0b19f314.webp'},{t:'t-8689f568.webp',f:'8689f568.webp'},{t:'t-d55499cd.webp',f:'d55499cd.webp'},{t:'t-11a56d28.webp',f:'11a56d28.webp'},{t:'t-59a9c9fe.webp',f:'59a9c9fe.webp'},{t:'t-f5b75d0f.webp',f:'f5b75d0f.webp'},{t:'t-4d0487a3.webp',f:'4d0487a3.webp'},{t:'t-3c1cfdd6.webp',f:'3c1cfdd6.webp'},{t:'t-48a873ef.webp',f:'48a873ef.webp'},{t:'t-22a72af2.webp',f:'22a72af2.webp'},{t:'t-de22e9fc.webp',f:'de22e9fc.webp'},{t:'t-063f0ded.webp',f:'063f0ded.webp'},{t:'t-bfd0c2e9.webp',f:'bfd0c2e9.webp'},{t:'t-ef227170.webp',f:'ef227170.webp'},{t:'t-2d7c2475.webp',f:'2d7c2475.webp'},{t:'t-9d1ac7c5.webp',f:'9d1ac7c5.webp'},{t:'t-52df9dd4.webp',f:'52df9dd4.webp'},{t:'t-a01cec26.webp',f:'a01cec26.webp'},{t:'t-e8db23d6.webp',f:'e8db23d6.webp'},{t:'t-76a26b9d.webp',f:'76a26b9d.webp'},{t:'t-c6d27626.webp',f:'c6d27626.webp'},{t:'t-8dfb2e2a.webp',f:'8dfb2e2a.webp'},{t:'t-342e3179.webp',f:'342e3179.webp'},{t:'t-ab3339d9.webp',f:'ab3339d9.webp'},{t:'t-dc2d5e6e.webp',f:'dc2d5e6e.webp'},{t:'t-da4f1d3e.webp',f:'da4f1d3e.webp'},{t:'t-3dd86c0d.webp',f:'3dd86c0d.webp'},{t:'t-41f75960.webp',f:'41f75960.webp'},{t:'t-4607a583.webp',f:'4607a583.webp'},{t:'t-24dc0c0f.webp',f:'24dc0c0f.webp'},{t:'t-4f168d62.webp',f:'4f168d62.webp'},{t:'t-562f0595.webp',f:'562f0595.webp'},{t:'t-6209722f.webp',f:'6209722f.webp'},{t:'t-649dcc4f.webp',f:'649dcc4f.webp'},{t:'t-f8c0fa1e.webp',f:'f8c0fa1e.webp'},{t:'t-d67cdda2.webp',f:'d67cdda2.webp'},{t:'t-9ad467a7.webp',f:'9ad467a7.webp'},{t:'t-25f427b8.webp',f:'25f427b8.webp'},{t:'t-51debbaf.webp',f:'51debbaf.webp'},{t:'t-7484877b.webp',f:'7484877b.webp'},{t:'t-278adf28.webp',f:'278adf28.webp'},{t:'t-4e6e130d.webp',f:'4e6e130d.webp'},{t:'t-603cef43.webp',f:'603cef43.webp'},{t:'t-7b3082d1.webp',f:'7b3082d1.webp'},{t:'t-2a6e0805.webp',f:'2a6e0805.webp'},{t:'t-a57d6025.webp',f:'a57d6025.webp'},{t:'t-7aea45c5.webp',f:'7aea45c5.webp'},{t:'t-1223f6f3.webp',f:'1223f6f3.webp'},{t:'t-6cca4936.webp',f:'6cca4936.webp'},{t:'t-fa3957ed.webp',f:'fa3957ed.webp'},{t:'t-7c5ce8f3.webp',f:'7c5ce8f3.webp'},{t:'t-1758f672.webp',f:'1758f672.webp'},{t:'t-bdc0e71c.webp',f:'bdc0e71c.webp'},{t:'t-705719c5.webp',f:'705719c5.webp'},{t:'t-53db28f0.webp',f:'53db28f0.webp'},{t:'t-5c4e7f0d.webp',f:'5c4e7f0d.webp'},{t:'t-2f1ee012.webp',f:'2f1ee012.webp'},{t:'t-88e360b6.webp',f:'88e360b6.webp'},{t:'t-a90c39f4.webp',f:'a90c39f4.webp'},{t:'t-c2bcafac.webp',f:'c2bcafac.webp'},{t:'t-acdbe162.webp',f:'acdbe162.webp'},{t:'t-2a10443b.webp',f:'2a10443b.webp'},{t:'t-8ea3220b.webp',f:'8ea3220b.webp'},{t:'t-4c38833c.webp',f:'4c38833c.webp'},{t:'t-ea764f3d.webp',f:'ea764f3d.webp'},{t:'t-919f6a44.webp',f:'919f6a44.webp'},{t:'t-fae97be8.webp',f:'fae97be8.webp'},{t:'t-1f5e3f67.webp',f:'1f5e3f67.webp'},{t:'t-dc914b58.webp',f:'dc914b58.webp'},{t:'t-6467e888.webp',f:'6467e888.webp'},{t:'t-74f8d3e8.webp',f:'74f8d3e8.webp'},{t:'t-73ad0863.webp',f:'73ad0863.webp'},{t:'t-c3bbd11b.webp',f:'c3bbd11b.webp'},{t:'t-0b6028b1.webp',f:'0b6028b1.webp'},{t:'t-f98bfe78.webp',f:'f98bfe78.webp'},{t:'t-36c6351a.webp',f:'36c6351a.webp'},{t:'t-10e8bb36.webp',f:'10e8bb36.webp'},{t:'t-7e122e1d.webp',f:'7e122e1d.webp'},{t:'t-79cca47d.webp',f:'79cca47d.webp'},{t:'t-a66ba4c9.webp',f:'a66ba4c9.webp'},{t:'t-0ead9913.webp',f:'0ead9913.webp'},{t:'t-609bf7a4.webp',f:'609bf7a4.webp'},{t:'t-84544fb3.webp',f:'84544fb3.webp'},{t:'t-f7be7309.webp',f:'f7be7309.webp'},{t:'t-f6f69c15.webp',f:'f6f69c15.webp'},{t:'t-8b6d8900.webp',f:'8b6d8900.webp'},{t:'t-e666d9cf.webp',f:'e666d9cf.webp'},{t:'t-be600767.webp',f:'be600767.webp'},{t:'t-e8bdfb99.webp',f:'e8bdfb99.webp'},{t:'t-0ec7250f.webp',f:'0ec7250f.webp'},{t:'t-aa6891bc.webp',f:'aa6891bc.webp'},{t:'t-26bbbd3a.webp',f:'26bbbd3a.webp'},{t:'t-03c93dab.webp',f:'03c93dab.webp'},{t:'t-0ab8e657.webp',f:'0ab8e657.webp'}];
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
 const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
@@ -327,23 +339,107 @@ $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return
  $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂');
  $('bcount').onclick=()=>goB(g[0].p.s)}
 bcal();
-function party(ps){
- const nm=ps.length>1?ps.slice(0,-1).map(p=>p.n).join(', ')+' y '+ps[ps.length-1].n:ps[0].n;
- const J=['Hoy manda el cumpleañero y nadie discute.','Tarta, confeti y cero dignidad.','Prohibido hablar de trabajo. Se admite brindar.','Que alguien avise al grupo: hay que montar plan.','Hoy la tarta no se comparte… bueno, un poquito.'];
- const rnd=a=>a[Math.floor(Math.random()*a.length)],C=['#ff4f93','#ffd23f','#3ddc97','#ffffff','#7cc7ff'],E=['🎈','🎉','🥳','🎂','🍻','🎊'];
- $('pph').innerHTML=ps.map(p=>'<div class="one"><span class="phat"></span><img src="'+p.i+'" alt="'+p.n+'"></div>').join('');
- $('pt').textContent=(ps.length>1?'Hoy cumplen años ':'Hoy es el cumple de ')+nm;
- $('pf').textContent='¡Felicidades, '+nm+'!';
- $('pj').textContent=rnd(J);
- $('pconf').innerHTML=Array.from({length:70},()=>'<i style="left:'+Math.random()*100+'%;background:'+rnd(C)+';animation-duration:'+(3+Math.random()*4)+'s;animation-delay:'+(-Math.random()*6)+'s"></i>').join('')+Array.from({length:12},()=>'<b class="pbal" style="left:'+Math.random()*100+'%;animation-duration:'+(6+Math.random()*6)+'s;animation-delay:'+(-Math.random()*8)+'s;--dx:'+((Math.random()-.5)*80)+'px">'+rnd(E)+'</b>').join('');
- $('party').hidden=false;$('pclose').focus();
-}
-$('pclose').onclick=()=>{$('party').hidden=true};
-$('party').addEventListener('click',x=>{if(x.target===$('party'))$('party').hidden=true});
-addEventListener('keydown',x=>{if(x.key==='Escape')$('party').hidden=true});
-{const tod=BD.filter(x=>x.t.getTime()===today.getTime()).map(x=>x.p),pv=location.hash.match(/^#cumple-(.+)$/),tp=pv&&PEOPLE.find(p=>p.s===pv[1]);
- if(tp)party([tp]);else if(tod.length)party(tod)}
 showTab(location.hash.slice(1));
 </script>
+
+<script>
+(()=>{
+ // CONFIGURACIÓN: sustituye estos dos valores por los de tu proyecto Supabase.
+ const SUPABASE_URL = 'https://uljwhumngqrkdwqixuqq.supabase.co';
+ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_2JmZ2drUB2TbuY09ZDkZrQ_r4tLLUve';
+ const configured = SUPABASE_URL.startsWith('https://') && !SUPABASE_URL.includes('PEGA_AQUI') && !SUPABASE_PUBLISHABLE_KEY.includes('PEGA_AQUI');
+ const $id=id=>document.getElementById(id);
+ const SESSION='paquillo_current_user_v2';
+ const people=PEOPLE.map(p=>p.n);
+ const names=$id('memberNames');
+ names.innerHTML=people.map(n=>'<option value="'+n.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"></option>').join('');
+ const slugFor = name => { const p=PEOPLE.find(x=>x.n===name); return p ? p.s : ''; };
+ const emailFor = name => slugFor(name)+'@paquillo-events.com';
+ const loginGate=$id('loginGate');
+ const client = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY) : null;
+ let currentProfile=null;
+ function lock(message){document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
+ function addUserTools(username,role){
+   loginGate.hidden=true;document.body.classList.remove('auth-locked');
+   const old=$id('userTools');if(old)old.remove();
+   const tools=document.createElement('div');tools.id='userTools';tools.style.cssText='max-width:1100px;margin:.4rem auto;padding:0 1rem;display:flex;justify-content:flex-end;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.9rem';
+   tools.innerHTML='<span>👋 '+username+'</span>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
+   document.querySelector('header.top').after(tools);
+   if(role==='admin')$id('adminToggle').onclick=()=>{const a=$id('adminPanel');a.hidden=!a.hidden;if(!a.hidden)renderAdmin()};
+   $id('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};
+   showBirthday(username);
+ }
+ async function loadProfile(user){
+   const {data,error}=await client.from('user_profiles').select('username,role').eq('user_id',user.id).single();
+   if(error||!data)throw new Error('Tu usuario aún no está dado de alta. Contacta con Javi.');
+   return data;
+ }
+ async function enter(user,profile,recordAccess=true){
+   currentProfile=profile;
+   if(recordAccess){try { const {error}=await client.from('access_logs').insert({user_id:user.id}); if(error)console.error('No se pudo registrar el acceso',error); }
+   catch(err){console.error(err)}}
+   localStorage.setItem(SESSION,profile.username);
+   addUserTools(profile.username,profile.role);
+ }
+ async function renderAdmin(){
+   const target=$id('adminContent');target.innerHTML='<p>Consultando estadísticas…</p>';
+   const [{data,error},{data:profiles,error:profileError}]=await Promise.all([
+     client.from('access_logs').select('user_id,created_at').order('created_at',{ascending:false}),
+     client.from('user_profiles').select('user_id,username')
+   ]);
+   if(error||profileError){target.innerHTML='<p class="login-error">No se pudieron cargar las estadísticas. Comprueba las políticas RLS y que el perfil de Javi tenga rol admin.</p>';return}
+   const usernameById=Object.fromEntries((profiles||[]).map(p=>[p.user_id,p.username]));
+   const stats={};people.forEach(n=>stats[n]={count:0,last:null});
+   (data||[]).forEach(row=>{const n=usernameById[row.user_id];if(!n||!stats[n])return;stats[n].count++;if(!stats[n].last)stats[n].last=new Date(row.created_at).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'});});
+   const rows=people.map(n=>'<tr><td><b>'+n+'</b></td><td>'+stats[n].count+'</td><td>'+(stats[n].last||'—')+'</td></tr>').join('');
+   const total=(data||[]).length;
+   target.innerHTML='<div class="admin-top"><div><b>📊 Estadísticas globales de acceso</b><p class="admin-note">'+total+' inicios de sesión registrados entre todos los dispositivos.</p></div><button class="btn" type="button" id="refreshStats">Actualizar</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Usuario</th><th>Accesos</th><th>Último acceso</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="admin-note">Los datos se consultan en Supabase. Esta sección solo se muestra a la cuenta de Javi.</p>';
+   $id('refreshStats').onclick=renderAdmin;
+ }
+ const admin=document.createElement('section');admin.id='adminPanel';admin.hidden=true;admin.innerHTML='<h2>⚙️ Administración</h2><div id="adminContent"></div>';
+ document.querySelector('main').append(admin);
+ function showBirthday(username){
+   const now=new Date(),key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+   const hiddenKey='paquillo_birthday_hidden_'+username+'_'+key;
+   if(localStorage.getItem(hiddenKey))return;
+   const todayPeople=PEOPLE.filter(p=>p.d===now.getDate()&&p.m===now.getMonth()+1);
+   if(!todayPeople.length)return;
+   const own=todayPeople.find(p=>p.n===username);
+   if(own){
+     $id('birthdayTitle').textContent='🎂 ¡Feliz cumpleaños, '+own.n+'!';
+     $id('birthdayIntro').textContent='Hoy la fiesta va por ti. ¡Que tengas un día enorme! 🥳';
+     $id('birthdayPeople').innerHTML='<div class="birthday-person"><img src="'+own.i+'" alt=""><div><b>'+own.n+'</b><br><span>¡Hoy es tu día!</span></div></div>';
+     const others=todayPeople.filter(p=>p.n!==username);
+     if(others.length)$id('birthdayPeople').innerHTML+='<p>Y también cumplen hoy: '+others.map(p=>p.n).join(', ')+'</p>';
+   }else{
+     $id('birthdayTitle').textContent='🎉 Hoy cumple '+todayPeople.map(p=>p.n).join(' y ');
+     $id('birthdayIntro').textContent='¡Acuérdate de felicitarle! Que no se diga que en Paquillo Events se nos pasa una fecha.';
+     $id('birthdayPeople').innerHTML=todayPeople.map(p=>'<div class="birthday-person"><img src="'+p.i+'" alt=""><div><b>'+p.n+'</b><br><span>¡Hoy es su cumpleaños!</span></div></div>').join('');
+   }
+   $id('birthdayGate').hidden=false;
+   const close=()=>{$id('birthdayGate').hidden=true};
+   $id('birthdayClose').onclick=close;
+   $id('birthdayToday').onclick=()=>{localStorage.setItem(hiddenKey,'1');close()};
+ }
+ $id('loginForm').addEventListener('submit',async e=>{
+   e.preventDefault();
+   if(!client){$id('loginError').textContent='Falta configurar Supabase. Sigue los pasos de instalación incluidos en el ZIP.';return;}
+   const username=$id('loginUser').value.trim(),password=$id('loginPass').value;
+   if(!people.includes(username)){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
+   const {data,error}=await client.auth.signInWithPassword({email:emailFor(username),password});
+   if(error||!data.user){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
+   try{const profile=await loadProfile(data.user);if(profile.username!==username)throw new Error('El usuario no coincide con el perfil.');$id('loginError').textContent='';await enter(data.user,profile);}
+   catch(err){await client.auth.signOut();$id('loginError').textContent=err.message||'No se pudo cargar tu perfil.';}
+ });
+ document.body.classList.add('auth-locked');
+ if(!client){lock('');return;}
+ (async()=>{
+   const {data}=await client.auth.getSession();
+   if(data.session){try{const profile=await loadProfile(data.session.user);await enter(data.session.user,profile,false);}catch(e){await client.auth.signOut();lock(e.message);}}
+   else lock('');
+ })();
+})();
+</script>
+
 </body>
 </html>
