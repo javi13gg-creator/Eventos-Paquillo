@@ -132,8 +132,10 @@ body.auth-locked{overflow:hidden}
 .login-card input{box-sizing:border-box;width:100%;padding:.85rem 1rem;border:2px solid #dedbea;border-radius:12px;font:inherit;color:#24213f}
 .login-card button,.admin-logout{border:0;border-radius:12px;padding:.85rem 1.2rem;font:inherit;font-weight:900;background:#f5d64c;color:#211d45;cursor:pointer}
 .login-card button{width:100%;margin-top:1.2rem}.login-error{color:#b42318!important;min-height:1.3em;font-weight:800}
-#adminPanel{max-width:1050px;margin:1rem auto;padding:1rem;background:var(--card);border:2px solid var(--ink);border-radius:18px}
-#adminPanel h2{margin-top:.2rem}.admin-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+#adminPanel{position:fixed;inset:0;z-index:9000;overflow:auto;width:100%;min-height:100vh;margin:0;padding:clamp(1rem,3vw,2rem);background:var(--bg)}
+#adminPanel .admin-shell{max-width:1050px;min-height:calc(100vh - 4rem);margin:0 auto;padding:clamp(1rem,3vw,2rem);background:var(--card);border:2px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink)}
+body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,body.admin-mode>main{display:none!important}
+#adminPanel h2{margin:.2rem 0 .5rem}.admin-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}.btn.danger{background:#b42318;color:#fff;margin:.35rem 0 .6rem}.admin-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
 .admin-table{width:100%;border-collapse:collapse;margin-top:1rem}.admin-table th,.admin-table td{padding:.65rem;text-align:left;border-bottom:1px solid var(--line,#ddd);font-size:.95rem}
 .admin-table th{font-weight:900}.admin-note{font-size:.88rem;color:var(--mut);line-height:1.45}
 #birthdayGate{position:fixed;inset:0;z-index:9998;background:#16132dcc;display:grid;place-items:center;padding:1rem}
@@ -162,8 +164,8 @@ body.auth-locked{overflow:hidden}
   </div></details>
   <details class="nav-group"><summary>🗳️ Participa</summary><div class="nav-menu">
     <button type="button" role="tab" data-t="votaciones">🗳️ Votaciones</button>
-    <button type="button" role="tab" data-t="viajes">🧳 Viajes</button>
   </div></details>
+  <button type="button" class="nav-main" role="tab" data-t="viajes">🧳 Viajes</button>
   <details class="nav-group"><summary>🎉 Más</summary><div class="nav-menu">
     <button type="button" role="tab" data-t="cumples">🎂 Cumples</button>
     <button type="button" role="tab" data-t="pasados">📸 Planes pasados</button>
@@ -454,12 +456,20 @@ showTab(location.hash.slice(1));
    for(const poll of polls){
      const {data:results,error:resultError}=await client.rpc('paqui_poll_results',{p_poll_id:poll.id});
      const status=poll.status==='open'?'Abierta':poll.status==='closed'?'Cerrada':'Borrador';
-     html+='<article class="poll-card"><span class="status-tag">'+status+' · '+(poll.vote_visibility==='secret'?'Voto secreto':'Voto identificado')+'</span><h3>'+esc(poll.title)+'</h3>'+(poll.description?'<p>'+esc(poll.description)+'</p>':'')+'<form class="poll-vote-form" data-poll="'+poll.id+'">';
+     html+='<article class="poll-card"><span class="status-tag">'+status+' · '+(poll.vote_visibility==='secret'?'Voto secreto':'Voto identificado')+'</span><h3>'+esc(poll.title)+'</h3>'+(poll.description?'<p>'+esc(poll.description)+'</p>':'')+(currentProfile?.role==='admin'?'<button class="btn danger" type="button" data-delete-poll="'+poll.id+'">🗑️ Eliminar encuesta</button>':'')+'<form class="poll-vote-form" data-poll="'+poll.id+'">';
      (poll.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).forEach(o=>{html+='<label class="poll-option"><input type="'+(poll.poll_type==='multiple'?'checkbox':'radio')+'" name="option" value="'+o.id+'"> '+esc(o.option_text)+'</label>'});
      if(poll.status==='open')html+='<button class="btn" type="submit">Enviar voto</button>';
      html+='</form><div class="poll-results">'+(resultError?'No se pudo obtener el recuento.':(results||[]).map(r=>esc(r.option_text)+': <b>'+r.vote_count+'</b>').join(' · '))+'</div></article>';
    }
    target.innerHTML=html;
+   target.querySelectorAll('[data-delete-poll]').forEach(btn=>btn.onclick=async()=>{
+     if(currentProfile?.role!=='admin')return;
+     if(!confirm('¿Seguro que quieres eliminar esta encuesta? Se borrarán también todas sus opciones y votos. Esta acción no se puede deshacer.'))return;
+     btn.disabled=true;btn.textContent='Eliminando…';
+     const {error}=await client.from('polls').delete().eq('id',btn.dataset.deletePoll);
+     if(error){alert('No se pudo eliminar la encuesta: '+error.message);btn.disabled=false;btn.textContent='🗑️ Eliminar encuesta';return;}
+     await renderPolls();
+   });
    target.querySelectorAll('.poll-vote-form').forEach(form=>form.onsubmit=async ev=>{
      ev.preventDefault();const ids=[...form.querySelectorAll('input:checked')].map(x=>x.value);if(!ids.length){alert('Selecciona al menos una opción.');return}
      const btn=form.querySelector('button');btn.disabled=true;btn.textContent='Enviando…';
@@ -507,7 +517,13 @@ showTab(location.hash.slice(1));
    const tools=document.createElement('div');tools.id='userTools';tools.style.cssText='max-width:1100px;margin:.4rem auto;padding:0 1rem;display:flex;justify-content:flex-end;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.9rem';
    tools.innerHTML='<span>👋 '+username+'</span>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
    document.querySelector('header.top').after(tools);
-   if(role==='admin')$id('adminToggle').onclick=()=>{const a=$id('adminPanel');a.hidden=!a.hidden;if(!a.hidden)renderAdmin()};
+   if(role==='admin')$id('adminToggle').onclick=()=>{
+     const a=$id('adminPanel'),opening=a.hidden;
+     a.hidden=!opening;document.body.classList.toggle('admin-mode',opening);
+     $id('adminToggle').textContent=opening?'↩ Volver a la web':'⚙️ Administración';
+     if(opening){history.replaceState(null,'','#admin');renderAdmin();window.scrollTo({top:0,behavior:'instant'});}
+     else{history.replaceState(null,'',location.pathname+location.search);window.scrollTo({top:0,behavior:'instant'});}
+   };
    $id('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};
    showBirthday(username);
  }
@@ -559,8 +575,9 @@ showTab(location.hash.slice(1));
  }));
  $id('pollForm').addEventListener('submit',createPoll);
  $id('tripForm').addEventListener('submit',createTrip);
- const admin=document.createElement('section');admin.id='adminPanel';admin.hidden=true;admin.innerHTML='<h2>⚙️ Administración</h2><div id="adminContent"></div>';
- document.querySelector('main').append(admin);
+ const admin=document.createElement('section');admin.id='adminPanel';admin.hidden=true;admin.innerHTML='<div class="admin-shell"><div class="admin-heading"><div><h2>⚙️ Administración</h2><p class="sub">Panel privado de gestión de Paquillo Events.</p></div><div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><span class="status-tag">Solo administradores</span><button class="btn" type="button" id="adminBack">↩ Volver a la web</button></div></div><div id="adminContent"></div></div>';
+ document.body.append(admin);
+ $id('adminBack').onclick=()=>{admin.hidden=true;document.body.classList.remove('admin-mode');const t=$id('adminToggle');if(t)t.textContent='⚙️ Administración';history.replaceState(null,'',location.pathname+location.search);window.scrollTo({top:0,behavior:'instant'});};
  function showBirthday(username){
    const now=new Date(),key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
    const hiddenKey='paquillo_birthday_hidden_'+username+'_'+key;
