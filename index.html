@@ -230,8 +230,9 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </section>
 <section class="panel" id="p-votaciones" hidden>
 <h2>🗳️ Votaciones</h2><p class="sub">Que decida el grupo. Puedes crear encuestas públicas o secretas.</p>
-<div class="how"><b>Crear una encuesta</b>
-<form id="pollForm" class="feature-form">
+<div class="how"><button class="btn" type="button" id="togglePollForm">➕ Crear encuesta</button>
+<form id="pollForm" class="feature-form" hidden>
+<input type="hidden" name="related_event_id"><input type="hidden" name="related_trip_id">
 <label>Pregunta<input name="title" required maxlength="140" placeholder="¿Qué día os viene mejor?"></label>
 <label>Descripción (opcional)<textarea name="description" rows="2" placeholder="Añade contexto…"></textarea></label>
 <div class="form-row"><label>Tipo<select name="type"><option value="single">Una respuesta</option><option value="multiple">Varias respuestas</option></select></label>
@@ -243,8 +244,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </section>
 <section class="panel" id="p-viajes" hidden>
 <h2>🧳 Viajes Paquillo</h2><p class="sub">Ideas, escapadas y viajes del grupo. Cada miembro puede crear y gestionar sus propios viajes.</p>
-<div class="how"><b>Proponer un viaje</b>
-<form id="tripForm" class="feature-form">
+<div class="how"><button class="btn" type="button" id="toggleTripForm">➕ Crear viaje</button>
+<form id="tripForm" class="feature-form" hidden>
 <label>Nombre del viaje<input name="title" required maxlength="120" placeholder="Escapada a…"></label>
 <label>Descripción<textarea name="description" rows="2" placeholder="Plan, alojamiento, ideas…"></textarea></label>
 <label>Destinos <small>(separa varios con comas)</small><input name="destinations" placeholder="Destino 1, destino 2"></label>
@@ -418,14 +419,18 @@ showTab(location.hash.slice(1));
    const {data:links, error:orgError}=await client.from('event_organizers').select('event_id,group_members(display_name)');
    if(orgError)throw orgError;
    const byEvent={};(links||[]).forEach(x=>{const n=x.group_members?.display_name;if(n)(byEvent[x.event_id]??=[]).push(n)});
-   EV=(events||[]).map(row=>({id:row.source_key||row.id,e:'',t:row.title,y:row.event_date?Number(row.event_date.slice(0,4)):new Date().getFullYear(),by:(byEvent[row.id]||[]).join(' y ')||'Por determinar',d:row.event_date?[row.event_date]:[],ok:row.status!=='draft'&&row.status!=='cancelled',status:row.status,when:row.event_date?new Date(row.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar',where:row.place||'Por determinar',map:row.map_url||'',desc:row.description||'',poster:row.poster_url||''}));
+   EV=(events||[]).map(row=>({dbId:row.id,id:row.source_key||row.id,e:'',t:row.title,y:row.event_date?Number(row.event_date.slice(0,4)):new Date().getFullYear(),by:(byEvent[row.id]||[]).join(' y ')||'Por determinar',d:row.event_date?[row.event_date]:[],ok:row.status!=='draft'&&row.status!=='cancelled',status:row.status,when:row.event_date?new Date(row.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar',where:row.place||'Por determinar',map:row.map_url||'',desc:row.description||'',poster:row.poster_url||''}));
    Object.keys(byDay).forEach(k=>delete byDay[k]);EV.forEach(e=>{if(e.status!=='cancelled')e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e))});
    let out='',yr=0;
    EV.forEach(e=>{if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
      const statusLabel=e.status==='completed'?'Realizado':e.status==='cancelled'?'Cancelado':e.status==='draft'?'En preparación':'Confirmado';
-     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'</article>';
+     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
    });
    $('events').innerHTML=out||'<div class="empty">Todavía no hay planes. ¡Que alguien proponga uno!</div>';
+   const {data:eventPolls}=await client.from('polls').select('id,title,related_event_id').not('related_event_id','is',null);
+   (eventPolls||[]).forEach(p=>{const slot=document.querySelector('[data-event-poll-link="'+p.related_event_id+'"]');if(slot)slot.innerHTML='<button class="btn" type="button" data-open-poll="'+p.id+'">🗳️ Ir a encuesta: '+esc(p.title)+'</button>';});
+   document.querySelectorAll('[data-create-event-poll]').forEach(b=>b.onclick=()=>openPollCreator({eventId:b.dataset.createEventPoll,title:b.closest('.ev-card').querySelector('h3').textContent}));
+   document.querySelectorAll('[data-open-poll]').forEach(b=>b.onclick=()=>openPollById(b.dataset.openPoll));
    const upcoming=EV.filter(e=>e.d.length&&e.status!=='cancelled').map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
    if(upcoming){const n=Math.round((upcoming.t-today)/864e5);$('count').textContent=n===0?'¡Hoy es '+upcoming.e.t+'!':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para '+upcoming.e.t;$('count').onclick=()=>go(upcoming.e.id);}
    else $('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';
@@ -449,19 +454,21 @@ showTab(location.hash.slice(1));
 
  async function renderPolls(){
    const target=$id('pollList');target.innerHTML='<div class="empty">Cargando encuestas…</div>';
-   const {data:polls,error}=await client.from('polls').select('id,title,description,poll_type,vote_visibility,status,closes_at,created_by,created_at,poll_options(id,option_text,sort_order)').order('created_at',{ascending:false});
+   const {data:polls,error}=await client.from('polls').select('id,title,description,poll_type,vote_visibility,status,closes_at,created_by,created_at,related_event_id,related_trip_id,poll_options(id,option_text,sort_order)').order('created_at',{ascending:false});
    if(error){target.innerHTML='<div class="empty">No se pudieron cargar las encuestas: '+esc(error.message)+'</div>';return}
    if(!polls?.length){target.innerHTML='<div class="empty">Todavía no hay encuestas. ¡Estrena la sección!</div>';return}
    let html='';
    for(const poll of polls){
      const {data:results,error:resultError}=await client.rpc('paqui_poll_results',{p_poll_id:poll.id});
      const status=poll.status==='open'?'Abierta':poll.status==='closed'?'Cerrada':'Borrador';
-     html+='<article class="poll-card"><span class="status-tag">'+status+' · '+(poll.vote_visibility==='secret'?'Voto secreto':'Voto identificado')+'</span><h3>'+esc(poll.title)+'</h3>'+(poll.description?'<p>'+esc(poll.description)+'</p>':'')+(currentProfile?.role==='admin'?'<button class="btn danger" type="button" data-delete-poll="'+poll.id+'">🗑️ Eliminar encuesta</button>':'')+'<form class="poll-vote-form" data-poll="'+poll.id+'">';
+     html+='<article class="poll-card" id="poll-'+poll.id+'"><span class="status-tag">'+status+' · '+(poll.vote_visibility==='secret'?'Voto secreto':'Voto identificado')+'</span><h3>'+esc(poll.title)+'</h3>'+(poll.description?'<p>'+esc(poll.description)+'</p>':'')+(poll.related_event_id?'<button class="btn" type="button" data-go-event="'+poll.related_event_id+'">📅 Ir al plan</button>':'')+(poll.related_trip_id?'<button class="btn" type="button" data-go-trip="'+poll.related_trip_id+'">🧳 Ir al viaje</button>':'')+(currentProfile?.role==='admin'?'<button class="btn danger" type="button" data-delete-poll="'+poll.id+'">🗑️ Eliminar encuesta</button>':'')+'<form class="poll-vote-form" data-poll="'+poll.id+'">';
      (poll.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).forEach(o=>{html+='<label class="poll-option"><input type="'+(poll.poll_type==='multiple'?'checkbox':'radio')+'" name="option" value="'+o.id+'"> '+esc(o.option_text)+'</label>'});
      if(poll.status==='open')html+='<button class="btn" type="submit">Enviar voto</button>';
      html+='</form><div class="poll-results">'+(resultError?'No se pudo obtener el recuento.':(results||[]).map(r=>esc(r.option_text)+': <b>'+r.vote_count+'</b>').join(' · '))+'</div></article>';
    }
    target.innerHTML=html;
+   target.querySelectorAll('[data-go-event]').forEach(b=>b.onclick=()=>{showTab('proximos');setTimeout(()=>{const ev=document.querySelector('[data-event-db="'+b.dataset.goEvent+'"]');if(ev){ev.scrollIntoView({behavior:'smooth'});ev.classList.add('flash')}},120)});
+   target.querySelectorAll('[data-go-trip]').forEach(b=>b.onclick=()=>{showTab('viajes');setTimeout(()=>{const tr=document.querySelector('[data-trip-db="'+b.dataset.goTrip+'"]');if(tr){tr.scrollIntoView({behavior:'smooth'});tr.classList.add('flash')}},120)});
    target.querySelectorAll('[data-delete-poll]').forEach(btn=>btn.onclick=async()=>{
      if(currentProfile?.role!=='admin')return;
      if(!confirm('¿Seguro que quieres eliminar esta encuesta? Se borrarán también todas sus opciones y votos. Esta acción no se puede deshacer.'))return;
@@ -482,14 +489,14 @@ showTab(location.hash.slice(1));
    ev.preventDefault();const f=ev.currentTarget,fd=new FormData(f),msg=$id('pollMsg');
    const options=String(fd.get('options')||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
    if(options.length<2){msg.textContent='Añade al menos dos opciones.';return}
-   msg.textContent='Publicando…';const {data:poll,error}=await client.from('polls').insert({title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,poll_type:fd.get('type'),vote_visibility:fd.get('visibility'),status:'draft',created_by:currentAuthUser.id}).select('id').single();
+   msg.textContent='Publicando…';const {data:poll,error}=await client.from('polls').insert({title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,poll_type:fd.get('type'),vote_visibility:fd.get('visibility'),status:'draft',related_event_id:fd.get('related_event_id')||null,related_trip_id:fd.get('related_trip_id')||null,created_by:currentAuthUser.id}).select('id').single();
    if(error){msg.textContent='No se pudo crear: '+error.message;return}
    const rows=options.map((option_text,sort_order)=>({poll_id:poll.id,option_text,sort_order}));
    const {error:optionError}=await client.from('poll_options').insert(rows);
    if(optionError){msg.textContent='La encuesta se creó, pero falló al guardar las opciones: '+optionError.message;return}
    const {error:publishError}=await client.from('polls').update({status:'open',updated_at:new Date().toISOString()}).eq('id',poll.id);
    if(publishError){msg.textContent='La encuesta se guardó como borrador: '+publishError.message;return}
-   f.reset();msg.textContent='¡Encuesta publicada!';await renderPolls();
+   f.reset();f.hidden=true;$id('togglePollForm').textContent='➕ Crear encuesta';msg.textContent='¡Encuesta publicada!';await renderPolls();await renderTrips();await loadEventsFromDatabase();
  }
  async function renderTrips(){
    const target=$id('tripList');target.innerHTML='<div class="empty">Cargando viajes…</div>';
@@ -497,7 +504,11 @@ showTab(location.hash.slice(1));
    if(error){target.innerHTML='<div class="empty">No se pudieron cargar los viajes: '+esc(error.message)+'</div>';return}
    if(!trips?.length){target.innerHTML='<div class="empty">No hay viajes todavía. ¡Proponed el primero!</div>';return}
    const statusNames={idea:'Idea',planning:'Organizando',confirmed:'Confirmado',completed:'Realizado',cancelled:'Cancelado'};
-   target.innerHTML=trips.map(t=>'<article class="trip-card"><span class="status-tag">'+(statusNames[t.status]||t.status)+'</span><h3>'+esc(t.title)+'</h3>'+(t.description?'<p>'+esc(t.description)+'</p>':'')+(t.destinations?.length?'<p>📍 '+esc(t.destinations.join(' · '))+'</p>':'')+'<p class="meta">📅 '+esc(t.start_date||'Fecha por decidir')+(t.end_date?' — '+esc(t.end_date):'')+(t.budget_per_person!==null?' · 💶 '+esc(t.budget_per_person)+' €/persona':'')+'</p>'+(t.created_by===currentAuthUser.id?'<label class="trip-status-edit">Estado: <select data-trip-status="'+t.id+'">'+Object.entries(statusNames).map(([k,v])=>'<option value="'+k+'" '+(t.status===k?'selected':'')+'>'+v+'</option>').join('')+'</select></label>':'')+'</article>').join('');
+   target.innerHTML=trips.map(t=>'<article class="trip-card" data-trip-db="'+t.id+'"><span class="status-tag">'+(statusNames[t.status]||t.status)+'</span><h3>'+esc(t.title)+'</h3>'+(t.description?'<p>'+esc(t.description)+'</p>':'')+(t.destinations?.length?'<p>📍 '+esc(t.destinations.join(' · '))+'</p>':'')+'<p class="meta">📅 '+esc(t.start_date||'Fecha por decidir')+(t.end_date?' — '+esc(t.end_date):'')+(t.budget_per_person!==null?' · 💶 '+esc(t.budget_per_person)+' €/persona':'')+'</p><div class="trip-poll-actions"><button class="btn" type="button" data-create-trip-poll="'+t.id+'">➕ Crear encuesta</button><span data-trip-poll-link="'+t.id+'"></span></div>'+(t.created_by===currentAuthUser.id?'<label class="trip-status-edit">Estado: <select data-trip-status="'+t.id+'">'+Object.entries(statusNames).map(([k,v])=>'<option value="'+k+'" '+(t.status===k?'selected':'')+'>'+v+'</option>').join('')+'</select></label>':'')+'</article>').join('');
+   const {data:tripPolls}=await client.from('polls').select('id,title,related_trip_id').not('related_trip_id','is',null);
+   (tripPolls||[]).forEach(p=>{const slot=target.querySelector('[data-trip-poll-link="'+p.related_trip_id+'"]');if(slot)slot.innerHTML='<button class="btn" type="button" data-open-poll="'+p.id+'">🗳️ Ir a encuesta: '+esc(p.title)+'</button>';});
+   target.querySelectorAll('[data-create-trip-poll]').forEach(b=>b.onclick=()=>openPollCreator({tripId:b.dataset.createTripPoll,title:b.closest('.trip-card').querySelector('h3').textContent}));
+   target.querySelectorAll('[data-open-poll]').forEach(b=>b.onclick=()=>openPollById(b.dataset.openPoll));
    target.querySelectorAll('[data-trip-status]').forEach(sel=>sel.onchange=async()=>{const {error}=await client.from('trips').update({status:sel.value,updated_at:new Date().toISOString()}).eq('id',sel.dataset.tripStatus);if(error){alert('No se pudo actualizar el viaje: '+error.message);await renderTrips()}});
  }
  async function createTrip(ev){
@@ -508,8 +519,14 @@ showTab(location.hash.slice(1));
    const payload={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,destinations:String(fd.get('destinations')||'').split(',').map(x=>x.trim()).filter(Boolean),start_date:start,end_date:end,budget_per_person:budget?Number(budget):null,status:'idea',created_by:currentAuthUser.id};
    msg.textContent='Publicando…';const {error}=await client.from('trips').insert(payload);
    if(error){msg.textContent='No se pudo publicar: '+error.message;return}
-   f.reset();msg.textContent='¡Viaje publicado!';await renderTrips();
+   f.reset();f.hidden=true;$id('toggleTripForm').textContent='➕ Crear viaje';msg.textContent='¡Viaje publicado!';await renderTrips();
  }
+ function openPollCreator({eventId=null,tripId=null,title=''}={}){
+   const f=$id('pollForm');f.hidden=false;f.reset();f.elements.related_event_id.value=eventId||'';f.elements.related_trip_id.value=tripId||'';
+   if(title)f.elements.description.value='Encuesta relacionada con: '+title;
+   $id('togglePollForm').textContent='✖ Cerrar formulario';showTab('votaciones');setTimeout(()=>f.scrollIntoView({behavior:'smooth',block:'center'}),100);
+ }
+ function openPollById(id){showTab('votaciones');setTimeout(()=>{const card=$id('poll-'+id);if(card){card.scrollIntoView({behavior:'smooth'});card.classList.add('flash')}},120)}
  function lock(message){document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
  function addUserTools(username,role){
    loginGate.hidden=true;document.body.classList.remove('auth-locked');
@@ -573,6 +590,8 @@ showTab(location.hash.slice(1));
    if(t==='viajes')renderTrips();
    const group=btn.closest('details');if(group)group.open=false;
  }));
+ $id('togglePollForm').addEventListener('click',()=>{const f=$id('pollForm');f.hidden=!f.hidden;$id('togglePollForm').textContent=f.hidden?'➕ Crear encuesta':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
+ $id('toggleTripForm').addEventListener('click',()=>{const f=$id('tripForm');f.hidden=!f.hidden;$id('toggleTripForm').textContent=f.hidden?'➕ Crear viaje':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
  $id('pollForm').addEventListener('submit',createPoll);
  $id('tripForm').addEventListener('submit',createTrip);
  const admin=document.createElement('section');admin.id='adminPanel';admin.hidden=true;admin.innerHTML='<div class="admin-shell"><div class="admin-heading"><div><h2>⚙️ Administración</h2><p class="sub">Panel privado de gestión de Paquillo Events.</p></div><div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><span class="status-tag">Solo administradores</span><button class="btn" type="button" id="adminBack">↩ Volver a la web</button></div></div><div id="adminContent"></div></div>';
