@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Paquillo Events</title>
+<title>Paquillo Events 2.0 · Fase 5</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -145,6 +145,46 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 .birthday-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-top:1rem}.birthday-actions button{border:0;border-radius:12px;padding:.75rem 1rem;font:inherit;font-weight:800;cursor:pointer;background:#f5d64c;color:#211d45}.birthday-actions .secondary{background:#eeeaf7}
 @media(max-width:520px){.login-card{padding:1.35rem}.admin-table th,.admin-table td{font-size:.82rem;padding:.45rem}}
 
+
+/* Fase 5: navegación compacta y juegos Paquillo */
+.tabs{justify-content:space-between;gap:.7rem;min-height:4.15rem;padding:.55rem max(1rem,calc((100% - 860px)/2))}
+.home-button{display:grid;place-items:center;width:2.85rem;height:2.85rem;flex:none;border-radius:14px!important;background:var(--yl)!important;color:#1d1b4f!important;font-size:1.25rem!important;box-shadow:3px 3px 0 var(--ink)}
+.home-button.on{background:var(--mint)!important;color:#06281d!important}
+.nav-brand{display:flex;align-items:center;gap:.55rem;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.nav-brand-mark{display:grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:9px;background:var(--pk);color:#fff;font-weight:900;transform:rotate(-7deg);box-shadow:2px 2px 0 var(--ink)}
+.menu-toggle{display:flex;align-items:center;gap:.55rem;background:linear-gradient(135deg,var(--pk),#a91b71)!important;color:#fff!important;border-radius:14px!important;padding:.55rem .95rem!important;box-shadow:3px 3px 0 var(--ink);font-weight:800!important}
+.menu-lines{font-size:1.15rem;line-height:1}
+.menu-backdrop{position:fixed;inset:0;z-index:69;background:rgba(20,18,58,.42)!important;border:0!important;border-radius:0!important;padding:0!important;cursor:default}
+.menu-panel{position:fixed;z-index:80;top:calc(env(safe-area-inset-top,0px) + 4.65rem);left:50%;transform:translateX(-50%);width:min(820px,calc(100vw - 1.2rem));max-height:calc(100vh - 5.5rem);max-height:calc(100dvh - 5.5rem);overflow:auto;padding:1rem;background:var(--card);border:2px solid var(--ink);border-radius:20px;box-shadow:7px 7px 0 var(--ink);animation:menuPop .16s ease-out}
+@keyframes menuPop{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+.menu-panel-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;padding-bottom:.8rem;border-bottom:1px solid var(--ln)}
+.menu-panel-head b{display:block;font-size:1.12rem}.menu-panel-head small{display:block;color:var(--mut);margin-top:.15rem}
+.menu-close{width:2.35rem;height:2.35rem;display:grid;place-items:center;border-radius:50%!important;background:var(--bg)!important;color:var(--ink)!important;font-size:1.1rem}
+.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.menu-group{min-width:0;padding:.75rem;border:1px solid var(--ln);border-radius:14px;background:color-mix(in srgb,var(--bg) 45%,var(--card))}
+.menu-group h3{font-size:.98rem;margin:0 0 .55rem;font-weight:900}
+.menu-link{display:flex;align-items:center;justify-content:space-between;gap:.5rem;width:100%;margin:.25rem 0;padding:.62rem .72rem!important;text-align:left;white-space:normal;border:1px solid transparent!important;border-radius:10px!important;background:var(--card)!important;color:var(--ink)!important;font-size:.92rem!important;font-weight:700!important}
+.menu-link span{color:var(--mut);font-size:1.2rem}.menu-link.on{background:var(--pk)!important;color:#fff!important;border-color:var(--ink)!important;box-shadow:2px 2px 0 var(--ink)!important}.menu-link.on span{color:#fff}
+.menu-footer{margin:.8rem .2rem 0;text-align:center;color:var(--mut);font-size:.82rem}
+.menu-admin-group[hidden]{display:none!important}
+[hidden]{display:none!important}
+.games-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:1rem 0}
+.games-heading h2{margin:.25rem 0 .35rem}.games-kicker{font-size:.72rem;font-weight:900;letter-spacing:.16em;color:var(--pk)}
+.games-stamp{display:grid;place-items:center;width:5.4rem;height:5.4rem;flex:none;border:2px solid var(--ink);border-radius:50%;background:var(--yl);font-size:1.8rem;line-height:1;transform:rotate(8deg);box-shadow:4px 4px 0 var(--ink)}.games-stamp small{font-size:.55rem;font-weight:900;text-align:center;line-height:1.05;color:#1d1b4f}
+.game-settings{display:grid;grid-template-columns:1.35fr 1fr 1fr auto;gap:.7rem;align-items:end;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:.9rem;box-shadow:4px 4px 0 var(--ink)}
+.game-settings label,.inline-label{display:grid;gap:.3rem;font-size:.9rem;font-weight:800}.game-settings input,.game-settings select,.inline-label select,.roulette-add input{width:100%;min-width:0;font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--ln);border-radius:9px;padding:.55rem .65rem}.game-settings small{font-size:.75rem;font-weight:400;color:var(--mut);line-height:1.3}.game-save-settings{white-space:nowrap}
+.game-safety{margin:.8rem 0 1.1rem;padding:.75rem .9rem;border:1px dashed var(--mint);border-radius:12px;background:color-mix(in srgb,var(--mint) 9%,var(--card));font-size:.88rem;color:var(--ink)}
+.game-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:start}
+.play-card{min-width:0;overflow:hidden;background:var(--card);border:2px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink)}
+.game-photo{height:165px;position:relative;overflow:hidden;background:#241b3d}.game-photo img{width:100%;height:100%;display:block;object-fit:cover}.photo-tag{position:absolute;left:.8rem;top:.8rem;padding:.32rem .65rem;border-radius:99px;background:var(--yl);color:#1d1b4f;font-size:.74rem;font-weight:900;letter-spacing:.04em;box-shadow:2px 2px 0 #1d1b4f}
+.play-card-body{padding:1rem}.game-card-title{display:flex;justify-content:space-between;align-items:flex-start;gap:.7rem}.game-card-title h3,.roulette-top h3{font-size:1.4rem;font-weight:900;margin:0}.game-card-title p,.roulette-top p{margin:.25rem 0 .8rem;color:var(--mut);font-size:.9rem}.game-emoji{font-size:2rem}.dice-stage{display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap;padding:.9rem;background:linear-gradient(135deg,#2b235b,#5b235e);border-radius:14px;color:#fff}.die{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);place-items:center;padding:.42rem;width:3.6rem;height:3.6rem;border:3px solid #dedcf2;border-radius:13px;background:linear-gradient(145deg,#fff,#d9d6e9);color:#28224f;font-size:2.6rem;line-height:1;box-shadow:inset -3px -4px 0 #b8b3ce,0 4px 0 #17143c;transition:transform .2s}.die .pip{display:block;width:8px;height:8px;border-radius:50%;background:#28224f;box-shadow:inset 0 1px 1px #0005}.die.roll{transform:rotate(12deg) scale(1.08)}.dice-total{font-size:.82rem;font-weight:700;margin-left:.35rem}.dice-total b{display:block;font-size:1.5rem;text-align:center;color:#ffe17b}.turn-line{font-size:.84rem;color:var(--mut);font-weight:700;margin:.65rem 0}.game-result{min-height:4.2rem;padding:.75rem .85rem;border:1px dashed var(--ln);border-radius:12px;background:var(--bg);font-size:.92rem;line-height:1.4}.game-result b{font-weight:900}.penalty-note{display:block;margin-top:.45rem;color:var(--pk);font-weight:900}.game-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0}.game-actions .btn{cursor:pointer}.btn-soft{background:var(--bg)!important;color:var(--ink)!important}.btn-dark{background:#26234e!important;color:#fff!important}
+.game-custom{margin-top:.7rem;padding:.7rem .75rem;border:1px solid var(--ln);border-radius:12px;background:color-mix(in srgb,var(--bg) 35%,var(--card))}.game-custom summary{cursor:pointer;font-weight:900;font-size:.9rem}.game-custom p{margin:.55rem 0;color:var(--mut);font-size:.82rem}.game-custom textarea{display:block;width:100%;max-width:100%;margin:.55rem 0;padding:.6rem;border:2px solid var(--ln);border-radius:9px;background:var(--bg);color:var(--ink);font:500 .82rem/1.45 ui-monospace,monospace;resize:vertical}.save-note{display:inline-block;margin-left:.45rem;color:var(--mint);font-size:.8rem;font-weight:800}
+.inline-label{margin:.4rem 0 .65rem}.card-stage{display:flex;align-items:center;justify-content:center;gap:1rem;min-height:132px;padding:.8rem;background:linear-gradient(135deg,#243c36,#1e2529);border-radius:14px}.playing-card{width:72px;height:100px;flex:none;display:flex;flex-direction:column;justify-content:space-between;padding:.4rem .5rem;border:2px solid #dedede;border-radius:9px;background:linear-gradient(135deg,#fff,#f0edf5);color:#24213f;box-shadow:3px 4px 0 #1118;font-size:1rem;font-weight:900}.playing-card.red{color:#c92750}.playing-card.black{color:#222}.playing-card strong{align-self:center;font-size:2.5rem;line-height:1}.playing-card span:last-child{align-self:flex-end;transform:rotate(180deg)}.playing-card.back{align-items:center;justify-content:center;gap:.25rem;color:#fff;background:repeating-linear-gradient(45deg,#9b174d 0 5px,#67143e 5px 10px);border:4px solid #fff;outline:2px solid #b9b4c9}.playing-card.back b{font-size:1.05rem;letter-spacing:.1em}.card-stage-copy{display:grid;gap:.25rem;color:#fff}.card-stage-copy small{opacity:.8}.card-controls{margin:.65rem 0}.card-controls[hidden]{display:none!important}
+.roulette-card{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:1.2rem;padding:1rem}.roulette-top{grid-column:1/-1;position:relative}.roulette-top .photo-tag{position:static;display:inline-block;margin-bottom:.6rem}.roulette-area{position:relative;width:min(100%,250px);aspect-ratio:1;margin:.6rem auto}.roulette-wheel{width:100%;height:100%;border:7px solid #211d45;border-radius:50%;background:conic-gradient(#ed3e76 0deg 45deg,#ffc933 45deg 90deg,#16a77a 90deg 135deg,#6554c0 135deg 180deg,#ed7d31 180deg 225deg,#e24b9a 225deg 270deg,#2b9fb1 270deg 315deg,#9d71d1 315deg 360deg);box-shadow:inset 0 0 0 5px #fff8,0 6px 0 #17143c;transition:transform 3.8s cubic-bezier(.12,.78,.14,1);will-change:transform}.roulette-wheel:after{content:"PAQUI";position:absolute;inset:38%;display:grid;place-items:center;border:3px solid #211d45;border-radius:50%;background:var(--yl);color:#211d45;font-size:.65rem;font-weight:1000;box-shadow:0 2px 0 #211d45}.roulette-pointer{position:absolute;z-index:2;top:-.15rem;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:27px solid var(--pk);filter:drop-shadow(0 2px 0 var(--ink))}.roulette-result{align-self:center;min-height:5rem}.roulette-actions{justify-content:center}.roulette-card>.game-custom{grid-column:1/-1}.roulette-add{display:flex;gap:.5rem}.roulette-add input{flex:1}.roulette-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin:.7rem 0}.roulette-item{display:flex;align-items:center;gap:.4rem;min-width:0}.roulette-item input{width:100%;min-width:0;padding:.42rem .5rem;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:.82rem}.roulette-item button{flex:none;width:1.9rem;height:1.9rem;border:0;border-radius:50%;background:#f8d7e2;color:#8f123e;font-weight:900;cursor:pointer}.roulette-custom-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem}.games-footnote{margin:1rem 0;color:var(--mut);font-size:.8rem;text-align:center}
+@media(max-width:720px){.game-settings{grid-template-columns:repeat(2,minmax(0,1fr))}.game-save-settings{grid-column:1/-1}.game-card-grid{grid-template-columns:1fr}.roulette-card{grid-template-columns:1fr}.roulette-top,.roulette-card>.game-custom{grid-column:1}.roulette-area{width:min(75vw,260px)}.roulette-items{grid-template-columns:1fr}}
+@media(max-width:560px){.tabs{gap:.45rem;padding:.45rem .65rem;min-height:3.8rem}.nav-brand{font-size:.88rem}.nav-brand-mark{width:1.7rem;height:1.7rem}.nav-current{display:none}.home-button{width:2.65rem;height:2.65rem}.menu-toggle{padding:.48rem .72rem!important;font-size:.9rem!important}.menu-panel{top:calc(env(safe-area-inset-top,0px) + 4.25rem);width:calc(100vw - .8rem);max-height:calc(100vh - 5rem);max-height:calc(100dvh - 5rem);padding:.75rem;border-radius:16px}.menu-grid{grid-template-columns:1fr;gap:.55rem}.menu-group{padding:.65rem}.menu-link{padding:.58rem .65rem!important}.games-heading{align-items:flex-start}.games-stamp{width:4.5rem;height:4.5rem;font-size:1.5rem}.game-settings{grid-template-columns:1fr}.game-save-settings{grid-column:auto}.game-photo{height:145px}.play-card-body{padding:.8rem}.dice-stage{gap:.5rem}.die{width:3.2rem;height:3.2rem}.roulette-card{padding:.8rem}}
+@media(prefers-reduced-motion:reduce){.menu-panel{animation:none}.roulette-wheel,.die{transition:none}}
+
 </style>
 </head>
 <body>
@@ -157,22 +197,38 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </div>
 </header>
 <nav class="tabs" id="tabs" aria-label="Navegación principal">
-  <button type="button" class="nav-main on" role="tab" data-t="proximos">📅 Agenda</button>
-  <details class="nav-group"><summary>👥 Comunidad</summary><div class="nav-menu">
-    <button type="button" role="tab" data-t="directorio">👥 Paquillos</button>
-    <button type="button" role="tab" data-t="ranking">🏆 TOP organizadores</button>
-  </div></details>
-  <details class="nav-group"><summary>🗳️ Participa</summary><div class="nav-menu">
-    <button type="button" role="tab" data-t="votaciones">🗳️ Votaciones</button>
-  </div></details>
-  <button type="button" class="nav-main" role="tab" data-t="viajes">🧳 Viajes</button>
-  <details class="nav-group"><summary>🎉 Más</summary><div class="nav-menu">
-    <button type="button" role="tab" data-t="cumples">🎂 Cumples</button>
-    <button type="button" role="tab" data-t="pasados">📸 Planes pasados</button>
-    <button type="button" role="tab" data-t="stickers">😂 Stickers</button>
-    <button type="button" role="tab" data-t="horno">🔥 En el horno</button>
-  </div></details>
+  <button type="button" id="homeButton" class="home-button on" role="tab" data-t="proximos" aria-label="Ir al inicio: calendario y próximos eventos" title="Inicio">🏠</button>
+  <div class="nav-brand"><span class="nav-brand-mark">P</span><span>Paquillo Events</span></div>
   <span class="nav-current" id="navCurrent">Agenda</span>
+  <button type="button" id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="menuPanel"><span class="menu-lines" aria-hidden="true">☰</span><span>Menú</span></button>
+  <button type="button" id="menuBackdrop" class="menu-backdrop" hidden aria-label="Cerrar menú"></button>
+  <div class="menu-panel" id="menuPanel" hidden>
+    <div class="menu-panel-head"><div><b>Explora Paquillo Events</b><small>Todos los planes y secciones, a un toque</small></div><button type="button" id="menuClose" class="menu-close" aria-label="Cerrar menú">✕</button></div>
+    <div class="menu-grid">
+      <section class="menu-group"><h3>📅 Agenda</h3>
+        <button type="button" class="menu-link on" role="tab" data-t="proximos">Calendario y próximos eventos <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="cumples">Cumpleaños <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="pasados">Planes pasados <span>›</span></button>
+      </section>
+      <section class="menu-group"><h3>👥 Comunidad</h3>
+        <button type="button" class="menu-link" role="tab" data-t="directorio">Paquillos <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="ranking">TOP organizadores <span>›</span></button>
+      </section>
+      <section class="menu-group"><h3>🗳️ Participa</h3>
+        <button type="button" class="menu-link" role="tab" data-t="votaciones">Votaciones <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="viajes">Viajes <span>›</span></button>
+      </section>
+      <section class="menu-group"><h3>🎉 Entretenimiento</h3>
+        <button type="button" class="menu-link" role="tab" data-t="juegos">Juegos 🎲 <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="stickers">Stickers <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="horno">En el horno <span>›</span></button>
+      </section>
+      <section class="menu-group menu-admin-group" id="menuAdminGroup" hidden><h3>⚙️ Gestión</h3>
+        <button type="button" class="menu-link" id="menuAdminBtn" hidden>Administración <span>›</span></button>
+      </section>
+    </div>
+    <p class="menu-footer">Hecho para que los Paquillos no se pierdan ningún plan. ✨</p>
+  </div>
 </nav>
 <main>
 <section class="panel" id="p-proximos">
@@ -272,6 +328,58 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <div><b>🏆 Salón de la fama</b><p>Las mejores anécdotas, citas y desastres de cada plan.</p></div>
 </div>
 </section>
+<section class="panel" id="p-juegos" hidden>
+  <div class="games-heading">
+    <div><span class="games-kicker">PAQUILLO ARCADE</span><h2>🎲 Juegos</h2><p class="sub">Elige juego, prepara la partida y que la suerte reparta.</p></div>
+    <div class="games-stamp">🎉<small>Que empiece<br>el pique</small></div>
+  </div>
+  <div class="game-settings">
+    <label>👥 Jugadores <input id="gamePlayers" type="text" placeholder="Ej.: Javi, Laura, Richy, Sandra" autocomplete="off"><small>Separa los nombres con comas. Se guardan en este dispositivo.</small></label>
+    <label>🔥 Nivel de intensidad <select id="gameLevel"><option value="1">Nivel 1 · Suave</option><option value="2">Nivel 2 · Medio</option><option value="3">Nivel 3 · Alegre</option></select><small id="levelHint">Castigo sugerido: 1 sorbo pequeño.</small></label>
+    <label>🥤 Modo de juego <select id="gameMode"><option value="drink">Con bebida</option><option value="points">Puntos / sin alcohol</option></select><small>En modo puntos, los castigos se convierten en puntos.</small></label>
+    <button type="button" class="btn game-save-settings" id="saveGameSettings">Guardar ajustes</button>
+  </div>
+  <div class="game-safety">💧 <b>Regla Paquillo:</b> en modo bebida, el nivel 3 son como máximo 3 sorbos pequeños por castigo; en modo puntos, 3 puntos. Nada de chupitos ni de terminar vasos; cualquiera puede pasar, cambiar a puntos o elegir agua. Jugad con cabeza.</div>
+
+  <div class="game-card-grid">
+    <article class="play-card" id="diceGame">
+      <div class="game-photo"><img src="https://images.unsplash.com/photo-1605216391936-b8a1fbf96dd6?auto=format&fit=crop&w=1200&q=80" alt="Dados rojos y blancos sobre una mesa de madera" loading="lazy"><span class="photo-tag">🎲 DADOS</span></div>
+      <div class="play-card-body">
+        <div class="game-card-title"><div><h3>Dados locos</h3><p>Dos dados, once resultados y ninguna excusa.</p></div><span class="game-emoji">🎲</span></div>
+        <div class="dice-stage"><div id="dieOne" class="die" aria-label="Primer dado">⚀</div><div id="dieTwo" class="die" aria-label="Segundo dado">⚀</div><div class="dice-total">Suma <b id="diceTotal">—</b></div></div>
+        <p class="turn-line" id="diceTurn">Empieza quien quiera. Después se rota el turno.</p>
+        <div class="game-result" id="diceResult" aria-live="polite">Pulsa «Tirar dados» para descubrir la regla.</div>
+        <div class="game-actions"><button type="button" class="btn" id="rollDice">🎲 Tirar dados</button><button type="button" class="btn btn-soft" id="resetDice">Reiniciar turno</button></div>
+        <details class="game-custom"><summary>🛠️ Personalizar reglas de los dados</summary><p>Una regla por línea, con el formato <b>suma: regla</b>. Puedes cambiar todas las combinaciones.</p><textarea id="diceRules" rows="11"></textarea><button type="button" class="btn btn-soft" id="saveDiceRules">Guardar reglas</button><span class="save-note" id="diceSaveNote" aria-live="polite"></span></details>
+      </div>
+    </article>
+
+    <article class="play-card" id="cardGame">
+      <div class="game-photo"><img src="https://images.unsplash.com/photo-1590929272909-82bf4dac19f9?auto=format&fit=crop&w=1200&q=80" alt="Cartas de póker desplegadas sobre una mesa de madera" loading="lazy"><span class="photo-tag">🃏 CARTAS</span></div>
+      <div class="play-card-body">
+        <div class="game-card-title"><div><h3>La baraja Paquillo</h3><p>Tres clásicos para jugar con una baraja francesa.</p></div><span class="game-emoji">🃏</span></div>
+        <label class="inline-label">Elige modalidad <select id="cardMode"><option value="redblack">Rojo o negro</option><option value="highlow">Mayor o menor</option><option value="surprise">Carta sorpresa</option></select></label>
+        <div class="card-stage"><div id="playingCard" class="playing-card back"><span>♠</span><b>PAQ</b><span>♥</span></div><div class="card-stage-copy"><b id="cardPlayer">Turno: Jugador 1</b><small id="cardDeckInfo">Baraja de 52 cartas</small></div></div>
+        <div class="game-actions card-controls" id="redBlackControls"><button type="button" class="btn" id="guessRed">❤️ Rojo</button><button type="button" class="btn btn-dark" id="guessBlack">♠️ Negro</button></div>
+        <div class="game-actions card-controls" id="highLowControls" hidden><button type="button" class="btn" id="guessHigher">⬆️ Mayor</button><button type="button" class="btn" id="guessLower">⬇️ Menor</button></div>
+        <div class="game-actions card-controls" id="surpriseControls" hidden><button type="button" class="btn" id="drawSurprise">🃏 Sacar carta</button></div>
+        <div class="game-result" id="cardResult" aria-live="polite">Elige una modalidad y juega tu primera carta.</div>
+        <div class="game-actions"><button type="button" class="btn btn-soft" id="nextCardPlayer">Siguiente jugador ↻</button><button type="button" class="btn btn-soft" id="shuffleDeck">Barajar de nuevo</button></div>
+        <details class="game-custom"><summary>🛠️ Personalizar reglas de las cartas</summary><p>En «Carta sorpresa», cada línea define una carta: <b>valor: acción</b>. Usa A, 2–10, J, Q y K.</p><textarea id="cardRules" rows="13"></textarea><button type="button" class="btn btn-soft" id="saveCardRules">Guardar reglas</button><span class="save-note" id="cardSaveNote" aria-live="polite"></span></details>
+      </div>
+    </article>
+
+    <article class="play-card roulette-card" id="rouletteGame">
+      <div class="roulette-top"><span class="photo-tag">🎡 RULETA</span><h3>La ruleta Paquillo</h3><p>La suerte elige nombre, reto o acontecimiento.</p></div>
+      <div class="roulette-area"><div class="roulette-pointer"></div><div class="roulette-wheel" id="rouletteWheel" aria-label="Ruleta personalizable"></div></div>
+      <p class="turn-line" id="rouletteTurn">La ruleta está lista.</p>
+      <div class="game-result roulette-result" id="rouletteResult" aria-live="polite">Pulsa «Girar ruleta» para descubrir qué toca.</div>
+      <div class="game-actions roulette-actions"><button type="button" class="btn" id="spinRoulette">🎡 Girar ruleta</button><button type="button" class="btn btn-soft" id="resetRoulette">Reiniciar giro</button></div>
+      <details class="game-custom" open><summary>🛠️ Personaliza tu ruleta</summary><p>Añade, edita o elimina nombres, pruebas, preguntas y acciones. Se guarda en este dispositivo.</p><div class="roulette-add"><input id="rouletteNewItem" type="text" maxlength="100" placeholder="Añadir nombre, reto o acción"><button type="button" class="btn" id="addRouletteItem">Añadir</button></div><div id="rouletteItems" class="roulette-items"></div><div class="roulette-custom-actions"><button type="button" class="btn btn-soft" id="saveRoulette">Guardar ruleta</button><button type="button" class="btn btn-soft" id="restoreRoulette">Restaurar ejemplos</button><span class="save-note" id="rouletteSaveNote" aria-live="polite"></span></div></details>
+    </article>
+  </div>
+  <p class="games-footnote">Los ajustes y las ruletas personalizadas se guardan solo en el navegador del dispositivo donde se editen; no se publican ni se comparten con el resto del grupo. Imágenes: <a href="https://unsplash.com/photos/red-dice-closeup-photography-MnSYYYqunXA" target="_blank" rel="noopener">dados</a> y <a href="https://unsplash.com/photos/jack-of-spade-and-jack-of-diamonds-playing-cards-4nTJa3qIa9A" target="_blank" rel="noopener">cartas</a> (Unsplash).</p>
+</section>
 </main>
 <footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
 
@@ -368,8 +476,9 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'En el horno',votaciones:'Votaciones',viajes:'Viajes'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
+function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'En el horno',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
+$('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
 const PEOPLE=[{n:'Leti',d:14,m:1,s:'leti',i:'cumples-leti.jpg'},{n:'Adri',d:22,m:7,s:'adri',i:'cumples-adri.jpg'},{n:'Alba',d:3,m:3,s:'alba',i:'cumples-alba.jpg'},{n:'Carla',d:30,m:4,s:'carla',i:'cumples-carla.jpg'},{n:'David',d:6,m:3,s:'david',i:'cumples-david.jpg'},{n:'Diego',d:22,m:4,s:'diego',i:'cumples-diego.jpg'},{n:'Ines',d:1,m:10,s:'ines',i:'cumples-ines.jpg'},{n:'Iván',d:28,m:9,s:'ivan',i:'cumples-ivan.jpg'},{n:'Joaquín',d:14,m:7,s:'joaquin',i:'cumples-joaquin.jpg'},{n:'JB',d:8,m:10,s:'jb',i:'cumples-jb.jpg'},{n:'Jorge R',d:24,m:9,s:'jorge-r',i:'cumples-jorge-r.jpg'},{n:'Julia',d:15,m:6,s:'julia',i:'cumples-julia.jpg'},{n:'Laura',d:20,m:5,s:'laura',i:'cumples-laura.jpg'},{n:'María',d:14,m:1,s:'maria',i:'cumples-maria.jpg'},{n:'Mireia',d:5,m:2,s:'mireia',i:'cumples-mireia.jpg'},{n:'Richy',d:26,m:2,s:'richy',i:'cumples-richy.jpg'},{n:'Román',d:1,m:12,s:'roman',i:'cumples-roman.jpg'},{n:'Rodri',d:27,m:4,s:'rodri',i:'cumples-rodri.jpg'},{n:'Sara',d:22,m:6,s:'sara',i:'cumples-sara.jpg'},{n:'Santi',d:16,m:2,s:'santi',i:'cumples-santi.jpg'},{n:'Sandra',d:2,m:11,s:'sandra',i:'cumples-sandra.jpg'},{n:'Sofía',d:16,m:1,s:'sofia',i:'cumples-sofia.jpg'},{n:'Javi',d:21,m:4,s:'javi',i:'cumples-javi.jpg'}];
 const bday={};PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(p)});
@@ -550,6 +659,7 @@ showTab(location.hash.slice(1));
    const tools=document.createElement('div');tools.id='userTools';tools.style.cssText='max-width:1100px;margin:.4rem auto;padding:0 1rem;display:flex;justify-content:flex-end;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.9rem';
    tools.innerHTML='<span>👋 '+username+'</span>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
    document.querySelector('header.top').after(tools);
+   const menuAdmin=$id('menuAdminBtn');if(menuAdmin){menuAdmin.hidden=role!=='admin';const menuAdminGroup=$id('menuAdminGroup');if(menuAdminGroup)menuAdminGroup.hidden=role!=='admin';menuAdmin.onclick=()=>{$id('menuPanel').hidden=true;$id('menuBackdrop').hidden=true;$id('menuToggle').setAttribute('aria-expanded','false');const adminButton=$id('adminToggle');if(adminButton)adminButton.click();};}
    if(role==='admin')$id('adminToggle').onclick=()=>{
      const a=$id('adminPanel'),opening=a.hidden;
      a.hidden=!opening;document.body.classList.toggle('admin-mode',opening);
@@ -659,5 +769,75 @@ showTab(location.hash.slice(1));
 })();
 </script>
 
+<script>
+(()=>{
+ const $=id=>document.getElementById(id);
+ const STORE='paquillo_games_phase5_v1';
+ const DICE_DEFAULT=`2: Doble uno: elige a alguien para un reto relámpago.
+3: Cuenta una anécdota en 20 segundos; el grupo decide si vale.
+4: Elige a dos personas para un duelo de piedra, papel o tijera.
+5: Categorías: quien repita o se quede en blanco propone un reto.
+6: Inventa una regla que dure hasta el siguiente turno.
+7: Brindis creativo: cada persona aporta una palabra.
+8: Rima rápida: quien no encuentre una rima propone el siguiente tema.
+9: Pregunta relámpago: hay cinco segundos para responder.
+10: Elige a alguien para una imitación de diez segundos.
+11: Reparte un reto divertido a otra persona.
+12: ¡Escudo! Elige a alguien que se libra de su próximo reto.`;
+ const CARD_DEFAULT=`A: Todos inventan un brindis de una frase.
+2: Elige a alguien para un duelo de piedra, papel o tijera.
+3: Cuenta una anécdota que nadie del grupo conozca.
+4: Ronda de categorías: elige tema y empieza a contar.
+5: Crea una regla divertida que dure dos rondas.
+6: Rima rápida: di una palabra y continúa la ronda.
+7: Pulgar maestro: el último en imitarte propone un reto.
+8: Elige compañero: los dos hacéis el mismo reto.
+9: Pregunta rápida: cinco segundos para responder.
+10: Todos señalan; la mayoría elige quién hace una imitación.
+J: Haz una imitación de alguien del grupo (con cariño).
+Q: Elige una pregunta para que responda el grupo.
+K: Inventa una regla nueva que dure una ronda.`;
+ const ROULETTE_DEFAULT=['Elige a alguien para un reto','Cuenta una anécdota','Reto de mímica','Pregunta curiosa','Todos inventan un brindis','Escudo: pasa el turno','Inventa una regla','Duelo de piedra, papel o tijera'];
+ let settings={players:'',level:'1',mode:'drink',diceRules:DICE_DEFAULT,cardRules:CARD_DEFAULT,roulette:ROULETTE_DEFAULT.slice()};
+ try{const saved=JSON.parse(localStorage.getItem(STORE)||'{}');settings={...settings,...saved};if(!Array.isArray(settings.roulette)||!settings.roulette.length)settings.roulette=ROULETTE_DEFAULT.slice()}catch(e){}
+ let turnIndex=0,deck=[],highLowCurrent=null,rouletteBusy=false,rouletteRotation=0;
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const players=()=>String($('gamePlayers').value||'').split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean);
+ const currentPlayer=()=>{const p=players();return p.length?p[turnIndex%p.length]:'Jugador '+(turnIndex%2+1)};
+ const advance=()=>{turnIndex++;};
+ const penalty=()=>{const n=Math.max(1,Math.min(3,Number($('gameLevel').value)||1));return $('gameMode').value==='points'?`${n} punto${n===1?'':'s'}`:`${n} sorbo${n===1?'':'s'} pequeño${n===1?'':'s'}`};
+ const penaltyHtml=()=>`<span class="penalty-note">Si alguien falla o pasa: ${esc(penalty())} como máximo.</span>`;
+ function persist(){settings.players=$('gamePlayers').value;settings.level=$('gameLevel').value;settings.mode=$('gameMode').value;settings.diceRules=$('diceRules').value;settings.cardRules=$('cardRules').value;try{localStorage.setItem(STORE,JSON.stringify(settings))}catch(e){}}
+ function updateLevel(){const n=Number($('gameLevel').value)||1;$('levelHint').textContent=$('gameMode').value==='points'?`Castigo sugerido: ${n} punto${n===1?'':'s'}.`:`Castigo sugerido: ${n} sorbo${n===1?'':'s'} pequeño${n===1?'':'s'} (máximo por turno).`;persist()}
+ function parseRules(text){const out={};String(text||'').split(/\r?\n/).forEach(line=>{const i=line.indexOf(':');if(i<1)return;const k=line.slice(0,i).trim().toUpperCase(),v=line.slice(i+1).trim();if(k&&v)out[k]=v});return out}
+ function dieMarkup(n){const dots={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]}[n];return `<div class="die" role="img" aria-label="Dado ${n}">${Array.from({length:9},(_,i)=>`<i class="${dots.includes(i+1)?'pip':''}"></i>`).join('')}</div>`}
+ function rollDice(){const player=currentPlayer(),a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6),sum=a+b,rules=parseRules($('diceRules').value),rule=rules[String(sum)]||'El grupo inventa una regla rápida para este resultado.';$('dieOne').outerHTML=dieMarkup(a).replace('class="die"','id="dieOne" class="die"');$('dieTwo').outerHTML=dieMarkup(b).replace('class="die"','id="dieTwo" class="die"');$('diceTotal').textContent=sum;$('diceTurn').textContent='Turno de '+player+' · siguiente: '+(players().length?players()[(turnIndex+1)%players().length]:'otro jugador');$('diceResult').innerHTML=`<b>${esc(player)}:</b> ${esc(rule)}${penaltyHtml()}`;advance();persist()}
+ function makeDeck(){const suits=[{s:'♠',c:'black'},{s:'♥',c:'red'},{s:'♦',c:'red'},{s:'♣',c:'black'}],ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];deck=[];for(const suit of suits)for(let i=0;i<ranks.length;i++)deck.push({rank:ranks[i],value:i+1,suit:suit.s,color:suit.c});for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}$('cardDeckInfo').textContent='Baraja mezclada · '+deck.length+' cartas';}
+ function draw(){if(!deck.length)makeDeck();const c=deck.pop();$('cardDeckInfo').textContent='Quedan '+deck.length+' cartas';return c}
+ function showCard(c){$('playingCard').className='playing-card '+c.color;$('playingCard').innerHTML=`<span>${esc(c.rank)} ${c.suit}</span><strong>${c.suit}</strong><span>${esc(c.rank)} ${c.suit}</span>`}
+ function setCardMode(){const mode=$('cardMode').value;$('redBlackControls').hidden=mode!=='redblack';$('highLowControls').hidden=mode!=='highlow';$('surpriseControls').hidden=mode!=='surprise';$('cardResult').textContent='Modalidad: '+(mode==='redblack'?'Rojo o negro':mode==='highlow'?'Mayor o menor':'Carta sorpresa')+'. ¡A jugar!';if(mode==='highlow'){highLowCurrent=draw();showCard(highLowCurrent);$('cardResult').textContent='Primera carta: '+highLowCurrent.rank+' '+highLowCurrent.suit+'. ¿La siguiente será mayor o menor?'}else{$('playingCard').className='playing-card back';$('playingCard').innerHTML='<span>♠</span><b>PAQ</b><span>♥</span>';}}
+ function cardTurn(){const p=currentPlayer();$('cardPlayer').textContent='Turno: '+p;}
+ function resolveCard(message,failed=false){$('cardResult').innerHTML=`<b>${esc(message)}</b>${failed?penaltyHtml():''}`;advance();cardTurn();persist()}
+ function guessColor(color){const p=currentPlayer(),c=draw();showCard(c);const ok=c.color===color;resolveCard(`${p}: ${c.rank} ${c.suit}. ${ok?'¡Acertaste! Elige a alguien para proponer el siguiente reto.':'No era '+(color==='red'?'roja':'negra')+'. Te toca el castigo sugerido.'}`,!ok)}
+ function guessHighLow(direction){if(!highLowCurrent)highLowCurrent=draw();const p=currentPlayer(),prev=highLowCurrent,next=draw();showCard(next);const ok=direction==='higher'?next.value>prev.value:next.value<prev.value;const tie=next.value===prev.value;highLowCurrent=next;resolveCard(`${p}: ${prev.rank} ${prev.suit} → ${next.rank} ${next.suit}. ${tie?'¡Empate! No hay castigo.':ok?'¡Bien visto! Te libras y eliges al siguiente.':'Fallaste la apuesta de mayor/menor.'}`,!ok&&!tie)}
+ function surpriseCard(){const p=currentPlayer(),c=draw(),rules=parseRules($('cardRules').value),action=rules[c.rank.toUpperCase()]||'El grupo inventa una regla para esta carta.';showCard(c);$('cardResult').innerHTML=`<b>${p}:</b> ${esc(c.rank)} ${c.suit} — ${esc(action)}${penaltyHtml()}`;advance();cardTurn();persist()}
+ function renderRoulette(){const list=$('rouletteItems');list.innerHTML='';settings.roulette.forEach((item,i)=>{const row=document.createElement('div');row.className='roulette-item';const input=document.createElement('input');input.type='text';input.maxLength=100;input.value=item;input.setAttribute('aria-label','Resultado '+(i+1));input.addEventListener('change',()=>{const v=input.value.trim();if(v)settings.roulette[i]=v;else settings.roulette.splice(i,1);renderRoulette();saveRoulette(false)});const del=document.createElement('button');del.type='button';del.textContent='×';del.setAttribute('aria-label','Eliminar resultado '+(i+1));del.onclick=()=>{settings.roulette.splice(i,1);if(!settings.roulette.length)settings.roulette=['Añade un resultado'];renderRoulette();saveRoulette(false)};row.append(input,del);list.append(row)});const wheel=$('rouletteWheel');const colors=['#ed3e76','#ffc933','#16a77a','#6554c0','#ed7d31','#e24b9a','#2b9fb1','#9d71d1'];const n=Math.max(1,settings.roulette.length),seg=360/n;let stops=[];for(let i=0;i<n;i++)stops.push(`${colors[i%colors.length]} ${i*seg}deg ${(i+1)*seg}deg`);wheel.style.background=`conic-gradient(${stops.join(',')})`;}
+ function saveRoulette(show=true){settings.roulette=settings.roulette.map(x=>String(x).trim()).filter(Boolean);persist();renderRoulette();if(show)$('rouletteSaveNote').textContent='Guardada en este dispositivo.'}
+ function spinRoulette(){if(rouletteBusy||!settings.roulette.length)return;rouletteBusy=true;$('spinRoulette').disabled=true;const p=currentPlayer(),n=settings.roulette.length,idx=Math.floor(Math.random()*n),segment=360/n,center=(idx+.5)*segment;rouletteRotation+=360*5+(360-center);$('rouletteWheel').style.transform=`rotate(${rouletteRotation}deg)`;$('rouletteTurn').textContent='Turno de '+p+' · girando…';$('rouletteResult').textContent='La suerte está echada…';const finish=()=>{if(!rouletteBusy)return;rouletteBusy=false;$('spinRoulette').disabled=false;const item=settings.roulette[idx];$('rouletteTurn').textContent='Ha girado '+p+'.';$('rouletteResult').innerHTML=`<b>${esc(p)}:</b> ${esc(item)}${penaltyHtml()}`;advance();persist()};$('rouletteWheel').addEventListener('transitionend',finish,{once:true});setTimeout(finish,4200)}
+ function init(){
+  $('gamePlayers').value=settings.players||'';$('gameLevel').value=settings.level||'1';$('gameMode').value=settings.mode||'drink';$('diceRules').value=settings.diceRules||DICE_DEFAULT;$('cardRules').value=settings.cardRules||CARD_DEFAULT;
+  updateLevel();renderRoulette();makeDeck();cardTurn();setCardMode();
+  $('saveGameSettings').onclick=()=>{persist();updateLevel();$('saveGameSettings').textContent='✓ Guardado';setTimeout(()=>$('saveGameSettings').textContent='Guardar ajustes',1500)};
+  $('gameLevel').onchange=updateLevel;$('gameMode').onchange=updateLevel;$('gamePlayers').onchange=()=>{turnIndex=0;persist();cardTurn();$('diceTurn').textContent='Preparados: '+(players().join(', ')||'añade jugadores arriba')};
+  $('rollDice').onclick=rollDice;$('resetDice').onclick=()=>{$('diceResult').textContent='Turno reiniciado. Pulsa «Tirar dados».';$('diceTotal').textContent='—';turnIndex=0;$('diceTurn').textContent='Empieza quien quiera.'};
+  $('saveDiceRules').onclick=()=>{persist();$('diceSaveNote').textContent='Reglas guardadas.'};$('saveCardRules').onclick=()=>{persist();$('cardSaveNote').textContent='Reglas guardadas.'};
+  $('cardMode').onchange=setCardMode;$('guessRed').onclick=()=>guessColor('red');$('guessBlack').onclick=()=>guessColor('black');$('guessHigher').onclick=()=>guessHighLow('higher');$('guessLower').onclick=()=>guessHighLow('lower');$('drawSurprise').onclick=surpriseCard;
+  $('nextCardPlayer').onclick=()=>{advance();cardTurn();$('cardResult').textContent='Turno pasado. ¡Le toca al siguiente!'};$('shuffleDeck').onclick=()=>{makeDeck();highLowCurrent=null;setCardMode();$('cardResult').textContent='Baraja nueva y mezclada.'};
+  $('addRouletteItem').onclick=()=>{const v=$('rouletteNewItem').value.trim();if(!v)return;settings.roulette.push(v);$('rouletteNewItem').value='';saveRoulette(false);$('rouletteSaveNote').textContent='Añadido.'};$('rouletteNewItem').addEventListener('keydown',e=>{if(e.key==='Enter'){$('addRouletteItem').click()}});
+  $('saveRoulette').onclick=()=>saveRoulette(true);$('restoreRoulette').onclick=()=>{settings.roulette=ROULETTE_DEFAULT.slice();saveRoulette(true)};$('spinRoulette').onclick=spinRoulette;$('resetRoulette').onclick=()=>{$('rouletteWheel').style.transition='none';rouletteRotation=0;$('rouletteWheel').style.transform='rotate(0deg)';requestAnimationFrame(()=>$('rouletteWheel').style.transition='');rouletteBusy=false;$('spinRoulette').disabled=false;$('rouletteResult').textContent='Ruleta lista para otro giro.'};
+ }
+ if($('p-juegos'))init();
+})();
+</script>
 </body>
 </html>
