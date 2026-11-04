@@ -53,7 +53,7 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .ev-card.tent{border-left-color:var(--yl)}
 .ev-card.flash{animation:fl 1.6s}
 @keyframes fl{0%,60%{box-shadow:0 0 0 6px var(--pk)}100%{box-shadow:0 0 0 0 transparent}}
-.ev-card h3{font-size:1.45rem;font-weight:800}.event-manage{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem}.btn.secondary{background:var(--card);color:var(--ink)}.btn.danger{background:#b42342;color:#fff}.event-editor-backdrop{position:fixed;inset:0;background:#100d2dcc;z-index:100;display:grid;place-items:center;padding:1rem}.event-editor{width:min(100%,620px);max-height:92dvh;overflow:auto;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:16px;padding:1rem;box-shadow:6px 6px 0 var(--ink)}.event-editor h2{margin:.2rem 0 1rem}.event-editor .editor-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}.poster-preview{max-width:100%;max-height:220px;object-fit:contain;border:1px solid var(--ln);border-radius:10px;margin-top:.5rem}
+.ev-card h3{font-size:1.45rem;font-weight:800}.event-manage{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem}.btn.secondary{background:var(--card);color:var(--ink)}.btn.danger{background:#b42342;color:#fff}.event-editor-backdrop{position:fixed;inset:0;background:#100d2dcc;z-index:100;display:grid;place-items:center;padding:1rem}.event-editor{width:min(100%,620px);max-height:92dvh;overflow:auto;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:16px;padding:1rem;box-shadow:6px 6px 0 var(--ink)}.event-editor h2{margin:.2rem 0 1rem}.event-editor .editor-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}.poster-preview{max-width:100%;max-height:220px;object-fit:contain;border:1px solid var(--ln);border-radius:10px;margin-top:.5rem}.organizer-picker{border:1px solid var(--ln);border-radius:10px;padding:.65rem;background:var(--card)}.organizer-picker summary{cursor:pointer;font-weight:700}.organizer-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:.45rem;margin-top:.65rem;max-height:220px;overflow:auto}.organizer-options label{display:flex;align-items:center;gap:.45rem;font-weight:500}.organizer-options input{width:auto;margin:0}
 .badge{display:inline-block;font-size:.8rem;font-weight:600;border-radius:99px;padding:.1rem .7rem;background:var(--mint);color:#06281d;margin-bottom:.4rem}
 .tent .badge{background:var(--yl);color:#1d1b4f}
 .meta{margin:.2rem 0 0;color:var(--mut)}
@@ -248,7 +248,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <label>Nombre del plan<input name="title" required maxlength="140" placeholder="¿Qué vamos a hacer?"></label>
 <label>Descripción<textarea name="description" rows="2" placeholder="Detalles, propuesta, horario…"></textarea></label>
 <div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160" placeholder="Dónde sería"></label>
-<label>Enlace de ubicación (opcional)<input name="map_url" type="url" placeholder="https://maps.app.goo.gl/…"></label><label>Cartel del evento (opcional)<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPG o WEBP · máximo 8 MB. La imagen se sube al almacenamiento de Supabase.</small></label>
+<label>Enlace de ubicación (opcional)<input name="map_url" type="url" placeholder="https://maps.app.goo.gl/…"></label><label>Organizadores <small>El creador queda incluido automáticamente. Puedes añadir más.</small><details class="organizer-picker"><summary>Seleccionar organizadores</summary><div id="eventOrganizers" class="organizer-options"></div></details></label><label>Cartel del evento (opcional)<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPG o WEBP · máximo 8 MB. La imagen se sube al almacenamiento de Supabase.</small></label>
 <button class="btn" type="submit">Enviar propuesta</button><p class="form-msg" id="eventMsg" aria-live="polite"></p>
 <p class="form-msg">La propuesta quedará pendiente de aprobación por administración.</p>
 </form></div>
@@ -666,15 +666,19 @@ showTab(location.hash.slice(1));
  async function openEventEditor(id){
    let row;try{row=await fetchEventForEdit(id)}catch(err){alert('No se puede abrir el plan: '+err.message);return}
    closeEventEditor();const wrap=document.createElement('div');wrap.id='eventEditorBackdrop';wrap.className='event-editor-backdrop';
-   wrap.innerHTML='<section class="event-editor" role="dialog" aria-modal="true" aria-labelledby="eventEditorTitle"><h2 id="eventEditorTitle">✏️ Editar plan</h2><form id="eventEditorForm" class="feature-form"><label>Título<input name="title" required maxlength="140"></label><label>Descripción<textarea name="description" rows="3"></textarea></label><div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160"></label><label>Enlace de ubicación<input name="map_url" type="url" placeholder="https://…"></label><label>Cartel del evento<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>JPG, PNG o WEBP · máximo 8 MB.</small></label><div id="eventPosterCurrent"></div><label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" name="remove_poster" style="width:auto"> Quitar el cartel actual</label><div class="editor-actions"><button class="btn" type="submit">💾 Guardar cambios</button><button class="btn secondary" type="button" id="eventEditorCancel">Cancelar</button></div><p class="form-msg" id="eventEditorMsg" aria-live="polite"></p></form></section>';
+   wrap.innerHTML='<section class="event-editor" role="dialog" aria-modal="true" aria-labelledby="eventEditorTitle"><h2 id="eventEditorTitle">✏️ Editar plan</h2><form id="eventEditorForm" class="feature-form"><label>Título<input name="title" required maxlength="140"></label><label>Descripción<textarea name="description" rows="3"></textarea></label><div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160"></label><label>Enlace de ubicación<input name="map_url" type="url" placeholder="https://…"></label><label>Organizadores <small>El creador se mantiene incluido. Puedes añadir o quitar colaboradores.</small><details class="organizer-picker"><summary>Seleccionar organizadores</summary><div id="editEventOrganizers" class="organizer-options"></div></details></label><label>Cartel del evento<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>JPG, PNG o WEBP · máximo 8 MB.</small></label><div id="eventPosterCurrent"></div><label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" name="remove_poster" style="width:auto"> Quitar el cartel actual</label><div class="editor-actions"><button class="btn" type="submit">💾 Guardar cambios</button><button class="btn secondary" type="button" id="eventEditorCancel">Cancelar</button></div><p class="form-msg" id="eventEditorMsg" aria-live="polite"></p></form></section>';
    document.body.append(wrap);const f=$id('eventEditorForm');['title','description','event_date','event_time','place','map_url'].forEach(k=>{if(f.elements[k])f.elements[k].value=row[k]||''});
+   try{const {data:links,error}=await client.from('event_organizers').select('member_id').eq('event_id',id);if(error)throw error;await loadActiveOrganizerMembers($id('editEventOrganizers'),(links||[]).map(x=>x.member_id));}catch(err){$id('eventEditorMsg').textContent='No se pudieron cargar los organizadores: '+err.message;}
    $id('eventPosterCurrent').innerHTML=row.poster_url?'<img class="poster-preview" src="'+esc(row.poster_url)+'" alt="Cartel actual"><small>Cartel actual</small>':'';
    $id('eventEditorCancel').onclick=closeEventEditor;wrap.addEventListener('click',e=>{if(e.target===wrap)closeEventEditor()});
    f.onsubmit=async ev=>{ev.preventDefault();const btn=f.querySelector('button[type="submit"]'),msg=$id('eventEditorMsg'),fd=new FormData(f);btn.disabled=true;msg.textContent='Guardando…';
      try{const latest=await fetchEventForEdit(id);const patch={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,event_time:fd.get('event_time')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,updated_at:new Date().toISOString()};
        const file=fd.get('poster_file');if(file&&file.size)patch.poster_url=await uploadEventPoster(file);else if(fd.get('remove_poster'))patch.poster_url=null;
        const {error}=await client.from('group_events').update(patch).eq('id',id);if(error)throw error;
-       closeEventEditor();await loadEventsFromDatabase();alert('Plan actualizado correctamente.');
+       const organizerSelect=$id('editEventOrganizers');const {creator}=await loadActiveOrganizerMembers(organizerSelect,selectedOrganizerIds(organizerSelect));
+       if(!creator)throw new Error('No se encuentra el miembro creador del plan.');
+       await saveEventOrganizers(id,[...new Set([...selectedOrganizerIds(organizerSelect),creator.id])]);
+       closeEventEditor();await loadEventsFromDatabase();await renderOrganizerRanking();alert('Plan actualizado correctamente.');
      }catch(err){msg.textContent='No se pudieron guardar los cambios: '+err.message;btn.disabled=false;}
    };
  }
@@ -684,12 +688,32 @@ showTab(location.hash.slice(1));
    const {error}=await client.from('group_events').delete().eq('id',id);if(error){alert('No se pudo eliminar el plan: '+error.message);return;}
    await loadEventsFromDatabase();await renderOrganizerRanking();alert('Plan eliminado.');
  }
+ async function loadActiveOrganizerMembers(container, selectedIds=[]){
+   const {data,error}=await client.from('group_members').select('id,display_name,auth_user_id').eq('is_active',true).order('display_name');
+   if(error)throw error;
+   const members=data||[];const creator=members.find(m=>m.auth_user_id===currentAuthUser?.id);
+   const selected=new Set(selectedIds);if(creator)selected.add(creator.id);
+   container.innerHTML=members.map(m=>'<label><input type="checkbox" value="'+esc(m.id)+'" '+(selected.has(m.id)?'checked ':'')+(creator?.id===m.id?'disabled ':'')+'><span>'+esc(m.display_name)+(creator?.id===m.id?' (creador)':'')+'</span></label>').join('');
+   return {members,creator};
+ }
+ function selectedOrganizerIds(container){return [...container.querySelectorAll('input[type="checkbox"]:checked')].map(o=>o.value);}
+ async function saveEventOrganizers(eventId, ids){
+   const {error:delError}=await client.from('event_organizers').delete().eq('event_id',eventId);
+   if(delError)throw delError;
+   if(ids.length){const {error}=await client.from('event_organizers').insert(ids.map(member_id=>({event_id:eventId,member_id})));if(error)throw error;}
+ }
  async function createEventProposal(ev){
    ev.preventDefault();const f=ev.currentTarget,fd=new FormData(f),msg=$id('eventMsg');
    const payload={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,event_time:fd.get('event_time')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,status:'draft',created_by:currentAuthUser.id};
    msg.textContent='Enviando propuesta…';const file=fd.get('poster_file');if(file&&file.size){try{payload.poster_url=await uploadEventPoster(file)}catch(err){msg.textContent='No se pudo subir el cartel: '+err.message;return}}
-   const {error}=await client.from('group_events').insert(payload);
-   if(error){msg.textContent='No se pudo enviar: '+error.message;return}
+   try{
+     const select=$id('eventOrganizers');const {creator}=await loadActiveOrganizerMembers(select,selectedOrganizerIds(select));
+     if(!creator)throw new Error('Tu usuario no está vinculado a un miembro activo del grupo.');
+     const organizerIds=[...new Set([...selectedOrganizerIds(select),creator.id])];
+     const {data:event,error}=await client.from('group_events').insert(payload).select('id').single();
+     if(error)throw error;
+     await saveEventOrganizers(event.id,organizerIds);
+   }catch(error){msg.textContent='No se pudo enviar la propuesta: '+error.message;return}
    f.reset();f.hidden=true;$id('toggleEventForm').textContent='➕ Proponer un plan';msg.textContent='¡Propuesta enviada! Queda pendiente de aprobación.';await loadEventsFromDatabase();
  }
  async function createPoll(ev){
@@ -799,7 +823,7 @@ showTab(location.hash.slice(1));
    if(t==='viajes')renderTrips();
    const group=btn.closest('details');if(group)group.open=false;
  }));
- $id('toggleEventForm').addEventListener('click',()=>{const f=$id('eventForm');f.hidden=!f.hidden;$id('toggleEventForm').textContent=f.hidden?'➕ Proponer un plan':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
+ $id('toggleEventForm').addEventListener('click',async()=>{const f=$id('eventForm');f.hidden=!f.hidden;$id('toggleEventForm').textContent=f.hidden?'➕ Proponer un plan':'✖ Cerrar formulario';if(!f.hidden){try{await loadActiveOrganizerMembers($id('eventOrganizers'),[])}catch(err){$id('eventMsg').textContent='No se pudieron cargar los organizadores: '+err.message}f.scrollIntoView({behavior:'smooth',block:'center'});}});
  $id('eventForm').addEventListener('submit',createEventProposal);
  $id('togglePollForm').addEventListener('click',()=>{const f=$id('pollForm');f.hidden=!f.hidden;$id('togglePollForm').textContent=f.hidden?'➕ Crear encuesta':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
  $id('toggleTripForm').addEventListener('click',()=>{const f=$id('tripForm');f.hidden=!f.hidden;$id('toggleTripForm').textContent=f.hidden?'➕ Crear viaje':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
