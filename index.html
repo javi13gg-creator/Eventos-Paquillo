@@ -200,6 +200,21 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 @media(max-width:560px){.f6-bar{grid-template-columns:85px 1fr 2rem;font-size:.78rem}.f6-stat{padding:.8rem}}
 
 </style>
+<style>
+/* Fase 6.1 · confirmación de asistencia */
+.attendance-prompt{font-weight:900;align-self:center;margin-right:.25rem}
+.event-quick-actions .attendance-choice{background:var(--card);border:1px solid var(--ink);color:var(--ink)}
+.event-quick-actions .attendance-choice.is-selected{background:#dff5e5;border-color:#16834a;color:#125b35;box-shadow:inset 0 0 0 2px #16834a}
+.attendance-panel{width:100%;margin-top:.65rem;padding:.8rem;border:1px solid var(--line,#ddd);border-radius:13px;background:var(--soft,rgba(127,127,127,.06))}
+.attendance-counts{display:flex;gap:.45rem .9rem;flex-wrap:wrap;font-size:.9rem}
+.attendance-mine{margin:.55rem 0 0;font-size:.88rem}
+.attendance-details{margin-top:.55rem}.attendance-details summary{cursor:pointer;font-weight:800}
+.attendance-name-group{display:grid;grid-template-columns:minmax(105px, .35fr) 1fr;gap:.6rem;padding:.45rem 0;border-top:1px solid var(--line,#ddd);font-size:.88rem}
+.attendance-name-group:first-of-type{margin-top:.5rem}
+.attendance-stats{margin-top:1.2rem}.attendance-stat-table{overflow-x:auto;margin-top:1rem}
+.attendance-stat-table table{min-width:560px}
+@media(max-width:600px){.attendance-name-group{grid-template-columns:1fr;gap:.2rem}.attendance-counts{font-size:.82rem}}
+</style>
 </head>
 <body>
 <header class="top">
@@ -568,7 +583,7 @@ showTab(location.hash.slice(1));
    EV.forEach(e=>{if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
      const statusLabel=e.status==='completed'?'Realizado':e.status==='cancelled'?'Cancelado':e.status==='draft'?'Propuesta pendiente':'Confirmado';
      const canManage=!!e.dbId&&(currentProfile?.role==='admin'||e.createdBy===currentAuthUser?.id);
-     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+(e.photos?'<div><a class="btn secondary" href="'+esc(e.photos)+'" target="_blank" rel="noopener noreferrer">📸 Ver álbum de fotos</a></div>':'')+'<div class="event-quick-actions"><button class="btn secondary" type="button" data-attendance="'+esc(e.dbId)+'">🙋 Confirmar asistencia</button><button class="btn secondary" type="button" data-event-calendar="'+esc(e.dbId)+'">📆 Descargar .ics</button><button class="btn secondary" type="button" data-google-calendar="'+esc(e.dbId)+'">Google Calendar</button><button class="btn secondary" type="button" data-event-expenses="'+esc(e.dbId)+'">💸 Gastos del plan</button></div><div class="f6-muted" data-attendance-info="'+esc(e.dbId)+'"></div>'+(canManage?'<div class="event-manage"><button class="btn secondary" type="button" data-edit-event="'+esc(e.dbId)+'">✏️ Editar plan</button><button class="btn danger" type="button" data-delete-event="'+esc(e.dbId)+'">🗑️ Eliminar plan</button></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
+     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+(e.photos?'<div><a class="btn secondary" href="'+esc(e.photos)+'" target="_blank" rel="noopener noreferrer">📸 Ver álbum de fotos</a></div>':'')+'<div class="event-quick-actions"><span class="attendance-prompt">🙋 ¿Te apuntas?</span><button class="btn attendance-choice" type="button" data-attendance-choice="yes" data-event="'+esc(e.dbId)+'">✅ Voy</button><button class="btn attendance-choice" type="button" data-attendance-choice="maybe" data-event="'+esc(e.dbId)+'">🤔 Quizá</button><button class="btn attendance-choice" type="button" data-attendance-choice="no" data-event="'+esc(e.dbId)+'">❌ No voy</button><button class="btn secondary" type="button" data-event-calendar="'+esc(e.dbId)+'">📆 Descargar .ics</button><button class="btn secondary" type="button" data-google-calendar="'+esc(e.dbId)+'">Google Calendar</button><button class="btn secondary" type="button" data-event-expenses="'+esc(e.dbId)+'">💸 Gastos del plan</button></div><div class="attendance-panel" data-attendance-info="'+esc(e.dbId)+'"><p class="f6-muted">Cargando respuestas…</p></div>'+(canManage?'<div class="event-manage"><button class="btn secondary" type="button" data-edit-event="'+esc(e.dbId)+'">✏️ Editar plan</button><button class="btn danger" type="button" data-delete-event="'+esc(e.dbId)+'">🗑️ Eliminar plan</button></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
    });
    $('events').innerHTML=out||'<div class="empty">Todavía no hay planes. ¡Que alguien proponga uno!</div>';
    const {data:eventPolls}=await client.from('polls').select('id,title,related_event_id').not('related_event_id','is',null);
@@ -580,7 +595,7 @@ showTab(location.hash.slice(1));
    document.querySelectorAll('[data-event-calendar]').forEach(b=>b.onclick=()=>{const e=EV.find(x=>x.dbId===b.dataset.eventCalendar);if(e)downloadEventICS(e)});
    document.querySelectorAll('[data-google-calendar]').forEach(b=>b.onclick=()=>{const e=EV.find(x=>x.dbId===b.dataset.googleCalendar);if(e)openGoogleCalendar(e)});
    document.querySelectorAll('[data-event-expenses]').forEach(b=>b.onclick=()=>{showTab('gastos');renderFinance(b.dataset.eventExpenses)});
-   document.querySelectorAll('[data-attendance]').forEach(b=>b.onclick=()=>setAttendance(b.dataset.attendance));
+   document.querySelectorAll('[data-attendance-choice]').forEach(b=>b.onclick=()=>setAttendance(b.dataset.event,b.dataset.attendanceChoice));
    renderAttendanceCounts();
    const upcoming=EV.filter(e=>e.d.length&&e.status!=='cancelled').map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
    if(upcoming){const n=Math.round((upcoming.t-today)/864e5);$('count').textContent=n===0?'¡Hoy es '+upcoming.e.t+'!':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para '+upcoming.e.t;$('count').onclick=()=>go(upcoming.e.id);}
@@ -595,16 +610,29 @@ showTab(location.hash.slice(1));
  }
  async function renderOrganizerRanking(){
    const target=$id('organizerRanking');target.innerHTML='<div class="empty">Calculando puntos…</div>';
-   const [{data:yearRows,error:yErr},{data:allRows,error:aErr}]=await Promise.all([client.from('organizer_yearly_stats').select('event_year,display_name,completed_events').order('event_year',{ascending:false}).order('completed_events',{ascending:false}),client.from('organizer_all_time_stats').select('display_name,completed_events').order('completed_events',{ascending:false})]);
-   if(yErr||aErr){target.innerHTML='<div class="empty">No se pudo cargar el TOP. '+esc((yErr||aErr).message)+'</div>';return}
-   const years=[...new Set((yearRows||[]).map(x=>x.event_year))];
-   let html='<h3>Clasificación general</h3><ol>'+((allRows||[]).map(x=>'<li><b>'+esc(x.display_name)+'</b> — '+x.completed_events+' '+(x.completed_events===1?'plan':'planes')+'</li>').join('')||'<li>Aún no hay planes completados.</li>')+'</ol>';
-   years.forEach(y=>{html+='<h3 style="margin:1.5rem 0 .5rem">'+y+'</h3><ol>'+yearRows.filter(x=>x.event_year===y).map(x=>'<li><b>'+esc(x.display_name)+'</b> — '+x.completed_events+' '+(x.completed_events===1?'plan':'planes')+'</li>').join('')+'</ol>'});
-   const max=Math.max(1,...(allRows||[]).map(x=>Number(x.completed_events)||0));
-   html+='<div class="f6-card"><h3>📊 Actividad del grupo</h3><p class="f6-muted">Planes completados por organizador · clasificación general</p><div class="f6-chart">'+((allRows||[]).map(x=>'<div class="f6-bar"><b>'+esc(x.display_name)+'</b><span class="f6-track"><i style="width:'+Math.max(2,Number(x.completed_events)/max*100)+'%"></i></span><strong>'+Number(x.completed_events)+'</strong></div>').join('')||'<p>Sin datos todavía.</p>')+'</div></div>';
-   const totalPlans=Math.max(0,...(allRows||[]).map(x=>Number(x.completed_events)||0));
-   html='<div class="f6-grid"><div class="f6-stat"><small>MIEMBROS EN EL TOP</small><b>'+(allRows||[]).length+'</b></div><div class="f6-stat"><small>PLANES DEL LÍDER</small><b>'+totalPlans+'</b></div><div class="f6-stat"><small>AÑOS CON REGISTRO</small><b>'+years.length+'</b></div></div>'+html;
-   target.innerHTML=html;
+   try{
+     const [{data:yearRows,error:yErr},{data:allRows,error:aErr},{data:attendance,error:attErr},members]=await Promise.all([
+       client.from('organizer_yearly_stats').select('event_year,display_name,completed_events').order('event_year',{ascending:false}).order('completed_events',{ascending:false}),
+       client.from('organizer_all_time_stats').select('display_name,completed_events').order('completed_events',{ascending:false}),
+       client.from('event_attendance').select('event_id,member_id,status'),getActiveMembers()
+     ]);
+     if(yErr||aErr||attErr)throw (yErr||aErr||attErr);
+     const years=[...new Set((yearRows||[]).map(x=>x.event_year))];
+     let html='<h3>Clasificación general de organizadores</h3><ol>'+((allRows||[]).map(x=>'<li><b>'+esc(x.display_name)+'</b> — '+x.completed_events+' '+(x.completed_events===1?'plan':'planes')+'</li>').join('')||'<li>Aún no hay planes completados.</li>')+'</ol>';
+     years.forEach(y=>{html+='<h3 style="margin:1.5rem 0 .5rem">'+y+'</h3><ol>'+yearRows.filter(x=>x.event_year===y).map(x=>'<li><b>'+esc(x.display_name)+'</b> — '+x.completed_events+' '+(x.completed_events===1?'plan':'planes')+'</li>').join('')+'</ol>'});
+     const max=Math.max(1,...(allRows||[]).map(x=>Number(x.completed_events)||0));
+     html+='<div class="f6-card"><h3>📊 Actividad del grupo</h3><p class="f6-muted">Planes completados por organizador</p><div class="f6-chart">'+((allRows||[]).map(x=>'<div class="f6-bar"><b>'+esc(x.display_name)+'</b><span class="f6-track"><i style="width:'+Math.max(2,Number(x.completed_events)/max*100)+'%"></i></span><strong>'+Number(x.completed_events)+'</strong></div>').join('')||'<p>Sin datos todavía.</p>')+'</div></div>';
+     const completedIds=new Set(EV.filter(e=>e.status==='completed').map(e=>e.dbId));
+     const stats=members.map(m=>{const rows=(attendance||[]).filter(r=>r.member_id===m.id);const yes=rows.filter(r=>r.status==='yes').length,maybe=rows.filter(r=>r.status==='maybe').length,no=rows.filter(r=>r.status==='no').length;const completedYes=rows.filter(r=>r.status==='yes'&&completedIds.has(r.event_id)).length;const completedResponses=rows.filter(r=>completedIds.has(r.event_id)).length;return {...m,yes,maybe,no,completedYes,completedResponses};}).sort((a,b)=>b.completedYes-a.completedYes||b.yes-a.yes||a.display_name.localeCompare(b.display_name,'es'));
+     const maxAttend=Math.max(1,...stats.map(x=>x.completedYes));
+     html+='<section class="f6-card attendance-stats"><h3>🙋 Ranking de participación</h3><p class="f6-muted">Respuestas «Voy» en planes marcados como realizados. Es una confirmación, no un control de presencia física.</p>';
+     html+='<div class="f6-grid"><div class="f6-stat"><small>MIEMBROS CON RESPUESTAS</small><b>'+stats.filter(x=>x.yes+x.maybe+x.no>0).length+'</b></div><div class="f6-stat"><small>PLANES REALIZADOS</small><b>'+completedIds.size+'</b></div><div class="f6-stat"><small>CONFIRMACIONES «VOY»</small><b>'+stats.reduce((n,x)=>n+x.completedYes,0)+'</b></div></div>';
+     html+='<div class="f6-chart">'+(stats.map((x,i)=>'<div class="f6-bar attendance-stat-row"><b>'+(i===0&&x.completedYes>0?'🏆 ':'')+esc(x.display_name)+'</b><span class="f6-track"><i style="width:'+Math.max(x.completedYes?3:0,x.completedYes/maxAttend*100)+'%"></i></span><strong>'+x.completedYes+'</strong></div>').join('')||'<p>No hay miembros activos.</p>')+'</div>';
+     html+='<div class="attendance-stat-table"><table class="admin-table"><thead><tr><th>Miembro</th><th>Voy</th><th>Quizá</th><th>No voy</th><th>Voy en realizados</th></tr></thead><tbody>'+stats.map(x=>'<tr><td>'+esc(x.display_name)+'</td><td>'+x.yes+'</td><td>'+x.maybe+'</td><td>'+x.no+'</td><td><b>'+x.completedYes+'</b></td></tr>').join('')+'</tbody></table></div></section>';
+     const leader=(allRows||[]).reduce((n,x)=>n+Number(x.completed_events||0),0);
+     html='<div class="f6-grid"><div class="f6-stat"><small>MIEMBROS EN EL TOP</small><b>'+(allRows||[]).length+'</b></div><div class="f6-stat"><small>PLANES DEL LÍDER</small><b>'+max+'</b></div><div class="f6-stat"><small>AÑOS CON REGISTRO</small><b>'+years.length+'</b></div></div>'+html;
+     target.innerHTML=html;
+   }catch(e){target.innerHTML='<div class="empty">No se pudieron cargar las estadísticas: '+esc(e.message)+'</div>';}
  }
 
  function canManagePoll(poll){return !!currentAuthUser&&(currentProfile?.role==='admin'||poll?.created_by===currentAuthUser.id);}
@@ -876,7 +904,7 @@ showTab(location.hash.slice(1));
  document.body.append(admin);
  $id('adminBack').onclick=()=>{admin.hidden=true;document.body.classList.remove('admin-mode');const t=$id('adminToggle');if(t)t.textContent='⚙️ Administración';history.replaceState(null,'',location.pathname+location.search);window.scrollTo({top:0,behavior:'instant'});};
 
- // ================= FASE 6 =================
+ // ================= FASE 6 + 6.1 · ASISTENCIA COMPLETA =================
  let activeMembersCache=[];
  async function getActiveMembers(){if(activeMembersCache.length)return activeMembersCache;const {data,error}=await client.from('group_members').select('id,display_name,auth_user_id').eq('is_active',true).order('display_name');if(error)throw error;activeMembersCache=data||[];return activeMembersCache;}
  function downloadTextFile(name,text,mime='text/calendar;charset=utf-8'){const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -886,8 +914,45 @@ showTab(location.hash.slice(1));
  function openGoogleCalendar(e){if(!e.d?.length){alert('Este plan todavía no tiene fecha.');return;}const start=icsDate(e.d[0],e.time);let end='';if(e.time){const d=new Date(e.d[0]+'T'+String(e.time).slice(0,5)+':00');d.setHours(d.getHours()+2);end=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';}else{const d=new Date(e.d[0]+'T12:00:00');d.setDate(d.getDate()+1);end=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}const dates=e.time?start+'/'+end:start+'/'+end;const url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.t)+'&dates='+dates+'&details='+encodeURIComponent(e.desc||'')+'&location='+encodeURIComponent(e.where||'');window.open(url,'_blank','noopener');}
  function downloadEventICS(e){const item=eventICS(e);if(!item){alert('Este plan todavía no tiene fecha.');return;}downloadTextFile('paquillo-'+(e.t||'plan').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.ics','BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Paquillo Events//ES\r\nCALSCALE:GREGORIAN\r\n'+item+'\r\nEND:VCALENDAR\r\n');}
  $id('exportAllCalendar').onclick=()=>{const items=EV.filter(e=>e.d?.length&&e.status!=='cancelled').map(eventICS).filter(Boolean);if(!items.length){alert('No hay planes con fecha para exportar.');return;}downloadTextFile('paquillo-events.ics','BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Paquillo Events//ES\r\nCALSCALE:GREGORIAN\r\n'+items.join('\r\n')+'\r\nEND:VCALENDAR\r\n');};
- async function setAttendance(eventId){try{const member=(await getActiveMembers()).find(m=>m.auth_user_id===currentAuthUser.id);if(!member)throw new Error('Tu cuenta no está vinculada a un miembro.');const current=await client.from('event_attendance').select('status').eq('event_id',eventId).eq('member_id',member.id).maybeSingle();const next=current.data?.status==='yes'?'maybe':current.data?.status==='maybe'?'no':'yes';const {error}=await client.from('event_attendance').upsert({event_id:eventId,member_id:member.id,status:next,updated_at:new Date().toISOString()},{onConflict:'event_id,member_id'});if(error)throw error;const labels={yes:'¡Has confirmado que vas!',maybe:'Te has marcado como quizá.',no:'Has indicado que no vas.'};alert(labels[next]);renderAttendanceCounts();}catch(err){alert('No se pudo guardar la asistencia: '+err.message);}}
- async function renderAttendanceCounts(){try{const ids=EV.map(e=>e.dbId).filter(Boolean);if(!ids.length)return;const {data,error}=await client.from('event_attendance').select('event_id,status').in('event_id',ids);if(error)throw error;ids.forEach(id=>{const slot=document.querySelector('[data-attendance-info="'+id+'"]');if(!slot)return;const rows=(data||[]).filter(x=>x.event_id===id);slot.textContent='🙋 '+rows.filter(x=>x.status==='yes').length+' van · '+rows.filter(x=>x.status==='maybe').length+' quizá · '+rows.filter(x=>x.status==='no').length+' no van';});}catch(e){console.warn('Asistencia:',e.message)}}
+ async function setAttendance(eventId,status){
+   try{
+     if(!['yes','maybe','no'].includes(status))throw new Error('Respuesta no válida.');
+     const member=(await getActiveMembers()).find(m=>m.auth_user_id===currentAuthUser.id);
+     if(!member)throw new Error('Tu cuenta no está vinculada a un miembro activo.');
+     const {error}=await client.from('event_attendance').upsert({event_id:eventId,member_id:member.id,status,updated_at:new Date().toISOString()},{onConflict:'event_id,member_id'});
+     if(error)throw error;
+     await renderAttendanceCounts();
+     const slot=document.querySelector('[data-attendance-info="'+eventId+'"]');
+     if(slot){slot.scrollIntoView({behavior:'smooth',block:'nearest'});}
+   }catch(err){alert('No se pudo guardar la asistencia: '+err.message);}
+ }
+ async function renderAttendanceCounts(){
+   try{
+     const ids=EV.map(e=>e.dbId).filter(Boolean);if(!ids.length)return;
+     const [attendance,members]=await Promise.all([
+       client.from('event_attendance').select('event_id,member_id,status').in('event_id',ids),getActiveMembers()
+     ]);
+     if(attendance.error)throw attendance.error;
+     const memberById=new Map(members.map(m=>[m.id,m]));
+     const currentMember=members.find(m=>m.auth_user_id===currentAuthUser?.id);
+     ids.forEach(id=>{
+       const slot=document.querySelector('[data-attendance-info="'+id+'"]');if(!slot)return;
+       const rows=(attendance.data||[]).filter(x=>x.event_id===id&&memberById.has(x.member_id));
+       const byStatus={yes:[],maybe:[],no:[]};rows.forEach(r=>byStatus[r.status]?.push(memberById.get(r.member_id).display_name));
+       const answered=new Set(rows.map(r=>r.member_id));
+       const pending=members.filter(m=>!answered.has(m.id)).map(m=>m.display_name);
+       const mine=rows.find(r=>r.member_id===currentMember?.id)?.status||'';
+       const label={yes:'Voy',maybe:'Quizá',no:'No voy'};
+       const count=(k)=>byStatus[k].length;
+       const list=(title,items,emoji)=>'<div class="attendance-name-group"><b>'+emoji+' '+title+' ('+items.length+')</b><span>'+ (items.length?items.map(esc).join(' · '):'<span class="f6-muted">Nadie todavía</span>')+'</span></div>';
+       slot.innerHTML='<div class="attendance-counts"><span>✅ <b>'+count('yes')+'</b> van</span><span>🤔 <b>'+count('maybe')+'</b> quizá</span><span>❌ <b>'+count('no')+'</b> no van</span><span>⏳ <b>'+pending.length+'</b> sin responder</span></div>'+
+         '<p class="attendance-mine">'+(mine?'Tu respuesta: <b>'+label[mine]+'</b>':'Todavía no has respondido')+'</p>'+
+         '<details class="attendance-details"><summary>Ver quién va, quién no y quién falta</summary>'+list('Van',byStatus.yes,'✅')+list('Quizá',byStatus.maybe,'🤔')+list('No van',byStatus.no,'❌')+list('Sin responder',pending,'⏳')+'</details>';
+       slot.querySelectorAll('.attendance-choice').forEach(()=>{});
+       const card=slot.closest('.ev-card');if(card)card.querySelectorAll('[data-attendance-choice]').forEach(btn=>{const active=btn.dataset.attendanceChoice===mine;btn.classList.toggle('is-selected',active);btn.setAttribute('aria-pressed',active?'true':'false');});
+     });
+   }catch(e){console.warn('Asistencia:',e.message);document.querySelectorAll('[data-attendance-info]').forEach(slot=>slot.innerHTML='<p class="f6-muted">No se pudieron cargar las respuestas.</p>');}
+ }
  async function renderFinance(selectedEvent=null){try{const [members,events]=await Promise.all([getActiveMembers(),client.from('group_events').select('id,title,event_date').order('event_date',{ascending:false})]);const evs=events.data||[];$id('expenseEvent').innerHTML='<option value="">Selecciona un plan</option>'+evs.map(e=>'<option value="'+e.id+'">'+esc(e.title)+' · '+esc(e.event_date||'sin fecha')+'</option>').join('');if(selectedEvent)$id('expenseEvent').value=selectedEvent;$id('expensePayer').innerHTML=members.map(m=>'<option value="'+m.id+'" '+(m.auth_user_id===currentAuthUser.id?'selected':'')+'>'+esc(m.display_name)+'</option>').join('');$id('expenseParticipants').innerHTML=members.map(m=>'<option value="'+m.id+'" selected>'+esc(m.display_name)+'</option>').join('');await loadEventExpenses();await loadFund();}catch(e){$id('expenseSummary').innerHTML='<p class="form-msg">No se pudo cargar: '+esc(e.message)+'</p>';}}
  function settlementHtml(balance){const debtors=balance.filter(x=>x.v<-.009).map(x=>({name:x.name,v:-x.v})),creditors=balance.filter(x=>x.v>.009).map(x=>({name:x.name,v:x.v}));const transfers=[];let i=0,j=0;while(i<debtors.length&&j<creditors.length){const amount=Math.min(debtors[i].v,creditors[j].v);if(amount>.009)transfers.push('<div class="f6-item"><span>👉 <b>'+esc(debtors[i].name)+'</b> paga a <b>'+esc(creditors[j].name)+'</b></span><strong>'+amount.toFixed(2)+' €</strong></div>');debtors[i].v-=amount;creditors[j].v-=amount;if(debtors[i].v<.009)i++;if(creditors[j].v<.009)j++;}return '<h4>🤝 Propuesta para saldar cuentas</h4><div class="f6-list">'+(transfers.join('')||'<p class="f6-muted">Todo está saldado.</p>')+'</div><p class="f6-muted">Es una propuesta de compensación calculada a partir de los gastos registrados; no realiza pagos.</p>';}
  async function loadEventExpenses(){const id=$id('expenseEvent').value;if(!id){$id('expenseSummary').innerHTML='<p class="f6-muted">Selecciona un plan para consultar su balance.</p>';return;}const {data,error}=await client.from('event_expenses').select('id,description,amount,paid_by,created_at,group_members:group_members!event_expenses_paid_by_fkey(display_name),event_expense_splits(member_id,share_amount,group_members(display_name))').eq('event_id',id).order('created_at',{ascending:false});if(error){$id('expenseSummary').innerHTML='<p class="form-msg">'+esc(error.message)+'</p>';return;}const totals={};(data||[]).forEach(x=>{const payer=x.paid_by;totals[payer]=(totals[payer]||0)+Number(x.amount);(x.event_expense_splits||[]).forEach(sp=>{totals[sp.member_id]=(totals[sp.member_id]||0)-Number(sp.share_amount);});});const names=await getActiveMembers();const balance=Object.entries(totals).map(([id,v])=>({name:names.find(m=>m.id===id)?.display_name||'Miembro',v}));$id('expenseSummary').innerHTML='<h4>Movimientos</h4><div class="f6-list">'+((data||[]).map(x=>'<div class="f6-item"><span><b>'+esc(x.description)+'</b><br><small>Pagó '+esc(x.group_members?.display_name||'—')+' · '+(x.event_expense_splits||[]).length+' participantes</small></span><b>'+Number(x.amount).toFixed(2)+' €</b></div>').join('')||'<p class="f6-muted">Todavía no hay gastos para este plan.</p>')+'</div><h4>Balance por persona</h4>'+balance.map(b=>'<div class="f6-item"><span>'+esc(b.name)+'</span><b class="'+(b.v>=0?'f6-positive':'f6-negative')+'">'+(b.v>0?'+':'')+b.v.toFixed(2)+' €</b></div>').join('')+settlementHtml(balance);}
