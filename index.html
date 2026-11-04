@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Paquillo Events 2.0 · Fase 5</title>
+<title>Paquillo Events 2.0 · Fase 5.1</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -53,7 +53,7 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .ev-card.tent{border-left-color:var(--yl)}
 .ev-card.flash{animation:fl 1.6s}
 @keyframes fl{0%,60%{box-shadow:0 0 0 6px var(--pk)}100%{box-shadow:0 0 0 0 transparent}}
-.ev-card h3{font-size:1.45rem;font-weight:800}
+.ev-card h3{font-size:1.45rem;font-weight:800}.event-manage{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem}.btn.secondary{background:var(--card);color:var(--ink)}.btn.danger{background:#b42342;color:#fff}.event-editor-backdrop{position:fixed;inset:0;background:#100d2dcc;z-index:100;display:grid;place-items:center;padding:1rem}.event-editor{width:min(100%,620px);max-height:92dvh;overflow:auto;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:16px;padding:1rem;box-shadow:6px 6px 0 var(--ink)}.event-editor h2{margin:.2rem 0 1rem}.event-editor .editor-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}.poster-preview{max-width:100%;max-height:220px;object-fit:contain;border:1px solid var(--ln);border-radius:10px;margin-top:.5rem}
 .badge{display:inline-block;font-size:.8rem;font-weight:600;border-radius:99px;padding:.1rem .7rem;background:var(--mint);color:#06281d;margin-bottom:.4rem}
 .tent .badge{background:var(--yl);color:#1d1b4f}
 .meta{margin:.2rem 0 0;color:var(--mut)}
@@ -247,8 +247,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <form id="eventForm" class="feature-form" hidden>
 <label>Nombre del plan<input name="title" required maxlength="140" placeholder="¿Qué vamos a hacer?"></label>
 <label>Descripción<textarea name="description" rows="2" placeholder="Detalles, propuesta, horario…"></textarea></label>
-<div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Lugar<input name="place" maxlength="160" placeholder="Dónde sería"></label></div>
-<label>Enlace de ubicación (opcional)<input name="map_url" type="url" placeholder="https://maps.app.goo.gl/…"></label>
+<div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160" placeholder="Dónde sería"></label>
+<label>Enlace de ubicación (opcional)<input name="map_url" type="url" placeholder="https://maps.app.goo.gl/…"></label><label>Cartel del evento (opcional)<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPG o WEBP · máximo 8 MB. La imagen se sube al almacenamiento de Supabase.</small></label>
 <button class="btn" type="submit">Enviar propuesta</button><p class="form-msg" id="eventMsg" aria-live="polite"></p>
 <p class="form-msg">La propuesta quedará pendiente de aprobación por administración.</p>
 </form></div>
@@ -532,21 +532,24 @@ showTab(location.hash.slice(1));
  let currentAuthUser=null;
  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  async function loadEventsFromDatabase(){
-   const {data:events,error}=await client.from('group_events').select('id,source_key,title,description,event_date,place,map_url,poster_url,status').order('event_date',{ascending:true,nullsFirst:false});
+   const {data:events,error}=await client.from('group_events').select('id,source_key,title,description,event_date,event_time,place,map_url,poster_url,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
    if(error)throw error;
    const {data:links, error:orgError}=await client.from('event_organizers').select('event_id,group_members(display_name)');
    if(orgError)throw orgError;
    const byEvent={};(links||[]).forEach(x=>{const n=x.group_members?.display_name;if(n)(byEvent[x.event_id]??=[]).push(n)});
-   EV=(events||[]).map(row=>({dbId:row.id,id:row.source_key||row.id,e:'',t:row.title,y:row.event_date?Number(row.event_date.slice(0,4)):new Date().getFullYear(),by:(byEvent[row.id]||[]).join(' y ')||'Por determinar',d:row.event_date?[row.event_date]:[],ok:row.status!=='draft'&&row.status!=='cancelled',status:row.status,when:row.event_date?new Date(row.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar',where:row.place||'Por determinar',map:row.map_url||'',desc:row.description||'',poster:row.poster_url||''}));
+   EV=(events||[]).map(row=>({dbId:row.id,id:row.source_key||row.id,e:'',t:row.title,y:row.event_date?Number(row.event_date.slice(0,4)):new Date().getFullYear(),by:(byEvent[row.id]||[]).join(' y ')||'Por determinar',d:row.event_date?[row.event_date]:[],ok:row.status!=='draft'&&row.status!=='cancelled',status:row.status,when:(row.event_date?new Date(row.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar')+(row.event_time?' · '+String(row.event_time).slice(0,5):''),where:row.place||'Por determinar',map:row.map_url||'',desc:row.description||'',poster:row.poster_url||'',createdBy:row.created_by||''}));
    Object.keys(byDay).forEach(k=>delete byDay[k]);EV.forEach(e=>{if(e.status!=='cancelled')e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e))});
    let out='',yr=0;
    EV.forEach(e=>{if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
      const statusLabel=e.status==='completed'?'Realizado':e.status==='cancelled'?'Cancelado':e.status==='draft'?'Propuesta pendiente':'Confirmado';
-     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
+     const canManage=!!e.dbId&&(currentProfile?.role==='admin'||e.createdBy===currentAuthUser?.id);
+     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+(canManage?'<div class="event-manage"><button class="btn secondary" type="button" data-edit-event="'+esc(e.dbId)+'">✏️ Editar plan</button><button class="btn danger" type="button" data-delete-event="'+esc(e.dbId)+'">🗑️ Eliminar plan</button></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
    });
    $('events').innerHTML=out||'<div class="empty">Todavía no hay planes. ¡Que alguien proponga uno!</div>';
    const {data:eventPolls}=await client.from('polls').select('id,title,related_event_id').not('related_event_id','is',null);
    (eventPolls||[]).forEach(p=>{const slot=document.querySelector('[data-event-poll-link="'+p.related_event_id+'"]');if(slot)slot.innerHTML='<button class="btn" type="button" data-open-poll="'+p.id+'">🗳️ Ir a encuesta: '+esc(p.title)+'</button>';});
+   document.querySelectorAll('[data-edit-event]').forEach(b=>b.onclick=()=>openEventEditor(b.dataset.editEvent));
+   document.querySelectorAll('[data-delete-event]').forEach(b=>b.onclick=()=>deleteEvent(b.dataset.deleteEvent));
    document.querySelectorAll('[data-create-event-poll]').forEach(b=>b.onclick=()=>openPollCreator({eventId:b.dataset.createEventPoll,title:b.closest('.ev-card').querySelector('h3').textContent}));
    document.querySelectorAll('[data-open-poll]').forEach(b=>b.onclick=()=>openPollById(b.dataset.openPoll));
    const upcoming=EV.filter(e=>e.d.length&&e.status!=='cancelled').map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
@@ -603,10 +606,46 @@ showTab(location.hash.slice(1));
      await renderPolls();alert('¡Voto registrado! Puedes cambiarlo mientras la encuesta siga abierta.');
    });
  }
+ const EVENT_POSTER_BUCKET='event-posters';
+ function canManageEvent(row){return currentProfile?.role==='admin'||row?.created_by===currentAuthUser?.id;}
+ async function uploadEventPoster(file){
+   if(!file||!file.size)return null;
+   if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Formato no válido. Usa JPG, PNG o WEBP.');
+   if(file.size>8*1024*1024)throw new Error('La imagen supera los 8 MB.');
+   const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+   const path=currentAuthUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
+   const {error}=await client.storage.from(EVENT_POSTER_BUCKET).upload(path,file,{contentType:file.type,upsert:false});
+   if(error)throw error;
+   return client.storage.from(EVENT_POSTER_BUCKET).getPublicUrl(path).data.publicUrl;
+ }
+ async function fetchEventForEdit(id){const {data,error}=await client.from('group_events').select('id,title,description,event_date,event_time,place,map_url,poster_url,status,created_by').eq('id',id).single();if(error)throw error;if(!canManageEvent(data))throw new Error('Solo el creador del plan o un administrador pueden modificarlo.');return data;}
+ function closeEventEditor(){const modal=$id('eventEditorBackdrop');if(modal)modal.remove();}
+ async function openEventEditor(id){
+   let row;try{row=await fetchEventForEdit(id)}catch(err){alert('No se puede abrir el plan: '+err.message);return}
+   closeEventEditor();const wrap=document.createElement('div');wrap.id='eventEditorBackdrop';wrap.className='event-editor-backdrop';
+   wrap.innerHTML='<section class="event-editor" role="dialog" aria-modal="true" aria-labelledby="eventEditorTitle"><h2 id="eventEditorTitle">✏️ Editar plan</h2><form id="eventEditorForm" class="feature-form"><label>Título<input name="title" required maxlength="140"></label><label>Descripción<textarea name="description" rows="3"></textarea></label><div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160"></label><label>Enlace de ubicación<input name="map_url" type="url" placeholder="https://…"></label><label>Cartel del evento<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>JPG, PNG o WEBP · máximo 8 MB.</small></label><div id="eventPosterCurrent"></div><label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" name="remove_poster" style="width:auto"> Quitar el cartel actual</label><div class="editor-actions"><button class="btn" type="submit">💾 Guardar cambios</button><button class="btn secondary" type="button" id="eventEditorCancel">Cancelar</button></div><p class="form-msg" id="eventEditorMsg" aria-live="polite"></p></form></section>';
+   document.body.append(wrap);const f=$id('eventEditorForm');['title','description','event_date','event_time','place','map_url'].forEach(k=>{if(f.elements[k])f.elements[k].value=row[k]||''});
+   $id('eventPosterCurrent').innerHTML=row.poster_url?'<img class="poster-preview" src="'+esc(row.poster_url)+'" alt="Cartel actual"><small>Cartel actual</small>':'';
+   $id('eventEditorCancel').onclick=closeEventEditor;wrap.addEventListener('click',e=>{if(e.target===wrap)closeEventEditor()});
+   f.onsubmit=async ev=>{ev.preventDefault();const btn=f.querySelector('button[type="submit"]'),msg=$id('eventEditorMsg'),fd=new FormData(f);btn.disabled=true;msg.textContent='Guardando…';
+     try{const latest=await fetchEventForEdit(id);const patch={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,event_time:fd.get('event_time')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,updated_at:new Date().toISOString()};
+       const file=fd.get('poster_file');if(file&&file.size)patch.poster_url=await uploadEventPoster(file);else if(fd.get('remove_poster'))patch.poster_url=null;
+       const {error}=await client.from('group_events').update(patch).eq('id',id);if(error)throw error;
+       closeEventEditor();await loadEventsFromDatabase();alert('Plan actualizado correctamente.');
+     }catch(err){msg.textContent='No se pudieron guardar los cambios: '+err.message;btn.disabled=false;}
+   };
+ }
+ async function deleteEvent(id){
+   let row;try{row=await fetchEventForEdit(id)}catch(err){alert('No se puede eliminar: '+err.message);return}
+   if(!confirm('¿Eliminar definitivamente «'+row.title+'»? Esta acción no se puede deshacer.'))return;
+   const {error}=await client.from('group_events').delete().eq('id',id);if(error){alert('No se pudo eliminar el plan: '+error.message);return;}
+   await loadEventsFromDatabase();await renderOrganizerRanking();alert('Plan eliminado.');
+ }
  async function createEventProposal(ev){
    ev.preventDefault();const f=ev.currentTarget,fd=new FormData(f),msg=$id('eventMsg');
-   const payload={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,status:'draft',created_by:currentAuthUser.id};
-   msg.textContent='Enviando propuesta…';const {error}=await client.from('group_events').insert(payload);
+   const payload={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,event_time:fd.get('event_time')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,status:'draft',created_by:currentAuthUser.id};
+   msg.textContent='Enviando propuesta…';const file=fd.get('poster_file');if(file&&file.size){try{payload.poster_url=await uploadEventPoster(file)}catch(err){msg.textContent='No se pudo subir el cartel: '+err.message;return}}
+   const {error}=await client.from('group_events').insert(payload);
    if(error){msg.textContent='No se pudo enviar: '+error.message;return}
    f.reset();f.hidden=true;$id('toggleEventForm').textContent='➕ Proponer un plan';msg.textContent='¡Propuesta enviada! Queda pendiente de aprobación.';await loadEventsFromDatabase();
  }
