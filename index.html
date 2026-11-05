@@ -1127,12 +1127,36 @@ showTab(location.hash.slice(1));
    if(error||!data)throw new Error('Tu usuario aún no está dado de alta. Contacta con Javi.');
    return data;
  }
+ const ACTIVITY_THROTTLE_MS=2*60*1000;
+ let activityWritePending=false;
+ async function recordUserActivity(force=false){
+   if(!currentAuthUser||activityWritePending)return;
+   const key='paqui_last_activity_'+currentAuthUser.id;
+   const now=Date.now();
+   const previous=Number(localStorage.getItem(key)||0);
+   if(!force&&now-previous<ACTIVITY_THROTTLE_MS)return;
+   localStorage.setItem(key,String(now));
+   activityWritePending=true;
+   try{
+     const {error}=await client.from('access_logs').insert({user_id:currentAuthUser.id});
+     if(error){console.error('No se pudo registrar la actividad',error);localStorage.setItem(key,String(previous));}
+   }catch(err){console.error('No se pudo registrar la actividad',err);localStorage.setItem(key,String(previous));}
+   finally{activityWritePending=false;}
+ }
+ function initUserActivityTracking(){
+   if(window.__paquiActivityTracking)return;
+   window.__paquiActivityTracking=true;
+   document.addEventListener('click',()=>recordUserActivity(),{passive:true});
+   document.addEventListener('visibilitychange',()=>{if(!document.hidden)recordUserActivity();});
+   window.addEventListener('focus',()=>recordUserActivity());
+   window.addEventListener('pageshow',()=>recordUserActivity());
+ }
  async function enter(user,profile,recordAccess=true){
    currentProfile=profile;
-   if(recordAccess){try { const {error}=await client.from('access_logs').insert({user_id:user.id}); if(error)console.error('No se pudo registrar el acceso',error); }
-   catch(err){console.error(err)}}
    localStorage.setItem(SESSION,profile.username);
    currentAuthUser=user;
+   await recordUserActivity(true);
+   initUserActivityTracking();
    addUserTools(profile.username,profile.role);
    try{await loadEventsFromDatabase();}catch(err){console.error('No se pudieron cargar los planes de Supabase',err);}
    initPaquiNewsUI();await loadPaquiNews(false);
@@ -1146,6 +1170,18 @@ showTab(location.hash.slice(1));
    if(initialTab==='pasados')renderPastEvents();
    if(initialTab==='horno')initCommunityFeatures();
  }
+ function formatActivityDate(value){
+   if(!value)return 'Sin actividad registrada';
+   const date=new Date(value),diff=Math.max(0,Date.now()-date.getTime());
+   const minutes=Math.floor(diff/60000);
+   if(minutes<2)return 'Ahora mismo';
+   if(minutes<60)return 'Hace '+minutes+' min';
+   const hours=Math.floor(minutes/60);
+   if(hours<24)return 'Hace '+hours+' h';
+   if(hours<48)return 'Ayer';
+   if(hours<24*7)return 'Hace '+Math.floor(hours/24)+' días';
+   return date.toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'});
+ }
  async function renderAdmin(){
    const target=$id('adminContent');target.innerHTML='<p>Consultando estadísticas…</p>';
    const [{data,error},{data:profiles,error:profileError}]=await Promise.all([
@@ -1155,10 +1191,10 @@ showTab(location.hash.slice(1));
    if(error||profileError){target.innerHTML='<p class="login-error">No se pudieron cargar las estadísticas. Comprueba las políticas RLS y que el perfil de Javi tenga rol admin.</p>';return}
    const usernameById=Object.fromEntries((profiles||[]).map(p=>[p.user_id,p.username]));
    const stats={};people.forEach(n=>stats[n]={count:0,last:null});
-   (data||[]).forEach(row=>{const n=usernameById[row.user_id];if(!n||!stats[n])return;stats[n].count++;if(!stats[n].last)stats[n].last=new Date(row.created_at).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'});});
+   (data||[]).forEach(row=>{const n=usernameById[row.user_id];if(!n||!stats[n])return;stats[n].count++;if(!stats[n].last)stats[n].last=formatActivityDate(row.created_at);});
    const rows=people.map(n=>'<tr><td><b>'+n+'</b></td><td>'+stats[n].count+'</td><td>'+(stats[n].last||'—')+'</td></tr>').join('');
    const total=(data||[]).length;
-   target.innerHTML='<div class="admin-top"><div><b>📊 Estadísticas globales de acceso</b><p class="admin-note">'+total+' inicios de sesión registrados entre todos los dispositivos.</p></div><button class="btn" type="button" id="refreshStats">Actualizar</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Usuario</th><th>Accesos</th><th>Último acceso</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="admin-note">Los datos se consultan en Supabase. Esta sección solo se muestra a la cuenta de Javi.</p>';
+   target.innerHTML='<div class="admin-top"><div><b>📊 Actividad de los miembros</b><p class="admin-note">'+total+' registros de actividad acumulados entre todos los dispositivos. Se registra al entrar, volver a la pestaña o interactuar, con un máximo de una escritura cada 2 minutos.</p></div><button class="btn" type="button" id="refreshStats">Actualizar</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Usuario</th><th>Registros</th><th>Última actividad</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="admin-note">Los datos se consultan en Supabase. Esta sección solo se muestra a la cuenta de Javi.</p>';
    $id('refreshStats').onclick=renderAdmin;
    const {data:events}=await client.from('group_events').select('id,title,event_date,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
    target.innerHTML+='<h3 style="margin-top:2rem">📨 Propuestas pendientes</h3>'+((events||[]).filter(ev=>ev.status==='draft').map(ev=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(ev.title)+'</b><br><small>'+esc(ev.event_date||'Fecha pendiente')+'</small></span><button class="btn approve-event-btn" type="button" data-event="'+ev.id+'">Aprobar propuesta</button></div>').join('')||'<p>No hay propuestas pendientes.</p>')+'<h3 style="margin-top:2rem">📅 Estado de los planes</h3><p class="admin-note">Marca como realizado solo cuando el evento haya ocurrido. Los confirmados y los realizados cuentan para el TOP.</p>'+((events||[]).map(ev=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(ev.title)+'</b><br><small>'+esc(ev.event_date||'Fecha pendiente')+' · '+esc(ev.status)+'</small></span><button class="btn event-status-btn" type="button" data-event="'+ev.id+'" data-status="'+(ev.status==='completed'?'planned':'completed')+'">'+(ev.status==='completed'?'Reabrir':'Marcar realizado')+'</button></div>').join('')||'<p>No hay planes.</p>');
