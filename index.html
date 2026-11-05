@@ -593,7 +593,35 @@ showTab(location.hash.slice(1));
  // Compartir por WhatsApp: abre la aplicación con un texto preparado; nunca envía mensajes automáticamente.
  function paquiShareUrl(tab='proximos'){try{const u=new URL(window.location.href);u.search='';u.hash=tab;return u.toString();}catch(_){return window.location.href;}}
  function shareWhatsAppText(text){const clean=String(text||'').trim();if(!clean)return;const a=document.createElement('a');a.href='https://wa.me/?text='+encodeURIComponent(clean);a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();}
- function eventShareText(e,reminder=false){if(!e)return '';const lines=[(reminder?'🔔 RECORDATORIO · ':'📅 ')+e.t,'📆 '+(e.when||'Fecha por decidir'),'📍 '+(e.where||'Lugar por decidir')];if(e.by)lines.push('🙋 Organiza: '+e.by);if(e.desc)lines.push('',e.desc);if(e.map)lines.push('📍 Cómo llegar: '+e.map);if(e.photos)lines.push('📸 Fotos: '+e.photos);lines.push('','Más información y confirmación de asistencia: '+paquiShareUrl('proximos'));return lines.join('\n');}
+ function eventShareText(e,reminder=false,includePosterLink=false){
+   if(!e)return '';
+   // Texto deliberadamente sin emojis: algunos clientes de WhatsApp/Windows los sustituyen por �.
+   const lines=[(reminder?'◆ RECORDATORIO · ':'◆ PLAN · ')+e.t,'◆ FECHA · '+(e.when||'Fecha por decidir'),'[LUGAR] '+(e.where||'Lugar por decidir')];
+   if(e.by)lines.push('◆ ORGANIZA · '+e.by);
+   if(e.desc)lines.push('',e.desc);
+   if(includePosterLink&&e.poster){let poster='';try{const u=new URL(String(e.poster),window.location.href);if(['http:','https:'].includes(u.protocol))poster=u.href;}catch(_){}if(poster)lines.push('','◆ CARTEL · '+poster);}
+   lines.push('','◆ INFO Y CONFIRMACION · '+paquiShareUrl('proximos'));
+   return lines.filter(Boolean).join('\n');
+ }
+ async function shareEventWhatsApp(e,reminder=false){
+   if(!e)return;
+   const text=eventShareText(e,reminder,false);let posterUrl='';try{const u=new URL(String(e.poster||''),window.location.href);if(['http:','https:'].includes(u.protocol))posterUrl=u.href;}catch(_){}
+   // En móviles/navegadores compatibles, comparte el cartel como archivo adjunto junto al texto.
+   if(posterUrl&&navigator.share&&navigator.canShare){
+     try{
+       const response=await fetch(posterUrl,{mode:'cors',credentials:'omit'});
+       if(!response.ok)throw new Error('No se pudo descargar el cartel');
+       const blob=await response.blob();
+       const mime=blob.type||'image/jpeg';
+       const ext=mime.includes('png')?'png':mime.includes('webp')?'webp':'jpg';
+       const file=new File([blob],'cartel-'+(e.id||'evento')+'.'+ext,{type:mime});
+       const payload={files:[file],title:e.t,text};
+       if(navigator.canShare({files:[file]})){await navigator.share(payload);return;}
+     }catch(err){if(err&&err.name==='AbortError')return;console.warn('Compartir cartel como archivo no disponible:',err);}
+   }
+   // Alternativa universal: WhatsApp recibe el texto y el enlace directo al cartel, nunca el enlace de Maps.
+   shareWhatsAppText(eventShareText(e,reminder,true));
+ }
  async function loadEventsFromDatabase(){
    const {data:events,error}=await client.from('group_events').select('id,source_key,title,description,event_date,event_time,place,map_url,poster_url,photos_url,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
    if(error)throw error;
@@ -611,8 +639,8 @@ showTab(location.hash.slice(1));
    $('events').innerHTML=out||'<div class="empty">Todavía no hay planes. ¡Que alguien proponga uno!</div>';
    const {data:eventPolls}=await client.from('polls').select('id,title,related_event_id').not('related_event_id','is',null);
    (eventPolls||[]).forEach(p=>{const slot=document.querySelector('[data-event-poll-link="'+p.related_event_id+'"]');if(slot)slot.innerHTML='<button class="btn" type="button" data-open-poll="'+p.id+'">🗳️ Ir a encuesta: '+esc(p.title)+'</button>';});
-   document.querySelectorAll('[data-share-event]').forEach(b=>b.onclick=()=>shareWhatsAppText(eventShareText(EV.find(x=>String(x.dbId)===b.dataset.shareEvent))));
-   document.querySelectorAll('[data-remind-event]').forEach(b=>b.onclick=()=>shareWhatsAppText(eventShareText(EV.find(x=>String(x.dbId)===b.dataset.remindEvent),true)));
+   document.querySelectorAll('[data-share-event]').forEach(b=>b.onclick=()=>shareEventWhatsApp(EV.find(x=>String(x.dbId)===b.dataset.shareEvent)));
+   document.querySelectorAll('[data-remind-event]').forEach(b=>b.onclick=()=>shareEventWhatsApp(EV.find(x=>String(x.dbId)===b.dataset.remindEvent),true));
    document.querySelectorAll('[data-edit-event]').forEach(b=>b.onclick=()=>openEventEditor(b.dataset.editEvent));
    document.querySelectorAll('[data-delete-event]').forEach(b=>b.onclick=()=>deleteEvent(b.dataset.deleteEvent));
    document.querySelectorAll('[data-create-event-poll]').forEach(b=>b.onclick=()=>openPollCreator({eventId:b.dataset.createEventPoll,title:b.closest('.ev-card').querySelector('h3').textContent}));
@@ -728,7 +756,7 @@ showTab(location.hash.slice(1));
      const date=r.event_date?new Date(r.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar';
      const status=r.status==='completed'?'Realizado':r.status==='cancelled'?'Cancelado':r.status==='draft'?'Propuesta pendiente':'Confirmado';
      body.innerHTML='<h2 id="eventDetailTitle">'+esc(r.title)+'</h2><span class="status-tag">'+status+'</span><p class="meta"><b>Cuándo:</b> '+esc(date)+(r.event_time?' · '+esc(String(r.event_time).slice(0,5)):'')+'<br><b>Dónde:</b> '+esc(r.place||'Por determinar')+'<br><b>Organizan:</b> '+esc(names(org.data||[]))+'</p>'+(r.description?'<p>'+esc(r.description)+'</p>':'')+(r.poster_url?'<img class="event-detail-poster" src="'+esc(r.poster_url)+'" alt="Cartel de '+esc(r.title)+'">':'')+'<div class="event-detail-grid"><div class="event-detail-stat"><small>Voy</small><b>'+yes.length+'</b></div><div class="event-detail-stat"><small>Quizá</small><b>'+maybe.length+'</b></div><div class="event-detail-stat"><small>No voy</small><b>'+no.length+'</b></div><div class="event-detail-stat"><small>Respuestas</small><b>'+rows.length+'</b></div></div><div class="member-detail-section"><h3>🙋 Asistencia</h3><div class="event-detail-list"><b>✅ Voy:</b> '+esc(names(yes))+'</div><div class="event-detail-list"><b>🤔 Quizá:</b> '+esc(names(maybe))+'</div><div class="event-detail-list"><b>❌ No voy:</b> '+esc(names(no))+'</div></div><div class="event-detail-links">'+(r.map_url?'<a class="btn" href="'+esc(r.map_url)+'" target="_blank" rel="noopener">📍 Cómo llegar</a>':'')+(r.photos_url?'<a class="btn secondary" href="'+esc(r.photos_url)+'" target="_blank" rel="noopener">📸 Álbum de fotos</a>':'')+'<button class="btn secondary" type="button" id="eventDetailShare">📲 Compartir por WhatsApp</button><button class="btn secondary" type="button" id="eventDetailRemind">🔔 Recordatorio WhatsApp</button><button class="btn secondary" type="button" id="eventDetailExpense">💸 Ver gastos</button><button class="btn secondary" type="button" id="eventDetailICS">📆 Añadir al calendario</button></div>';
-     $id('eventDetailShare').onclick=()=>shareWhatsAppText(eventShareText(ev));$id('eventDetailRemind').onclick=()=>shareWhatsAppText(eventShareText(ev,true));$id('eventDetailExpense').onclick=()=>{back.hidden=true;showTab('gastos');renderFinance(id)};$id('eventDetailICS').onclick=()=>downloadEventICS(ev);
+     $id('eventDetailShare').onclick=()=>shareEventWhatsApp(ev);$id('eventDetailRemind').onclick=()=>shareEventWhatsApp(ev,true);$id('eventDetailExpense').onclick=()=>{back.hidden=true;showTab('gastos');renderFinance(id)};$id('eventDetailICS').onclick=()=>downloadEventICS(ev);
    }catch(e){body.innerHTML='<p class="form-msg">No se pudo cargar la ficha: '+esc(e.message)+'</p>';}
  }
  async function renderPastEvents(){
