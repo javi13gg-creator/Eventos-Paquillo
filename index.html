@@ -211,6 +211,14 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 /* Acciones de compartir: cómodas también en móvil */
 [data-share-event],[data-remind-event],[data-share-poll],[data-share-trip],[data-share-idea],[data-share-memory],#eventDetailShare,#eventDetailRemind,#shareEventExpenses,#shareFundSummary{white-space:normal}
 @media(max-width:600px){.event-quick-actions,.event-detail-links,.idea-actions,.trip-poll-actions{align-items:stretch}.event-quick-actions .btn,.event-detail-links .btn,.idea-actions .btn,.trip-poll-actions .btn{flex:1 1 100%;min-width:0}}
+
+/* Centro de novedades personal */
+.news-bell{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:2.65rem;height:2.65rem;padding:.25rem .55rem;border:2px solid var(--ink);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:1.25rem;cursor:pointer;box-shadow:2px 2px 0 var(--ink);flex:none}
+.news-bell[hidden]{display:none!important}.news-bell-count{position:absolute;top:-.48rem;right:-.48rem;min-width:1.25rem;height:1.25rem;padding:0 .25rem;border-radius:99px;background:var(--pk);color:#fff;border:2px solid var(--card);font:800 .68rem/1.05 system-ui;display:grid;place-items:center}.news-bell-count[hidden]{display:none!important}
+.news-panel{position:fixed;z-index:200;top:calc(env(safe-area-inset-top,0px) + 5.5rem);right:max(.75rem,env(safe-area-inset-right));width:min( min(410px, calc(100vw - 1.5rem)), 410px);max-height:min(72dvh,620px);overflow:auto;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 #0004;padding:.85rem}
+.news-panel[hidden]{display:none!important}.news-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;position:sticky;top:-.85rem;background:var(--card);padding:.2rem 0 .65rem;z-index:1}.news-head h3{font-size:1.15rem}.news-actions{display:flex;gap:.35rem;align-items:center}.news-actions button{font:inherit;font-size:.78rem;padding:.28rem .5rem;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}.news-item{display:grid;grid-template-columns:2.1rem 1fr;gap:.55rem;padding:.7rem .25rem;border-top:1px solid var(--ln);cursor:pointer}.news-item.unread{background:color-mix(in srgb,var(--pk) 7%,transparent)}.news-icon{width:2rem;height:2rem;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-size:1.05rem}.news-copy b{display:block;line-height:1.25}.news-copy small{display:block;color:var(--mut);margin-top:.2rem}.news-copy p{margin:.2rem 0 0;font-size:.86rem;color:var(--mut)}.news-empty{padding:1.3rem .5rem;text-align:center;color:var(--mut)}.news-open{font:inherit;text-align:left;color:inherit;background:none;border:0;padding:0;width:100%;cursor:pointer}
+@media(max-width:560px){.news-panel{top:calc(env(safe-area-inset-top,0px) + 4.6rem);right:.55rem;width:calc(100vw - 1.1rem);max-height:75dvh}.news-bell{min-width:2.45rem;height:2.45rem}}
+
 </style>
 <style>
 /* Fase 6.1 · confirmación de asistencia */
@@ -248,6 +256,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <span class="nav-current" id="navCurrent">Agenda</span>
   <div class="global-search"><input id="globalSearch" type="search" placeholder="🔎 Buscar planes o Paquillos" aria-label="Buscar planes o miembros"><div id="globalSearchResults" class="global-search-results" hidden></div></div>
   <button type="button" id="installAppButton" class="btn secondary" hidden>📲 Instalar</button>
+  <button type="button" id="newsBell" class="news-bell" aria-label="Novedades" aria-expanded="false" aria-controls="newsPanel" title="Novedades" hidden>🔔<span id="newsBellCount" class="news-bell-count" hidden>0</span></button>
   <button type="button" id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="menuPanel"><span class="menu-lines" aria-hidden="true">☰</span><span>Menú</span></button>
   <button type="button" id="menuBackdrop" class="menu-backdrop" hidden aria-label="Cerrar menú"></button>
   <div class="menu-panel" id="menuPanel" hidden>
@@ -280,6 +289,10 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
     <p class="menu-footer">Hecho para que los Paquillos no se pierdan ningún plan. ✨</p>
   </div>
 </nav>
+<div id="newsPanel" class="news-panel" hidden role="dialog" aria-label="Novedades de Paquillo Events">
+ <div class="news-head"><h3>🔔 Novedades</h3><div class="news-actions"><button type="button" id="newsMarkAll">Marcar todas leídas</button><button type="button" id="newsClose" aria-label="Cerrar novedades">✕</button></div></div>
+ <div id="newsList"><div class="news-empty">Cargando novedades…</div></div>
+</div>
 <main>
 <section class="panel" id="p-proximos">
 <div class="c"><h2>Calendario</h2>
@@ -623,7 +636,7 @@ showTab(location.hash.slice(1));
    shareWhatsAppText(eventShareText(e,reminder,true));
  }
  async function loadEventsFromDatabase(){
-   const {data:events,error}=await client.from('group_events').select('id,source_key,title,description,event_date,event_time,place,map_url,poster_url,photos_url,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
+   const {data:events,error}=await client.from('group_events').select('id,source_key,title,description,event_date,event_time,place,map_url,poster_url,photos_url,status,created_by,created_at').order('event_date',{ascending:true,nullsFirst:false});
    if(error)throw error;
    const {data:links, error:orgError}=await client.from('event_organizers').select('event_id,group_members(display_name)');
    if(orgError)throw orgError;
@@ -770,7 +783,7 @@ showTab(location.hash.slice(1));
    const target=$id('ideaBoard');target.innerHTML='<p class="empty">Cargando ideas…</p>';
    const {data,error}=await client.from('group_ideas').select('id,title,description,category,proposed_date,proposed_place,budget_per_person,status,created_at,created_by_member_id,created_by_user_id,converted_event_id,group_members(display_name),group_idea_votes(member_id,interested)').order('created_at',{ascending:false});
    if(error){target.innerHTML='<p class="form-msg">No se pudieron cargar las ideas. Comprueba que has ejecutado el SQL de la Fase 8–10: '+esc(error.message)+'</p>';return;}
-   target.innerHTML=(data||[]).map(i=>{const votes=i.group_idea_votes||[],interested=votes.filter(v=>v.interested),mine=votes.find(v=>v.member_id===currentMemberId);return '<article class="idea-card"><h3>💡 '+esc(i.title)+'</h3><p>'+esc(i.description||'Sin más detalles.')+'</p><p class="idea-meta">'+esc(i.category||'Idea')+' · '+esc(i.group_members?.display_name||'Un Paquillo')+(i.proposed_date?' · '+esc(i.proposed_date):'')+(i.proposed_place?' · '+esc(i.proposed_place):'')+(i.budget_per_person?' · '+Number(i.budget_per_person).toFixed(2)+' €/persona':'')+'</p><div class="idea-actions"><span class="idea-vote-count">🙋 '+interested.length+' interesados</span><button class="btn secondary" type="button" data-share-idea="'+i.id+'">📲 Compartir idea</button><button class="btn '+(mine?.interested?'secondary':'')+'" type="button" data-idea-vote="'+i.id+'" data-vote="'+(!mine?.interested)+'">'+(mine?.interested?'Quitar mi interés':'Me apunto a la idea')+'</button>'+(i.status==='converted'?'<span class="status-tag">Convertida en plan</span>':(i.created_by_user_id===currentAuthUser.id?'<button class="btn secondary" type="button" data-idea-convert="'+i.id+'">📅 Crear evento con esta idea</button>':''))+'</div></article>';}).join('')||'<div class="empty">Todavía no hay ideas. ¡Rompe el hielo!</div>';
+   target.innerHTML=(data||[]).map(i=>{const votes=i.group_idea_votes||[],interested=votes.filter(v=>v.interested),mine=votes.find(v=>v.member_id===currentMemberId);return '<article class="idea-card" id="idea-'+esc(i.id)+'"><h3>💡 '+esc(i.title)+'</h3><p>'+esc(i.description||'Sin más detalles.')+'</p><p class="idea-meta">'+esc(i.category||'Idea')+' · '+esc(i.group_members?.display_name||'Un Paquillo')+(i.proposed_date?' · '+esc(i.proposed_date):'')+(i.proposed_place?' · '+esc(i.proposed_place):'')+(i.budget_per_person?' · '+Number(i.budget_per_person).toFixed(2)+' €/persona':'')+'</p><div class="idea-actions"><span class="idea-vote-count">🙋 '+interested.length+' interesados</span><button class="btn secondary" type="button" data-share-idea="'+i.id+'">📲 Compartir idea</button><button class="btn '+(mine?.interested?'secondary':'')+'" type="button" data-idea-vote="'+i.id+'" data-vote="'+(!mine?.interested)+'">'+(mine?.interested?'Quitar mi interés':'Me apunto a la idea')+'</button>'+(i.status==='converted'?'<span class="status-tag">Convertida en plan</span>':(i.created_by_user_id===currentAuthUser.id?'<button class="btn secondary" type="button" data-idea-convert="'+i.id+'">📅 Crear evento con esta idea</button>':''))+'</div></article>';}).join('')||'<div class="empty">Todavía no hay ideas. ¡Rompe el hielo!</div>';
    target.querySelectorAll('[data-share-idea]').forEach(b=>b.onclick=()=>{const i=(data||[]).find(x=>String(x.id)===b.dataset.shareIdea);if(!i)return;shareWhatsAppText(['💡 IDEA PARA PAQUILLO · '+i.title,i.description||'',i.category?'Categoría: '+i.category:'',i.proposed_date?'📆 '+i.proposed_date:'',i.proposed_place?'📍 '+i.proposed_place:'',i.budget_per_person!==null?'💶 '+Number(i.budget_per_person).toFixed(2)+' €/persona':'','En Ideas y recuerdos puedes mostrar tu interés: '+paquiShareUrl('horno')].filter(Boolean).join('\n'));});
    target.querySelectorAll('[data-idea-vote]').forEach(b=>b.onclick=async()=>{try{const {error}=await client.from('group_idea_votes').upsert({idea_id:b.dataset.ideaVote,member_id:currentMemberId,interested:b.dataset.vote==='true',updated_at:new Date().toISOString()},{onConflict:'idea_id,member_id'});if(error)throw error;await renderIdeas();}catch(e){alert('No se pudo guardar el voto: '+e.message)}});
    target.querySelectorAll('[data-idea-convert]').forEach(b=>b.onclick=async()=>{const idea=(data||[]).find(x=>String(x.id)===b.dataset.ideaConvert);if(!idea||idea.status==='converted')return;if(!confirm('¿Crear una propuesta de evento a partir de esta idea?'))return;try{const {data:event,error}=await client.from('group_events').insert({title:idea.title,description:idea.description,event_date:idea.proposed_date,place:idea.proposed_place,status:'draft',created_by:currentAuthUser.id}).select('id').single();if(error)throw error;if(currentMemberId)await saveEventOrganizers(event.id,[currentMemberId]);await notifyNewEvent(event.id);const {error:updateError}=await client.from('group_ideas').update({status:'converted',converted_event_id:event.id}).eq('id',idea.id);if(updateError)throw updateError;await loadEventsFromDatabase();await renderIdeas();alert('Propuesta de evento creada. Queda pendiente de aprobación.');}catch(err){alert('No se pudo convertir la idea: '+err.message)}});
@@ -779,7 +792,7 @@ showTab(location.hash.slice(1));
    const target=$id('memoryWall');target.innerHTML='<p class="empty">Cargando recuerdos…</p>';
    const {data,error}=await client.from('group_memories').select('id,title,body,media_url,event_id,created_at,group_members(display_name),group_events(title,event_date)').order('created_at',{ascending:false});
    if(error){target.innerHTML='<p class="form-msg">No se pudieron cargar los recuerdos: '+esc(error.message)+'</p>';return;}
-   target.innerHTML=(data||[]).map(m=>'<article class="memory-card"><h3>📌 '+esc(m.title)+'</h3><p>'+esc(m.body||'')+'</p><p class="idea-meta">Compartido por '+esc(m.group_members?.display_name||'Un Paquillo')+(m.group_events?.title?' · '+esc(m.group_events.title):'')+' · '+new Date(m.created_at).toLocaleDateString('es-ES')+'</p>'+(safeExternalUrl(m.media_url)?'<a href="'+esc(safeExternalUrl(m.media_url))+'" target="_blank" rel="noopener">Abrir foto o álbum ↗</a>':'')+'<div class="idea-actions"><button class="btn secondary" type="button" data-share-memory="'+m.id+'">📲 Compartir recuerdo</button></div></article>').join('')||'<div class="empty">Todavía no hay recuerdos guardados. ¡Que no se pierdan las anécdotas!</div>';
+   target.innerHTML=(data||[]).map(m=>'<article class="memory-card" id="memory-'+esc(m.id)+'"><h3>📌 '+esc(m.title)+'</h3><p>'+esc(m.body||'')+'</p><p class="idea-meta">Compartido por '+esc(m.group_members?.display_name||'Un Paquillo')+(m.group_events?.title?' · '+esc(m.group_events.title):'')+' · '+new Date(m.created_at).toLocaleDateString('es-ES')+'</p>'+(safeExternalUrl(m.media_url)?'<a href="'+esc(safeExternalUrl(m.media_url))+'" target="_blank" rel="noopener">Abrir foto o álbum ↗</a>':'')+'<div class="idea-actions"><button class="btn secondary" type="button" data-share-memory="'+m.id+'">📲 Compartir recuerdo</button></div></article>').join('')||'<div class="empty">Todavía no hay recuerdos guardados. ¡Que no se pierdan las anécdotas!</div>';
    target.querySelectorAll('[data-share-memory]').forEach(b=>b.onclick=()=>{const m=(data||[]).find(x=>String(x.id)===b.dataset.shareMemory);if(!m)return;shareWhatsAppText(['📌 RECUERDO PAQUILLO · '+m.title,m.body||'',m.group_events?.title?'Relacionado con: '+m.group_events.title:'',safeExternalUrl(m.media_url)?'📸 '+safeExternalUrl(m.media_url):'','Baúl de Paquillo: '+paquiShareUrl('horno')].filter(Boolean).join('\n'));});
  }
  async function initCommunityFeatures(){
@@ -1028,8 +1041,75 @@ showTab(location.hash.slice(1));
  }
  async function notifyNewEvent(eventId){try{const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'notify-new-event',event_id:eventId}});if(error)console.warn('El plan se creó, pero no se pudo lanzar el aviso:',error.message);else if(data?.error)console.warn('Avisos no enviados:',data.error);else console.info('Avisos del nuevo plan procesados:',data?.sent);}catch(e){console.warn('No se pudo lanzar la notificación:',e);}}
 
+ // Centro de novedades: el contenido es común, pero las lecturas se guardan por usuario en Supabase.
+ let paquiNewsItems=[];
+ const newsDate=v=>{try{return new Date(v).toLocaleString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}catch(_){return '';}};
+ async function loadPaquiNews(openPanel=false){
+   if(!currentAuthUser||!client)return;
+   const bell=$id('newsBell'),panel=$id('newsPanel'),list=$id('newsList');if(!bell||!panel||!list)return;
+   bell.hidden=false;
+   try{
+     // La primera vez se fija un punto de partida: no se muestran como "nuevas" todas las publicaciones históricas.
+     let {data:state,error:stateErr}=await client.from('paqui_news_user_state').select('activated_at').eq('user_id',currentAuthUser.id).maybeSingle();
+     if(stateErr)throw stateErr;
+     if(!state){const {error:insertErr}=await client.from('paqui_news_user_state').insert({user_id:currentAuthUser.id});if(insertErr&&insertErr.code!=='23505')throw insertErr;const again=await client.from('paqui_news_user_state').select('activated_at').eq('user_id',currentAuthUser.id).single();if(again.error)throw again.error;state=again.data;}
+     const since=state.activated_at;
+     const requests=await Promise.allSettled([
+       client.from('group_events').select('id,title,description,created_at,status,created_by').gt('created_at',since).neq('status','cancelled').order('created_at',{ascending:false}).limit(30),
+       client.from('polls').select('id,title,description,created_at,status,created_by').gt('created_at',since).eq('status','open').order('created_at',{ascending:false}).limit(30),
+       client.from('trips').select('id,title,description,created_at,created_by').gt('created_at',since).order('created_at',{ascending:false}).limit(30),
+       client.from('group_ideas').select('id,title,description,created_at,created_by_user_id').gt('created_at',since).eq('status','open').order('created_at',{ascending:false}).limit(30),
+       client.from('group_memories').select('id,title,body,created_at,author_user_id').gt('created_at',since).order('created_at',{ascending:false}).limit(30),
+       client.from('event_expenses').select('id,event_id,description,amount,created_at,paid_by').gt('created_at',since).order('created_at',{ascending:false}).limit(30),
+       client.from('group_fund_transactions').select('id,kind,description,amount,created_at,created_by').gt('created_at',since).order('created_at',{ascending:false}).limit(30)
+     ]);
+     const rows=requests.map(x=>x.status==='fulfilled'&&!x.value.error?(x.value.data||[]):[]);
+     const errors=requests.filter(x=>x.status==='rejected'||(x.status==='fulfilled'&&x.value.error));
+     if(errors.length)console.warn('Algunas fuentes del centro de novedades no están disponibles:',errors);
+     const items=[];
+     rows[0].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'event:'+x.id,type:'event',icon:'📅',title:'Nuevo plan: '+x.title,detail:x.description||'Se ha publicado un nuevo plan.',date:x.created_at,target:x.id,tab:'proximos'});});
+     rows[1].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'poll:'+x.id,type:'poll',icon:'🗳️',title:'Nueva encuesta: '+x.title,detail:x.description||'Hay una votación disponible.',date:x.created_at,target:x.id,tab:'votaciones'});});
+     rows[2].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'trip:'+x.id,type:'trip',icon:'🧳',title:'Nuevo viaje: '+x.title,detail:x.description||'Se ha propuesto un viaje.',date:x.created_at,target:x.id,tab:'viajes'});});
+     rows[3].forEach(x=>{if(x.created_by_user_id===currentAuthUser.id)return;items.push({key:'idea:'+x.id,type:'idea',icon:'💡',title:'Nueva idea: '+x.title,detail:x.description||'Alguien ha propuesto un plan.',date:x.created_at,target:x.id,tab:'horno'});});
+     rows[4].forEach(x=>{if(x.author_user_id===currentAuthUser.id)return;items.push({key:'memory:'+x.id,type:'memory',icon:'📸',title:'Nuevo recuerdo: '+x.title,detail:x.body||'Se ha añadido algo al baúl de recuerdos.',date:x.created_at,target:x.id,tab:'horno'});});
+     rows[5].forEach(x=>{if(x.paid_by===currentMemberId)return;const ev=EV.find(e=>String(e.dbId)===String(x.event_id));items.push({key:'expense:'+x.id,type:'expense',icon:'💸',title:'Nuevo gasto: '+x.description,detail:(ev?.t?ev.t+' · ':'')+Number(x.amount).toFixed(2)+' €',date:x.created_at,target:x.event_id,tab:'gastos'});});
+     rows[6].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'fund:'+x.id,type:'fund',icon:'🪙',title:'Movimiento en la caja común',detail:x.description+' · '+(x.kind==='income'?'+':'−')+Number(x.amount).toFixed(2)+' €',date:x.created_at,target:'',tab:'gastos'});});
+     items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+     const {data:reads,error:readErr}=await client.from('paqui_news_reads').select('news_key').eq('user_id',currentAuthUser.id);if(readErr)throw readErr;
+     const readSet=new Set((reads||[]).map(x=>x.news_key));paquiNewsItems=items.map(x=>({...x,read:readSet.has(x.key)}));
+     const unread=paquiNewsItems.filter(x=>!x.read).length;const count=$id('newsBellCount');count.textContent=unread>99?'99+':String(unread);count.hidden=unread===0;bell.setAttribute('aria-label',unread?`Novedades, ${unread} sin leer`:'Novedades');
+     list.innerHTML=paquiNewsItems.length?paquiNewsItems.map((x,i)=>'<article class="news-item '+(x.read?'':'unread')+'"><div class="news-icon">'+x.icon+'</div><button class="news-open" type="button" data-news-index="'+i+'"><span class="news-copy"><b>'+esc(x.title)+'</b><small>'+esc(newsDate(x.date))+(x.read?' · Leída':' · Nueva')+'</small><p>'+esc(x.detail)+'</p></span></button></article>').join(''):'<div class="news-empty">✨ No tienes novedades pendientes.<br><small>Cuando alguien publique algo nuevo, aparecerá aquí.</small></div>';
+     list.querySelectorAll('[data-news-index]').forEach(b=>b.onclick=()=>openPaquiNewsItem(Number(b.dataset.newsIndex)));
+     if(openPanel){panel.hidden=false;bell.setAttribute('aria-expanded','true');}
+   }catch(e){console.error('Centro de novedades:',e);list.innerHTML='<div class="news-empty">No se han podido cargar las novedades.<br><small>Comprueba que has ejecutado el SQL de esta fase.</small></div>';}
+ }
+ async function markPaquiNewsRead(keys){
+   if(!currentAuthUser||!keys.length)return;
+   const payload=keys.map(news_key=>({user_id:currentAuthUser.id,news_key}));
+   const {error}=await client.from('paqui_news_reads').upsert(payload,{onConflict:'user_id,news_key'});if(error)throw error;
+ }
+ async function openPaquiNewsItem(index){
+   const item=paquiNewsItems[index];if(!item)return;
+   try{await markPaquiNewsRead([item.key]);item.read=true;await loadPaquiNews(false);}catch(e){console.warn('No se pudo marcar como leída:',e);}
+   $id('newsPanel').hidden=true;$id('newsBell').setAttribute('aria-expanded','false');
+   if(item.type==='event'){await openEventDetail(item.target);return;}
+   if(item.type==='poll'){showTab('votaciones');await renderPolls();setTimeout(()=>{const el=$id('poll-'+item.target);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');}},100);return;}
+   if(item.type==='trip'){showTab('viajes');await renderTrips();setTimeout(()=>{const el=document.querySelector('[data-trip-db="'+item.target+'"]');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');}},100);return;}
+   if(item.type==='idea'||item.type==='memory'){showTab('horno');await initCommunityFeatures();setTimeout(()=>{const el=$id((item.type==='idea'?'idea-':'memory-')+item.target);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');}},100);return;}
+   if(item.type==='expense'){showTab('gastos');await renderFinance(item.target);return;}
+   showTab('gastos');await renderFinance();
+ }
+ function initPaquiNewsUI(){
+   const bell=$id('newsBell'),panel=$id('newsPanel');if(!bell||bell.dataset.bound)return;bell.dataset.bound='1';
+   bell.onclick=async()=>{if(panel.hidden){await loadPaquiNews(true);}else{panel.hidden=true;bell.setAttribute('aria-expanded','false');}};
+   $id('newsClose').onclick=()=>{panel.hidden=true;bell.setAttribute('aria-expanded','false');};
+   $id('newsMarkAll').onclick=async()=>{try{const unread=paquiNewsItems.filter(x=>!x.read);await markPaquiNewsRead(unread.map(x=>x.key));await loadPaquiNews(true);}catch(e){alert('No se pudieron marcar las novedades: '+e.message);}};
+   document.addEventListener('click',e=>{if(panel.hidden)return;if(!panel.contains(e.target)&&!bell.contains(e.target)){panel.hidden=true;bell.setAttribute('aria-expanded','false');}});
+   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentAuthUser)loadPaquiNews(false);});
+ }
  function addUserTools(username,role){
    loginGate.hidden=true;document.body.classList.remove('auth-locked');
+   if($id('newsBell'))$id('newsBell').hidden=false;
    const old=$id('userTools');if(old)old.remove();
    const tools=document.createElement('div');tools.id='userTools';tools.style.cssText='max-width:1100px;margin:.4rem auto;padding:0 1rem;display:flex;justify-content:flex-end;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.9rem';
    tools.innerHTML='<span>👋 '+username+'</span><button type="button" class="btn secondary" id="notifySettingsBtn">🔔 Notificaciones</button>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
@@ -1056,9 +1136,10 @@ showTab(location.hash.slice(1));
    if(recordAccess){try { const {error}=await client.from('access_logs').insert({user_id:user.id}); if(error)console.error('No se pudo registrar el acceso',error); }
    catch(err){console.error(err)}}
    localStorage.setItem(SESSION,profile.username);
-   addUserTools(profile.username,profile.role);
    currentAuthUser=user;
+   addUserTools(profile.username,profile.role);
    try{await loadEventsFromDatabase();}catch(err){console.error('No se pudieron cargar los planes de Supabase',err);}
+   initPaquiNewsUI();await loadPaquiNews(false);
    const initialTab=location.hash.slice(1);
    if(initialTab==='directorio')renderDirectory();
    if(initialTab==='ranking')renderOrganizerRanking();
