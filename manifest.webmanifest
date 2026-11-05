@@ -1,0 +1,10 @@
+{
+  "name": "Paquillo Events",
+  "short_name": "Paquillo",
+  "start_url": "/Eventos-Paquillo/",
+  "scope": "/Eventos-Paquillo/",
+  "display": "standalone",
+  "background_color": "#f3f0ff",
+  "theme_color": "#e6246b",
+  "description": "Planes y eventos del grupo Paquillo"
+}

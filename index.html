@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Paquillo Events 2.0 · Fase 7</title>
+<title>Paquillo Events 2.0 · Fase 7.1</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -71,7 +71,7 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .soon div{background:var(--card);border:2px dashed var(--ln);border-radius:14px;padding:1rem}
 .soon b{display:block;font-size:1.05rem}
 .soon p{margin:.3rem 0 0;color:var(--mut);font-size:.92rem}
-.member-grid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.member-card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.85rem;display:flex;align-items:center;gap:.7rem;box-shadow:3px 3px 0 var(--ink)}.member-card img{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--ink)}.member-card p{margin:0;color:var(--mut);font-size:.88rem}
+.member-grid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.member-card{width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.85rem;display:flex;align-items:center;gap:.7rem;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:transform .15s,box-shadow .15s}.member-card:hover{transform:translateY(-2px);box-shadow:5px 5px 0 var(--ink)}.member-card:focus-visible{outline:3px solid var(--mint);outline-offset:3px}.member-card img{width:54px;height:54px;flex:0 0 54px;border-radius:50%;object-fit:cover;border:2px solid var(--ink)}.member-card p{margin:0;color:var(--mut);font-size:.88rem}.member-card .member-open-hint{display:block;color:var(--pk);font-size:.78rem;font-weight:800;margin-top:.2rem}.member-detail-backdrop{position:fixed;inset:0;z-index:120;background:#100d2ddd;display:grid;place-items:center;padding:1rem}.member-detail{width:min(100%,720px);max-height:92dvh;overflow:auto;background:var(--bg);color:var(--ink);border:2px solid var(--ink);border-radius:20px;padding:1rem;box-shadow:7px 7px 0 #0008}.member-detail-head{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}.member-detail-head img{width:88px;height:88px;object-fit:cover;border-radius:50%;border:3px solid var(--ink);background:var(--card)}.member-detail-head h2{margin:0 0 .25rem}.member-detail-head p{margin:0;color:var(--mut)}.member-detail-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-bottom:.7rem}.member-plan-list{display:grid;gap:.55rem}.member-plan{display:flex;justify-content:space-between;gap:.7rem;align-items:center;padding:.7rem .8rem;border:1px solid var(--ln);border-radius:11px;background:var(--card)}.member-plan small{display:block;color:var(--mut)}.member-detail-section{margin-top:1.1rem}.member-detail-section h3{margin-bottom:.6rem}.member-detail .f6-grid{margin:.8rem 0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:.55rem;padding:.55rem max(1rem,calc((100% - 860px)/2));background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:2px solid var(--ink)}
 .tabs button,.nav-group summary{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:12px;padding:.48rem .8rem;cursor:pointer;list-style:none;white-space:nowrap}
@@ -223,6 +223,10 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 .attendance-stats{margin-top:1.2rem}.attendance-stat-table{overflow-x:auto;margin-top:1rem}
 .attendance-stat-table table{min-width:560px}
 @media(max-width:600px){.attendance-name-group{grid-template-columns:1fr;gap:.2rem}.attendance-counts{font-size:.82rem}}
+
+/* Fase 8-10 · centro de eventos, archivo, ideas y comunidad */
+.global-search{position:relative;flex:1;max-width:270px;min-width:120px}.global-search input{width:100%;min-width:0;padding:.48rem .65rem;border:1.5px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:.85rem}.global-search-results{position:absolute;top:calc(100% + .4rem);right:0;width:min(340px,88vw);max-height:55vh;overflow:auto;z-index:80;background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);padding:.35rem}.global-search-results button{display:block;width:100%;text-align:left;border:0;border-radius:8px;background:transparent;color:var(--ink);padding:.65rem;font:inherit;white-space:normal}.global-search-results button:hover{background:color-mix(in srgb,var(--pk) 12%,var(--card))}.history-toolbar{display:flex;gap:.6rem;flex-wrap:wrap;margin:.8rem 0}.history-toolbar input,.history-toolbar select{flex:1;min-width:160px;padding:.65rem;border:2px solid var(--ln);border-radius:9px;background:var(--card);color:var(--ink);font:inherit}.history-event{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.7rem;align-items:center;padding:.85rem;margin:.65rem 0;background:var(--card);border:1.5px solid var(--ln);border-radius:12px}.history-event small{display:block;color:var(--mut)}.idea-card,.memory-card{margin:.75rem 0;padding:1rem;border:2px solid var(--ink);border-radius:14px;background:var(--card);box-shadow:3px 3px 0 var(--ink)}.idea-card h3,.memory-card h3{margin:0 0 .35rem}.idea-meta{font-size:.84rem;color:var(--mut);margin:.35rem 0}.idea-actions{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-top:.65rem}.idea-vote-count{font-weight:900;color:var(--pk)}.memory-card img{max-width:100%;max-height:300px;object-fit:contain;border-radius:10px;margin-top:.6rem}.award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.7rem;margin:1rem 0}.award-card{padding:1rem;border:2px solid var(--ink);border-radius:14px;background:var(--card);box-shadow:3px 3px 0 var(--ink)}.award-card b{display:block;font-size:1.05rem}.award-card span{display:block;color:var(--mut);font-size:.86rem;margin-top:.25rem}.event-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;margin:1rem 0}.event-detail-stat{padding:.75rem;border:1px solid var(--ln);border-radius:10px;background:var(--card)}.event-detail-stat b{display:block;font-size:1.35rem}.event-detail-links{display:flex;gap:.5rem;flex-wrap:wrap;margin:.7rem 0}.event-detail-poster{display:block;max-width:100%;max-height:330px;object-fit:contain;margin:.7rem auto;border-radius:12px}.event-detail-list{padding:.65rem 0;border-bottom:1px solid var(--ln)}
+@media(max-width:560px){.global-search{max-width:none;flex:1}.global-search input{font-size:.78rem;padding:.42rem}.nav-brand{display:none}.history-event{grid-template-columns:1fr}.history-event .btn{justify-self:start}}
 </style>
 <meta name="theme-color" content="#e6246b">
 </head>
@@ -239,6 +243,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <button type="button" id="homeButton" class="home-button on" role="tab" data-t="proximos" aria-label="Ir al inicio: calendario y próximos eventos" title="Inicio">🏠</button>
   <div class="nav-brand"><span class="nav-brand-mark">P</span><span>Paquillo Events</span></div>
   <span class="nav-current" id="navCurrent">Agenda</span>
+  <div class="global-search"><input id="globalSearch" type="search" placeholder="🔎 Buscar planes o Paquillos" aria-label="Buscar planes o miembros"><div id="globalSearchResults" class="global-search-results" hidden></div></div>
+  <button type="button" id="installAppButton" class="btn secondary" hidden>📲 Instalar</button>
   <button type="button" id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="menuPanel"><span class="menu-lines" aria-hidden="true">☰</span><span>Menú</span></button>
   <button type="button" id="menuBackdrop" class="menu-backdrop" hidden aria-label="Cerrar menú"></button>
   <div class="menu-panel" id="menuPanel" hidden>
@@ -262,7 +268,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
       <section class="menu-group"><h3>🎉 Entretenimiento</h3>
         <button type="button" class="menu-link" role="tab" data-t="juegos">Juegos 🎲 <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="stickers">Stickers <span>›</span></button>
-        <button type="button" class="menu-link" role="tab" data-t="horno">En el horno <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="horno">Ideas y recuerdos <span>›</span></button>
       </section>
       <section class="menu-group menu-admin-group" id="menuAdminGroup" hidden><h3>⚙️ Gestión</h3>
         <button type="button" class="menu-link" id="menuAdminBtn" hidden>Administración <span>›</span></button>
@@ -289,7 +295,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <label>Nombre del plan<input name="title" required maxlength="140" placeholder="¿Qué vamos a hacer?"></label>
 <label>Descripción<textarea name="description" rows="2" placeholder="Detalles, propuesta, horario…"></textarea></label>
 <div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160" placeholder="Dónde sería"></label>
-<label>Enlace de ubicación (opcional)<input name="map_url" type="url" placeholder="https://maps.app.goo.gl/…"></label><label>Álbum de fotos (Google Fotos u otro)<input name="photos_url" type="url" placeholder="https://photos.app.goo.gl/…"><small>Las fotos se alojan fuera de Paquillo Events.</small></label><label>Organizadores <small>El creador queda incluido automáticamente. Puedes añadir más.</small><details class="organizer-picker"><summary>Seleccionar organizadores</summary><div id="eventOrganizers" class="organizer-options"></div></details></label><label>Cartel del evento (opcional)<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPG o WEBP · máximo 8 MB. La imagen se sube al almacenamiento de Supabase.</small></label>
+<label>Enlace de ubicación (opcional)<input name="map_url" type="url" placeholder="https://maps.app.goo.gl/…"></label><label>Álbum de fotos (Google Fotos u otro)<input name="photos_url" type="url" placeholder="https://photos.app.goo.gl/…"><small>Las fotos se alojan fuera de Paquillo Events.</small></label><label>Organizadores <small>Por defecto apareces tú, pero puedes desmarcarte y elegir quién organiza realmente el plan.</small><details class="organizer-picker"><summary>Seleccionar organizadores</summary><div id="eventOrganizers" class="organizer-options"></div></details></label><label>Cartel del evento (opcional)<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPG o WEBP · máximo 8 MB. La imagen se sube al almacenamiento de Supabase.</small></label>
 <button class="btn" type="submit">Enviar propuesta</button><p class="form-msg" id="eventMsg" aria-live="polite"></p>
 <p class="form-msg">La propuesta quedará pendiente de aprobación por administración.</p>
 </form></div>
@@ -309,17 +315,9 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <div id="blist"></div>
 </section>
 <section class="panel" id="p-pasados" hidden>
-<h2>Planes pasados</h2>
-<div class="build">
-<div class="stripe"></div>
-<div class="in">
-<span class="em" aria-hidden="true">🚧</span>
-<h3>En construcción</h3>
-<p class="sub" style="margin:.4rem 0 0">Estamos desenterrando fotos del archivo. Si sales mal en alguna, es pura casualidad.</p>
-</div>
-<div class="stripe"></div>
-</div>
-
+<h2>📚 Archivo de Paquillo</h2><p class="sub">Todos los planes que ya forman parte de la historia del grupo.</p>
+<div class="history-toolbar"><input id="historySearch" type="search" placeholder="Buscar en el historial…" aria-label="Buscar planes pasados"><select id="historyYear"><option value="all">Todos los años</option></select></div>
+<div id="pastEvents"><div class="empty">Cargando recuerdos…</div></div>
 </section>
 <section class="panel" id="p-stickers" hidden>
 <h2>Stickers del grupo</h2>
@@ -332,7 +330,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <h2>La cuadrilla</h2><p class="sub">Miembros del grupo que tienen cuenta en Paquillo Events.</p><div id="memberDirectory" class="member-grid"><div class="empty">Cargando Paquillos…</div></div>
 </section>
 <section class="panel" id="p-ranking" hidden>
-<h2>🏆 TOP organizadores</h2><p class="sub">Clasificación, gráficos y estadísticas de la actividad del grupo. Solo puntúan los planes completados.</p><div id="organizerRanking"><div class="empty">Cargando clasificación…</div></div>
+<h2>🏆 TOP organizadores</h2><p class="sub">Clasificación, gráficos y estadísticas de la actividad del grupo. Cuentan los planes confirmados y realizados.</p><div id="organizerRanking"><div class="empty">Cargando clasificación…</div></div>
 </section>
 <section class="panel" id="p-perfil" hidden>
 <h2>👤 Mi perfil</h2><p class="sub">Tu ficha dentro de la cuadrilla. Comparte solo lo que quieras.</p>
@@ -371,12 +369,12 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <h2>Viajes propuestos</h2><div id="tripList"><div class="empty">Cargando viajes…</div></div>
 </section>
 <section class="panel" id="p-horno" hidden>
-<h2>En el horno</h2>
-<p class="sub">Secciones que llegarán cuando alguien tenga un rato libre.</p>
-<div class="soon">
-<div><b>⏰ Ranking de impuntuales</b><p>Datos objetivos. Reclamaciones, por escrito.</p></div>
-<div><b>🏆 Salón de la fama</b><p>Las mejores anécdotas, citas y desastres de cada plan.</p></div>
-</div>
+<h2>💡 ¿Qué hacemos?</h2><p class="sub">Ideas sin fecha cerrada. Votad y convertid las que más gusten en un plan de verdad.</p>
+<div class="f6-card"><form id="ideaForm" class="f6-form"><label>Idea<input name="title" required maxlength="140" placeholder="Ej. Escapada de fin de semana"></label><label>Detalles<textarea name="description" rows="2" maxlength="800" placeholder="Qué se propone, posibles fechas…"></textarea></label><div class="form-row"><label>Categoría<select name="category"><option>Quedada</option><option>Viaje</option><option>Deporte</option><option>Cena / fiesta</option><option>Otro</option></select></label><label>Presupuesto por persona (€)<input name="budget_per_person" type="number" min="0" step="0.01" placeholder="Opcional"></label></div><div class="form-row"><label>Fecha orientativa<input name="proposed_date" type="date"></label><label>Lugar / destino<input name="proposed_place" maxlength="160" placeholder="Opcional"></label></div><button class="btn" type="submit">💡 Publicar idea</button><p class="form-msg" id="ideaMsg" aria-live="polite"></p></form></div>
+<div id="ideaBoard"><div class="empty">Cargando propuestas…</div></div>
+<h2 style="margin-top:2rem">📸 El baúl de Paquillo</h2><p class="sub">Anécdotas, fotos, carteles y recuerdos que merece la pena conservar.</p>
+<div class="f6-card"><form id="memoryForm" class="f6-form"><label>Título del recuerdo<input name="title" required maxlength="140" placeholder="La cena que se nos fue de las manos"></label><label>La historia<textarea name="body" rows="3" maxlength="1500" placeholder="Cuenta qué pasó…"></textarea></label><label>Enlace a foto o álbum (opcional)<input name="media_url" type="url" placeholder="https://…"></label><label>Relacionado con un plan<select name="event_id" id="memoryEvent"><option value="">Sin vincular a un plan</option></select></label><button class="btn" type="submit">📌 Guardar recuerdo</button><p class="form-msg" id="memoryMsg" aria-live="polite"></p></form></div>
+<div id="memoryWall"><div class="empty">Cargando recuerdos…</div></div>
 </section>
 <section class="panel" id="p-juegos" hidden>
   <div class="games-heading">
@@ -458,6 +456,13 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <div class="birthday-actions"><button id="birthdayClose">¡A felicitar! 🥳</button><button id="birthdayToday" class="secondary">No volver a mostrar hoy</button></div>
  </div>
 </div>
+<div id="eventDetailBackdrop" class="member-detail-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="eventDetailTitle"><section class="member-detail"><div class="member-detail-actions"><button type="button" class="btn secondary" id="eventDetailClose">✕ Cerrar</button></div><div id="eventDetailContent"></div></section></div>
+<div id="memberDetailBackdrop" class="member-detail-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="memberDetailName">
+ <section class="member-detail">
+  <div class="member-detail-actions"><button type="button" class="btn secondary" id="memberDetailClose">✕ Cerrar</button></div>
+  <div id="memberDetailContent"><p class="empty">Cargando ficha…</p></div>
+ </section>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -526,7 +531,7 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'En el horno',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
+function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 $('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
@@ -581,6 +586,7 @@ showTab(location.hash.slice(1));
  let currentProfile=null;
  let currentAuthUser=null;
  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const safeExternalUrl=value=>{try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:'';}catch(_){return '';}};
  async function loadEventsFromDatabase(){
    const {data:events,error}=await client.from('group_events').select('id,source_key,title,description,event_date,event_time,place,map_url,poster_url,photos_url,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
    if(error)throw error;
@@ -593,7 +599,7 @@ showTab(location.hash.slice(1));
    EV.forEach(e=>{if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
      const statusLabel=e.status==='completed'?'Realizado':e.status==='cancelled'?'Cancelado':e.status==='draft'?'Propuesta pendiente':'Confirmado';
      const canManage=!!e.dbId&&(currentProfile?.role==='admin'||e.createdBy===currentAuthUser?.id);
-     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+(e.photos?'<div><a class="btn secondary" href="'+esc(e.photos)+'" target="_blank" rel="noopener noreferrer">📸 Ver álbum de fotos</a></div>':'')+'<div class="event-quick-actions"><span class="attendance-prompt">🙋 ¿Te apuntas?</span><button class="btn attendance-choice" type="button" data-attendance-choice="yes" data-event="'+esc(e.dbId)+'">✅ Voy</button><button class="btn attendance-choice" type="button" data-attendance-choice="maybe" data-event="'+esc(e.dbId)+'">🤔 Quizá</button><button class="btn attendance-choice" type="button" data-attendance-choice="no" data-event="'+esc(e.dbId)+'">❌ No voy</button><button class="btn secondary" type="button" data-event-calendar="'+esc(e.dbId)+'">📆 Descargar .ics</button><button class="btn secondary" type="button" data-google-calendar="'+esc(e.dbId)+'">Google Calendar</button><button class="btn secondary" type="button" data-event-expenses="'+esc(e.dbId)+'">💸 Gastos del plan</button></div><div class="attendance-panel" data-attendance-info="'+esc(e.dbId)+'"><p class="f6-muted">Cargando respuestas…</p></div>'+(canManage?'<div class="event-manage"><button class="btn secondary" type="button" data-edit-event="'+esc(e.dbId)+'">✏️ Editar plan</button><button class="btn danger" type="button" data-delete-event="'+esc(e.dbId)+'">🗑️ Eliminar plan</button></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
+     out+='<article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+(e.photos?'<div><a class="btn secondary" href="'+esc(e.photos)+'" target="_blank" rel="noopener noreferrer">📸 Ver álbum de fotos</a></div>':'')+'<div class="event-quick-actions"><button class="btn secondary" type="button" data-event-detail="'+esc(e.dbId)+'">📋 Ver ficha completa</button><span class="attendance-prompt">🙋 ¿Te apuntas?</span><button class="btn attendance-choice" type="button" data-attendance-choice="yes" data-event="'+esc(e.dbId)+'">✅ Voy</button><button class="btn attendance-choice" type="button" data-attendance-choice="maybe" data-event="'+esc(e.dbId)+'">🤔 Quizá</button><button class="btn attendance-choice" type="button" data-attendance-choice="no" data-event="'+esc(e.dbId)+'">❌ No voy</button><button class="btn secondary" type="button" data-event-calendar="'+esc(e.dbId)+'">📆 Descargar .ics</button><button class="btn secondary" type="button" data-google-calendar="'+esc(e.dbId)+'">Google Calendar</button><button class="btn secondary" type="button" data-event-expenses="'+esc(e.dbId)+'">💸 Gastos del plan</button></div><div class="attendance-panel" data-attendance-info="'+esc(e.dbId)+'"><p class="f6-muted">Cargando respuestas…</p></div>'+(canManage?'<div class="event-manage"><button class="btn secondary" type="button" data-edit-event="'+esc(e.dbId)+'">✏️ Editar plan</button><button class="btn danger" type="button" data-delete-event="'+esc(e.dbId)+'">🗑️ Eliminar plan</button></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div></article>';
    });
    $('events').innerHTML=out||'<div class="empty">Todavía no hay planes. ¡Que alguien proponga uno!</div>';
    const {data:eventPolls}=await client.from('polls').select('id,title,related_event_id').not('related_event_id','is',null);
@@ -614,9 +620,40 @@ showTab(location.hash.slice(1));
  }
  async function renderDirectory(){
    const target=$id('memberDirectory');target.innerHTML='<div class="empty">Cargando…</div>';
-   const {data,error}=await client.from('group_members').select('display_name,avatar_url,birthday,bio').eq('is_active',true).order('display_name');
+   const {data,error}=await client.from('group_members').select('id,display_name,avatar_url,birthday,bio').eq('is_active',true).order('display_name');
    if(error){target.innerHTML='<div class="empty">No se pudo cargar el directorio: '+esc(error.message)+'</div>';return}
-   target.innerHTML=(data||[]).map(m=>{const p=PEOPLE.find(x=>x.n===m.display_name);const avatar=m.avatar_url||p?.i;return '<div class="member-card">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':'<span style="font-size:2rem">👤</span>')+'<div><b>'+esc(m.display_name)+'</b>'+(m.birthday?'<p>🎂 '+new Date(m.birthday+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+'</p>':'')+(m.bio?'<p>'+esc(m.bio)+'</p>':'')+'</div></div>'}).join('')||'<div class="empty">Aún no hay miembros dados de alta.</div>';
+   target.innerHTML=(data||[]).map(m=>{const p=PEOPLE.find(x=>x.n===m.display_name);const avatar=m.avatar_url||p?.i;return '<button type="button" class="member-card" data-member-profile="'+esc(m.id)+'">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':'<span style="font-size:2rem">👤</span>')+'<span><b>'+esc(m.display_name)+'</b>'+(m.birthday?'<p>🎂 '+new Date(m.birthday+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+'</p>':'')+(m.bio?'<p>'+esc(m.bio)+'</p>':'')+'<span class="member-open-hint">Ver ficha y estadísticas →</span></span></button>'}).join('')||'<div class="empty">Aún no hay miembros dados de alta.</div>';
+   target.querySelectorAll('[data-member-profile]').forEach(b=>b.addEventListener('click',()=>openMemberDetail(b.dataset.memberProfile)));
+ }
+ async function openMemberDetail(memberId){
+   const backdrop=$id('memberDetailBackdrop'),content=$id('memberDetailContent');
+   backdrop.hidden=false;content.innerHTML='<p class="empty">Cargando ficha y estadísticas…</p>';
+   const close=()=>{backdrop.hidden=true;};$id('memberDetailClose').onclick=close;
+   backdrop.onclick=e=>{if(e.target===backdrop)close();};
+   try{
+     const [{data:member,error:memberErr},{data:orgLinks,error:orgErr},{data:attendance,error:attErr},{data:events,error:eventsErr}]=await Promise.all([
+       client.from('group_members').select('id,display_name,avatar_url,birthday,bio').eq('id',memberId).single(),
+       client.from('event_organizers').select('event_id').eq('member_id',memberId),
+       client.from('event_attendance').select('event_id,status,updated_at').eq('member_id',memberId),
+       client.from('group_events').select('id,title,event_date,event_time,place,status').order('event_date',{ascending:false,nullsFirst:false})
+     ]);
+     const err=memberErr||orgErr||attErr||eventsErr;if(err)throw err;
+     const eventById=new Map((events||[]).map(e=>[String(e.id),e]));
+     const organized=(orgLinks||[]).map(x=>eventById.get(String(x.event_id))).filter(Boolean).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''));
+     const attended=(attendance||[]).map(x=>({...x,event:eventById.get(String(x.event_id))})).filter(x=>x.event).sort((a,b)=>(b.event.event_date||'').localeCompare(a.event.event_date||''));
+     const yes=attended.filter(x=>x.status==='yes').length,maybe=attended.filter(x=>x.status==='maybe').length,no=attended.filter(x=>x.status==='no').length;
+     const confirmedOrDone=organized.filter(e=>['planned','confirmed','completed'].includes(e.status)).length;
+     const pending=organized.filter(e=>e.status==='draft').length;
+     const avatar=member.avatar_url||PEOPLE.find(x=>x.n===member.display_name)?.i||'';
+     const statusLabel=s=>s==='completed'?'Realizado':s==='cancelled'?'Cancelado':s==='draft'?'Propuesta pendiente':'Confirmado';
+     const dateLabel=d=>d?new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}):'Fecha por determinar';
+     const planRows=arr=>arr.length?'<div class="member-plan-list">'+arr.map(e=>'<div class="member-plan"><span><b>'+esc(e.title)+'</b><small>'+dateLabel(e.event_date)+(e.place?' · '+esc(e.place):'')+'</small></span><span class="status-tag">'+statusLabel(e.status)+'</span></div>').join('')+'</div>':'<p class="f6-muted">Todavía no hay planes en esta categoría.</p>';
+     const attendedRows=attended.length?'<div class="member-plan-list">'+attended.map(x=>'<div class="member-plan"><span><b>'+esc(x.event.title)+'</b><small>'+dateLabel(x.event.event_date)+' · Actualizado '+new Date(x.updated_at).toLocaleDateString('es-ES')+'</small></span><span class="status-tag">'+(x.status==='yes'?'Voy':x.status==='maybe'?'Quizá':'No voy')+'</span></div>').join('')+'</div>':'<p class="f6-muted">No ha respondido todavía a ningún plan.</p>';
+     content.innerHTML='<div class="member-detail-head">'+(avatar?'<img src="'+esc(avatar)+'" alt="Foto de '+esc(member.display_name)+'">':'<span style="font-size:3rem">👤</span>')+'<div><h2 id="memberDetailName">'+esc(member.display_name)+'</h2>'+(member.birthday?'<p>🎂 Cumpleaños: '+new Date(member.birthday+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+'</p>':'')+(member.bio?'<p>'+esc(member.bio)+'</p>':'<p class="f6-muted">Aún no ha añadido una descripción.</p>')+'</div></div>'+
+       '<div class="f6-grid"><div class="f6-stat"><small>PLANES ORGANIZADOS</small><b>'+confirmedOrDone+'</b></div><div class="f6-stat"><small>PROPUESTAS PENDIENTES</small><b>'+pending+'</b></div><div class="f6-stat"><small>RESPUESTAS «VOY»</small><b>'+yes+'</b></div><div class="f6-stat"><small>QUIZÁ</small><b>'+maybe+'</b></div><div class="f6-stat"><small>NO VOY</small><b>'+no+'</b></div><div class="f6-stat"><small>PLANES CON RESPUESTA</small><b>'+attended.length+'</b></div></div>'+
+       '<section class="member-detail-section"><h3>🎯 Planes organizados o en colaboración</h3>'+planRows(organized)+'</section>'+
+       '<section class="member-detail-section"><h3>🙋 Historial de respuestas a planes</h3>'+attendedRows+'</section>';
+   }catch(e){content.innerHTML='<p class="form-msg">No se pudo cargar la ficha: '+esc(e.message)+'</p>';}
  }
  async function renderOrganizerRanking(){
    const target=$id('organizerRanking');target.innerHTML='<div class="empty">Calculando puntos…</div>';
@@ -658,9 +695,72 @@ showTab(location.hash.slice(1));
      html+='<div class="attendance-stat-table"><table class="admin-table"><thead><tr><th>Miembro</th><th>Voy</th><th>Quizá</th><th>No voy</th><th>Voy en confirmados/realizados</th></tr></thead><tbody>'+stats.map(x=>'<tr><td>'+esc(x.display_name)+'</td><td>'+x.yes+'</td><td>'+x.maybe+'</td><td>'+x.no+'</td><td><b>'+x.eligibleYes+'</b></td></tr>').join('')+'</tbody></table></div></section>';
      const leader=(allRows||[]).reduce((n,x)=>n+Number(x.completed_events||0),0);
      html='<div class="f6-grid"><div class="f6-stat"><small>MIEMBROS EN EL TOP</small><b>'+(allRows||[]).length+'</b></div><div class="f6-stat"><small>PLANES DEL LÍDER</small><b>'+max+'</b></div><div class="f6-stat"><small>AÑOS CON REGISTRO</small><b>'+years.length+'</b></div></div>'+html;
+     const organizerChamp=allRows[0],attendanceChamp=stats[0],mostMaybe=[...stats].sort((a,b)=>b.maybe-a.maybe)[0],mostResponses=[...stats].sort((a,b)=>(b.yes+b.maybe+b.no)-(a.yes+a.maybe+a.no))[0];
+     html+='<section class="member-detail-section"><h3>🎖️ Paquillo Awards · clasificación actual</h3><div class="award-grid"><div class="award-card"><b>🏆 El organizador</b><span>'+(organizerChamp?esc(organizerChamp.display_name)+' · '+organizerChamp.completed_events+' planes':'Sin datos todavía')+'</span></div><div class="award-card"><b>🎉 El imprescindible</b><span>'+(attendanceChamp&&attendanceChamp.eligibleYes?esc(attendanceChamp.display_name)+' · '+attendanceChamp.eligibleYes+' confirmaciones':'Sin confirmaciones todavía')+'</span></div><div class="award-card"><b>🤔 El indeciso</b><span>'+(mostMaybe&&mostMaybe.maybe?esc(mostMaybe.display_name)+' · '+mostMaybe.maybe+' quizá':'Sin respuestas «quizá»')+'</span></div><div class="award-card"><b>🙋 El participativo</b><span>'+(mostResponses&&(mostResponses.yes+mostResponses.maybe+mostResponses.no)?esc(mostResponses.display_name)+' · '+(mostResponses.yes+mostResponses.maybe+mostResponses.no)+' respuestas':'Sin respuestas todavía')+'</span></div></div><p class="f6-muted">Premios calculados automáticamente con los datos disponibles. No son premios oficiales ni contabilizan asistencia física.</p></section>';
      target.innerHTML=html;
    }catch(e){target.innerHTML='<div class="empty">No se pudieron cargar las estadísticas: '+esc(e.message)+'</div>';}
  }
+
+
+ // FASE 8-10: detalle unificado de evento, archivo histórico, ideas, recuerdos y buscador.
+ async function openEventDetail(id){
+   const ev=EV.find(x=>String(x.dbId)===String(id));if(!ev)return;
+   const back=$id('eventDetailBackdrop'),body=$id('eventDetailContent');back.hidden=false;body.innerHTML='<p class="empty">Cargando ficha del plan…</p>';
+   $id('eventDetailClose').onclick=()=>back.hidden=true;back.onclick=e=>{if(e.target===back)back.hidden=true;};
+   try{
+     const [att,org,mem]=await Promise.all([
+       client.from('event_attendance').select('status,group_members(display_name)').eq('event_id',id),
+       client.from('event_organizers').select('group_members(display_name)').eq('event_id',id),
+       client.from('group_events').select('id,title,event_date,event_time,place,map_url,photos_url,poster_url,description,status').eq('id',id).single()
+     ]);
+     if(att.error||org.error||mem.error)throw att.error||org.error||mem.error;
+     const r=mem.data||{},rows=att.data||[],yes=rows.filter(x=>x.status==='yes'),maybe=rows.filter(x=>x.status==='maybe'),no=rows.filter(x=>x.status==='no');
+     const names=a=>a.map(x=>x.group_members?.display_name).filter(Boolean).join(', ')||'Nadie todavía';
+     const date=r.event_date?new Date(r.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar';
+     const status=r.status==='completed'?'Realizado':r.status==='cancelled'?'Cancelado':r.status==='draft'?'Propuesta pendiente':'Confirmado';
+     body.innerHTML='<h2 id="eventDetailTitle">'+esc(r.title)+'</h2><span class="status-tag">'+status+'</span><p class="meta"><b>Cuándo:</b> '+esc(date)+(r.event_time?' · '+esc(String(r.event_time).slice(0,5)):'')+'<br><b>Dónde:</b> '+esc(r.place||'Por determinar')+'<br><b>Organizan:</b> '+esc(names(org.data||[]))+'</p>'+(r.description?'<p>'+esc(r.description)+'</p>':'')+(r.poster_url?'<img class="event-detail-poster" src="'+esc(r.poster_url)+'" alt="Cartel de '+esc(r.title)+'">':'')+'<div class="event-detail-grid"><div class="event-detail-stat"><small>Voy</small><b>'+yes.length+'</b></div><div class="event-detail-stat"><small>Quizá</small><b>'+maybe.length+'</b></div><div class="event-detail-stat"><small>No voy</small><b>'+no.length+'</b></div><div class="event-detail-stat"><small>Respuestas</small><b>'+rows.length+'</b></div></div><div class="member-detail-section"><h3>🙋 Asistencia</h3><div class="event-detail-list"><b>✅ Voy:</b> '+esc(names(yes))+'</div><div class="event-detail-list"><b>🤔 Quizá:</b> '+esc(names(maybe))+'</div><div class="event-detail-list"><b>❌ No voy:</b> '+esc(names(no))+'</div></div><div class="event-detail-links">'+(r.map_url?'<a class="btn" href="'+esc(r.map_url)+'" target="_blank" rel="noopener">📍 Cómo llegar</a>':'')+(r.photos_url?'<a class="btn secondary" href="'+esc(r.photos_url)+'" target="_blank" rel="noopener">📸 Álbum de fotos</a>':'')+'<button class="btn secondary" type="button" id="eventDetailExpense">💸 Ver gastos</button><button class="btn secondary" type="button" id="eventDetailICS">📆 Añadir al calendario</button></div>';
+     $id('eventDetailExpense').onclick=()=>{back.hidden=true;showTab('gastos');renderFinance(id)};$id('eventDetailICS').onclick=()=>downloadEventICS(ev);
+   }catch(e){body.innerHTML='<p class="form-msg">No se pudo cargar la ficha: '+esc(e.message)+'</p>';}
+ }
+ async function renderPastEvents(){
+   const target=$id('pastEvents');if(!target)return;
+   const past=EV.filter(e=>e.status==='completed'||(e.d?.length&&new Date(e.d[0]+'T23:59:59')<new Date()&&e.status!=='cancelled')).sort((a,b)=>(b.d?.[0]||'').localeCompare(a.d?.[0]||''));
+   const years=[...new Set(past.map(e=>e.y))].sort((a,b)=>b-a);$id('historyYear').innerHTML='<option value="all">Todos los años</option>'+years.map(y=>'<option value="'+y+'">'+y+'</option>').join('');
+   const draw=()=>{const q=String($id('historySearch').value||'').toLocaleLowerCase('es'),yr=$id('historyYear').value;const rows=past.filter(e=>(yr==='all'||String(e.y)===yr)&&[e.t,e.where,e.by,e.desc].join(' ').toLocaleLowerCase('es').includes(q));target.innerHTML=rows.map(e=>'<article class="history-event"><span><b>'+esc(e.t)+'</b><small>'+esc(e.when)+' · '+esc(e.where)+' · '+esc(e.by)+'</small></span><button class="btn secondary" type="button" data-history-detail="'+esc(e.dbId)+'">Ver recuerdo</button></article>').join('')||'<div class="empty">No hay planes que coincidan con la búsqueda.</div>';target.querySelectorAll('[data-history-detail]').forEach(b=>b.onclick=()=>openEventDetail(b.dataset.historyDetail));};
+   $id('historySearch').oninput=draw;$id('historyYear').onchange=draw;draw();
+ }
+ async function renderIdeas(){
+   const target=$id('ideaBoard');target.innerHTML='<p class="empty">Cargando ideas…</p>';
+   const {data,error}=await client.from('group_ideas').select('id,title,description,category,proposed_date,proposed_place,budget_per_person,status,created_at,created_by_member_id,created_by_user_id,converted_event_id,group_members(display_name),group_idea_votes(member_id,interested)').order('created_at',{ascending:false});
+   if(error){target.innerHTML='<p class="form-msg">No se pudieron cargar las ideas. Comprueba que has ejecutado el SQL de la Fase 8–10: '+esc(error.message)+'</p>';return;}
+   target.innerHTML=(data||[]).map(i=>{const votes=i.group_idea_votes||[],interested=votes.filter(v=>v.interested),mine=votes.find(v=>v.member_id===currentMemberId);return '<article class="idea-card"><h3>💡 '+esc(i.title)+'</h3><p>'+esc(i.description||'Sin más detalles.')+'</p><p class="idea-meta">'+esc(i.category||'Idea')+' · '+esc(i.group_members?.display_name||'Un Paquillo')+(i.proposed_date?' · '+esc(i.proposed_date):'')+(i.proposed_place?' · '+esc(i.proposed_place):'')+(i.budget_per_person?' · '+Number(i.budget_per_person).toFixed(2)+' €/persona':'')+'</p><div class="idea-actions"><span class="idea-vote-count">🙋 '+interested.length+' interesados</span><button class="btn '+(mine?.interested?'secondary':'')+'" type="button" data-idea-vote="'+i.id+'" data-vote="'+(!mine?.interested)+'">'+(mine?.interested?'Quitar mi interés':'Me apunto a la idea')+'</button>'+(i.status==='converted'?'<span class="status-tag">Convertida en plan</span>':(i.created_by_user_id===currentAuthUser.id?'<button class="btn secondary" type="button" data-idea-convert="'+i.id+'">📅 Crear evento con esta idea</button>':''))+'</div></article>';}).join('')||'<div class="empty">Todavía no hay ideas. ¡Rompe el hielo!</div>';
+   target.querySelectorAll('[data-idea-vote]').forEach(b=>b.onclick=async()=>{try{const {error}=await client.from('group_idea_votes').upsert({idea_id:b.dataset.ideaVote,member_id:currentMemberId,interested:b.dataset.vote==='true',updated_at:new Date().toISOString()},{onConflict:'idea_id,member_id'});if(error)throw error;await renderIdeas();}catch(e){alert('No se pudo guardar el voto: '+e.message)}});
+   target.querySelectorAll('[data-idea-convert]').forEach(b=>b.onclick=async()=>{const idea=(data||[]).find(x=>String(x.id)===b.dataset.ideaConvert);if(!idea||idea.status==='converted')return;if(!confirm('¿Crear una propuesta de evento a partir de esta idea?'))return;try{const {data:event,error}=await client.from('group_events').insert({title:idea.title,description:idea.description,event_date:idea.proposed_date,place:idea.proposed_place,status:'draft',created_by:currentAuthUser.id}).select('id').single();if(error)throw error;if(currentMemberId)await saveEventOrganizers(event.id,[currentMemberId]);await notifyNewEvent(event.id);const {error:updateError}=await client.from('group_ideas').update({status:'converted',converted_event_id:event.id}).eq('id',idea.id);if(updateError)throw updateError;await loadEventsFromDatabase();await renderIdeas();alert('Propuesta de evento creada. Queda pendiente de aprobación.');}catch(err){alert('No se pudo convertir la idea: '+err.message)}});
+ }
+ async function renderMemories(){
+   const target=$id('memoryWall');target.innerHTML='<p class="empty">Cargando recuerdos…</p>';
+   const {data,error}=await client.from('group_memories').select('id,title,body,media_url,event_id,created_at,group_members(display_name),group_events(title,event_date)').order('created_at',{ascending:false});
+   if(error){target.innerHTML='<p class="form-msg">No se pudieron cargar los recuerdos: '+esc(error.message)+'</p>';return;}
+   target.innerHTML=(data||[]).map(m=>'<article class="memory-card"><h3>📌 '+esc(m.title)+'</h3><p>'+esc(m.body||'')+'</p><p class="idea-meta">Compartido por '+esc(m.group_members?.display_name||'Un Paquillo')+(m.group_events?.title?' · '+esc(m.group_events.title):'')+' · '+new Date(m.created_at).toLocaleDateString('es-ES')+'</p>'+(safeExternalUrl(m.media_url)?'<a href="'+esc(safeExternalUrl(m.media_url))+'" target="_blank" rel="noopener">Abrir foto o álbum ↗</a>':'')+'</article>').join('')||'<div class="empty">Todavía no hay recuerdos guardados. ¡Que no se pierdan las anécdotas!</div>';
+ }
+ async function initCommunityFeatures(){
+   try{const members=await getActiveMembers();const mine=members.find(m=>m.auth_user_id===currentAuthUser?.id);currentMemberId=mine?.id||null;
+     if($id('memoryEvent'))$id('memoryEvent').innerHTML='<option value="">Sin vincular a un plan</option>'+EV.map(e=>'<option value="'+esc(e.dbId)+'">'+esc(e.t)+'</option>').join('');
+     await Promise.all([renderIdeas(),renderMemories()]);
+   }catch(e){console.warn('Comunidad:',e);}
+ }
+ let currentMemberId=null;
+ $id('ideaForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,fd=new FormData(f),msg=$id('ideaMsg');try{if(!currentMemberId)throw new Error('Tu usuario no está vinculado a un miembro.');const {error}=await client.from('group_ideas').insert({title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,category:fd.get('category'),budget_per_person:fd.get('budget_per_person')?Number(fd.get('budget_per_person')):null,proposed_date:fd.get('proposed_date')||null,proposed_place:String(fd.get('proposed_place')||'').trim()||null,created_by_member_id:currentMemberId,created_by_user_id:currentAuthUser.id});if(error)throw error;f.reset();msg.textContent='¡Idea publicada!';await renderIdeas();}catch(err){msg.textContent='No se pudo publicar: '+err.message;}});
+ $id('memoryForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,fd=new FormData(f),msg=$id('memoryMsg');try{if(!currentMemberId)throw new Error('Tu usuario no está vinculado a un miembro.');const {error}=await client.from('group_memories').insert({title:String(fd.get('title')).trim(),body:String(fd.get('body')||'').trim()||null,media_url:String(fd.get('media_url')||'').trim()||null,event_id:fd.get('event_id')||null,author_member_id:currentMemberId,author_user_id:currentAuthUser.id});if(error)throw error;f.reset();msg.textContent='Recuerdo guardado en el baúl.';await renderMemories();}catch(err){msg.textContent='No se pudo guardar: '+err.message;}});
+ // Buscador rápido de eventos y miembros del grupo.
+ $id('globalSearch')?.addEventListener('input',async e=>{const q=e.target.value.trim().toLocaleLowerCase('es'),box=$id('globalSearchResults');if(q.length<2){box.hidden=true;return;}let members=[];try{members=await getActiveMembers()}catch(_){}const evs=EV.filter(x=>[x.t,x.where,x.by,x.desc].join(' ').toLocaleLowerCase('es').includes(q)).slice(0,6),ms=members.filter(m=>m.display_name.toLocaleLowerCase('es').includes(q)).slice(0,5);box.innerHTML=evs.map(x=>'<button type="button" data-search-event="'+esc(x.dbId)+'">📅 '+esc(x.t)+' <small>· '+esc(x.when)+'</small></button>').join('')+ms.map(m=>'<button type="button" data-search-member="'+esc(m.id)+'">👤 '+esc(m.display_name)+'</button>').join('')||'<p class="f6-muted">Sin resultados.</p>';box.hidden=false;box.querySelectorAll('[data-search-event]').forEach(b=>b.onclick=()=>{box.hidden=true;$id('globalSearch').value='';openEventDetail(b.dataset.searchEvent)});box.querySelectorAll('[data-search-member]').forEach(b=>b.onclick=()=>{box.hidden=true;$id('globalSearch').value='';openMemberDetail(b.dataset.searchMember)});});
+ document.addEventListener('click',e=>{const box=$id('globalSearchResults'),input=$id('globalSearch');if(box&&!box.contains(e.target)&&e.target!==input)box.hidden=true;});
+ $id('events')?.addEventListener('click',e=>{const b=e.target.closest('[data-event-detail]');if(b)openEventDetail(b.dataset.eventDetail)});
+
+
+ let paquiInstallPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();paquiInstallPrompt=e;$id('installAppButton').hidden=false;});
+ $id('installAppButton')?.addEventListener('click',async()=>{if(!paquiInstallPrompt)return;paquiInstallPrompt.prompt();await paquiInstallPrompt.userChoice;paquiInstallPrompt=null;$id('installAppButton').hidden=true;});
+ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./paquillo-sw.js').catch(e=>console.warn('No se pudo registrar el Service Worker',e)));}
 
  function canManagePoll(poll){return !!currentAuthUser&&(currentProfile?.role==='admin'||poll?.created_by===currentAuthUser.id);}
  async function renderPolls(){
@@ -756,18 +856,17 @@ showTab(location.hash.slice(1));
  async function openEventEditor(id){
    let row;try{row=await fetchEventForEdit(id)}catch(err){alert('No se puede abrir el plan: '+err.message);return}
    closeEventEditor();const wrap=document.createElement('div');wrap.id='eventEditorBackdrop';wrap.className='event-editor-backdrop';
-   wrap.innerHTML='<section class="event-editor" role="dialog" aria-modal="true" aria-labelledby="eventEditorTitle"><h2 id="eventEditorTitle">✏️ Editar plan</h2><form id="eventEditorForm" class="feature-form"><label>Título<input name="title" required maxlength="140"></label><label>Descripción<textarea name="description" rows="3"></textarea></label><div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160"></label><label>Enlace de ubicación<input name="map_url" type="url" placeholder="https://…"></label><label>Álbum de fotos<input name="photos_url" type="url" placeholder="https://photos.app.goo.gl/…"></label><label>Organizadores <small>El creador se mantiene incluido. Puedes añadir o quitar colaboradores.</small><details class="organizer-picker"><summary>Seleccionar organizadores</summary><div id="editEventOrganizers" class="organizer-options"></div></details></label><label>Cartel del evento<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>JPG, PNG o WEBP · máximo 8 MB.</small></label><div id="eventPosterCurrent"></div><label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" name="remove_poster" style="width:auto"> Quitar el cartel actual</label><div class="editor-actions"><button class="btn" type="submit">💾 Guardar cambios</button><button class="btn secondary" type="button" id="eventEditorCancel">Cancelar</button></div><p class="form-msg" id="eventEditorMsg" aria-live="polite"></p></form></section>';
+   wrap.innerHTML='<section class="event-editor" role="dialog" aria-modal="true" aria-labelledby="eventEditorTitle"><h2 id="eventEditorTitle">✏️ Editar plan</h2><form id="eventEditorForm" class="feature-form"><label>Título<input name="title" required maxlength="140"></label><label>Descripción<textarea name="description" rows="3"></textarea></label><div class="form-row"><label>Fecha<input name="event_date" type="date"></label><label>Hora<input name="event_time" type="time"></label></div><label>Lugar<input name="place" maxlength="160"></label><label>Enlace de ubicación<input name="map_url" type="url" placeholder="https://…"></label><label>Álbum de fotos<input name="photos_url" type="url" placeholder="https://photos.app.goo.gl/…"></label><label>Organizadores <small>El creador del plan puede no ser organizador. Marca solo a quienes lo organizan.</small><details class="organizer-picker"><summary>Seleccionar organizadores</summary><div id="editEventOrganizers" class="organizer-options"></div></details></label><label>Cartel del evento<input name="poster_file" type="file" accept="image/png,image/jpeg,image/webp"><small>JPG, PNG o WEBP · máximo 8 MB.</small></label><div id="eventPosterCurrent"></div><label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" name="remove_poster" style="width:auto"> Quitar el cartel actual</label><div class="editor-actions"><button class="btn" type="submit">💾 Guardar cambios</button><button class="btn secondary" type="button" id="eventEditorCancel">Cancelar</button></div><p class="form-msg" id="eventEditorMsg" aria-live="polite"></p></form></section>';
    document.body.append(wrap);const f=$id('eventEditorForm');['title','description','event_date','event_time','place','map_url','photos_url'].forEach(k=>{if(f.elements[k])f.elements[k].value=row[k]||''});
-   try{const {data:links,error}=await client.from('event_organizers').select('member_id').eq('event_id',id);if(error)throw error;await loadActiveOrganizerMembers($id('editEventOrganizers'),(links||[]).map(x=>x.member_id));}catch(err){$id('eventEditorMsg').textContent='No se pudieron cargar los organizadores: '+err.message;}
+   try{const {data:links,error}=await client.from('event_organizers').select('member_id').eq('event_id',id);if(error)throw error;await loadActiveOrganizerMembers($id('editEventOrganizers'),(links||[]).map(x=>x.member_id),false);}catch(err){$id('eventEditorMsg').textContent='No se pudieron cargar los organizadores: '+err.message;}
    $id('eventPosterCurrent').innerHTML=row.poster_url?'<img class="poster-preview" src="'+esc(row.poster_url)+'" alt="Cartel actual"><small>Cartel actual</small>':'';
    $id('eventEditorCancel').onclick=closeEventEditor;wrap.addEventListener('click',e=>{if(e.target===wrap)closeEventEditor()});
    f.onsubmit=async ev=>{ev.preventDefault();const btn=f.querySelector('button[type="submit"]'),msg=$id('eventEditorMsg'),fd=new FormData(f);btn.disabled=true;msg.textContent='Guardando…';
      try{const latest=await fetchEventForEdit(id);const patch={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,event_time:fd.get('event_time')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,photos_url:String(fd.get('photos_url')||'').trim()||null,updated_at:new Date().toISOString()};
        const file=fd.get('poster_file');if(file&&file.size)patch.poster_url=await uploadEventPoster(file);else if(fd.get('remove_poster'))patch.poster_url=null;
        const {error}=await client.from('group_events').update(patch).eq('id',id);if(error)throw error;
-       const organizerSelect=$id('editEventOrganizers');const {creator}=await loadActiveOrganizerMembers(organizerSelect,selectedOrganizerIds(organizerSelect));
-       if(!creator)throw new Error('No se encuentra el miembro creador del plan.');
-       await saveEventOrganizers(id,[...new Set([...selectedOrganizerIds(organizerSelect),creator.id])]);
+       const organizerSelect=$id('editEventOrganizers');
+       await saveEventOrganizers(id,[...new Set(selectedOrganizerIds(organizerSelect))]);
        closeEventEditor();await loadEventsFromDatabase();await renderOrganizerRanking();alert('Plan actualizado correctamente.');
      }catch(err){msg.textContent='No se pudieron guardar los cambios: '+err.message;btn.disabled=false;}
    };
@@ -778,12 +877,12 @@ showTab(location.hash.slice(1));
    const {error}=await client.from('group_events').delete().eq('id',id);if(error){alert('No se pudo eliminar el plan: '+error.message);return;}
    await loadEventsFromDatabase();await renderOrganizerRanking();alert('Plan eliminado.');
  }
- async function loadActiveOrganizerMembers(container, selectedIds=[]){
+ async function loadActiveOrganizerMembers(container, selectedIds=[], selectCreatorByDefault=false){
    const {data,error}=await client.from('group_members').select('id,display_name,auth_user_id').eq('is_active',true).order('display_name');
    if(error)throw error;
    const members=data||[];const creator=members.find(m=>m.auth_user_id===currentAuthUser?.id);
-   const selected=new Set(selectedIds);if(creator)selected.add(creator.id);
-   container.innerHTML=members.map(m=>'<label><input type="checkbox" value="'+esc(m.id)+'" '+(selected.has(m.id)?'checked ':'')+(creator?.id===m.id?'disabled ':'')+'><span>'+esc(m.display_name)+(creator?.id===m.id?' (creador)':'')+'</span></label>').join('');
+   const selected=new Set(selectedIds);if(selectCreatorByDefault&&creator)selected.add(creator.id);
+   container.innerHTML=members.map(m=>'<label><input type="checkbox" value="'+esc(m.id)+'" '+(selected.has(m.id)?'checked ':'')+'><span>'+esc(m.display_name)+(creator?.id===m.id?' (tú, creador del plan)':'')+'</span></label>').join('');
    return {members,creator};
  }
  function selectedOrganizerIds(container){return [...container.querySelectorAll('input[type="checkbox"]:checked')].map(o=>o.value);}
@@ -797,9 +896,8 @@ showTab(location.hash.slice(1));
    const payload={title:String(fd.get('title')).trim(),description:String(fd.get('description')||'').trim()||null,event_date:fd.get('event_date')||null,event_time:fd.get('event_time')||null,place:String(fd.get('place')||'').trim()||null,map_url:String(fd.get('map_url')||'').trim()||null,photos_url:String(fd.get('photos_url')||'').trim()||null,status:'draft',created_by:currentAuthUser.id};
    msg.textContent='Enviando propuesta…';const file=fd.get('poster_file');if(file&&file.size){try{payload.poster_url=await uploadEventPoster(file)}catch(err){msg.textContent='No se pudo subir el cartel: '+err.message;return}}
    try{
-     const select=$id('eventOrganizers');const {creator}=await loadActiveOrganizerMembers(select,selectedOrganizerIds(select));
-     if(!creator)throw new Error('Tu usuario no está vinculado a un miembro activo del grupo.');
-     const organizerIds=[...new Set([...selectedOrganizerIds(select),creator.id])];
+     const select=$id('eventOrganizers');
+     const organizerIds=[...new Set(selectedOrganizerIds(select))];
      const {data:event,error}=await client.from('group_events').insert(payload).select('id').single();
      if(error)throw error;
      await saveEventOrganizers(event.id,organizerIds);
@@ -864,25 +962,25 @@ showTab(location.hash.slice(1));
  async function openNotificationSettings(){
    const prior=document.getElementById('paquiNotifyOverlay');if(prior)prior.remove();
    const overlay=document.createElement('div');overlay.id='paquiNotifyOverlay';overlay.className='paqui-notify-overlay';
-   overlay.innerHTML='<section class="paqui-notify-card" role="dialog" aria-modal="true" aria-labelledby="paquiNotifyTitle"><div class="paqui-notify-head"><h2 id="paquiNotifyTitle">🔔 Mis notificaciones</h2><button type="button" class="paqui-notify-close" id="paquiNotifyClose" aria-label="Cerrar">✕</button></div><p class="paqui-notify-muted">Recibe un aviso cuando cualquier miembro cree un plan, aunque todavía esté pendiente de aprobación.</p><label for="paquiNotifyEmail">Correo electrónico de contacto</label><input id="paquiNotifyEmail" type="email" autocomplete="email" placeholder="tu-correo@ejemplo.com"><div class="paqui-notify-actions"><button class="btn" type="button" id="paquiSendEmailCode">Enviar código de verificación</button></div><label for="paquiNotifyCode">Código recibido por correo</label><input id="paquiNotifyCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 cifras"><div class="paqui-notify-actions"><button class="btn secondary" type="button" id="paquiVerifyEmailCode">Verificar correo</button></div><div class="paqui-notify-option"><input id="paquiEmailEnabled" type="checkbox"><span><b>Recibir avisos por email</b><br><span class="paqui-notify-muted" id="paquiEmailState">Primero verifica tu dirección.</span></span></div><div class="paqui-notify-option"><input id="paquiPushEnabled" type="checkbox"><span><b>Recibir notificaciones push</b><br><span class="paqui-notify-muted" id="paquiPushState">Este dispositivo recibirá avisos aunque la web no esté abierta.</span></span></div><p class="paqui-notify-msg" id="paquiNotifyMsg" aria-live="polite"></p><div class="paqui-notify-actions"><button type="button" class="btn" id="paquiSaveNotify">Guardar preferencias</button><button type="button" class="btn secondary" id="paquiDisablePush">Desactivar push en este dispositivo</button></div><p class="paqui-notify-muted">Puedes cambiar estas opciones cuando quieras. Cada dispositivo se suscribe por separado. En iPhone debes añadir la web a la pantalla de inicio para recibir push.</p></section>';
+   overlay.innerHTML='<section class="paqui-notify-card" role="dialog" aria-modal="true" aria-labelledby="paquiNotifyTitle"><div class="paqui-notify-head"><h2 id="paquiNotifyTitle">🔔 Mis notificaciones</h2><button type="button" class="paqui-notify-close" id="paquiNotifyClose" aria-label="Cerrar">✕</button></div><p class="paqui-notify-muted">Recibe un aviso cuando cualquier miembro cree un plan, aunque todavía esté pendiente de aprobación.</p><label for="paquiNotifyEmail">Correo electrónico de contacto</label><input id="paquiNotifyEmail" type="email" autocomplete="email" placeholder="tu-correo@ejemplo.com"><div class="paqui-notify-actions"><button class="btn" type="button" id="paquiSendEmailCode">Enviar código de verificación</button></div><label for="paquiNotifyCode">Código recibido por correo</label><input id="paquiNotifyCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 cifras"><div class="paqui-notify-actions"><button class="btn secondary" type="button" id="paquiVerifyEmailCode">Verificar correo</button></div><div class="paqui-notify-option"><input id="paquiEmailEnabled" type="checkbox"><span><b>Recibir avisos por email</b><br><span class="paqui-notify-muted" id="paquiEmailState">Primero verifica tu dirección.</span></span></div><div class="paqui-notify-option"><input id="paquiPushEnabled" type="checkbox"><span><b>Recibir notificaciones push</b><br><span class="paqui-notify-muted" id="paquiPushState">Este dispositivo recibirá avisos aunque la web no esté abierta.</span></span></div><div class="paqui-notify-option"><input id="paquiRemindersEnabled" type="checkbox" checked><span><b>Recordatorios antes de los planes</b><br><span class="paqui-notify-muted">Avisos 3 días y 1 día antes por los canales que tengas activados.</span></span></div><p class="paqui-notify-msg" id="paquiNotifyMsg" aria-live="polite"></p><div class="paqui-notify-actions"><button type="button" class="btn" id="paquiSaveNotify">Guardar preferencias</button><button type="button" class="btn secondary" id="paquiDisablePush">Desactivar push en este dispositivo</button></div><p class="paqui-notify-muted">Puedes cambiar estas opciones cuando quieras. Cada dispositivo se suscribe por separado. En iPhone debes añadir la web a la pantalla de inicio para recibir push.</p></section>';
    document.body.appendChild(overlay);
    const close=()=>overlay.remove();$id('paquiNotifyClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
    const msg=$id('paquiNotifyMsg');
    try{
-     const {data:pref,error}=await client.from('paqui_notification_preferences').select('email_address,email_verified,email_enabled,push_enabled').eq('user_id',currentAuthUser.id).maybeSingle();
+     const {data:pref,error}=await client.from('paqui_notification_preferences').select('email_address,email_verified,email_enabled,push_enabled,reminders_enabled').eq('user_id',currentAuthUser.id).maybeSingle();
      if(error)throw error;
-     if(pref){$id('paquiNotifyEmail').value=pref.email_address||'';$id('paquiEmailEnabled').checked=!!pref.email_enabled&&!!pref.email_verified;$id('paquiPushEnabled').checked=!!pref.push_enabled;$id('paquiEmailState').textContent=pref.email_verified?'Correo verificado: '+pref.email_address:'Correo pendiente de verificación.';}
+     if(pref){$id('paquiNotifyEmail').value=pref.email_address||'';$id('paquiEmailEnabled').checked=!!pref.email_enabled&&!!pref.email_verified;$id('paquiPushEnabled').checked=!!pref.push_enabled;$id('paquiRemindersEnabled').checked=pref.reminders_enabled!==false;$id('paquiEmailState').textContent=pref.email_verified?'Correo verificado: '+pref.email_address:'Correo pendiente de verificación.';}
      const reg=await getPaquiServiceWorker().catch(()=>null);if(reg){const sub=await reg.pushManager.getSubscription();if(sub)$id('paquiPushEnabled').checked=true;}
    }catch(e){msg.textContent='No se pudieron cargar las preferencias: '+e.message;}
    $id('paquiSendEmailCode').onclick=async()=>{const email=$id('paquiNotifyEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(email)){msg.textContent='Introduce un correo válido.';return;}msg.textContent='Enviando código…';const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'send-email-code',email}});msg.textContent=error?'No se pudo enviar: '+error.message:(data?.message||'Código enviado. Revisa también la carpeta de spam.');};
    $id('paquiVerifyEmailCode').onclick=async()=>{const code=$id('paquiNotifyCode').value.trim();if(!/^\d{6}$/.test(code)){msg.textContent='Introduce el código de 6 cifras.';return;}msg.textContent='Verificando…';const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'verify-email-code',code}});if(error||data?.error){msg.textContent='No se pudo verificar: '+(error?.message||data.error);return;}$id('paquiEmailEnabled').checked=true;$id('paquiEmailState').textContent='Correo verificado.';msg.textContent='Correo verificado correctamente. Guarda las preferencias.';};
    $id('paquiSaveNotify').onclick=async()=>{msg.textContent='Guardando…';try{
-     const emailEnabled=$id('paquiEmailEnabled').checked,pushEnabled=$id('paquiPushEnabled').checked;
+     const emailEnabled=$id('paquiEmailEnabled').checked,pushEnabled=$id('paquiPushEnabled').checked,remindersEnabled=$id('paquiRemindersEnabled').checked;
      const {data:pref,error}=await client.from('paqui_notification_preferences').select('email_verified,email_address').eq('user_id',currentAuthUser.id).maybeSingle();if(error)throw error;
      if(emailEnabled&&!pref?.email_verified)throw new Error('Verifica primero tu correo electrónico.');
      let pushSub=null;
      if(pushEnabled){if(!('PushManager' in window)||!('Notification' in window))throw new Error('Este navegador no admite push.');if(PAQUI_VAPID_PUBLIC_KEY.startsWith('PEGA_AQUI'))throw new Error('Falta configurar la clave pública VAPID en el HTML.');const permission=await Notification.requestPermission();if(permission!=='granted')throw new Error('No has concedido permiso para notificaciones.');const reg=await getPaquiServiceWorker();pushSub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(PAQUI_VAPID_PUBLIC_KEY)});const {error:subErr}=await client.from('paqui_push_subscriptions').upsert({user_id:currentAuthUser.id,endpoint:pushSub.endpoint,subscription:pushSub.toJSON(),updated_at:new Date().toISOString()},{onConflict:'endpoint'});if(subErr)throw subErr;}
-     const {error:saveErr}=await client.from('paqui_notification_preferences').upsert({user_id:currentAuthUser.id,email_enabled:emailEnabled,push_enabled:pushEnabled,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(saveErr)throw saveErr;
+     const {error:saveErr}=await client.from('paqui_notification_preferences').upsert({user_id:currentAuthUser.id,email_enabled:emailEnabled,push_enabled:pushEnabled,reminders_enabled:remindersEnabled,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(saveErr)throw saveErr;
      msg.textContent='Preferencias guardadas. ¡No te perderás ningún plan! 🎉';$id('paquiEmailState').textContent=emailEnabled?'Avisos por correo activados.':(pref?.email_verified?'Correo verificado.':'Correo pendiente de verificación.');$id('paquiPushState').textContent=pushEnabled?'Avisos push activados en este dispositivo.':'Avisos push desactivados.';
    }catch(e){msg.textContent=e.message||'No se pudieron guardar las preferencias.';}};
    $id('paquiDisablePush').onclick=async()=>{try{const reg=await getPaquiServiceWorker(),sub=await reg.pushManager.getSubscription();if(sub){const endpoint=sub.endpoint;await sub.unsubscribe();const {error}=await client.from('paqui_push_subscriptions').delete().eq('endpoint',endpoint);if(error)throw error;}await client.from('paqui_notification_preferences').update({push_enabled:false,updated_at:new Date().toISOString()}).eq('user_id',currentAuthUser.id);$id('paquiPushEnabled').checked=false;$id('paquiPushState').textContent='Push desactivado en este dispositivo.';msg.textContent='Notificaciones push desactivadas.';}catch(e){msg.textContent='No se pudo desactivar: '+e.message;}};
@@ -927,6 +1025,8 @@ showTab(location.hash.slice(1));
    if(initialTab==='viajes')renderTrips();
    if(initialTab==='perfil')renderMyProfile();
    if(initialTab==='gastos')renderFinance();
+   if(initialTab==='pasados')renderPastEvents();
+   if(initialTab==='horno')initCommunityFeatures();
  }
  async function renderAdmin(){
    const target=$id('adminContent');target.innerHTML='<p>Consultando estadísticas…</p>';
@@ -960,9 +1060,11 @@ showTab(location.hash.slice(1));
    if(t==='viajes')renderTrips();
    if(t==='perfil')renderMyProfile();
    if(t==='gastos')renderFinance();
+   if(t==='pasados')renderPastEvents();
+   if(t==='horno')initCommunityFeatures();
    const group=btn.closest('details');if(group)group.open=false;
  }));
- $id('toggleEventForm').addEventListener('click',async()=>{const f=$id('eventForm');f.hidden=!f.hidden;$id('toggleEventForm').textContent=f.hidden?'➕ Proponer un plan':'✖ Cerrar formulario';if(!f.hidden){try{await loadActiveOrganizerMembers($id('eventOrganizers'),[])}catch(err){$id('eventMsg').textContent='No se pudieron cargar los organizadores: '+err.message}f.scrollIntoView({behavior:'smooth',block:'center'});}});
+ $id('toggleEventForm').addEventListener('click',async()=>{const f=$id('eventForm');f.hidden=!f.hidden;$id('toggleEventForm').textContent=f.hidden?'➕ Proponer un plan':'✖ Cerrar formulario';if(!f.hidden){try{await loadActiveOrganizerMembers($id('eventOrganizers'),[],true)}catch(err){$id('eventMsg').textContent='No se pudieron cargar los organizadores: '+err.message}f.scrollIntoView({behavior:'smooth',block:'center'});}});
  $id('eventForm').addEventListener('submit',createEventProposal);
  $id('togglePollForm').addEventListener('click',()=>{const f=$id('pollForm');f.hidden=!f.hidden;$id('togglePollForm').textContent=f.hidden?'➕ Crear encuesta':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
  $id('toggleTripForm').addEventListener('click',()=>{const f=$id('tripForm');f.hidden=!f.hidden;$id('toggleTripForm').textContent=f.hidden?'➕ Crear viaje':'✖ Cerrar formulario';if(!f.hidden)f.scrollIntoView({behavior:'smooth',block:'center'});});
