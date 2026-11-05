@@ -1003,7 +1003,7 @@ showTab(location.hash.slice(1));
  function openPollById(id){showTab('votaciones');setTimeout(()=>{const card=$id('poll-'+id);if(card){card.scrollIntoView({behavior:'smooth'});card.classList.add('flash')}},120)}
  function lock(message){document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
 
- const PAQUI_VAPID_PUBLIC_KEY='PEGA_AQUI_TU_CLAVE_PUBLICA_VAPID';
+ const PAQUI_VAPID_PUBLIC_KEY='BEJirS-f2dJ28DSVlQKH9JZ8c-CEMfsDuuhfEc7U5ZUadBbhssL2u4z8WxXTDIKJDlyvXJGFBsbY8L_6K5FKpvw';
  const PAQUI_SITE_URL='https://javi13gg-creator.github.io/Eventos-Paquillo/';
  let paquiSwRegistration=null;
  function b64ToBytes(base64){const pad='='.repeat((4-base64.length%4)%4);const raw=atob((base64+pad).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));}
