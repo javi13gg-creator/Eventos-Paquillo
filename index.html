@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Paquillo Events 2.0 · Fase 6</title>
+<title>Paquillo Events 2.0 · Fase 7.1</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
 <style>
 :root{--bg:#f3f0ff;--card:#fff;--ink:#1d1b4f;--mut:#5c5a8a;--pk:#e6246b;--yl:#ffc933;--mint:#12a97a;--ln:#cfc9f5;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -70,7 +71,7 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .soon div{background:var(--card);border:2px dashed var(--ln);border-radius:14px;padding:1rem}
 .soon b{display:block;font-size:1.05rem}
 .soon p{margin:.3rem 0 0;color:var(--mut);font-size:.92rem}
-.member-grid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.member-card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.85rem;display:flex;align-items:center;gap:.7rem;box-shadow:3px 3px 0 var(--ink)}.member-card img{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--ink)}.member-card p{margin:0;color:var(--mut);font-size:.88rem}
+.member-grid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.member-card{width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.85rem;display:flex;align-items:center;gap:.7rem;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transition:transform .15s,box-shadow .15s}.member-card:hover{transform:translateY(-2px);box-shadow:5px 5px 0 var(--ink)}.member-card:focus-visible{outline:3px solid var(--mint);outline-offset:3px}.member-card img{width:54px;height:54px;flex:0 0 54px;border-radius:50%;object-fit:cover;border:2px solid var(--ink)}.member-card p{margin:0;color:var(--mut);font-size:.88rem}.member-card .member-open-hint{display:block;color:var(--pk);font-size:.78rem;font-weight:800;margin-top:.2rem}.member-detail-backdrop{position:fixed;inset:0;z-index:120;background:#100d2ddd;display:grid;place-items:center;padding:1rem}.member-detail{width:min(100%,720px);max-height:92dvh;overflow:auto;background:var(--bg);color:var(--ink);border:2px solid var(--ink);border-radius:20px;padding:1rem;box-shadow:7px 7px 0 #0008}.member-detail-head{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}.member-detail-head img{width:88px;height:88px;object-fit:cover;border-radius:50%;border:3px solid var(--ink);background:var(--card)}.member-detail-head h2{margin:0 0 .25rem}.member-detail-head p{margin:0;color:var(--mut)}.member-detail-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-bottom:.7rem}.member-plan-list{display:grid;gap:.55rem}.member-plan{display:flex;justify-content:space-between;gap:.7rem;align-items:center;padding:.7rem .8rem;border:1px solid var(--ln);border-radius:11px;background:var(--card)}.member-plan small{display:block;color:var(--mut)}.member-detail-section{margin-top:1.1rem}.member-detail-section h3{margin-bottom:.6rem}.member-detail .f6-grid{margin:.8rem 0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:.55rem;padding:.55rem max(1rem,calc((100% - 860px)/2));background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:2px solid var(--ink)}
 .tabs button,.nav-group summary{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:12px;padding:.48rem .8rem;cursor:pointer;list-style:none;white-space:nowrap}
@@ -199,6 +200,14 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 .event-quick-actions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem}.event-quick-actions .btn{font-size:.82rem;padding:.5rem .7rem}
 @media(max-width:560px){.f6-bar{grid-template-columns:85px 1fr 2rem;font-size:.78rem}.f6-stat{padding:.8rem}}
 
+
+/* Fase 7 · preferencias de notificación */
+.paqui-notify-overlay{position:fixed;inset:0;z-index:10050;background:rgba(16,13,45,.72);display:grid;place-items:center;padding:1rem;overflow:auto}
+.paqui-notify-card{width:min(100%,520px);max-height:min(90vh,760px);overflow:auto;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:22px;padding:1.2rem;box-shadow:7px 7px 0 var(--ink)}
+.paqui-notify-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.8rem}.paqui-notify-head h2{margin:.2rem 0;background:none;padding:0;font-size:1.5rem}
+.paqui-notify-card label{display:block;font-weight:700;margin:.8rem 0 .25rem}.paqui-notify-card input[type=email],.paqui-notify-card input[type=text]{width:100%;padding:.75rem;border:1.5px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.paqui-notify-option{display:flex!important;align-items:center;gap:.7rem;padding:.7rem;border:1px solid var(--ln);border-radius:12px;margin:.55rem 0!important}.paqui-notify-option input{width:1.15rem;height:1.15rem}.paqui-notify-muted{font-size:.88rem;color:var(--mut);font-weight:400}.paqui-notify-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}.paqui-notify-msg{min-height:1.4rem;color:var(--mut);font-size:.9rem}.paqui-notify-close{border:0;background:transparent;color:var(--ink);font-size:1.4rem;cursor:pointer}
+
 </style>
 <style>
 /* Fase 6.1 · confirmación de asistencia */
@@ -215,6 +224,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 .attendance-stat-table table{min-width:560px}
 @media(max-width:600px){.attendance-name-group{grid-template-columns:1fr;gap:.2rem}.attendance-counts{font-size:.82rem}}
 </style>
+<meta name="theme-color" content="#e6246b">
 </head>
 <body>
 <header class="top">
@@ -448,6 +458,12 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <div class="birthday-actions"><button id="birthdayClose">¡A felicitar! 🥳</button><button id="birthdayToday" class="secondary">No volver a mostrar hoy</button></div>
  </div>
 </div>
+<div id="memberDetailBackdrop" class="member-detail-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="memberDetailName">
+ <section class="member-detail">
+  <div class="member-detail-actions"><button type="button" class="btn secondary" id="memberDetailClose">✕ Cerrar</button></div>
+  <div id="memberDetailContent"><p class="empty">Cargando ficha…</p></div>
+ </section>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -604,9 +620,40 @@ showTab(location.hash.slice(1));
  }
  async function renderDirectory(){
    const target=$id('memberDirectory');target.innerHTML='<div class="empty">Cargando…</div>';
-   const {data,error}=await client.from('group_members').select('display_name,avatar_url,birthday,bio').eq('is_active',true).order('display_name');
+   const {data,error}=await client.from('group_members').select('id,display_name,avatar_url,birthday,bio').eq('is_active',true).order('display_name');
    if(error){target.innerHTML='<div class="empty">No se pudo cargar el directorio: '+esc(error.message)+'</div>';return}
-   target.innerHTML=(data||[]).map(m=>{const p=PEOPLE.find(x=>x.n===m.display_name);const avatar=m.avatar_url||p?.i;return '<div class="member-card">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':'<span style="font-size:2rem">👤</span>')+'<div><b>'+esc(m.display_name)+'</b>'+(m.birthday?'<p>🎂 '+new Date(m.birthday+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+'</p>':'')+(m.bio?'<p>'+esc(m.bio)+'</p>':'')+'</div></div>'}).join('')||'<div class="empty">Aún no hay miembros dados de alta.</div>';
+   target.innerHTML=(data||[]).map(m=>{const p=PEOPLE.find(x=>x.n===m.display_name);const avatar=m.avatar_url||p?.i;return '<button type="button" class="member-card" data-member-profile="'+esc(m.id)+'">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':'<span style="font-size:2rem">👤</span>')+'<span><b>'+esc(m.display_name)+'</b>'+(m.birthday?'<p>🎂 '+new Date(m.birthday+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+'</p>':'')+(m.bio?'<p>'+esc(m.bio)+'</p>':'')+'<span class="member-open-hint">Ver ficha y estadísticas →</span></span></button>'}).join('')||'<div class="empty">Aún no hay miembros dados de alta.</div>';
+   target.querySelectorAll('[data-member-profile]').forEach(b=>b.addEventListener('click',()=>openMemberDetail(b.dataset.memberProfile)));
+ }
+ async function openMemberDetail(memberId){
+   const backdrop=$id('memberDetailBackdrop'),content=$id('memberDetailContent');
+   backdrop.hidden=false;content.innerHTML='<p class="empty">Cargando ficha y estadísticas…</p>';
+   const close=()=>{backdrop.hidden=true;};$id('memberDetailClose').onclick=close;
+   backdrop.onclick=e=>{if(e.target===backdrop)close();};
+   try{
+     const [{data:member,error:memberErr},{data:orgLinks,error:orgErr},{data:attendance,error:attErr},{data:events,error:eventsErr}]=await Promise.all([
+       client.from('group_members').select('id,display_name,avatar_url,birthday,bio').eq('id',memberId).single(),
+       client.from('event_organizers').select('event_id').eq('member_id',memberId),
+       client.from('event_attendance').select('event_id,status,updated_at').eq('member_id',memberId),
+       client.from('group_events').select('id,title,event_date,event_time,place,status').order('event_date',{ascending:false,nullsFirst:false})
+     ]);
+     const err=memberErr||orgErr||attErr||eventsErr;if(err)throw err;
+     const eventById=new Map((events||[]).map(e=>[String(e.id),e]));
+     const organized=(orgLinks||[]).map(x=>eventById.get(String(x.event_id))).filter(Boolean).sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||''));
+     const attended=(attendance||[]).map(x=>({...x,event:eventById.get(String(x.event_id))})).filter(x=>x.event).sort((a,b)=>(b.event.event_date||'').localeCompare(a.event.event_date||''));
+     const yes=attended.filter(x=>x.status==='yes').length,maybe=attended.filter(x=>x.status==='maybe').length,no=attended.filter(x=>x.status==='no').length;
+     const confirmedOrDone=organized.filter(e=>['planned','confirmed','completed'].includes(e.status)).length;
+     const pending=organized.filter(e=>e.status==='draft').length;
+     const avatar=member.avatar_url||PEOPLE.find(x=>x.n===member.display_name)?.i||'';
+     const statusLabel=s=>s==='completed'?'Realizado':s==='cancelled'?'Cancelado':s==='draft'?'Propuesta pendiente':'Confirmado';
+     const dateLabel=d=>d?new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}):'Fecha por determinar';
+     const planRows=arr=>arr.length?'<div class="member-plan-list">'+arr.map(e=>'<div class="member-plan"><span><b>'+esc(e.title)+'</b><small>'+dateLabel(e.event_date)+(e.place?' · '+esc(e.place):'')+'</small></span><span class="status-tag">'+statusLabel(e.status)+'</span></div>').join('')+'</div>':'<p class="f6-muted">Todavía no hay planes en esta categoría.</p>';
+     const attendedRows=attended.length?'<div class="member-plan-list">'+attended.map(x=>'<div class="member-plan"><span><b>'+esc(x.event.title)+'</b><small>'+dateLabel(x.event.event_date)+' · Actualizado '+new Date(x.updated_at).toLocaleDateString('es-ES')+'</small></span><span class="status-tag">'+(x.status==='yes'?'Voy':x.status==='maybe'?'Quizá':'No voy')+'</span></div>').join('')+'</div>':'<p class="f6-muted">No ha respondido todavía a ningún plan.</p>';
+     content.innerHTML='<div class="member-detail-head">'+(avatar?'<img src="'+esc(avatar)+'" alt="Foto de '+esc(member.display_name)+'">':'<span style="font-size:3rem">👤</span>')+'<div><h2 id="memberDetailName">'+esc(member.display_name)+'</h2>'+(member.birthday?'<p>🎂 Cumpleaños: '+new Date(member.birthday+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+'</p>':'')+(member.bio?'<p>'+esc(member.bio)+'</p>':'<p class="f6-muted">Aún no ha añadido una descripción.</p>')+'</div></div>'+
+       '<div class="f6-grid"><div class="f6-stat"><small>PLANES ORGANIZADOS</small><b>'+confirmedOrDone+'</b></div><div class="f6-stat"><small>PROPUESTAS PENDIENTES</small><b>'+pending+'</b></div><div class="f6-stat"><small>RESPUESTAS «VOY»</small><b>'+yes+'</b></div><div class="f6-stat"><small>QUIZÁ</small><b>'+maybe+'</b></div><div class="f6-stat"><small>NO VOY</small><b>'+no+'</b></div><div class="f6-stat"><small>PLANES CON RESPUESTA</small><b>'+attended.length+'</b></div></div>'+
+       '<section class="member-detail-section"><h3>🎯 Planes organizados o en colaboración</h3>'+planRows(organized)+'</section>'+
+       '<section class="member-detail-section"><h3>🙋 Historial de respuestas a planes</h3>'+attendedRows+'</section>';
+   }catch(e){content.innerHTML='<p class="form-msg">No se pudo cargar la ficha: '+esc(e.message)+'</p>';}
  }
  async function renderOrganizerRanking(){
    const target=$id('organizerRanking');target.innerHTML='<div class="empty">Calculando puntos…</div>';
@@ -793,6 +840,7 @@ showTab(location.hash.slice(1));
      const {data:event,error}=await client.from('group_events').insert(payload).select('id').single();
      if(error)throw error;
      await saveEventOrganizers(event.id,organizerIds);
+     await notifyNewEvent(event.id);
    }catch(error){msg.textContent='No se pudo enviar la propuesta: '+error.message;return}
    f.reset();f.hidden=true;$id('toggleEventForm').textContent='➕ Proponer un plan';msg.textContent='¡Propuesta enviada! Queda pendiente de aprobación.';await loadEventsFromDatabase();
  }
@@ -839,12 +887,52 @@ showTab(location.hash.slice(1));
  }
  function openPollById(id){showTab('votaciones');setTimeout(()=>{const card=$id('poll-'+id);if(card){card.scrollIntoView({behavior:'smooth'});card.classList.add('flash')}},120)}
  function lock(message){document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
+
+ const PAQUI_VAPID_PUBLIC_KEY='PEGA_AQUI_TU_CLAVE_PUBLICA_VAPID';
+ const PAQUI_SITE_URL='https://javi13gg-creator.github.io/Eventos-Paquillo/';
+ let paquiSwRegistration=null;
+ function b64ToBytes(base64){const pad='='.repeat((4-base64.length%4)%4);const raw=atob((base64+pad).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));}
+ async function getPaquiServiceWorker(){
+   if(!('serviceWorker' in navigator))throw new Error('Este navegador no admite notificaciones push.');
+   if(!window.isSecureContext)throw new Error('Las notificaciones requieren HTTPS.');
+   paquiSwRegistration=await navigator.serviceWorker.register(PAQUI_SITE_URL+'paquillo-sw.js',{scope:'/Eventos-Paquillo/'});
+   await navigator.serviceWorker.ready;return paquiSwRegistration;
+ }
+ async function openNotificationSettings(){
+   const prior=document.getElementById('paquiNotifyOverlay');if(prior)prior.remove();
+   const overlay=document.createElement('div');overlay.id='paquiNotifyOverlay';overlay.className='paqui-notify-overlay';
+   overlay.innerHTML='<section class="paqui-notify-card" role="dialog" aria-modal="true" aria-labelledby="paquiNotifyTitle"><div class="paqui-notify-head"><h2 id="paquiNotifyTitle">🔔 Mis notificaciones</h2><button type="button" class="paqui-notify-close" id="paquiNotifyClose" aria-label="Cerrar">✕</button></div><p class="paqui-notify-muted">Recibe un aviso cuando cualquier miembro cree un plan, aunque todavía esté pendiente de aprobación.</p><label for="paquiNotifyEmail">Correo electrónico de contacto</label><input id="paquiNotifyEmail" type="email" autocomplete="email" placeholder="tu-correo@ejemplo.com"><div class="paqui-notify-actions"><button class="btn" type="button" id="paquiSendEmailCode">Enviar código de verificación</button></div><label for="paquiNotifyCode">Código recibido por correo</label><input id="paquiNotifyCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 cifras"><div class="paqui-notify-actions"><button class="btn secondary" type="button" id="paquiVerifyEmailCode">Verificar correo</button></div><div class="paqui-notify-option"><input id="paquiEmailEnabled" type="checkbox"><span><b>Recibir avisos por email</b><br><span class="paqui-notify-muted" id="paquiEmailState">Primero verifica tu dirección.</span></span></div><div class="paqui-notify-option"><input id="paquiPushEnabled" type="checkbox"><span><b>Recibir notificaciones push</b><br><span class="paqui-notify-muted" id="paquiPushState">Este dispositivo recibirá avisos aunque la web no esté abierta.</span></span></div><p class="paqui-notify-msg" id="paquiNotifyMsg" aria-live="polite"></p><div class="paqui-notify-actions"><button type="button" class="btn" id="paquiSaveNotify">Guardar preferencias</button><button type="button" class="btn secondary" id="paquiDisablePush">Desactivar push en este dispositivo</button></div><p class="paqui-notify-muted">Puedes cambiar estas opciones cuando quieras. Cada dispositivo se suscribe por separado. En iPhone debes añadir la web a la pantalla de inicio para recibir push.</p></section>';
+   document.body.appendChild(overlay);
+   const close=()=>overlay.remove();$id('paquiNotifyClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+   const msg=$id('paquiNotifyMsg');
+   try{
+     const {data:pref,error}=await client.from('paqui_notification_preferences').select('email_address,email_verified,email_enabled,push_enabled').eq('user_id',currentAuthUser.id).maybeSingle();
+     if(error)throw error;
+     if(pref){$id('paquiNotifyEmail').value=pref.email_address||'';$id('paquiEmailEnabled').checked=!!pref.email_enabled&&!!pref.email_verified;$id('paquiPushEnabled').checked=!!pref.push_enabled;$id('paquiEmailState').textContent=pref.email_verified?'Correo verificado: '+pref.email_address:'Correo pendiente de verificación.';}
+     const reg=await getPaquiServiceWorker().catch(()=>null);if(reg){const sub=await reg.pushManager.getSubscription();if(sub)$id('paquiPushEnabled').checked=true;}
+   }catch(e){msg.textContent='No se pudieron cargar las preferencias: '+e.message;}
+   $id('paquiSendEmailCode').onclick=async()=>{const email=$id('paquiNotifyEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(email)){msg.textContent='Introduce un correo válido.';return;}msg.textContent='Enviando código…';const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'send-email-code',email}});msg.textContent=error?'No se pudo enviar: '+error.message:(data?.message||'Código enviado. Revisa también la carpeta de spam.');};
+   $id('paquiVerifyEmailCode').onclick=async()=>{const code=$id('paquiNotifyCode').value.trim();if(!/^\d{6}$/.test(code)){msg.textContent='Introduce el código de 6 cifras.';return;}msg.textContent='Verificando…';const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'verify-email-code',code}});if(error||data?.error){msg.textContent='No se pudo verificar: '+(error?.message||data.error);return;}$id('paquiEmailEnabled').checked=true;$id('paquiEmailState').textContent='Correo verificado.';msg.textContent='Correo verificado correctamente. Guarda las preferencias.';};
+   $id('paquiSaveNotify').onclick=async()=>{msg.textContent='Guardando…';try{
+     const emailEnabled=$id('paquiEmailEnabled').checked,pushEnabled=$id('paquiPushEnabled').checked;
+     const {data:pref,error}=await client.from('paqui_notification_preferences').select('email_verified,email_address').eq('user_id',currentAuthUser.id).maybeSingle();if(error)throw error;
+     if(emailEnabled&&!pref?.email_verified)throw new Error('Verifica primero tu correo electrónico.');
+     let pushSub=null;
+     if(pushEnabled){if(!('PushManager' in window)||!('Notification' in window))throw new Error('Este navegador no admite push.');if(PAQUI_VAPID_PUBLIC_KEY.startsWith('PEGA_AQUI'))throw new Error('Falta configurar la clave pública VAPID en el HTML.');const permission=await Notification.requestPermission();if(permission!=='granted')throw new Error('No has concedido permiso para notificaciones.');const reg=await getPaquiServiceWorker();pushSub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(PAQUI_VAPID_PUBLIC_KEY)});const {error:subErr}=await client.from('paqui_push_subscriptions').upsert({user_id:currentAuthUser.id,endpoint:pushSub.endpoint,subscription:pushSub.toJSON(),updated_at:new Date().toISOString()},{onConflict:'endpoint'});if(subErr)throw subErr;}
+     const {error:saveErr}=await client.from('paqui_notification_preferences').upsert({user_id:currentAuthUser.id,email_enabled:emailEnabled,push_enabled:pushEnabled,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(saveErr)throw saveErr;
+     msg.textContent='Preferencias guardadas. ¡No te perderás ningún plan! 🎉';$id('paquiEmailState').textContent=emailEnabled?'Avisos por correo activados.':(pref?.email_verified?'Correo verificado.':'Correo pendiente de verificación.');$id('paquiPushState').textContent=pushEnabled?'Avisos push activados en este dispositivo.':'Avisos push desactivados.';
+   }catch(e){msg.textContent=e.message||'No se pudieron guardar las preferencias.';}};
+   $id('paquiDisablePush').onclick=async()=>{try{const reg=await getPaquiServiceWorker(),sub=await reg.pushManager.getSubscription();if(sub){const endpoint=sub.endpoint;await sub.unsubscribe();const {error}=await client.from('paqui_push_subscriptions').delete().eq('endpoint',endpoint);if(error)throw error;}await client.from('paqui_notification_preferences').update({push_enabled:false,updated_at:new Date().toISOString()}).eq('user_id',currentAuthUser.id);$id('paquiPushEnabled').checked=false;$id('paquiPushState').textContent='Push desactivado en este dispositivo.';msg.textContent='Notificaciones push desactivadas.';}catch(e){msg.textContent='No se pudo desactivar: '+e.message;}};
+ }
+ async function notifyNewEvent(eventId){try{const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'notify-new-event',event_id:eventId}});if(error)console.warn('El plan se creó, pero no se pudo lanzar el aviso:',error.message);else if(data?.error)console.warn('Avisos no enviados:',data.error);else console.info('Avisos del nuevo plan procesados:',data?.sent);}catch(e){console.warn('No se pudo lanzar la notificación:',e);}}
+
  function addUserTools(username,role){
    loginGate.hidden=true;document.body.classList.remove('auth-locked');
    const old=$id('userTools');if(old)old.remove();
    const tools=document.createElement('div');tools.id='userTools';tools.style.cssText='max-width:1100px;margin:.4rem auto;padding:0 1rem;display:flex;justify-content:flex-end;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.9rem';
-   tools.innerHTML='<span>👋 '+username+'</span>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
+   tools.innerHTML='<span>👋 '+username+'</span><button type="button" class="btn secondary" id="notifySettingsBtn">🔔 Notificaciones</button>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
    document.querySelector('header.top').after(tools);
+   $id('notifySettingsBtn').onclick=()=>openNotificationSettings();
    const menuAdmin=$id('menuAdminBtn');if(menuAdmin){menuAdmin.hidden=role!=='admin';const menuAdminGroup=$id('menuAdminGroup');if(menuAdminGroup)menuAdminGroup.hidden=role!=='admin';menuAdmin.onclick=()=>{$id('menuPanel').hidden=true;$id('menuBackdrop').hidden=true;$id('menuToggle').setAttribute('aria-expanded','false');const adminButton=$id('adminToggle');if(adminButton)adminButton.click();};}
    if(role==='admin')$id('adminToggle').onclick=()=>{
      const a=$id('adminPanel'),opening=a.hidden;
