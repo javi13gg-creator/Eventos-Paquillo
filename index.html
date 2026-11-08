@@ -42,6 +42,8 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .day.today{border-color:var(--mut)}
 .day.ev{cursor:pointer;font-weight:800;background:var(--pk);color:#fff}
 .day.ev.tent{background:transparent;color:var(--ink);border:2px dashed var(--yl);box-shadow:inset 0 0 0 2px var(--yl)}
+.day.ev.completed{background:var(--mint);color:#173b32;border-color:var(--mint);text-decoration:line-through}
+.legend i.p{background:var(--mint)}
 .count:focus-visible,.day:focus-visible,.btn:focus-visible,.calh button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
 .legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;font-size:.78rem;color:var(--mut);margin-top:.7rem}
 .legend i{display:inline-block;width:.9rem;height:.9rem;border-radius:50%;vertical-align:-.1rem;margin-right:.3rem;background:var(--pk)}
@@ -299,7 +301,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <div class="cal">
 <div class="calh"><button id="prev" aria-label="Mes anterior">‹</button><b id="mname"></b><button id="next" aria-label="Mes siguiente">›</button></div>
 <div class="grid" id="cg"></div>
-<div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span></div>
+<div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span><span><i class="p"></i>Realizado</span></div>
 <div id="pick"></div>
 </div>
 
@@ -513,8 +515,8 @@ function cal(){
  for(let d=1;d<=n;d++){
   const k=y+'-'+p2(m+1)+'-'+p2(d), ev=byDay[k];
   const isT=new Date(y,m,d).getTime()===today.getTime();
-  if(ev){const tent=ev.every(e=>!e.ok);
-   h+='<button class="day ev'+(tent?' tent':'')+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+': '+ev.map(e=>e.t).join(', ')+'">'+d+'</button>';
+  if(ev){const tent=ev.every(e=>!e.ok),done=ev.every(e=>e.status==='completed');
+   h+='<button class="day ev'+(done?' completed':tent?' tent':'')+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+': '+ev.map(e=>e.t).join(', ')+'">'+d+'</button>';
   }else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
  }
  $('cg').innerHTML=h;$('pick').innerHTML='';
@@ -641,7 +643,7 @@ showTab(location.hash.slice(1));
    if(orgError)throw orgError;
    const byEvent={};(links||[]).forEach(x=>{const n=x.group_members?.display_name;if(n)(byEvent[x.event_id]??=[]).push(n)});
    EV=(events||[]).map(row=>({dbId:row.id,id:row.source_key||row.id,e:'',t:row.title,y:row.event_date?Number(row.event_date.slice(0,4)):new Date().getFullYear(),by:(byEvent[row.id]||[]).join(' y ')||'Por determinar',d:row.event_date?[row.event_date]:[],ok:row.status!=='draft'&&row.status!=='cancelled',status:row.status,when:(row.event_date?new Date(row.event_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Fecha por determinar')+(row.event_time?' · '+String(row.event_time).slice(0,5):''),where:row.place||'Por determinar',map:row.map_url||'',photos:row.photos_url||'',time:row.event_time||'',desc:row.description||'',poster:row.poster_url||'',createdBy:row.created_by||''}));
-   Object.keys(byDay).forEach(k=>delete byDay[k]);EV.forEach(e=>{if(!['cancelled','completed'].includes(e.status))e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e))});
+   Object.keys(byDay).forEach(k=>delete byDay[k]);EV.forEach(e=>{if(e.status!=='cancelled')e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e))});
    let out='',yr=0;
    const upcomingEvents=EV.filter(e=>e.status!=='completed');
    upcomingEvents.forEach(e=>{if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
