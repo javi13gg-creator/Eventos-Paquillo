@@ -913,20 +913,29 @@ showTab(location.hash.slice(1));
  }
  const PROFILE_AVATAR_BUCKET='profile-avatars';
  async function compressProfileAvatar(file){
-   if(!file||!file.type.startsWith('image/'))throw new Error('Selecciona un archivo de imagen.');
+   if(!file||!file.type||!file.type.startsWith('image/'))throw new Error('Selecciona un archivo de imagen.');
    if(file.size>15*1024*1024)throw new Error('La foto original supera los 15 MB.');
-   const bitmap=await createImageBitmap(file);
-   const scale=Math.min(1,512/Math.max(bitmap.width,bitmap.height));
-   const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
-   const ctx=canvas.getContext('2d');ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
-   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.82));
-   if(!blob)throw new Error('No se pudo procesar la imagen.');
-   return blob;
+   // Image + canvas es más compatible con Safari/iOS que createImageBitmap y WebP.
+   const objectUrl=URL.createObjectURL(file);
+   try{
+     const img=await new Promise((resolve,reject)=>{
+       const image=new Image();
+       image.onload=()=>resolve(image);
+       image.onerror=()=>reject(new Error('El iPhone no ha podido leer esta imagen. Prueba con otra foto.'));
+       image.src=objectUrl;
+     });
+     const scale=Math.min(1,512/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+     const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+     const ctx=canvas.getContext('2d');if(!ctx)throw new Error('No se pudo preparar la imagen en este navegador.');
+     ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+     const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('No se pudo comprimir la foto.')),'image/jpeg',0.84));
+     return blob;
+   }finally{URL.revokeObjectURL(objectUrl);}
  }
  async function uploadProfileAvatar(file,oldUrl){
-   const blob=await compressProfileAvatar(file),path=currentAuthUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.webp';
-   const {error}=await client.storage.from(PROFILE_AVATAR_BUCKET).upload(path,blob,{contentType:'image/webp',upsert:false,cacheControl:'31536000'});
-   if(error)throw error;
+   const blob=await compressProfileAvatar(file),path=currentAuthUser.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.jpg';
+   const {error}=await client.storage.from(PROFILE_AVATAR_BUCKET).upload(path,blob,{contentType:'image/jpeg',upsert:false,cacheControl:'31536000'});
+   if(error)throw new Error('Supabase Storage: '+error.message);
    return client.storage.from(PROFILE_AVATAR_BUCKET).getPublicUrl(path).data.publicUrl;
  }
  async function deleteOldProfileAvatar(oldUrl){
