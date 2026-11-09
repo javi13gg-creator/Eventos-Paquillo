@@ -21,3 +21,10 @@ NOTAS
 - La interfaz sigue siendo de privacidad básica: fotos, HTML y otros recursos del repositorio público siguen siendo accesibles por URL.
 - No publiques nunca la Secret/service_role key. Solo se usa la Publishable key en el navegador; RLS protege las tablas.
 - Si cambias la lista de personas, hay que actualizar los usuarios/perfiles y el array PEOPLE.
+
+
+FOTOS DE PERFIL (añadido)
+- En Supabase > SQL Editor, ejecuta una vez el archivo profile-avatars-storage.sql.
+- Esto crea el bucket público profile-avatars y sus políticas: cualquiera puede ver las fotos de perfil, pero cada usuario autenticado solo puede subir y borrar archivos dentro de su propia carpeta.
+- En Mi perfil, cada miembro puede elegir una imagen desde el móvil o el ordenador. La web la reduce automáticamente a WebP de hasta 512 px y la guarda en Supabase Storage. No hay que pegar URLs.
+- Las fotos existentes mediante URL siguen siendo compatibles. Al cambiar o quitar una foto alojada en el nuevo bucket, se intenta borrar el archivo anterior.
