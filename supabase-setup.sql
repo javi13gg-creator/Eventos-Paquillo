@@ -35,6 +35,7 @@ select id,
     when 'maria' then 'María'
     when 'mireia' then 'Mireia'
     when 'richy' then 'Richy'
+    when 'ruben' then 'Rubén'
     when 'roman' then 'Román'
     when 'rodri' then 'Rodri'
     when 'sara' then 'Sara'
