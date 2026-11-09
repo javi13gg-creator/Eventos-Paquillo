@@ -1,7 +1,6 @@
 -- PAQUILLO EVENTS · alta de Rubén
 -- 1) En Supabase > Authentication > Users > Add user, crea primero:
 --    Email: ruben@paquillo-events.com
---    Password inicial: Rubén
 --    Activa Auto Confirm User.
 -- 2) Después ejecuta este archivo completo en SQL Editor.
 -- No guarda ni modifica contraseñas; el alta de Auth se hace desde el panel seguro.
