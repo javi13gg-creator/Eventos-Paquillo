@@ -26,5 +26,5 @@ NOTAS
 FOTOS DE PERFIL (añadido)
 - En Supabase > SQL Editor, ejecuta una vez el archivo profile-avatars-storage.sql.
 - Esto crea el bucket público profile-avatars y sus políticas: cualquiera puede ver las fotos de perfil, pero cada usuario autenticado solo puede subir y borrar archivos dentro de su propia carpeta.
-- En Mi perfil, cada miembro puede elegir una imagen desde el móvil o el ordenador. La web la reduce automáticamente a WebP de hasta 512 px y la guarda en Supabase Storage. No hay que pegar URLs.
+- En Mi perfil, cada miembro puede elegir una imagen desde el móvil o el ordenador. La web la reduce automáticamente a JPEG de hasta 512 px y la guarda en Supabase Storage. No hay que pegar URLs.
 - Las fotos existentes mediante URL siguen siendo compatibles. Al cambiar o quitar una foto alojada en el nuevo bucket, se intenta borrar el archivo anterior.
