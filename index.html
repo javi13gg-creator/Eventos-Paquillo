@@ -586,7 +586,7 @@ function escBirthday(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;'
 window.syncPaquilloBirthdays=function(rows){
  const byName=new Map((rows||[]).map(m=>[m.display_name,m]));
  PEOPLE.forEach(p=>{const m=byName.get(p.n);if(!m)return;
-  if(m.birthday){const d=new Date(m.birthday+'T12:00:00');if(!Number.isNaN(d.getTime())){p.d=d.getDate();p.m=d.getMonth()+1;p.y=d.getFullYear()>=1901&&d.getFullYear()!==2000?d.getFullYear():null;}}
+  if(m.birthday){const d=new Date(m.birthday+'T12:00:00');if(!Number.isNaN(d.getTime())){p.d=d.getDate();p.m=d.getMonth()+1;p.y=d.getFullYear()>=1901&&!(p.n==='Rubén'&&d.getFullYear()===2000)?d.getFullYear():null;}}
   if(Object.prototype.hasOwnProperty.call(m,'avatar_url'))p.i=m.avatar_url||p.i;
  });
  Object.keys(bday).forEach(k=>delete bday[k]);
