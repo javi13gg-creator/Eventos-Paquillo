@@ -101,7 +101,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .banner{display:block;width:100%;max-width:780px;height:auto;margin:0 auto 1.1rem;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
-.count.b{background:var(--mint);color:#06281d;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.2rem .45rem;max-width:100%;white-space:normal}
+.count.b{background:linear-gradient(110deg,#b9f5d8,#d8ff82 55%,#ffe36e);color:#173b32;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.15rem .35rem;max-width:100%;white-space:normal;padding:.48rem .8rem;border-radius:14px;border-width:2px;font-size:clamp(.78rem,3.2vw,.96rem);line-height:1.15;box-shadow:3px 3px 0 var(--ink)}
 .birthday-countdown-copy{display:inline}
 .birthday-countdown-age{display:inline-block;font-weight:900;white-space:normal;background:rgba(255,255,255,.42);border-radius:99px;padding:.1rem .5rem;margin:.12rem 0 0}.birthday-countdown-copy{display:inline}.birthday-countdown-age{display:inline;font-weight:900;white-space:normal}
 .av{width:1.9rem;height:1.9rem;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.4rem;border:2px solid #06281d}
@@ -570,7 +570,8 @@ const when=n=>n===0?'¡Hoy!':n===1?'Mañana':'En '+n+' días';
  function birthdayAgeLabel(p,t){const age=birthdayAge(p,t);return age===null?'':' · Cumple '+age+' años';}
 $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+x.p.i+'" alt="'+escBirthday(x.p.n)+'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
 {const g=BD.filter(x=>x.t.getTime()===BD[0].t.getTime()),n=Math.round((BD[0].t-today)/864e5),nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(birthdayAge(g[0].p,g[0].t)!==null?'<strong class="birthday-countdown-age"> · Este año cumple '+birthdayAge(g[0].p,g[0].t)+' años</strong>':'')+'</span>';
+ const ages=g.map(x=>birthdayAge(x.p,x.t)).filter(age=>age!==null);
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+'<span class="birthday-countdown-copy">🎉 '+nm+' · '+(n===0?'¡HOY!':n===1?'¡MAÑANA!':'en '+n+' días')+(ages.length?' · '+ages.join(' y ')+' años':'')+' 🎂</span>';
  $('bcount').onclick=()=>goB(g[0].p.s)}
 window.PaquilloBirthdayLookup={};PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(window.PaquilloBirthdayLookup[k]=window.PaquilloBirthdayLookup[k]||[]).push(p)});
 cal();
@@ -589,7 +590,8 @@ window.syncPaquilloBirthdays=function(rows){
  $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+escBirthday(x.p.i)+'" alt="'+escBirthday(x.p.n)+'" onerror="this.style.display=\'none\'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
  cal();
  const g=BD.filter(x=>x.t.getTime()===BD[0]?.t.getTime()),n=BD.length?Math.round((BD[0].t-today)/864e5):0,nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+'</span>'+g.map(x=>{const age=birthdayAge(x.p,x.t);return age===null?'':'<strong class="birthday-countdown-age">🎈 '+escBirthday(x.p.n)+': cumple '+age+' años</strong>'}).join('');
+ const ages=g.map(x=>birthdayAge(x.p,x.t)).filter(age=>age!==null);
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+'<span class="birthday-countdown-copy">🎉 '+escBirthday(nm)+' · '+(n===0?'¡HOY!':n===1?'¡MAÑANA!':'en '+n+' días')+(ages.length?' · '+ages.join(' y ')+' años':'')+' 🎂</span>';
  $('bcount').onclick=()=>{if(g[0])goB(g[0].p.s)};
 };
 showTab(location.hash.slice(1));
