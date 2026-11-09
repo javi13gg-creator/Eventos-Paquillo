@@ -1,0 +1,32 @@
+-- PAQUILLO EVENTS · almacenamiento de fotos de perfil
+-- Ejecutar una sola vez en Supabase > SQL Editor.
+-- Las imágenes se guardan optimizadas en WebP (máx. 512 px) en un bucket público.
+-- Solo usuarios autenticados pueden subir/borrar archivos dentro de su propia carpeta.
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('profile-avatars', 'profile-avatars', true, 5242880, array['image/webp'])
+on conflict (id) do update
+set public = true,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Profile avatars are publicly readable" on storage.objects;
+create policy "Profile avatars are publicly readable"
+on storage.objects for select
+using (bucket_id = 'profile-avatars');
+
+drop policy if exists "Users upload their own profile avatar" on storage.objects;
+create policy "Users upload their own profile avatar"
+on storage.objects for insert to authenticated
+with check (
+  bucket_id = 'profile-avatars'
+  and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+drop policy if exists "Users delete their own profile avatar" on storage.objects;
+create policy "Users delete their own profile avatar"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'profile-avatars'
+  and (storage.foldername(name))[1] = auth.uid()::text
+);
