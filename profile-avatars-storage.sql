@@ -4,7 +4,7 @@
 -- Solo usuarios autenticados pueden subir/borrar archivos dentro de su propia carpeta.
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('profile-avatars', 'profile-avatars', true, 5242880, array['image/webp'])
+values ('profile-avatars', 'profile-avatars', true, 5242880, array['image/jpeg','image/webp'])
 on conflict (id) do update
 set public = true,
     file_size_limit = excluded.file_size_limit,
