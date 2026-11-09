@@ -577,9 +577,11 @@ $('bpick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(
 $('bprev').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()-1,1);bcal()};
 $('bnext').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()+1,1);bcal()};
 const when=n=>n===0?'¡Hoy!':n===1?'Mañana':'En '+n+' días';
-$('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5),age=x.p.y?x.t.getFullYear()-x.p.y:null;return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+x.p.i+'" alt="'+escBirthday(x.p.n)+'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+(age!==null?' · Cumple '+age+' años':'')+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
+ function birthdayAge(p,t){return Number.isInteger(p.y)&&p.y>=1901?t.getFullYear()-p.y:null;}
+ function birthdayAgeLabel(p,t){const age=birthdayAge(p,t);return age===null?'':' · Cumple '+age+' años';}
+$('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+x.p.i+'" alt="'+escBirthday(x.p.n)+'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
 {const g=BD.filter(x=>x.t.getTime()===BD[0].t.getTime()),n=Math.round((BD[0].t-today)/864e5),nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂');
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+birthdayAgeLabel(g[0].p,g[0].t);
  $('bcount').onclick=()=>goB(g[0].p.s)}
 bcal();
 function escBirthday(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -593,10 +595,10 @@ window.syncPaquilloBirthdays=function(rows){
  PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(p)});
  BD=PEOPLE.map(p=>{let t=new Date(today.getFullYear(),p.m-1,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m-1,p.d);return{p,t}}).sort((a,b)=>a.t-b.t||PEOPLE.indexOf(a.p)-PEOPLE.indexOf(b.p));
  if(BD.length)bcur=new Date(BD[0].t.getFullYear(),BD[0].t.getMonth(),1);
- $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5),age=x.p.y?x.t.getFullYear()-x.p.y:null;return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+escBirthday(x.p.i)+'" alt="'+escBirthday(x.p.n)+'" onerror="this.style.display=\'none\'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+(age!==null?' · Cumple '+age+' años':'')+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
+ $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+escBirthday(x.p.i)+'" alt="'+escBirthday(x.p.n)+'" onerror="this.style.display=\'none\'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
  bcal();
  const g=BD.filter(x=>x.t.getTime()===BD[0]?.t.getTime()),n=BD.length?Math.round((BD[0].t-today)/864e5):0,nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂');
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(g[0]?birthdayAgeLabel(g[0].p,g[0].t):'');
  $('bcount').onclick=()=>{if(g[0])goB(g[0].p.s)};
 };
 showTab(location.hash.slice(1));
