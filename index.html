@@ -43,6 +43,10 @@ h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;disp
 .day.ev{cursor:pointer;font-weight:800;background:var(--pk);color:#fff}
 .day.ev.tent{background:transparent;color:var(--ink);border:2px dashed var(--yl);box-shadow:inset 0 0 0 2px var(--yl)}
 .day.ev.completed{background:var(--mint);color:#173b32;border-color:var(--mint);text-decoration:line-through}
+.day.has-birthday{position:relative;box-shadow:inset 0 -4px 0 var(--yl)}
+.day.has-birthday::after{content:"🎂";position:absolute;right:-3px;bottom:-5px;font-size:.58rem;line-height:1;background:var(--card);border-radius:50%;padding:1px}
+.day.ev.has-birthday{box-shadow:inset 0 -4px 0 var(--yl)}
+.legend i.bday-legend{background:var(--yl);border:2px solid var(--pk)}
 .legend i.p{background:var(--mint)}
 .count:focus-visible,.day:focus-visible,.btn:focus-visible,.calh button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
 .legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;font-size:.78rem;color:var(--mut);margin-top:.7rem}
@@ -97,7 +101,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .banner{display:block;width:100%;max-width:780px;height:auto;margin:0 auto 1.1rem;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
-.count.b{background:var(--mint);color:#06281d}.birthday-countdown-copy{display:inline}.birthday-countdown-age{display:inline;font-weight:900;white-space:normal}
+.count.b{background:var(--mint);color:#06281d;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.2rem .45rem;max-width:100%;white-space:normal}
+.birthday-countdown-copy{display:inline}
+.birthday-countdown-age{display:inline-block;font-weight:900;white-space:normal;background:rgba(255,255,255,.42);border-radius:99px;padding:.1rem .5rem;margin:.12rem 0 0}.birthday-countdown-copy{display:inline}.birthday-countdown-age{display:inline;font-weight:900;white-space:normal}
 .av{width:1.9rem;height:1.9rem;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.4rem;border:2px solid #06281d}
 .av+.av{margin-left:-.9rem}
 .day.bd{padding:0;border:2px solid var(--pk);border-radius:50%;overflow:hidden;position:relative;cursor:pointer;background:none}
@@ -301,7 +307,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <div class="cal">
 <div class="calh"><button id="prev" aria-label="Mes anterior">‹</button><b id="mname"></b><button id="next" aria-label="Mes siguiente">›</button></div>
 <div class="grid" id="cg"></div>
-<div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span><span><i class="p"></i>Realizado</span></div>
+<div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span><span><i class="p"></i>Realizado</span><span><i class="bday-legend"></i>Cumpleaños</span></div>
 <div id="pick"></div>
 </div>
 
@@ -321,12 +327,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </section>
 <section class="panel" id="p-cumples" hidden>
 <div class="c"><h2>Cumpleaños</h2>
-<p class="sub">Toca un día con foto y te llevo a su cumple.</p></div>
-<div class="cal">
-<div class="calh"><button id="bprev" aria-label="Mes anterior">‹</button><b id="bmname"></b><button id="bnext" aria-label="Mes siguiente">›</button></div>
-<div class="grid" id="bcg"></div>
-<div id="bpick"></div>
-</div>
+<p class="sub">Los cumpleaños también aparecen marcados en el calendario de Inicio. Toca un día para ver quién cumple.</p></div>
 <h2>Próximos cumples</h2>
 <p class="sub">Ordenados desde el que toca ahora.</p>
 <div id="blist"></div>
@@ -495,6 +496,7 @@ const STK=[{t:'t-0a52a98a.webp',f:'0a52a98a.webp'},{t:'t-39947c71.webp',f:'39947
 const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
 const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
+window.PaquilloBirthdayLookup={};
 const today=new Date();today.setHours(0,0,0,0);
 const nxt=EV.filter(e=>e.d.length).map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
 let cur=nxt?new Date(nxt.t.getFullYear(),nxt.t.getMonth(),1):new Date(today.getFullYear(),today.getMonth(),1);
@@ -515,18 +517,24 @@ function cal(){
  for(let d=1;d<=n;d++){
   const k=y+'-'+p2(m+1)+'-'+p2(d), ev=byDay[k];
   const isT=new Date(y,m,d).getTime()===today.getTime();
-  if(ev){const tent=ev.every(e=>!e.ok),done=ev.every(e=>e.status==='completed');
-   h+='<button class="day ev'+(done?' completed':tent?' tent':'')+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+': '+ev.map(e=>e.t).join(', ')+'">'+d+'</button>';
-  }else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
+  const birthdays=window.PaquilloBirthdayLookup[(m+1)+'-'+d]||[];
+  const birthdayClass=birthdays.length?' has-birthday':'';
+  const birthdayNames=birthdays.map(p=>p.n).join(', ');
+  if(ev&&ev.length){const tent=ev.every(e=>!e.ok),done=ev.every(e=>e.status==='completed');
+   h+='<button class="day ev'+(done?' completed':tent?' tent':'')+birthdayClass+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+': '+ev.map(e=>e.t).join(', ')+(birthdayNames?'. Cumpleaños: '+birthdayNames:'')+'">'+d+'</button>';
+  }else if(birthdays.length)h+='<button class="day has-birthday'+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+'. Cumpleaños: '+birthdayNames+'">'+d+'</button>';
+  else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
  }
  $('cg').innerHTML=h;$('pick').innerHTML='';
 }
 $('cg').addEventListener('click',x=>{const b=x.target.closest('[data-k]');if(!b)return;
- const ev=byDay[b.dataset.k];
- if(ev.length===1){$('pick').innerHTML='';go(ev[0].id)}
- else{$('pick').innerHTML='<span class="sub" style="margin:0">Ese día hay plan doble:</span>'+ev.map(e=>'<button class="chip" data-g="'+e.id+'">'+e.e+' '+e.t+'</button>').join('')}
+ const ev=byDay[b.dataset.k]||[],parts=b.dataset.k.split('-'),birthdays=window.PaquilloBirthdayLookup[Number(parts[1])+'-'+Number(parts[2])]||[];
+ if(ev.length===1&&!birthdays.length){$('pick').innerHTML='';go(ev[0].id);return;}
+ if(!ev.length&&birthdays.length===1){$('pick').innerHTML='';goB(birthdays[0].s);return;}
+ const choices=ev.map(e=>'<button class="chip" data-g="'+e.id+'">📅 '+e.t+'</button>').concat(birthdays.map(p=>'<button class="chip" data-bperson="'+p.s+'">🎂 '+escBirthday(p.n)+'</button>'));
+ $('pick').innerHTML=choices.length?'<span class="sub" style="margin:0">'+(ev.length&&birthdays.length?'Planes y cumpleaños de este día:':ev.length?'Planes de este día:':'Cumpleaños de este día:')+'</span>'+choices.join(''):'';
 });
-$('pick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b)go(b.dataset.g)});
+$('pick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b){go(b.dataset.g);return;}const p=x.target.closest('[data-bperson]');if(p)goB(p.dataset.bperson)});
 $('prev').onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);cal()};
 $('next').onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);cal()};
 
@@ -557,25 +565,6 @@ const bday={};PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(
 let BD=PEOPLE.map(p=>{let t=new Date(today.getFullYear(),p.m-1,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m-1,p.d);return{p,t}}).sort((a,b)=>a.t-b.t||PEOPLE.indexOf(a.p)-PEOPLE.indexOf(b.p));
 let bcur=new Date(BD[0].t.getFullYear(),BD[0].t.getMonth(),1);
 function goB(s){showTab('cumples');const el=$('b-'+s);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
-function bcal(){
- const y=bcur.getFullYear(),m=bcur.getMonth();
- $('bmname').textContent=MES[m]+' '+y;
- let h=['L','M','X','J','V','S','D'].map(d=>'<div class="dow">'+d+'</div>').join('');
- const off=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
- for(let i=0;i<off;i++)h+='<div></div>';
- for(let d=1;d<=n;d++){
-  const ps=bday[(m+1)+'-'+d],isT=new Date(y,m,d).getTime()===today.getTime();
-  if(ps)h+='<button class="day bd'+(isT?' today':'')+'" data-b="'+(m+1)+'-'+d+'" aria-label="'+d+' de '+MES[m]+': '+ps.map(p=>p.n).join(', ')+'"><img src="'+ps[0].i+'" alt="">'+(ps.length>1?'<span class="n">'+ps.length+'</span>':'')+'</button>';
-  else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
- }
- $('bcg').innerHTML=h;$('bpick').innerHTML='';
-}
-$('bcg').addEventListener('click',x=>{const b=x.target.closest('[data-b]');if(!b)return;const ps=bday[b.dataset.b];
- if(ps.length===1){$('bpick').innerHTML='';goB(ps[0].s)}
- else $('bpick').innerHTML='<span class="sub" style="margin:0">Ese día cumplen:</span>'+ps.map(p=>'<button class="chip" data-g="'+p.s+'">'+p.n+'</button>').join('')});
-$('bpick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b)goB(b.dataset.g)});
-$('bprev').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()-1,1);bcal()};
-$('bnext').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()+1,1);bcal()};
 const when=n=>n===0?'¡Hoy!':n===1?'Mañana':'En '+n+' días';
  function birthdayAge(p,t){return Number.isInteger(p.y)&&p.y>=1901?t.getFullYear()-p.y:null;}
  function birthdayAgeLabel(p,t){const age=birthdayAge(p,t);return age===null?'':' · Cumple '+age+' años';}
@@ -583,7 +572,8 @@ $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return
 {const g=BD.filter(x=>x.t.getTime()===BD[0].t.getTime()),n=Math.round((BD[0].t-today)/864e5),nm=g.map(x=>x.p.n).join(' y ');
  $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(birthdayAge(g[0].p,g[0].t)!==null?'<strong class="birthday-countdown-age"> · Este año cumple '+birthdayAge(g[0].p,g[0].t)+' años</strong>':'')+'</span>';
  $('bcount').onclick=()=>goB(g[0].p.s)}
-bcal();
+window.PaquilloBirthdayLookup={};PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(window.PaquilloBirthdayLookup[k]=window.PaquilloBirthdayLookup[k]||[]).push(p)});
+cal();
 function escBirthday(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 window.syncPaquilloBirthdays=function(rows){
  const byName=new Map((rows||[]).map(m=>[m.display_name,m]));
@@ -592,13 +582,14 @@ window.syncPaquilloBirthdays=function(rows){
   if(Object.prototype.hasOwnProperty.call(m,'avatar_url'))p.i=m.avatar_url||p.i;
  });
  Object.keys(bday).forEach(k=>delete bday[k]);
- PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(p)});
+ Object.keys(window.PaquilloBirthdayLookup).forEach(k=>delete window.PaquilloBirthdayLookup[k]);
+ PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(p);(window.PaquilloBirthdayLookup[k]=window.PaquilloBirthdayLookup[k]||[]).push(p)});
  BD=PEOPLE.map(p=>{let t=new Date(today.getFullYear(),p.m-1,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m-1,p.d);return{p,t}}).sort((a,b)=>a.t-b.t||PEOPLE.indexOf(a.p)-PEOPLE.indexOf(b.p));
- if(BD.length)bcur=new Date(BD[0].t.getFullYear(),BD[0].t.getMonth(),1);
+ cal();
  $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+escBirthday(x.p.i)+'" alt="'+escBirthday(x.p.n)+'" onerror="this.style.display=\'none\'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
  bcal();
  const g=BD.filter(x=>x.t.getTime()===BD[0]?.t.getTime()),n=BD.length?Math.round((BD[0].t-today)/864e5):0,nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(g[0]&&birthdayAge(g[0].p,g[0].t)!==null?'<strong class="birthday-countdown-age"> · Este año cumple '+birthdayAge(g[0].p,g[0].t)+' años</strong>':'')+'</span>';
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+'</span>'+g.map(x=>{const age=birthdayAge(x.p,x.t);return age===null?'':'<strong class="birthday-countdown-age">🎈 '+escBirthday(x.p.n)+': cumple '+age+' años</strong>'}).join('');
  $('bcount').onclick=()=>{if(g[0])goB(g[0].p.s)};
 };
 showTab(location.hash.slice(1));
