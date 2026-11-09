@@ -9,6 +9,12 @@
   "description": "Planes y eventos del grupo Paquillo",
   "icons": [
     {
+      "src": "/Eventos-Paquillo/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/Eventos-Paquillo/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
