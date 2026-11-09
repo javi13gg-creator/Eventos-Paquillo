@@ -1200,6 +1200,7 @@ showTab(location.hash.slice(1));
    await recordUserActivity(true);
    initUserActivityTracking();
    addUserTools(profile.username,profile.role);
+   try{await getActiveMembers();}catch(err){console.warn('No se pudieron sincronizar los perfiles para cumpleaños',err);}
    try{await loadEventsFromDatabase();}catch(err){console.error('No se pudieron cargar los planes de Supabase',err);}
    initPaquiNewsUI();await loadPaquiNews(false);
    const initialTab=location.hash.slice(1);
