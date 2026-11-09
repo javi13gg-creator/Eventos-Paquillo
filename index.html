@@ -97,7 +97,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .banner{display:block;width:100%;max-width:780px;height:auto;margin:0 auto 1.1rem;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
-.count.b{background:var(--mint);color:#06281d}
+.count.b{background:var(--mint);color:#06281d}.birthday-countdown-copy{display:inline}.birthday-countdown-age{display:inline;font-weight:900;white-space:normal}
 .av{width:1.9rem;height:1.9rem;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.4rem;border:2px solid #06281d}
 .av+.av{margin-left:-.9rem}
 .day.bd{padding:0;border:2px solid var(--pk);border-radius:50%;overflow:hidden;position:relative;cursor:pointer;background:none}
@@ -581,7 +581,7 @@ const when=n=>n===0?'¡Hoy!':n===1?'Mañana':'En '+n+' días';
  function birthdayAgeLabel(p,t){const age=birthdayAge(p,t);return age===null?'':' · Cumple '+age+' años';}
 $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+x.p.i+'" alt="'+escBirthday(x.p.n)+'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
 {const g=BD.filter(x=>x.t.getTime()===BD[0].t.getTime()),n=Math.round((BD[0].t-today)/864e5),nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+birthdayAgeLabel(g[0].p,g[0].t);
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(birthdayAge(g[0].p,g[0].t)!==null?'<strong class="birthday-countdown-age"> · Este año cumple '+birthdayAge(g[0].p,g[0].t)+' años</strong>':'')+'</span>';
  $('bcount').onclick=()=>goB(g[0].p.s)}
 bcal();
 function escBirthday(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -598,7 +598,7 @@ window.syncPaquilloBirthdays=function(rows){
  $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+escBirthday(x.p.i)+'" alt="'+escBirthday(x.p.n)+'" onerror="this.style.display=\'none\'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
  bcal();
  const g=BD.filter(x=>x.t.getTime()===BD[0]?.t.getTime()),n=BD.length?Math.round((BD[0].t-today)/864e5):0,nm=g.map(x=>x.p.n).join(' y ');
- $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(g[0]?birthdayAgeLabel(g[0].p,g[0].t):'');
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+(g[0]&&birthdayAge(g[0].p,g[0].t)!==null?'<strong class="birthday-countdown-age"> · Este año cumple '+birthdayAge(g[0].p,g[0].t)+' años</strong>':'')+'</span>';
  $('bcount').onclick=()=>{if(g[0])goB(g[0].p.s)};
 };
 showTab(location.hash.slice(1));
