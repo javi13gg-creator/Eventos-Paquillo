@@ -587,7 +587,7 @@ window.syncPaquilloBirthdays=function(rows){
  BD=PEOPLE.map(p=>{let t=new Date(today.getFullYear(),p.m-1,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m-1,p.d);return{p,t}}).sort((a,b)=>a.t-b.t||PEOPLE.indexOf(a.p)-PEOPLE.indexOf(b.p));
  cal();
  $('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+escBirthday(x.p.i)+'" alt="'+escBirthday(x.p.n)+'" onerror="this.style.display=\'none\'"><div><b>'+escBirthday(x.p.n)+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+birthdayAgeLabel(x.p,x.t)+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
- bcal();
+ cal();
  const g=BD.filter(x=>x.t.getTime()===BD[0]?.t.getTime()),n=BD.length?Math.round((BD[0].t-today)/864e5):0,nm=g.map(x=>x.p.n).join(' y ');
  $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+escBirthday(x.p.i)+'" alt="">').join('')+'<span class="birthday-countdown-copy">'+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂')+'</span>'+g.map(x=>{const age=birthdayAge(x.p,x.t);return age===null?'':'<strong class="birthday-countdown-age">🎈 '+escBirthday(x.p.n)+': cumple '+age+' años</strong>'}).join('');
  $('bcount').onclick=()=>{if(g[0])goB(g[0].p.s)};
