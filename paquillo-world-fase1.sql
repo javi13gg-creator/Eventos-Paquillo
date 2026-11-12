@@ -110,4 +110,5 @@ after insert on public.polls
 for each row execute function public.paqui_world_poll_created_xp();
 
 grant select on public.paqui_world_profiles, public.paqui_world_xp_ledger to authenticated;
+revoke all on function public.paqui_world_award_xp(uuid, integer, text, text) from public, anon, authenticated;
 revoke insert, update, delete on public.paqui_world_profiles, public.paqui_world_xp_ledger from anon, authenticated;
