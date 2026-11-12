@@ -10,8 +10,8 @@
  const avatar=(url,name,large=false)=>{
   const cls='pw-avatar'+(large?' pw-avatar-large':'');
   return '<div class="pw-avatar-wrap'+(large?' pw-avatar-wrap-large':'')+'">'+
-   (url?'<img class="'+cls+'" src="'+esc(url)+'" alt="Personaje provisional de '+esc(name)+'" onerror="this.remove()">':'')+
-   '<span class="'+cls+' pw-avatar-fallback">'+esc(initials(name))+'</span></div>';
+   (url?'<img class="'+cls+'" src="'+esc(url)+'" alt="Personaje provisional de '+esc(name)+'" onerror="this.style.display=\'none\';this.nextElementSibling.hidden=false">':'')+
+   '<span class="'+cls+' pw-avatar-fallback"'+(url?' hidden':'')+'>'+esc(initials(name))+'</span></div>';
  };
  function renderGames(){
   const games=[
@@ -46,7 +46,7 @@
     const mp=profiles.get(m.auth_user_id);
     return '<article class="pw-character-card'+(mineCard?' is-me':'')+'"><div class="pw-character-portrait"><div class="pw-character-glow"></div>'+avatar(mp?.character_image_url||m.avatar_url,m.display_name,true)+'<span class="pw-character-status">'+(mp?.character_image_url?'PERSONAJE PAQUILLERO': 'AVATAR EN PREPARACIÓN')+'</span>'+(mineCard?'<span class="pw-you-tag">TÚ</span>':'')+'</div><div class="pw-character-info"><b>'+esc(m.display_name)+'</b><div><span class="pw-level-pill">NIVEL '+level(m.xp)+'</span><strong>'+m.xp+' XP</strong></div><small>'+(i<3&&m.xp>0?['🥇 TOP 1','🥈 TOP 2','🥉 TOP 3'][i]:'MIEMBRO DEL EQUIPO')+'</small></div></article>';
    }).join('');
-   const podium=ranked.slice(0,5).map((m,i)=>'<div class="pw-leader-row '+(m.auth_user_id===uid?'is-me':'')+'"><span class="pw-leader-pos">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1).padStart(2,'0'))+'</span>'+(m.avatar_url?'<img src="'+esc(m.avatar_url)+'" alt="" onerror="this.style.display=\\'none\\'">':'<span class="pw-leader-initials">'+esc(initials(m.display_name))+'</span>')+'<b>'+esc(m.display_name)+'</b><strong>'+m.xp+' <small>XP</small></strong></div>').join('');
+   const podium=ranked.slice(0,5).map((m,i)=>'<div class="pw-leader-row '+(m.auth_user_id===uid?'is-me':'')+'"><span class="pw-leader-pos">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1).padStart(2,'0'))+'</span>'+(m.avatar_url?'<img src="'+esc(m.avatar_url)+'" alt="" onerror="this.remove()">':'<span class="pw-leader-initials">'+esc(initials(m.display_name))+'</span>')+'<b>'+esc(m.display_name)+'</b><strong>'+m.xp+' <small>XP</small></strong></div>').join('');
    target.innerHTML='<div class="pw-world">'+notice+
     '<header class="pw-hero"><div class="pw-hero-sparks"></div><div class="pw-hero-copy"><div class="pw-brandline"><span class="pw-brand-icon">P!</span><span>EL UNIVERSO DE LOS PAQUILLOS</span><b>TEMPORADA 01</b></div><h2>PAQUILLO<br><em>WORLD</em></h2><p>Tu pandilla. Tu personaje. Tu leyenda.</p><div class="pw-hero-tags"><span>🎮 JUEGA</span><span>⚡ SUBE DE NIVEL</span><span>🏆 CONQUISTA EL GRUPO</span></div></div><div class="pw-hero-player"><div class="pw-hero-orbit pw-orbit-one"></div><div class="pw-hero-orbit pw-orbit-two"></div><div class="pw-hero-platform"></div><div class="pw-hero-avatar">'+avatar(myProfile.character_image_url||mine?.avatar_url,mine?.display_name||'Tu personaje',true)+'</div><div class="pw-hero-level">LVL <b>'+lvl+'</b></div><div class="pw-hero-name">'+esc(mine?.display_name||'TU PERSONAJE')+'</div><span class="pw-hero-caption">PLAYER 01 · PAQUILLO</span></div><div class="pw-hero-scribble">¡A JUGAR!</div></header>'+
     '<div class="pw-stats-strip"><div><small>EXPERIENCIA</small><b>'+xp+' <i>XP</i></b></div><div><small>POSICIÓN</small><b>#'+(rank||'—')+' <i>/ '+members.length+'</i></b></div><div><small>NIVEL ACTUAL</small><b>'+lvl+'</b></div><div><small>HASTA EL SIGUIENTE</small><b>'+((250-progress)%250||250)+' <i>XP</i></b></div></div>'+
