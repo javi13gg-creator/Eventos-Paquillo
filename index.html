@@ -232,6 +232,11 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 .news-panel[hidden]{display:none!important}.news-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;position:sticky;top:-.85rem;background:var(--card);padding:.2rem 0 .65rem;z-index:1}.news-head h3{font-size:1.15rem}.news-actions{display:flex;gap:.35rem;align-items:center}.news-actions button{font:inherit;font-size:.78rem;padding:.28rem .5rem;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}.news-item{display:grid;grid-template-columns:2.1rem 1fr;gap:.55rem;padding:.7rem .25rem;border-top:1px solid var(--ln);cursor:pointer}.news-item.unread{background:color-mix(in srgb,var(--pk) 7%,transparent)}.news-icon{width:2rem;height:2rem;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-size:1.05rem}.news-copy b{display:block;line-height:1.25}.news-copy small{display:block;color:var(--mut);margin-top:.2rem}.news-copy p{margin:.2rem 0 0;font-size:.86rem;color:var(--mut)}.news-empty{padding:1.3rem .5rem;text-align:center;color:var(--mut)}.news-open{font:inherit;text-align:left;color:inherit;background:none;border:0;padding:0;width:100%;cursor:pointer}
 @media(max-width:560px){.news-panel{top:calc(env(safe-area-inset-top,0px) + 4.6rem);right:.55rem;width:calc(100vw - 1.1rem);max-height:75dvh}.news-bell{min-width:2.45rem;height:2.45rem}}
 
+
+/* Paquillo World · fase 1 */
+.paqui-world-hero{padding:1.2rem 1rem;text-align:center;border:2px solid var(--ink);border-radius:20px;background:linear-gradient(135deg,#29216d,#9f236f 70%,#ed7b4c);color:#fff;box-shadow:5px 5px 0 var(--ink)}
+.paqui-world-hero h2{margin:.3rem 0 .5rem;background:none;color:#fff}.paqui-world-hero .sub{color:#f5eaff;margin:.4rem auto;max-width:38rem}.paqui-world-kicker{font-size:.72rem;font-weight:900;letter-spacing:.13em;color:#ffdc62}
+.pw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;margin:1rem 0}.pw-card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:1rem;box-shadow:3px 3px 0 var(--ink)}.pw-me{display:flex;align-items:center;gap:1rem}.pw-avatar{width:88px;height:112px;object-fit:cover;object-position:center;border-radius:14px;border:2px solid var(--yl);background:var(--bg)}.pw-level{font-size:2rem;font-weight:900;color:var(--pk);line-height:1}.pw-xpbar{height:12px;border-radius:99px;background:var(--ln);overflow:hidden;margin:.55rem 0}.pw-xpbar span{display:block;height:100%;background:linear-gradient(90deg,var(--pk),var(--yl));border-radius:99px}.pw-muted{color:var(--mut);font-size:.88rem}.pw-ranking{display:grid;gap:.45rem}.pw-rank{display:flex;align-items:center;gap:.65rem;padding:.55rem .65rem;background:var(--bg);border-radius:11px}.pw-rank img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid var(--ln)}.pw-rank b{flex:1}.pw-rank strong{color:var(--pk);white-space:nowrap}.pw-action-list{display:grid;gap:.4rem}.pw-action{display:flex;justify-content:space-between;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--ln)}.pw-action:last-child{border:0}
 </style>
 <style>
 /* Fase 6.1 · confirmación de asistencia */
@@ -292,6 +297,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
       </section>
       <section class="menu-group"><h3>🎉 Entretenimiento</h3>
         <button type="button" class="menu-link" role="tab" data-t="juegos">Juegos 🎲 <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="world">Paquillo World 🌍 <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="stickers">Stickers <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="horno">Ideas y recuerdos <span>›</span></button>
       </section>
@@ -452,6 +458,10 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   </div>
   <p class="games-footnote">Los ajustes y las ruletas personalizadas se guardan solo en el navegador del dispositivo donde se editen; no se publican ni se comparten con el resto del grupo. Imágenes: <a href="https://unsplash.com/photos/red-dice-closeup-photography-MnSYYYqunXA" target="_blank" rel="noopener">dados</a> y <a href="https://unsplash.com/photos/jack-of-spade-and-jack-of-diamonds-playing-cards-4nTJa3qIa9A" target="_blank" rel="noopener">cartas</a> (Unsplash).</p>
 </section>
+<section class="panel" id="p-world" hidden>
+  <div class="paqui-world-hero"><span class="paqui-world-kicker">EL UNIVERSO DE LOS PAQUILLOS</span><h2>🌍 Paquillo World</h2><p class="sub">Participa, sube de nivel y demuestra quién es la auténtica leyenda del grupo.</p></div>
+  <div id="paquiWorldContent"><div class="empty">Cargando tu mundo…</div></div>
+</section>
 </main>
 <footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
 
@@ -562,7 +572,7 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
+function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 $('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
@@ -1053,7 +1063,8 @@ showTab(location.hash.slice(1));
    $id('togglePollForm').textContent='✖ Cerrar formulario';showTab('votaciones');setTimeout(()=>f.scrollIntoView({behavior:'smooth',block:'center'}),100);
  }
  function openPollById(id){showTab('votaciones');setTimeout(()=>{const card=$id('poll-'+id);if(card){card.scrollIntoView({behavior:'smooth'});card.classList.add('flash')}},120)}
- function lock(message){document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
+ function lock(message){window.PaquilloWorldContext=()=>({client,currentAuthUser});
+  document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
 
  const PAQUI_VAPID_PUBLIC_KEY='BEJirS-f2dJ28DSVlQKH9JZ8c-CEMfsDuuhfEc7U5ZUadBbhssL2u4z8WxXTDIKJDlyvXJGFBsbY8L_6K5FKpvw';
  const PAQUI_SITE_URL='https://javi13gg-creator.github.io/Eventos-Paquillo/';
@@ -1211,6 +1222,7 @@ showTab(location.hash.slice(1));
    initUserActivityTracking();
    addUserTools(profile.username,profile.role);
    try{await getActiveMembers();}catch(err){console.warn('No se pudieron sincronizar los perfiles para cumpleaños',err);}
+    window.dispatchEvent(new Event('paqui-world-ready'));
    try{await loadEventsFromDatabase();}catch(err){console.error('No se pudieron cargar los planes de Supabase',err);}
    initPaquiNewsUI();await loadPaquiNews(false);
    const initialTab=location.hash.slice(1);
@@ -1423,6 +1435,7 @@ showTab(location.hash.slice(1));
 })();
 </script>
 
+<script src="paquillo-world.js?v=1"></script>
 <script>
 (()=>{
  const $=id=>document.getElementById(id);
