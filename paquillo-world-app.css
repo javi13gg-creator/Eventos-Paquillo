@@ -10,7 +10,7 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-shell::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 20%,#ffa4da55,transparent 35%),linear-gradient(180deg,#176bee 0%,#a56cd0 32%,#ffb18e 58%,#ffa65f 78%,#fcb26f 100%)}
 #p-world .pw-shell::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.2;background-image:radial-gradient(circle,#fff 1px,transparent 2px);background-size:38px 38px}
 #p-world .pw-head{z-index:5;flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:60px;padding:calc(7px + env(safe-area-inset-top,0px)) 14px 9px;background:linear-gradient(180deg,#1d0c4ef7,#251052ef);box-shadow:0 3px 20px #1d094f66}
-#p-world .pw-return{background:linear-gradient(160deg,#7f33e8,#381084);color:#fff;border:2px solid #bf77fb;border-radius:14px;padding:9px 12px;display:flex;align-items:center;gap:7px;font:900 .8rem/1.1 inherit;box-shadow:0 3px 0 #22065d;cursor:pointer}
+#p-world .pw-return{background:linear-gradient(160deg,#7f33e8,#381084);color:#fff;border:2px solid #bf77fb;border-radius:14px;padding:9px 12px;display:flex;align-items:center;gap:7px;font-family:inherit;font-size:.8rem;font-weight:900;line-height:1.1;box-shadow:0 3px 0 #22065d;cursor:pointer}
 #p-world .pw-return span:first-child{font-size:1.35rem}
 #p-world .pw-head-brand{min-width:0;flex:1;display:flex;align-items:center;gap:7px;font-size:clamp(.9rem,3vw,1.15rem);font-weight:1000;letter-spacing:-.025em;white-space:nowrap}
 #p-world .pw-head-brand b{color:#ffe057}
@@ -25,9 +25,9 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-palm{position:absolute;z-index:2;font-size:clamp(6rem,20vw,14rem);line-height:1;filter:drop-shadow(0 7px 3px #1f4e6f55);pointer-events:none}
 #p-world .pw-palm-left{top:7%;left:-4%;transform:rotate(-20deg)}
 #p-world .pw-palm-right{top:4%;right:-4%;transform:scaleX(-1) rotate(-17deg)}
-#p-world .pw-scene-cast{position:absolute;z-index:2;left:50%;transform:translateX(-50%);bottom:6%;width:min(89%,920px);height:60%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 8px #52265f88)}
+#p-world .pw-scene-cast{position:absolute;z-index:2;left:50%;transform:translateX(-50%);bottom:6%;width:min(89%,920px);height:60%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 8px #52265f88);-webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 53%,#000 67%,transparent 100%);mask-image:radial-gradient(ellipse 72% 72% at 50% 53%,#000 67%,transparent 100%)}
 #p-world .pw-scene-cast[hidden]{display:none}
-#p-world .pw-wood-sign{position:absolute;z-index:4;top:5%;left:50%;transform:translateX(-50%) rotate(-1deg);max-width:94%;padding:9px 23px 14px;background:repeating-linear-gradient(0deg,#9d511f,#9d511f 12px,#b86b2e 13px,#d28a3b 22px);border:4px solid #6c3016;border-radius:20px 16px 22px 20px;box-shadow:0 7px 0 #4b1851,0 15px 30px #36106299;text-align:center}
+#p-world .pw-wood-sign{position:absolute;z-index:4;top:9%;left:50%;transform:translateX(-50%) rotate(-1deg);max-width:94%;padding:9px 23px 14px;background:repeating-linear-gradient(0deg,#9d511f,#9d511f 12px,#b86b2e 13px,#d28a3b 22px);border:4px solid #6c3016;border-radius:20px 16px 22px 20px;box-shadow:0 7px 0 #4b1851,0 15px 30px #36106299;text-align:center}
 #p-world .pw-wood-sign::before{content:"👑";position:absolute;top:-38px;left:50%;transform:translateX(-50%);font-size:2.7rem;filter:drop-shadow(0 3px 1px #7f3b13)}
 #p-world .pw-wood-sign strong{display:block;font-size:clamp(1.6rem,7vw,4.6rem);letter-spacing:-.055em;font-weight:1000;line-height:.92;color:#ffe14b;-webkit-text-stroke:1.5px #77371b;text-shadow:0 3px #a9501d,2px 6px #5d2719,0 9px 12px #47220f77}
 #p-world .pw-wood-sign span{display:block;font-size:clamp(.62rem,2.4vw,1.3rem);margin-top:8px;font-weight:1000;color:#fff;text-shadow:0 2px 2px #4c213b}
@@ -56,7 +56,7 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-bottom-motto{margin:19px 2px;padding:13px;border-radius:15px;background:#35116de8;border:2px solid #d38afa;color:#fff;text-align:center;font-size:.85rem;font-weight:800}
 #p-world .pw-bottom-motto em{color:#ffe159;font-style:normal}
 #p-world .pw-bottom-nav{position:relative;z-index:6;flex:0 0 auto;display:grid;grid-template-columns:repeat(5,1fr);min-height:66px;padding:7px 6px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid #bb72f3;background:#240d57f5;box-shadow:0 -5px 22px #240b5599}
-#p-world .pw-nav-btn{background:transparent;color:#ddd3fa;border:0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:800 .6rem/1.1 inherit;cursor:pointer}
+#p-world .pw-nav-btn{background:transparent;color:#ddd3fa;border:0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit;font-size:.6rem;font-weight:800;line-height:1.1;cursor:pointer}
 #p-world .pw-nav-btn i{font-style:normal;font-size:1.38rem;line-height:1.15}
 #p-world .pw-nav-btn.on{color:#ffe15b;background:#7736c8}
 #p-world .pw-panel{min-height:calc(100dvh - 180px);padding:12px 2px}
@@ -95,8 +95,8 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-modal-card h2{color:#ffe45c;background:none;margin:.5rem 0;font-size:1.6rem}
 #p-world .pw-modal-card .pw-modal-icon{font-size:4rem;line-height:1.1}
 #p-world .pw-modal-card p{color:#f8ecff;font-size:.9rem}
-#p-world .pw-action-button{display:inline-flex;align-items:center;justify-content:center;min-width:150px;min-height:44px;border:2px solid #fff5ab;border-radius:999px;background:linear-gradient(#ffe863,#ffa51a);color:#371b54;font:1000 .95rem/1 inherit;box-shadow:0 4px 0 #ad5e13;cursor:pointer;padding:10px 16px}
-#p-world .pw-secondary-button{margin-top:8px;border:1px solid #aa83f6;border-radius:999px;padding:8px 14px;background:#321273;color:white;font:800 .82rem inherit;cursor:pointer}
+#p-world .pw-action-button{display:inline-flex;align-items:center;justify-content:center;min-width:150px;min-height:44px;border:2px solid #fff5ab;border-radius:999px;background:linear-gradient(#ffe863,#ffa51a);color:#371b54;font-family:inherit;font-size:.95rem;font-weight:900;line-height:1;box-shadow:0 4px 0 #ad5e13;cursor:pointer;padding:10px 16px}
+#p-world .pw-secondary-button{margin-top:8px;border:1px solid #aa83f6;border-radius:999px;padding:8px 14px;background:#321273;color:white;font-family:inherit;font-size:.82rem;font-weight:800;cursor:pointer}
 #p-world .pw-reflex-pad{height:150px;border-radius:22px;border:4px solid #e8e0ff;background:#dc477e;display:grid;place-items:center;font-size:1.2rem;font-weight:1000;margin:18px auto;color:white;cursor:pointer;user-select:none}
 #p-world .pw-reflex-pad.ready{background:#e0a62a;color:#2b1c4a}
 #p-world .pw-reflex-pad.go{background:#22cc69;color:#073c24}
@@ -120,7 +120,7 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-scene-cast{height:59%;width:96%;bottom:12%}
  #p-world .pw-palm{font-size:7rem}
  #p-world .pw-hero-label{display:none}
- #p-world .pw-wood-sign{top:7%;padding:10px 12px}
+ #p-world .pw-wood-sign{top:11%;padding:10px 12px}
  #p-world .pw-wood-sign strong{font-size:clamp(2rem,8.8vw,3.2rem)}
  #p-world .pw-wood-sign::before{font-size:1.9rem;top:-30px}
  #p-world .pw-head-brand{font-size:.97rem}
