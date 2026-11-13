@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
       ?String(body.destination):"proximos";
     if(kind!=="event"&&audience==="attendees")return fail("Los asistentes solo se pueden seleccionar en avisos de planes");
     if(kind==="event"){
-      if(!isUuid(eventId))return fail("Selecciona un plan válido");
+      if(!isUuid(eventId)&&!/^[0-9]{1,20}$/.test(eventId))return fail("Selecciona un plan válido");
       const {data:event,error}=await db.from("group_events").select("id,title,status").eq("id",eventId).maybeSingle();
       if(error||!event||["draft","cancelled"].includes(event.status))
         return fail("El plan no existe o no admite avisos");
