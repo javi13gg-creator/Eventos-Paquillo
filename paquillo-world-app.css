@@ -489,3 +489,231 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-bottom-nav{padding-left:4px;padding-right:4px;gap:0}
  #p-world .pw-modal{padding:9px 9px}
 }
+
+
+/* Paquillo World v13 · una pantalla, sin cortes ni desplazamiento.
+   La navegación se ancla al área de juego y nunca depende del alto del contenido. */
+#p-world:not([hidden]){top:0;left:0;right:0;bottom:0;height:100dvh;max-height:100dvh;overflow:hidden}
+#p-world .pw-shell{
+ --pw-head-h:60px;
+ --pw-nav-h:calc(72px + env(safe-area-inset-bottom,0px));
+ position:relative!important;display:block!important;
+ width:100%;height:100%;min-height:0;max-height:100%;
+ overflow:hidden;box-sizing:border-box;
+}
+#p-world .pw-head{
+ position:absolute!important;z-index:70;
+ top:0;left:0;right:0;
+ width:100%;height:var(--pw-head-h);min-height:0!important;
+ box-sizing:border-box;padding:5px 12px;
+}
+#p-world .pw-scroll{
+ position:absolute!important;z-index:1;
+ top:var(--pw-head-h);left:0;right:0;bottom:var(--pw-nav-h);
+ height:auto;min-height:0!important;
+ padding:0!important;overflow:hidden!important;
+ touch-action:pan-x;
+}
+#p-world .pw-bottom-nav{
+ position:absolute!important;z-index:200!important;
+ bottom:0;left:0;right:0;top:auto;
+ width:100%;height:var(--pw-nav-h);min-height:0!important;
+ padding:5px 7px calc(12px + env(safe-area-inset-bottom,0px));
+ box-sizing:border-box;display:grid!important;
+ grid-template-columns:repeat(6,minmax(0,1fr));align-items:center;
+ background:linear-gradient(180deg,#482280,#200c50);
+ border-top:2px solid #cda0ff;
+ box-shadow:0 -5px 18px #180b40cc;
+ visibility:visible!important;opacity:1!important;
+}
+#p-world .pw-nav-btn{height:100%;max-height:54px;min-height:0!important;padding:4px 0;gap:1px}
+#p-world .pw-nav-btn i{font-size:1.28rem}
+#p-world .pw-nav-btn span{font-size:.6rem}
+#p-world .pw-screen{
+ box-sizing:border-box;
+ height:100%;min-height:0!important;max-height:100%;
+ overflow:hidden!important;
+ margin:0 auto;padding:8px 10px!important;
+}
+#p-world .pw-panel{min-height:0!important}
+#p-world .pw-panel-head{padding:9px 11px;border-radius:12px}
+#p-world .pw-panel-head h2{font-size:1.15rem;line-height:1.12}
+#p-world .pw-panel-head p{font-size:.72rem;margin:3px 0 0}
+#p-world .pw-modal{
+ position:absolute!important;z-index:110!important;
+ top:var(--pw-head-h)!important;left:0;right:0;bottom:var(--pw-nav-h)!important;
+ height:auto!important;max-height:none;
+ padding:7px 9px;overflow:hidden!important;
+ display:flex;align-items:center;justify-content:center;
+}
+#p-world .pw-modal[hidden]{display:none!important}
+#p-world .pw-modal-card{
+ display:flex;flex-direction:column;
+ width:min(100%,620px);height:100%;max-height:100%;
+ min-height:0;overflow:hidden!important;box-sizing:border-box;
+ padding:6px 10px 8px;border-radius:16px;border-width:2px;
+}
+#p-world .pw-modal-top{
+ position:relative;z-index:1;flex:0 0 auto;
+ top:auto;margin:-6px -10px 5px;padding:4px 8px;
+ min-height:34px;border-radius:14px 14px 0 0;
+}
+#p-world .pw-modal-back{min-height:30px;min-width:74px;padding:4px 9px;font-size:.72rem}
+#p-world .pw-modal-card>.pw-secondary-button{display:none}
+#p-world .pw-modal-card h2{font-size:clamp(1rem,3.8vw,1.25rem);line-height:1.18;margin:3px 0 7px}
+#p-world .pw-modal-card p{font-size:.78rem;line-height:1.25}
+#p-world .pw-modal-icon{font-size:2.2rem!important}
+#p-world .pw-action-button{min-height:36px;padding:7px 12px;font-size:.83rem;box-shadow:0 2px 0 #ad5e13}
+#p-world .pw-modal-card>.pw-quiz,
+#p-world .pw-modal-card>.pw-memory{display:flex;flex-direction:column;flex:1;min-height:0}
+#p-world .pw-quiz-head{flex:0 0 auto}
+#p-world .pw-quiz-progress{flex:0 0 5px;margin:6px 0}
+#p-world .pw-quiz-type{margin:2px 0;font-size:.65rem}
+#p-world .pw-quiz-options{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ grid-template-rows:repeat(2,minmax(0,1fr));
+ gap:7px;flex:1;min-height:0;margin:6px 0;
+}
+#p-world .pw-quiz-answer{
+ min-height:0!important;height:100%;padding:7px 8px;
+ line-height:1.12;white-space:normal;overflow-wrap:anywhere;
+ font-size:clamp(.75rem,3.4vw,.94rem);border-radius:11px;box-shadow:0 2px 0 #2f175b;
+}
+#p-world .pw-quiz-feedback{flex:0 0 auto;margin:3px 0;font-size:.75rem}
+#p-world .pw-quiz .pw-action-button{flex:0 0 auto;align-self:center}
+#p-world .pw-quiz .pw-local-note,#p-world .pw-memory .pw-local-note{display:none}
+#p-world .pw-quiz-score{margin:2px 0}
+#p-world .pw-memory>p:first-of-type{flex:0 0 auto;margin:2px 0 6px}
+#p-world .pw-memory-stats{flex:0 0 auto;padding:5px;font-size:.72rem}
+#p-world .pw-memory-grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ grid-template-rows:repeat(3,minmax(0,1fr));gap:5px;
+ flex:1;min-height:0;margin:7px 0;
+}
+#p-world .pw-memory-card{width:100%;height:100%;min-height:0;aspect-ratio:auto;border-radius:9px;padding:3px}
+#p-world .pw-memory-name{font-size:clamp(.65rem,2.8vw,.84rem)}
+#p-world .pw-memory .pw-secondary-button{flex:0 0 auto;align-self:center;margin:2px 0;padding:5px 12px;font-size:.72rem}
+#p-world .pw-modal[data-game="reflex"] .pw-reflex-pad{height:clamp(65px,19dvh,120px);margin:6px auto;font-size:1rem}
+#p-world .pw-paged-screen{display:flex;flex-direction:column;gap:6px}
+#p-world .pw-paged-surface{flex:1;min-height:0;overflow:hidden;margin:0;padding:8px 10px}
+#p-world .pw-paged-surface h3{font-size:.88rem;margin:0 0 5px}
+#p-world .pw-paged-surface .pw-rank-row{padding:5px 0;min-height:0}
+#p-world .pw-paged-surface .pw-rank-row img{width:32px;height:32px}
+#p-world .pw-paged-surface .pw-rank-row b{font-size:.77rem}
+#p-world .pw-paged-surface .pw-rank-row strong{font-size:.68rem}
+#p-world .pw-pagination{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:9px;margin:2px 0 5px}
+#p-world .pw-pagination button{min-height:35px;padding:6px 13px;border:2px solid #cfabfb;border-radius:99px;background:#763cb6;color:white;font:850 .76rem "Bricolage Grotesque",system-ui,sans-serif}
+#p-world .pw-pagination button:disabled{opacity:.37}
+#p-world .pw-pagination strong{font-size:.76rem;color:#ffe77e}
+#p-world .pw-paged-hint{flex:0 0 auto;font-size:.68rem;color:#f4deef;margin:0}
+#p-world .pw-people-screen .pw-person-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ grid-template-rows:repeat(2,minmax(0,1fr));gap:7px;
+ flex:1;min-height:0;overflow:hidden;margin:0;
+}
+#p-world .pw-people-screen .pw-person-card{display:flex;flex-direction:column;min-height:0;height:100%;border-radius:11px}
+#p-world .pw-people-screen .pw-person-art{height:auto;flex:1;min-height:0}
+#p-world .pw-people-screen .pw-person-card b{flex:0 0 auto;padding:4px 3px 0}
+#p-world .pw-people-screen .pw-person-card small{flex:0 0 auto;padding:0 3px 4px}
+#p-world .pw-profile-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;flex:0 0 auto}
+#p-world .pw-profile-tabs button{min-height:38px;padding:5px;border:2px solid #a879ee;border-radius:10px;background:#472281;color:white;font:850 .78rem "Bricolage Grotesque",system-ui,sans-serif}
+#p-world .pw-profile-tabs button.selected{background:#8550d2;border-color:#ffe27d;color:#fff6ce}
+#p-world .pw-profile-content{flex:1;min-height:0;overflow:hidden}
+#p-world .pw-profile-content .pw-surface{margin:3px 0;padding:9px}
+#p-world .pw-profile-content .pw-player-card img{width:70px;height:88px}
+#p-world .pw-profile-content .pw-rank-row{padding:6px 0}
+#p-world .pw-profile-hint{margin:10px 4px;font-size:.75rem;color:#ebdefa}
+#p-world .pw-games-screen{display:flex;flex-direction:column;gap:5px}
+#p-world .pw-games-board{flex:1;min-height:0;overflow:hidden}
+#p-world .pw-games-board .pw-game-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ grid-template-rows:repeat(2,minmax(0,1fr));
+ height:100%;gap:8px;margin:0;
+}
+#p-world .pw-games-board .pw-game{height:100%;min-height:0!important;padding:8px 5px;border-radius:14px}
+#p-world .pw-games-board .pw-game-art{font-size:clamp(1.6rem,5dvh,3rem);margin:1px 0 3px;width:auto;height:auto;border:0;background:none}
+#p-world .pw-games-board .pw-game strong{font-size:.95rem}
+#p-world .pw-games-board .pw-game p{font-size:.67rem;min-height:0;margin:3px 0}
+#p-world .pw-games-board .pw-play-chip{padding:4px 7px;font-size:.68rem}
+#p-world .pw-games-coming{flex:0 0 auto;margin:2px 1px 5px;font-size:.67rem;color:#fff3c9;text-align:center}
+#p-world .pw-challenges-screen{display:flex;flex-direction:column;gap:8px}
+#p-world .pw-challenges-screen .pw-surface{margin:0;padding:9px}
+#p-world .pw-challenges-screen .pw-rank-row{padding:7px 0;font-size:.82rem}
+#p-world .pw-challenges-games{align-self:center}
+@media(max-width:690px){
+ #p-world .pw-lobby-screen{max-width:none;height:100%;padding:0!important}
+ #p-world .pw-lobby-land{height:100%;border:0;border-radius:0;box-shadow:none;overflow:hidden}
+ #p-world .pw-lobby-screen .pw-scene{height:clamp(190px,43dvh,335px)}
+ #p-world .pw-lobby-screen .pw-wood-sign{top:101px;width:min(68%,290px)}
+ #p-world .pw-lobby-screen .pw-lobby-layout{display:block;margin:-26px 9px 0;position:relative;z-index:9}
+ #p-world .pw-lobby-screen .pw-shortcut-rail{display:none}
+ #p-world .pw-lobby-screen .pw-lobby-right,#p-world .pw-lobby-screen .pw-stage-ticker,#p-world .pw-lobby-screen .pw-lobby-foot{display:none!important}
+ #p-world .pw-lobby-screen .pw-game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:7px}
+ #p-world .pw-lobby-screen .pw-game{min-height:clamp(100px,16dvh,130px);height:100%;padding:7px 5px 9px;border-radius:15px}
+ #p-world .pw-lobby-screen .pw-game-art{width:36px;height:36px;font-size:1.85rem;margin:0 0 3px}
+ #p-world .pw-lobby-screen .pw-game strong{font-size:.89rem}
+ #p-world .pw-lobby-screen .pw-game p{font-size:.65rem;margin:1px 0 4px;min-height:0}
+ #p-world .pw-lobby-screen .pw-play-chip{font-size:.67rem;padding:4px 6px;margin-bottom:0}
+ #p-world .pw-island-section-title{font-size:.85rem;margin:0 0 7px}
+}
+@media(max-height:600px){
+ #p-world .pw-shell{--pw-head-h:49px;--pw-nav-h:calc(61px + env(safe-area-inset-bottom,0px))}
+ #p-world .pw-head{padding:3px 10px}
+ #p-world .pw-head-xp{font-size:.61rem;padding:4px 6px}
+ #p-world .pw-return{padding:4px 8px;font-size:.67rem}
+ #p-world .pw-bottom-nav{padding:3px 4px calc(7px + env(safe-area-inset-bottom,0px))}
+ #p-world .pw-nav-btn{max-height:48px}
+ #p-world .pw-nav-btn span{font-size:.56rem}
+ #p-world .pw-nav-btn i{font-size:1.15rem}
+ #p-world .pw-screen{padding:5px 8px!important}
+ #p-world .pw-panel-head{padding:4px 8px}
+ #p-world .pw-panel-head h2{font-size:.98rem}
+ #p-world .pw-panel-head p{display:none}
+ #p-world .pw-modal{padding:4px 7px}
+ #p-world .pw-modal-card{padding:3px 8px 4px}
+ #p-world .pw-modal-top{margin:-3px -8px 3px;min-height:27px;padding:2px 6px}
+ #p-world .pw-modal-back{min-height:27px;padding:3px 8px}
+ #p-world .pw-modal-card h2{font-size:.93rem;line-height:1.1;margin:3px 0}
+ #p-world .pw-quiz-progress,#p-world .pw-quiz-type,#p-world .pw-quiz-score{display:none}
+ #p-world .pw-quiz-answer{font-size:.78rem;padding:4px;min-height:0}
+ #p-world .pw-quiz-options{gap:5px;margin:3px 0}
+ #p-world .pw-quiz-feedback{margin:2px 0;font-size:.68rem}
+ #p-world .pw-modal-card p{font-size:.7rem;margin:3px 0}
+ #p-world .pw-modal-card>.pw-game-finish{font-size:.8rem}
+ #p-world .pw-final-score{font-size:1.75rem!important}
+ #p-world .pw-memory>p:first-of-type{display:none}
+ #p-world .pw-memory-stats{padding:2px}
+ #p-world .pw-memory-grid{gap:4px;margin:4px 0}
+ #p-world .pw-memory .pw-secondary-button{padding:3px 8px;font-size:.65rem}
+ #p-world .pw-paged-surface .pw-rank-row{padding:3px 0}
+ #p-world .pw-people-screen .pw-person-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ #p-world .pw-people-screen .pw-person-card b{font-size:.72rem}
+ #p-world .pw-people-screen .pw-person-card small{font-size:.58rem}
+ #p-world .pw-lobby-screen .pw-scene{height:clamp(120px,39dvh,200px)}
+ #p-world .pw-lobby-screen .pw-wood-sign{top:57px;padding:4px 10px;width:min(46%,200px)}
+ #p-world .pw-lobby-screen .pw-wood-sign strong{font-size:1.55rem}
+ #p-world .pw-lobby-screen .pw-wood-sign small{display:none}
+ #p-world .pw-lobby-screen .pw-logo-crown{display:none}
+ #p-world .pw-lobby-screen .pw-lobby-layout{margin-top:-12px}
+ #p-world .pw-lobby-screen .pw-game-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr;gap:5px}
+ #p-world .pw-lobby-screen .pw-game{min-height:87px;padding:3px 2px 5px}
+ #p-world .pw-lobby-screen .pw-game-art{width:24px;height:24px;font-size:1.3rem}
+ #p-world .pw-lobby-screen .pw-game strong{font-size:.73rem}
+ #p-world .pw-lobby-screen .pw-game p,#p-world .pw-lobby-screen .pw-play-chip{display:none}
+ #p-world .pw-island-section-title{margin:0 0 4px;font-size:.72rem}
+ #p-world .pw-lobby-screen .pw-palm{font-size:4.5rem}
+}
+@media(min-width:600px) and (max-height:520px){
+ #p-world .pw-quiz-options{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr}
+ #p-world .pw-memory-grid{grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+ #p-world .pw-games-board .pw-game-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr}
+ #p-world .pw-games-board .pw-game strong{font-size:.75rem}
+ #p-world .pw-games-board .pw-game p{display:none}
+ #p-world .pw-games-board .pw-game-art{font-size:1.6rem}
+}
+@media(max-height:370px){
+ /* Accessibility fallback for very small visual viewports: retain reachable game content. */
+ #p-world .pw-modal-card{overflow-y:auto!important}
+ #p-world .pw-quiz-options{min-height:76px}
+ #p-world .pw-memory-grid{min-height:120px}
+}
