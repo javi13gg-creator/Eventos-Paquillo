@@ -430,3 +430,62 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-quiz-answer{font-size:.76rem;min-height:60px;padding:7px}
  #p-world .pw-memory-name{font-size:.63rem}
 }
+
+
+/* World v12: barra persistente incluso con minijuegos abiertos.
+   Safe area: el alto total ya incluye margen de la barra de gestos. */
+#p-world:not([hidden]){height:100vh;height:100dvh;bottom:0}
+#p-world .pw-shell{
+ --pw-nav-height:calc(87px + env(safe-area-inset-bottom,0px));
+ height:100%;min-height:0;box-sizing:border-box;
+}
+#p-world .pw-scroll{flex:1 1 auto;min-height:0;padding-bottom:24px}
+#p-world .pw-bottom-nav{
+ position:relative;z-index:60;
+ display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:stretch;
+ flex:0 0 var(--pw-nav-height);
+ width:100%;height:var(--pw-nav-height);min-height:var(--pw-nav-height);
+ padding:7px 7px calc(17px + env(safe-area-inset-bottom,0px));
+ box-sizing:border-box;gap:2px;
+ border-top:2px solid #bd87f3;
+ background:linear-gradient(180deg,#34136eea,#210b54 80%);
+ box-shadow:0 -6px 22px #17083dbb;
+}
+#p-world .pw-nav-btn{min-width:0;min-height:46px;gap:3px;padding:4px 1px;border-radius:12px;font-size:.63rem;line-height:1.12}
+#p-world .pw-nav-btn i{font-size:1.4rem;line-height:1.1}
+#p-world .pw-nav-btn span{white-space:nowrap}
+#p-world .pw-nav-back{color:#ffe5a1;background:#5b277de0}
+#p-world .pw-modal{
+ position:absolute;inset:0 0 var(--pw-nav-height) 0;
+ z-index:40;box-sizing:border-box;
+ display:flex;align-items:center;justify-content:center;
+ padding:14px 12px;overflow:hidden;
+}
+#p-world .pw-modal[hidden]{display:none}
+#p-world .pw-modal-card{
+ max-height:100%;min-height:0;overflow-y:auto;
+ overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ width:min(100%,500px);box-sizing:border-box;
+ padding:12px 13px 18px;
+}
+#p-world .pw-modal-top{
+ position:sticky;top:-12px;z-index:5;
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ margin:-12px -13px 12px;padding:11px 12px;
+ background:linear-gradient(140deg,#5521a5,#2b146b);
+ border-radius:19px 19px 0 0;border-bottom:1px solid #8e62d7;
+ font-size:.67rem;letter-spacing:.02em;font-weight:950;color:#ffe783;
+}
+#p-world .pw-modal-back{
+ min-height:42px;min-width:94px;
+ border:2px solid #ffe68b;border-radius:12px;
+ background:linear-gradient(#8752d2,#532697);
+ box-shadow:0 3px 0 #2c135e;color:white;font:900 .83rem/1 "Bricolage Grotesque",system-ui,sans-serif;
+ padding:8px 10px;cursor:pointer;
+}
+@media(max-width:400px){
+ #p-world .pw-nav-btn{font-size:.58rem}
+ #p-world .pw-nav-btn i{font-size:1.29rem}
+ #p-world .pw-bottom-nav{padding-left:4px;padding-right:4px;gap:0}
+ #p-world .pw-modal{padding:9px 9px}
+}
