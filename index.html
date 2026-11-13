@@ -1345,7 +1345,7 @@ showTab(location.hash.slice(1));
      '<p class="paqui-notify-msg" id="paquiNotifyMsg" aria-live="polite"></p>'+
      '<div class="paqui-notify-actions"><button type="button" class="btn" id="paquiSaveNotify">Guardar / Reintentar push</button><button type="button" class="btn secondary" id="paquiDisablePush">Desactivar en este dispositivo</button></div>'+
      '<div class="paqui-push-diagnostics"><b>🩺 Diagnóstico de este móvil</b><p class="paqui-notify-muted">Comprueba el navegador y prueba el sistema de notificaciones sin mandar avisos al grupo.</p>'+
-     '<div class="paqui-notify-actions"><button type="button" class="btn secondary" id="paquiCheckPush">Diagnosticar dispositivo</button><button type="button" class="btn secondary" id="paquiLocalPushTest">Probar notificación local</button></div>'+
+     '<div class="paqui-notify-actions"><button type="button" class="btn secondary" id="paquiCheckPush">Diagnosticar dispositivo</button><button type="button" class="btn secondary" id="paquiLocalPushTest">Probar notificación local</button><button type="button" class="btn secondary" id="paquiCopyPushDiagnostic" hidden>📋 Copiar diagnóstico</button></div>'+
      '<pre id="paquiPushDiagnosticReport" hidden></pre></div>'+
      '<p class="paqui-notify-muted">En iPhone/iPad necesitas abrir la aplicación desde un icono añadido a la pantalla de inicio. En Android, verifica también los permisos de notificaciones del navegador y de la aplicación instalada.</p></section>';
    document.body.appendChild(overlay);
@@ -1391,10 +1391,21 @@ showTab(location.hash.slice(1));
        ];
        if(info.registrationError)data.push('Error: '+info.registrationError);
        report.textContent=data.join('\n');report.hidden=false;
+       $id('paquiCopyPushDiagnostic').hidden=false;
        msg.textContent=info.subscribed?'Se detecta una suscripción del navegador. Si no llegan los avisos, revisa permisos del móvil y el resultado del envío en Administración.':
          'No hay suscripción activa en este móvil. Puedes probar la notificación local y reintentar el registro.';
      }catch(e){msg.textContent=paquiPushFailure(e);}
      finally{diagnose.disabled=false;}
+   };
+   $id('paquiCopyPushDiagnostic').onclick=async()=>{
+     if(!report.textContent)return;
+     try{
+       if(!navigator.clipboard?.writeText)throw new Error('Portapapeles no disponible');
+       await navigator.clipboard.writeText(report.textContent);
+       msg.textContent='📋 Diagnóstico copiado. Puedes pegarlo en el chat para revisarlo.';
+     }catch(_){
+       msg.textContent='Mantén pulsado el texto del diagnóstico para seleccionarlo y copiarlo.';
+     }
    };
    localTest.onclick=async()=>{
      localTest.disabled=true;msg.textContent='Probando notificación local…';
