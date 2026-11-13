@@ -288,3 +288,24 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  @keyframes pw-lobby-float{50%{transform:translateX(-50%) rotate(1deg) translateY(-3px)}}
  @keyframes pw-lobby-bob{50%{transform:translateY(-4px)}}
 }
+
+
+/* HUD superior: ficha del jugador fuera de la escena para no tapar el logotipo */
+#p-world .pw-lobby-hud{position:relative;z-index:9;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:82px;padding:9px 20px;background:linear-gradient(115deg,#24135a 0%,#4d2590 65%,#261354 100%);border-bottom:3px solid #e9ba64;box-shadow:0 5px 13px #23125144}
+#p-world .pw-lobby-hud-caption{display:flex;gap:7px;align-items:center;color:#ffe797;font-size:clamp(.7rem,1.5vw,1rem);font-weight:950;letter-spacing:.04em;white-space:nowrap;text-shadow:0 2px #160c3c}
+#p-world .pw-lobby-hud .pw-hero-player{position:relative;top:auto;left:auto;right:auto;bottom:auto;transform:none;z-index:1;display:flex;align-items:center;min-width:0;max-width:min(310px,100%);margin:0;padding:7px 12px;background:linear-gradient(135deg,#7040bc,#34146b);border-radius:14px;box-shadow:0 3px 0 #1e0a4e;flex-shrink:0}
+#p-world .pw-lobby-hud .pw-hero-player:focus-visible{outline:3px solid #ffe760;outline-offset:2px}
+#p-world .pw-lobby-hud .pw-hero-player-stats{flex:1}
+#p-world .pw-lobby-hud .pw-hero-player-stats small{display:block;white-space:nowrap}
+@media(max-width:690px){
+ #p-world .pw-lobby-hud{min-height:68px;padding:7px 10px;gap:6px}
+ #p-world .pw-lobby-hud-caption{font-size:.72rem;letter-spacing:0}
+ #p-world .pw-lobby-hud .pw-hero-player{max-width:75%;padding:5px 8px;gap:7px}
+ #p-world .pw-lobby-hud .pw-hero-player img,#p-world .pw-lobby-hud .pw-avatar-placeholder{width:41px;height:41px;flex-basis:41px}
+ #p-world .pw-lobby-hud .pw-hero-player-stats small{font-size:.6rem}
+}
+@media(max-width:390px){
+ #p-world .pw-lobby-hud-caption{font-size:0;gap:0}
+ #p-world .pw-lobby-hud-caption::first-letter{font-size:1.45rem}
+ #p-world .pw-lobby-hud .pw-hero-player{max-width:82%}
+}
