@@ -77,7 +77,7 @@ function art(id,person){
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 const APPROVED={
- adri:'paquillo-world-art/adri.webp',
+ adri:'paquillo-world-art/adri-cutout-v34.webp',
  carla:'paquillo-world-art/carla-cutout-v27.webp',
  david:'paquillo-world-art/david-cutout-v27.webp',
  diego:'paquillo-world-art/diego-cutout-v28.webp',
