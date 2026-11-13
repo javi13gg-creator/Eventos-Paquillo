@@ -16,8 +16,14 @@ let memory=null;
 const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const safeBest=(key,score)=>{try{const prev=Number(localStorage.getItem(key))||0;if(score>prev){localStorage.setItem(key,String(score));return score;}return prev;}catch(_){return score;}};
 
-const image=(src,alt,cls)=>src?'<img class="'+(cls||'')+'" src="'+esc(src)+'" alt="'+esc(alt||'')+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
-const memberPhoto=m=>state.profiles.get(m?.auth_user_id)?.character_image_url||m?.avatar_url||'';
+const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+esc(src)+'" alt="'+esc(alt||'')+'" loading="lazy"'+
+ (fallback&&fallback!==src?' data-fallback="'+esc(fallback)+'"':'')+
+ ' onerror="if(this.dataset.fallback){const fallback=this.dataset.fallback;this.removeAttribute(\'data-fallback\');this.src=fallback}else{this.style.display=\'none\'}">':'';
+const normalizePersonName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').replace(/[^a-z0-9]+/g,' ').trim();
+const defaultPhotoLookup=new Map((window.PaquilloPeople||[]).filter(p=>p?.n&&p?.i).map(p=>[normalizePersonName(p.n),p.i]));
+const memberDefaultPhoto=m=>defaultPhotoLookup.get(normalizePersonName(m?.display_name))||'';
+const memberPhoto=m=>m?(state.profiles.get(m.auth_user_id)?.character_image_url||m.avatar_url||memberDefaultPhoto(m)):'';
+const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
 function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
 function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+(state.view===key?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
@@ -25,7 +31,7 @@ function playerCard(){
  const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
  const pic=memberPhoto(m);
  return '<button class="pw-hero-player" type="button" data-pw-view="profile" aria-label="Ver mi personaje">'+
- (pic?image(pic,m.display_name,''):'<span class="pw-avatar-placeholder">🦸</span>')+
+ (pic?memberImage(m,m.display_name,''):'<span class="pw-avatar-placeholder">🦸</span>')+
  '<span class="pw-hero-player-stats"><b>'+esc(m.display_name)+'</b><small>⭐ Nivel '+lvl+' · '+(state.ready?points(state.xp)+' XP':'XP pendiente')+'</small>'+
  '<span class="pw-xp-track"><i style="width:'+((progress/250)*100)+'%"></i></span></span><span class="pw-hero-chevron">›</span></button>';
 }
@@ -58,7 +64,7 @@ function gameTiles(includePlanned=false){
 function homeView(){
  const ranked=state.ready?state.ranked.slice(0,5):[];
  const rankingRows=ranked.map((m,i)=>'<button class="pw-league-row" data-pw-view="ranking" type="button"><span class="pw-medal">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.')+'</span>'+
- (memberPhoto(m)?image(memberPhoto(m),'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
+ (memberPhoto(m)?memberImage(m,'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
  playerHero()+
@@ -90,19 +96,19 @@ function rankingView(){
  (!state.ready?'<div class="pw-demo-notice">La base de datos de XP aún no está activada. Ejecuta <code>paquillo-world-fase1.sql</code> en Supabase para activar la clasificación.</div>':'')+
  '<article class="pw-surface"><h3>🌟 TOP PAQUILLEROS</h3>'+
  (state.ranked.length?state.ranked.map((m,i)=>'<div class="pw-rank-row"><span class="pw-rank-pos">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.')+'</span>'+
- (memberPhoto(m)?image(memberPhoto(m),'',''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
+ (memberPhoto(m)?memberImage(m,'',''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '<b>'+esc(m.display_name)+(m.auth_user_id===state.uid?' (Tú)':'')+'</b><strong>'+points(m.xp)+' XP</strong></div>').join(''):'<p>No hay miembros activos todavía.</p>')+'</article></section>';
 }
 function peopleView(){
  return '<section class="pw-screen pw-panel" data-pw-screen="people">'+screenTitle('👥 SELECCIÓN DE PERSONAJES','Tu pandilla completa. Los avatares 3D cartoon personalizados llegarán aquí.')+
- '<div class="pw-person-grid">'+state.ranked.map((m,i)=>'<button type="button" data-pw-member="'+i+'" class="pw-person-card"><div class="pw-person-art">'+(memberPhoto(m)?image(memberPhoto(m),'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+'</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
+ '<div class="pw-person-grid">'+state.ranked.map((m,i)=>'<button type="button" data-pw-member="'+i+'" class="pw-person-card"><div class="pw-person-art">'+(memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+'</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
  '<div class="pw-demo-notice">🎨 La galería muestra por ahora las fotos de perfil. La estética 3D y los accesorios se incorporarán cuando estén terminados los personajes.</div></section>';
 }
 function profileView(){
  const m=state.mine||{display_name:'Paquillo'},xp=state.xp,progress=xp%250;
  const actions=state.ledger.filter(x=>x.user_id===state.uid).slice(0,8);
  return '<section class="pw-screen pw-panel" data-pw-screen="profile">'+screenTitle('⭐ MI PERSONAJE','Tu aventura Paquillera empieza aquí.')+
- '<div class="pw-surface pw-player-card">'+(memberPhoto(m)?image(memberPhoto(m),m.display_name,''):'<span style="font-size:3rem">🦸</span>')+
+ '<div class="pw-surface pw-player-card">'+(memberPhoto(m)?memberImage(m,m.display_name,''):'<span style="font-size:3rem">🦸</span>')+
  '<div><b>'+esc(m.display_name)+'</b><small>⭐ NIVEL '+level(xp)+' · '+points(xp)+' XP</small><p class="pw-muted">Próximo nivel: '+(250-progress)+' XP</p><div class="pw-xp-track"><i style="width:'+Math.round(progress/250*100)+'%"></i></div></div></div>'+
  '<div class="pw-surface"><h3>⚡ Cómo ganar XP</h3><div class="pw-actions-grid">'+
  [['📅 Crear un plan',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div>'+
@@ -173,7 +179,7 @@ function hitReaction(){
 function showMember(idx){
  const m=state.ranked[idx];if(!m)return;
  modal('<div class="pw-modal-icon">👑</div><h2>'+esc(m.display_name)+'</h2>'+
- (memberPhoto(m)?image(memberPhoto(m),m.display_name,''):'<div class="pw-modal-icon">🦸</div>')+
+ (memberPhoto(m)?memberImage(m,m.display_name,''):'<div class="pw-modal-icon">🦸</div>')+
  '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>Personaje 3D cartoon pendiente de incorporar.</p>');
 }
 /* Trivial de 10 preguntas: fechas de group_members + cultura general.
@@ -279,7 +285,7 @@ function renderMemory(){
  '<p>Encuentra las parejas: <b>foto + nombre</b> de cada Paquillo.</p><div class="pw-memory-stats"><span>🎯 '+memory.moves+' intentos</span><span>✅ '+memory.matched.size+' parejas</span></div>'+
  '<div class="pw-memory-grid">'+memory.cards.map((c,i)=>{
  const face=memory.matched.has(c.id)||memory.flipped.includes(i);
- const content=!face?'<span class="pw-memory-back">❔</span>':c.kind==='name'?'<span class="pw-memory-name">'+esc(c.m.display_name)+'</span>':memberPhoto(c.m)?image(memberPhoto(c.m),'Foto de '+c.m.display_name,'pw-memory-photo'):'<span class="pw-memory-initials">'+esc(nameInitial(c.m.display_name))+'</span>';
+ const content=!face?'<span class="pw-memory-back">❔</span>':c.kind==='name'?'<span class="pw-memory-name">'+esc(c.m.display_name)+'</span>':memberPhoto(c.m)?memberImage(c.m,'Foto de '+c.m.display_name,'pw-memory-photo'):'<span class="pw-memory-initials">'+esc(nameInitial(c.m.display_name))+'</span>';
  return '<button type="button" class="pw-memory-card'+(face?' flipped':'')+(memory.matched.has(c.id)?' matched':'')+'" data-pw-memory-card="'+i+'" '+(face?'disabled':'')+' aria-label="'+(face?'Carta descubierta':'Carta oculta '+(i+1))+'">'+content+'</button>';
  }).join('')+'</div><p class="pw-local-note">Partida en este dispositivo · Sin XP</p><button class="pw-secondary-button" type="button" data-pw-memory-restart>Reiniciar ↻</button></div>');
 }
