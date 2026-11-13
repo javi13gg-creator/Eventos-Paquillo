@@ -79,6 +79,7 @@ function art(id,person){
 }
 const APPROVED={
  adri:'paquillo-world-art/adri.webp',
+ carla:'paquillo-world-art/carla.webp',
  sandra:'paquillo-world-art/sandra.webp',
  santi:'paquillo-world-art/santi.webp',
  sofia:'paquillo-world-art/sofia.webp',
@@ -94,7 +95,7 @@ const imageFor=name=>{
 window.PaquilloWorldCharacters={
  imageFor,has:name=>!!(APPROVED[normSlug(name)]||R[normSlug(name)]),
  names:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
- approvedNames:['Adri','Sandra','Santi','Sofía','Rubén'],
+ approvedNames:['Adri','Carla','Sandra','Santi','Sofía','Rubén'],
  isPreview:true
 };
 })();
