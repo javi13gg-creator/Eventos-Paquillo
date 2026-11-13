@@ -33,7 +33,8 @@ const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+es
 const normalizePersonName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').replace(/[^a-z0-9]+/g,' ').trim();
 const defaultPhotoLookup=new Map((window.PaquilloPeople||[]).filter(p=>p?.n&&p?.i).map(p=>[normalizePersonName(p.n),p.i]));
 const memberDefaultPhoto=m=>defaultPhotoLookup.get(normalizePersonName(m?.display_name))||'';
-const memberPhoto=m=>m?(state.previewCharacters?(state.profiles.get(m.auth_user_id)?.character_image_url||window.PaquilloWorldCharacters?.imageFor(m.display_name)||m.avatar_url||memberDefaultPhoto(m)):(m.avatar_url||memberDefaultPhoto(m)||state.profiles.get(m.auth_user_id)?.character_image_url||'')):'';
+const latestApprovedCutout=m=>['carla','david'].includes(normalizePersonName(m?.display_name))?(window.PaquilloWorldCharacters?.imageFor(m.display_name)||''):'';
+const memberPhoto=m=>m?(state.previewCharacters?(latestApprovedCutout(m)||state.profiles.get(m.auth_user_id)?.character_image_url||window.PaquilloWorldCharacters?.imageFor(m.display_name)||m.avatar_url||memberDefaultPhoto(m)):(m.avatar_url||memberDefaultPhoto(m)||state.profiles.get(m.auth_user_id)?.character_image_url||'')):'';
 const hasStoredCharacter=m=>!!state.profiles.get(m?.auth_user_id)?.character_image_url;
 const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
 function toWeb(){closeModal();location.hash='proximos';}
@@ -234,7 +235,7 @@ function showMember(idx){
  const m=state.ranked[idx];if(!m)return;
  modal('<div class="pw-modal-icon">👑</div><h2>'+esc(m.display_name)+'</h2>'+
  (memberPhoto(m)?memberImage(m,m.display_name,''):'<div class="pw-modal-icon">🦸</div>')+
- '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>'+(hasStoredCharacter(m)?'Personaje personalizado vinculado desde Supabase.':window.PaquilloWorldCharacters?.has(m.display_name)?'Boceto cartoon provisional: su parecido y render 3D final siguen pendientes de validar.':'Personaje 3D cartoon pendiente de incorporar.')+'</p>');
+ '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>'+(window.PaquilloWorldCharacters?.approvedNames?.includes(m.display_name)?'Personaje 3D aprobado y disponible en Paquillo World.':hasStoredCharacter(m)?'Personaje personalizado vinculado desde Supabase.':window.PaquilloWorldCharacters?.has(m.display_name)?'Boceto cartoon provisional: su parecido y render 3D final siguen pendientes de validar.':'Personaje 3D cartoon pendiente de incorporar.')+'</p>');
 }
 /* Trivial de 10 preguntas: fechas de group_members + cultura general.
    Las respuestas y puntos son locales; nunca se acreditan XP. */
@@ -385,9 +386,12 @@ function gameAction(id){
    modal('<div class="pw-modal-icon">🏁</div><h2>Carrera Paquillera</h2><p>No se ha podido cargar el minijuego. Actualiza Paquillo World y vuelve a entrar.</p>');
    return;
   }
+  const raceApproved=latestApprovedCutout(state.mine);
+  const racePhoto=raceApproved||memberPhoto(state.mine);
+  const isFullBody=racePhoto.includes('/paquillo-characters/')||
+   /(?:^|\/)paquillo-world-art\/(?:carla-cutout-v27|david-cutout-v27|sandra|santi|sofia|ruben)\.webp(?:\?|$)/.test(racePhoto);
   window.PaquilloRace.open({
-   uid:state.uid,member:state.mine,photo:memberPhoto(state.mine),
-   sticker:memberPhoto(state.mine).includes('/paquillo-characters/'),
+   uid:state.uid,member:state.mine,photo:racePhoto,sticker:isFullBody,
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
    render:modal,onClose:closeModal
   });
