@@ -124,8 +124,8 @@ function peopleView(){
  const page=Math.min(Math.max(0,pageState.people),count-1);pageState.people=page;
  const items=state.ranked.slice(page*size,(page+1)*size);
  return '<section class="pw-screen pw-panel pw-paged-screen pw-people-screen" data-pw-screen="people">'+
- screenTitle('👥 PERSONAJES',state.previewCharacters?'24 personajes: 4 retratos 3D aprobados y 20 bocetos cartoon provisionales':'Fotos reales de perfil y cumpleaños')+
- '<div class="pw-avatar-mode"><span>🎭 24/24 · 4 en 3D</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver personajes')+'</button></div>'+
+ screenTitle('👥 PERSONAJES',state.previewCharacters?'24 personajes: 5 retratos 3D aprobados y 19 bocetos cartoon provisionales':'Fotos reales de perfil y cumpleaños')+
+ '<div class="pw-avatar-mode"><span>🎭 24/24 · 5 en 3D</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver personajes')+'</button></div>'+
  '<div class="pw-person-grid">'+items.map((m,i)=>'<button type="button" data-pw-member="'+(page*size+i)+'" class="pw-person-card"><div class="pw-person-art">'+
  (memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
