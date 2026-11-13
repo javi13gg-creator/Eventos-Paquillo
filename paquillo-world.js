@@ -132,7 +132,7 @@ function peopleView(){
 
 function profileView(){
  const m=state.mine||{display_name:'Paquillo'},xp=state.xp,progress=xp%250;
- const actions=state.ledger.filter(x=>x.user_id===state.uid).slice(0,6);
+ const actions=state.ledger.filter(x=>x.user_id===state.uid).slice(0,viewportHeight()<480?3:viewportHeight()<650?4:6);
  const tabs=[['🦸','Personaje'],['⚡','Ganar XP'],['📜','Historial']];
  const page=Math.max(0,Math.min(2,pageState.profile));
  const body=page===0?'<div class="pw-surface pw-player-card">'+(memberPhoto(m)?memberImage(m,m.display_name,''):'<span style="font-size:3rem">🦸</span>')+
