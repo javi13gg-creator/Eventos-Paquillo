@@ -4,6 +4,27 @@ El centro de avisos ya está disponible en la web, dentro de ⚙️ Ajustes → 
 
 **Importante:** GitHub Pages solo aloja el frontend. Para enviar notificaciones reales es necesario desplegar la Edge Function en el proyecto Supabase. El botón Enviar permanecerá deshabilitado hasta que el backend y el historial estén disponibles.
 
+## Nuevo: seguimiento individual de envíos
+
+La versión 2 del panel muestra por cada Paquillo:
+
+- ✅ **Aceptada**: el servicio push confirmó el envío al endpoint del dispositivo. **NO demuestra que la notificación apareciese en su pantalla**.
+- 🟠 **Parcial**: un dispositivo aceptó el mensaje y otro falló.
+- ❌ **Fallida**: el servicio rechazó el mensaje, mostrando el motivo HTTP cuando está disponible.
+- 🔕 **Desactivadas**: la persona tiene deshabilitadas las notificaciones.
+- 📵 **Sin dispositivo suscrito**: no existe una suscripción push activa guardada.
+- 👤 **Sin cuenta vinculada**: su ficha no está asociada a una cuenta autenticada.
+
+El detalle también se guarda en el historial mediante la columna `delivery_details`. No se guardan direcciones de suscripción ni claves privadas en ese historial.
+
+**Si ya habías instalado una versión anterior de la función, es obligatorio actualizar DOS partes**:
+1. Ejecutar de nuevo `supabase/paqui-manual-push.sql`. Conserva los registros existentes y añade `delivery_details` con `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`.
+2. **Volver a desplegar** `supabase/functions/paquillo-manual-push/index.ts`. GitHub Pages NO actualiza automáticamente una Edge Function que ya está instalada.
+
+Los avisos históricos guardados antes del cambio solo tienen contadores agregados: **no es posible reconstruir quién los recibió**.
+
+Si una persona figura ✅ pero su móvil no muestra el aviso, comprobar permisos de notificaciones de la aplicación y del sistema, restricciones de batería y que tenga la suscripción push activa en ese dispositivo. Si aparece 📵, debe entrar en ⚙️ Ajustes → Notificaciones push y activarlas de nuevo en el móvil.
+
 ## Paso 1. Ejecutar SQL
 
 En Supabase → SQL Editor, ejecuta el archivo `supabase/paqui-manual-push.sql` del repositorio. Crea el historial privado de envíos. No elimina ni modifica las tablas que ya usas.
@@ -42,7 +63,7 @@ Mantén habilitada la comprobación JWT de la función. Además del JWT, el cód
 4. Escribe título y mensaje. Consulta la vista previa, pulsa «Comprobar destinatarios» para obtener usuarios y dispositivos sin enviar nada.
 5. Al pulsar «Enviar aviso push», aparece una confirmación con destinatarios y contenido. Solo al confirmar se hace el envío.
 
-El historial muestra intentos y notificaciones aceptadas por los servicios push. Un mensaje aceptado **no garantiza que el usuario lo haya visto o leído**.
+El historial muestra tanto los totales como el **detalle por persona y dispositivo** (en envíos nuevos). Un mensaje aceptado **no garantiza que el usuario lo haya visto o leído**.
 
 ### Seguridad y límites
 
