@@ -33,7 +33,7 @@ const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+es
 const normalizePersonName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').replace(/[^a-z0-9]+/g,' ').trim();
 const defaultPhotoLookup=new Map((window.PaquilloPeople||[]).filter(p=>p?.n&&p?.i).map(p=>[normalizePersonName(p.n),p.i]));
 const memberDefaultPhoto=m=>defaultPhotoLookup.get(normalizePersonName(m?.display_name))||'';
-const latestApprovedCutout=m=>['carla','david','diego','ines','ivan','javi'].includes(normalizePersonName(m?.display_name))?(window.PaquilloWorldCharacters?.imageFor(m.display_name)||''):'';
+const latestApprovedCutout=m=>['carla','david','diego','ines','ivan','javi','jb'].includes(normalizePersonName(m?.display_name))?(window.PaquilloWorldCharacters?.imageFor(m.display_name)||''):'';
 const memberPhoto=m=>m?(state.previewCharacters?(latestApprovedCutout(m)||state.profiles.get(m.auth_user_id)?.character_image_url||window.PaquilloWorldCharacters?.imageFor(m.display_name)||m.avatar_url||memberDefaultPhoto(m)):(m.avatar_url||memberDefaultPhoto(m)||state.profiles.get(m.auth_user_id)?.character_image_url||'')):'';
 const hasStoredCharacter=m=>!!state.profiles.get(m?.auth_user_id)?.character_image_url;
 const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
@@ -125,8 +125,8 @@ function peopleView(){
  const page=Math.min(Math.max(0,pageState.people),count-1);pageState.people=page;
  const items=state.ranked.slice(page*size,(page+1)*size);
  return '<section class="pw-screen pw-panel pw-paged-screen pw-people-screen" data-pw-screen="people">'+
- screenTitle('👥 PERSONAJES',state.previewCharacters?'24 personajes: 11 retratos 3D aprobados y 13 bocetos cartoon provisionales':'Fotos reales de perfil y cumpleaños')+
- '<div class="pw-avatar-mode"><span>🎭 24/24 · 11 en 3D</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver personajes')+'</button></div>'+
+ screenTitle('👥 PERSONAJES',state.previewCharacters?'24 personajes: 12 retratos 3D aprobados y 12 bocetos cartoon provisionales':'Fotos reales de perfil y cumpleaños')+
+ '<div class="pw-avatar-mode"><span>🎭 24/24 · 12 en 3D</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver personajes')+'</button></div>'+
  '<div class="pw-person-grid">'+items.map((m,i)=>'<button type="button" data-pw-member="'+(page*size+i)+'" class="pw-person-card"><div class="pw-person-art">'+
  (memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
@@ -389,7 +389,7 @@ function gameAction(id){
   const raceApproved=latestApprovedCutout(state.mine);
   const racePhoto=raceApproved||memberPhoto(state.mine);
   const isFullBody=racePhoto.includes('/paquillo-characters/')||
-   /(?:^|\/)paquillo-world-art\/(?:carla-cutout-v27|david-cutout-v27|diego-cutout-v28|ines-cutout-v28|ivan-cutout-v28|javi-cutout-v28|sandra|santi|sofia|ruben)\.webp(?:\?|$)/.test(racePhoto);
+   /(?:^|\/)paquillo-world-art\/(?:carla-cutout-v27|david-cutout-v27|diego-cutout-v28|ines-cutout-v28|ivan-cutout-v28|javi-cutout-v28|jb-cutout-v29|sandra|santi|sofia|ruben)\.webp(?:\?|$)/.test(racePhoto);
   window.PaquilloRace.open({
    uid:state.uid,member:state.mine,photo:racePhoto,sticker:isFullBody,
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
