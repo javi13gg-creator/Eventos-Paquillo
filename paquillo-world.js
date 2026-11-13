@@ -12,6 +12,16 @@ const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','�
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false};
 let reaction={timer:null,armed:0,phase:'idle'};
 const viewHistory=[];
+const pageState={people:0,ranking:0,profile:0};
+const viewportWidth=()=>window.innerWidth||390;
+const viewportHeight=()=>window.innerHeight||750;
+const peoplePageSize=()=>viewportHeight()<480?(viewportWidth()>540?8:4):6;
+const rankingPageSize=()=>viewportHeight()<480?3:viewportHeight()<650?5:7;
+function pageButtons(kind,current,total){return total<=1?'':'<nav class="pw-pagination" aria-label="Páginas de '+(kind==='people'?'personajes':'clasificación')+'">'+
+ '<button type="button" data-pw-page="'+kind+'" data-pw-page-index="'+(current-1)+'" '+(current===0?'disabled':'')+' aria-label="Página anterior">‹ Anterior</button>'+
+ '<strong>'+(current+1)+' / '+total+'</strong>'+
+ '<button type="button" data-pw-page="'+kind+'" data-pw-page-index="'+(current+1)+'" '+(current+1===total?'disabled':'')+' aria-label="Página siguiente">Siguiente ›</button></nav>';}
+
 let trivia=null;
 let memory=null;
 const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -90,40 +100,64 @@ function homeView(){
  '</div></section>';
 }
 function gamesView(){
- return '<section class="pw-screen pw-panel" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Minijuegos rápidos, con tu personaje y contra tus amigos cuando estén listos.')+
- '<h2 class="pw-section-title">🕹️ ¿A QUÉ JUGAMOS?</h2>'+gameTiles(true)+
- '<div class="pw-demo-notice">🎮 <b>Trivial Paquillero, Memoria Paquillera y Duelo de reflejos</b> ya permiten jugar en este dispositivo. Los récords del Trivial y Memoria se guardan solo aquí. Las carreras y el multijugador están pendientes; ningún minijuego otorga XP.</div></section>';
+ return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
+ '<div class="pw-games-board">'+gameTiles()+'</div>'+
+ '<p class="pw-games-coming">🏁 Carreras Paquilleras: multijugador en preparación · Los juegos no otorgan XP</p></section>';
 }
+
 function rankingView(){
- return '<section class="pw-screen pw-panel" data-pw-screen="ranking">'+screenTitle('🏆 CLASIFICACIÓN','La tabla de honor de los Paquillos, ordenada por XP reales.')+
- (!state.ready?'<div class="pw-demo-notice">La base de datos de XP aún no está activada. Ejecuta <code>paquillo-world-fase1.sql</code> en Supabase para activar la clasificación.</div>':'')+
- '<article class="pw-surface"><h3>🌟 TOP PAQUILLEROS</h3>'+
- (state.ranked.length?state.ranked.map((m,i)=>'<div class="pw-rank-row"><span class="pw-rank-pos">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.')+'</span>'+
+ const size=rankingPageSize(),pageCount=Math.max(1,Math.ceil(state.ranked.length/size));
+ const page=Math.min(Math.max(0,pageState.ranking),pageCount-1);pageState.ranking=page;
+ const items=state.ranked.slice(page*size,(page+1)*size);
+ return '<section class="pw-screen pw-panel pw-paged-screen" data-pw-screen="ranking">'+screenTitle('🏆 CLASIFICACIÓN','Ranking de XP de los Paquillos')+
+ '<article class="pw-surface pw-paged-surface"><h3>🌟 TOP PAQUILLEROS</h3>'+
+ (items.length?items.map((m,i)=>'<div class="pw-rank-row"><span class="pw-rank-pos">'+(page*size+i===0?'🥇':page*size+i===1?'🥈':page*size+i===2?'🥉':(page*size+i+1)+'.')+'</span>'+
  (memberPhoto(m)?memberImage(m,'',''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
- '<b>'+esc(m.display_name)+(m.auth_user_id===state.uid?' (Tú)':'')+'</b><strong>'+points(m.xp)+' XP</strong></div>').join(''):'<p>No hay miembros activos todavía.</p>')+'</article></section>';
+ '<b>'+esc(m.display_name)+(m.auth_user_id===state.uid?' (Tú)':'')+'</b><strong>'+points(m.xp)+' XP</strong></div>').join(''):'<p>Los jugadores aparecerán aquí.</p>')+'</article>'+
+ pageButtons('ranking',page,pageCount)+
+ (!state.ready?'<p class="pw-paged-hint">Los XP necesitan la configuración de Supabase para reflejar la puntuación real.</p>':'')+'</section>';
 }
+
 function peopleView(){
- return '<section class="pw-screen pw-panel" data-pw-screen="people">'+screenTitle('👥 SELECCIÓN DE PERSONAJES','Tu pandilla completa. Los avatares 3D cartoon personalizados llegarán aquí.')+
- '<div class="pw-person-grid">'+state.ranked.map((m,i)=>'<button type="button" data-pw-member="'+i+'" class="pw-person-card"><div class="pw-person-art">'+(memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+'</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
- '<div class="pw-demo-notice">🎨 La galería muestra por ahora las fotos de perfil. La estética 3D y los accesorios se incorporarán cuando estén terminados los personajes.</div></section>';
+ const size=peoplePageSize(),count=Math.max(1,Math.ceil(state.ranked.length/size));
+ const page=Math.min(Math.max(0,pageState.people),count-1);pageState.people=page;
+ const items=state.ranked.slice(page*size,(page+1)*size);
+ return '<section class="pw-screen pw-panel pw-paged-screen pw-people-screen" data-pw-screen="people">'+
+ screenTitle('👥 PERSONAJES','Conoce a los Paquillos')+
+ '<div class="pw-person-grid">'+items.map((m,i)=>'<button type="button" data-pw-member="'+(page*size+i)+'" class="pw-person-card"><div class="pw-person-art">'+
+ (memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
+ '</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
+ pageButtons('people',page,count)+'</section>';
 }
+
 function profileView(){
  const m=state.mine||{display_name:'Paquillo'},xp=state.xp,progress=xp%250;
- const actions=state.ledger.filter(x=>x.user_id===state.uid).slice(0,8);
- return '<section class="pw-screen pw-panel" data-pw-screen="profile">'+screenTitle('⭐ MI PERSONAJE','Tu aventura Paquillera empieza aquí.')+
- '<div class="pw-surface pw-player-card">'+(memberPhoto(m)?memberImage(m,m.display_name,''):'<span style="font-size:3rem">🦸</span>')+
+ const actions=state.ledger.filter(x=>x.user_id===state.uid).slice(0,6);
+ const tabs=[['🦸','Personaje'],['⚡','Ganar XP'],['📜','Historial']];
+ const page=Math.max(0,Math.min(2,pageState.profile));
+ const body=page===0?'<div class="pw-surface pw-player-card">'+(memberPhoto(m)?memberImage(m,m.display_name,''):'<span style="font-size:3rem">🦸</span>')+
  '<div><b>'+esc(m.display_name)+'</b><small>⭐ NIVEL '+level(xp)+' · '+points(xp)+' XP</small><p class="pw-muted">Próximo nivel: '+(250-progress)+' XP</p><div class="pw-xp-track"><i style="width:'+Math.round(progress/250*100)+'%"></i></div></div></div>'+
- '<div class="pw-surface"><h3>⚡ Cómo ganar XP</h3><div class="pw-actions-grid">'+
- [['📅 Crear un plan',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div>'+
- '<div class="pw-surface"><h3>📜 Historial de experiencia</h3>'+
- (actions.length?actions.map(x=>'<div class="pw-rank-row"><span>✨</span><b>'+esc(actionNames[x.action]||'Actividad')+'</b><strong>+'+x.points+' XP</strong></div>').join(''):'<p class="pw-muted">No hay puntos registrados todavía.</p>')+'</div>'+
- '<div class="pw-demo-notice">💡 Los XP de planes, confirmaciones y encuestas se asignan desde Supabase. Los juegos todavía no reparten experiencia.</div></section>';
+ '<p class="pw-profile-hint">Tu personaje Paquillero. Próximamente podrás desbloquear nuevos accesorios y avatares.</p>':
+ page===1?'<div class="pw-surface"><h3>⚡ Cómo ganar XP</h3><div class="pw-actions-grid">'+
+ [['📅 Crear un plan',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div><p class="pw-profile-hint">Los minijuegos aún no dan experiencia.</p>':
+ '<div class="pw-surface"><h3>📜 Última actividad</h3>'+
+ (actions.length?actions.map(x=>'<div class="pw-rank-row"><span>✨</span><b>'+esc(actionNames[x.action]||'Actividad')+'</b><strong>+'+x.points+' XP</strong></div>').join(''):'<p class="pw-muted">No hay puntos registrados todavía.</p>')+'</div>';
+ return '<section class="pw-screen pw-panel pw-paged-screen pw-profile-screen" data-pw-screen="profile">'+screenTitle('⭐ MI PERSONAJE','Tu progreso en Paquillo World')+
+ '<nav class="pw-profile-tabs" aria-label="Apartados de mi personaje">'+tabs.map(([ico,lab],i)=>'<button type="button" data-pw-profile-page="'+i+'" class="'+(page===i?'selected':'')+'">'+ico+' '+lab+'</button>').join('')+'</nav>'+
+ '<div class="pw-profile-content">'+body+'</div></section>';
 }
+
 function challengesView(){
- return '<section class="pw-screen pw-panel" data-pw-screen="challenges">'+screenTitle('🏆 RETOS Y LOGROS','Desafíos para animar al grupo a participar.')+
- '<div class="pw-surface"><h3>🎯 Próximos retos</h3><div class="pw-rank-row"><span>📅</span><b>Organizador nato</b><strong>Próximamente</strong></div><div class="pw-rank-row"><span>🧠</span><b>Trivial de la semana</b><strong>Próximamente</strong></div><div class="pw-rank-row"><span>🏃</span><b>Campeón de reflejos</b><strong>Próximamente</strong></div></div>'+
- '<div class="pw-demo-notice">Los retos están diseñados, pero todavía no hay seguimiento ni recompensas automáticas. Aquí aparecerán cuando se active esa fase.</div></section>';
+ return '<section class="pw-screen pw-panel pw-challenges-screen" data-pw-screen="challenges">'+
+ screenTitle('🏆 RETOS Y LOGROS','Desafíos Paquilleros en preparación')+
+ '<div class="pw-surface"><h3>🎯 Próximos retos</h3>'+
+ '<div class="pw-rank-row"><span>📅</span><b>Organizador nato</b><strong>Próximamente</strong></div>'+
+ '<div class="pw-rank-row"><span>🧠</span><b>Trivial de la semana</b><strong>Próximamente</strong></div>'+
+ '<div class="pw-rank-row"><span>🏃</span><b>Campeón de reflejos</b><strong>Próximamente</strong></div></div>'+
+ '<p class="pw-paged-hint">Los retos aún no otorgan recompensas. Mientras tanto, prueba los minijuegos.</p>'+
+ '<button type="button" class="pw-action-button pw-challenges-games" data-pw-view="games">🎮 Ir a Juegos</button></section>';
 }
+
 function renderShell(){
  clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
@@ -156,6 +190,7 @@ function goBack(){
 function modal(body){
  const overlay=document.getElementById('pwModal'),c=document.getElementById('pwModalCard');
  if(!overlay||!c)return;
+ overlay.dataset.game=body.includes('class="pw-quiz"')?'trivia':body.includes('class="pw-memory"')?'memory':body.includes('pw-reflex-pad')?'reflex':'other';
  c.innerHTML='<div class="pw-modal-top"><button type="button" class="pw-modal-back" data-pw-close>← Volver</button><span>🎮 PAQUILLO WORLD</span></div>'+body+
  '<button type="button" class="pw-secondary-button" data-pw-close>Cerrar ✕</button>';
  overlay.hidden=false;
@@ -380,6 +415,22 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
  if(btn.hasAttribute('data-pw-close')){closeModal();return}
  if(btn.hasAttribute('data-pw-back')){goBack();return}
+ if(btn.hasAttribute('data-pw-page')){
+  const kind=btn.dataset.pwPage,idx=Number(btn.dataset.pwPageIndex);
+  if(!btn.disabled&&(kind==='people'||kind==='ranking')&&Number.isInteger(idx)&&idx>=0){
+   pageState[kind]=idx;const old=root.querySelector('[data-pw-screen="'+kind+'"]');
+   if(old){old.outerHTML=kind==='people'?peopleView():rankingView();setView(kind,false,false);}
+  }
+  return;
+ }
+ if(btn.hasAttribute('data-pw-profile-page')){
+  const idx=Number(btn.dataset.pwProfilePage);
+  if(Number.isInteger(idx)&&idx>=0&&idx<3){
+   pageState.profile=idx;const old=root.querySelector('[data-pw-screen="profile"]');
+   if(old){old.outerHTML=profileView();setView('profile',false,false);}
+  }
+  return;
+ }
  if(btn.hasAttribute('data-pw-trivia-answer')){answerTrivia(Number(btn.dataset.pwTriviaAnswer));return}
  if(btn.hasAttribute('data-pw-trivia-next')){advanceTrivia();return}
  if(btn.hasAttribute('data-pw-trivia-restart')){startTrivia();return}
@@ -393,6 +444,17 @@ root.addEventListener('click',e=>{
 });
 root.addEventListener('keydown',e=>{if(e.key==='Escape')goBack();if((e.key==='Enter'||e.key===' ')&&e.target.id==='pwReflexPad'){e.preventDefault();hitReaction()}});
 window.addEventListener('paqui-world-ready',()=>{if(location.hash==='#world')refresh()});
+window.addEventListener('resize',()=>{
+ if(location.hash!=='#world'||!state.loaded||document.getElementById('pwModal')?.hidden===false)return;
+ const area=document.getElementById('pwScroll');
+ if(!area)return;
+ const selected=state.view;
+ const existing=area.querySelector('[data-pw-screen="people"]');
+ const rank=area.querySelector('[data-pw-screen="ranking"]');
+ if(existing)existing.outerHTML=peopleView();
+ if(rank)rank.outerHTML=rankingView();
+ setView(selected,false,false);
+});
 window.addEventListener('hashchange',()=>{if(location.hash==='#world')refresh();else{closeModal();clearReaction()}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-t="world"]'))setTimeout(refresh,0)});
 if(location.hash==='#world')refresh();
