@@ -4,6 +4,36 @@
 const q=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const prettyDate=v=>{try{return new Date(v).toLocaleString("es-ES",{dateStyle:"short",timeStyle:"short"});}catch{return "";}}
+const statusMeta={
+  ready:["🟣","Preparado para envío"],
+  accepted:["✅","Aceptada por el servicio push"],
+  partial:["🟠","Aceptación parcial"],
+  failed:["❌","No aceptada"],
+  disabled:["🔕","Notificaciones desactivadas"],
+  no_subscription:["📵","Sin dispositivo suscrito"],
+  unlinked:["👤","Sin cuenta vinculada"]
+};
+const normalizedDetails=rows=>Array.isArray(rows)?rows.filter(row=>row&&typeof row==="object"):[];
+function recipientView(rows,mode="preview"){
+ const recipients=normalizedDetails(rows);
+ if(!recipients.length)return '<p class="amp-empty">No hay destinatarios para esta selección.</p>';
+ const intro=mode==="preview"?"<p>Destinatarios previstos. Todavía no se ha enviado nada.</p>":
+  "<p>✅ significa que el servicio push aceptó el aviso; <b>no confirma que el móvil lo mostrase o que la persona lo leyese</b>.</p>";
+ return '<div class="amp-recipients">'+intro+
+  '<div class="amp-recipient-list">'+recipients.map((r)=>{
+   const [symbol,label]=statusMeta[r.status]||["❔","Estado desconocido"];
+   const detail=normalizedDetails(r.details);
+   const devices=Number(r.devices)||0,accepted=Number(r.accepted)||0,failed=Number(r.failed)||0;
+   return '<div class="amp-recipient-row"><div class="amp-recipient-top"><b>'+esc(r.name||"Paquillo")+'</b>'+
+    '<span class="amp-recipient-status amp-status-'+esc(r.status)+'">'+symbol+' '+esc(label)+'</span></div>'+
+    '<small>'+(devices?devices+' dispositivo'+(devices===1?"":"s")+
+     (mode==="result"?" · "+accepted+" aceptada(s) · "+failed+" fallida(s)":""):
+     "Ningún dispositivo elegible")+'</small>'+
+    (detail.length&&mode==="result"?'<ul>'+detail.map(d=>'<li>'+esc(d.device||"Dispositivo")+
+     ': <b>'+(d.result==="accepted"?"✅ Aceptada":"❌ Fallida")+'</b>'+
+     (d.reason?' · '+esc(d.reason):'')+'</li>').join("")+'</ul>':'')+'</div>';
+  }).join("")+'</div></div>';
+}
 function view(events){
  const options=events.filter(e=>e.id&&e.title&&!["draft","cancelled","completed"].includes(e.status))
    .map(e=>'<option value="'+esc(e.id)+'">'+esc(e.title)+' · '+esc(e.event_date||"sin fecha")+'</option>').join("");
@@ -23,7 +53,8 @@ function view(events){
  '<button class="btn" type="submit" id="ampSend" disabled>🚀 Enviar aviso push</button></div>'+
  '<p class="amp-status" id="ampStatus" role="status" aria-live="polite">Comprobando conexión con el servidor…</p>'+
  '<small class="amp-tip">Solo recibirán el aviso los miembros activos que hayan autorizado las notificaciones en su navegador o aplicación. No se enviará nada hasta que confirmes.</small>'+
- '</form><div class="amp-history"><h4>🕘 Últimos avisos enviados</h4><div id="ampHistory">Consultando historial…</div></div></section>';
+ '</form><div class="amp-delivery-section" id="ampRecipientsSection" hidden><h4 id="ampRecipientTitle">👥 Estado de los destinatarios</h4><div id="ampRecipientDetails"></div></div>'+
+ '<div class="amp-history"><h4>🕘 Últimos avisos enviados</h4><div id="ampHistory">Consultando historial…</div></div></section>';
 }
 function mount(container,events,client){
  if(!container||!client)return;
@@ -34,6 +65,14 @@ function mount(container,events,client){
  const check=q("ampCheck"),sampleTitle=q("ampSampleTitle"),sampleMessage=q("ampSampleMessage");
  let active=false;
  let lastRequestId=null;
+ const showRecipients=(rows,mode)=>{
+  const section=q("ampRecipientsSection"),content=q("ampRecipientDetails");
+  if(!section||!content)return;
+  if(!Array.isArray(rows)){section.hidden=true;return;}
+  section.hidden=false;
+  q("ampRecipientTitle").textContent=mode==="result"?"📨 Resultado por Paquillo":"👥 Estado de los destinatarios";
+  content.innerHTML=recipientView(rows,mode);
+ };
  const setStatus=(text,failed=false)=>{status.textContent=text;status.classList.toggle("amp-error",failed);};
  const invoke=async body=>{
   const {data,error}=await client.functions.invoke("paquillo-manual-push",{body});
@@ -64,6 +103,7 @@ function mount(container,events,client){
   sampleTitle.textContent=title.value.trim()||"Tu título aparecerá aquí";
   sampleMessage.textContent=message.value.trim()||"Tu mensaje se mostrará en el dispositivo.";
   lastRequestId=null;
+  showRecipients(null,"preview");
  };
  const refreshHistory=async()=>{
   const block=q("ampHistory");if(!block)return;
@@ -74,7 +114,12 @@ function mount(container,events,client){
    block.innerHTML=rows.length?rows.map(x=>'<article class="amp-history-row"><div><b>'+esc(x.title)+
     '</b><small>'+esc(prettyDate(x.created_at))+' · '+(x.kind==="event"?"📅 Plan":"📢 Anuncio")+
     '</small><p>'+esc(x.body)+'</p></div><span>'+Number(x.sent||0)+' / '+Number(x.attempted||0)+
-    ' dispositivos</span></article>').join(""):'<p>Sin avisos enviados todavía.</p>';
+    ' aceptadas</span></article>'+
+    (Array.isArray(x.delivery_details)&&x.delivery_details.length?
+     '<details class="amp-history-details"><summary>👥 Ver resultado por persona</summary>'+
+      recipientView(x.delivery_details,"result")+'</details>':
+     '<p class="amp-legacy-note">Este envío no tiene desglose individual registrado.</p>')).join(""):
+    '<p>Sin avisos enviados todavía.</p>';
    setStatus("✅ Servicio preparado. Puedes comprobar destinatarios o enviar un aviso.");
   }catch(e){
    active=false;send.disabled=true;check.disabled=true;
@@ -96,7 +141,9 @@ function mount(container,events,client){
   check.disabled=true;setStatus("Contando destinatarios…");
   try{
    const result=await invoke({action:"preview",...payload()});
-   setStatus("👥 "+result.users+" usuarios · "+result.devices+" dispositivos suscritos recibirían este aviso. Aún no se ha enviado nada.");
+   if(!Array.isArray(result.recipients))throw new Error("Actualiza la Edge Function en Supabase para consultar el detalle por persona.");
+   showRecipients(result.recipients,"preview");
+   setStatus("👥 "+result.users+" usuarios · "+result.devices+" dispositivos preparados. Aún no se ha enviado nada.");
   }catch(e){setStatus(e.message||String(e),true)}
   finally{check.disabled=!active;}
  };
@@ -110,6 +157,10 @@ function mount(container,events,client){
   try{
    const params=payload();
    const preview=await invoke({action:"preview",...params});
+   if(!Array.isArray(preview.recipients)){
+    setStatus("Actualiza la Edge Function en Supabase antes de enviar: la versión actual no informa de los resultados por persona.",true);return;
+   }
+   showRecipients(preview.recipients,"preview");
    if(!preview.devices){setStatus("Ningún dispositivo tiene push activo para esta selección.",true);return;}
    const confirmation="¿ENVIAR PUSH AHORA?\n\n"+params.title+"\n"+params.message+
      "\n\nUsuarios: "+preview.users+" · Dispositivos: "+preview.devices+
@@ -118,10 +169,13 @@ function mount(container,events,client){
    if(!lastRequestId)lastRequestId=crypto.randomUUID();
    setStatus("Enviando notificaciones… No pulses de nuevo.");
    const result=await invoke({action:"send",request_id:lastRequestId,...params});
-   setStatus("📨 Envío finalizado: "+result.sent+" aceptadas, "+result.failed+" fallidas de "+result.attempted+" dispositivos.");
+   showRecipients(result.recipients,"result");
+   const summary="📨 Servicio push: "+result.sent+" aceptadas y "+result.failed+
+    " fallidas de "+result.attempted+" dispositivos. Aceptada no significa mostrada en el móvil.";
+   setStatus(summary);
    lastRequestId=null;
    await refreshHistory();
-   setStatus("📨 Envío finalizado: "+result.sent+" aceptadas, "+result.failed+" fallidas de "+result.attempted+" dispositivos.");
+   setStatus(summary+(result.history_saved===false?" ⚠️ El historial no pudo guardar el desglose.":""));
   }catch(err){setStatus(err.message||String(err),true)}
   finally{send.disabled=!active;check.disabled=!active;}
  };
