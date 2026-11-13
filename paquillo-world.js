@@ -16,6 +16,14 @@ const memberPhoto=m=>state.profiles.get(m?.auth_user_id)?.character_image_url||m
 function toWeb(){clearReaction();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
 function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+(state.view===key?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
+function playerCard(){
+ const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
+ const pic=memberPhoto(m);
+ return '<button class="pw-hero-player" type="button" data-pw-view="profile" aria-label="Ver mi personaje">'+
+ (pic?image(pic,m.display_name,''):'<span class="pw-avatar-placeholder">🦸</span>')+
+ '<span class="pw-hero-player-stats"><b>'+esc(m.display_name)+'</b><small>⭐ Nivel '+lvl+' · '+(state.ready?points(state.xp)+' XP':'XP pendiente')+'</small>'+
+ '<span class="pw-xp-track"><i style="width:'+((progress/250)*100)+'%"></i></span></span><span class="pw-hero-chevron">›</span></button>';
+}
 function playerHero(){
  const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
  const pic=memberPhoto(m);
@@ -25,10 +33,6 @@ function playerHero(){
  '<div class="pw-mountain pw-mountain-left" aria-hidden="true"></div><div class="pw-mountain pw-mountain-right" aria-hidden="true"></div>'+
  '<div class="pw-wood-sign"><span class="pw-logo-crown">👑</span><strong><span>PAQUILLO</span><em>WORLD</em></strong><small>Tu grupo. Tus personajes. Tus piques.</small></div>'+
  '<img class="pw-scene-cast" src="paqui-world-cast.webp" alt="La pandilla Paquillo en estilo cartoon" onerror="this.hidden=true">'+
- '<button class="pw-hero-player" type="button" data-pw-view="profile" aria-label="Ver mi personaje">'+
- (pic?image(pic,m.display_name,''):'<span class="pw-avatar-placeholder">🦸</span>')+
- '<span class="pw-hero-player-stats"><b>'+esc(m.display_name)+'</b><small>⭐ Nivel '+lvl+' · '+(state.ready?points(state.xp)+' XP':'XP pendiente')+'</small>'+
- '<span class="pw-xp-track"><i style="width:'+((progress/250)*100)+'%"></i></span></span><span class="pw-hero-chevron">›</span></button>'+
  '<button class="pw-quest-bubble" type="button" data-pw-view="challenges"><span>🌟</span><b>¡Sigue participando!</b><small>Descubre los próximos retos</small></button>'+
  '<span class="pw-island-ribbon" aria-hidden="true">¡PAQUILLO SIEMPRE! 💛</span>'+
  '</div>';
@@ -50,6 +54,7 @@ function homeView(){
  (memberPhoto(m)?image(memberPhoto(m),'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
+ '<div class="pw-lobby-hud"><span class="pw-lobby-hud-caption">🎮 <b>MI AVENTURA</b></span>'+playerCard()+'</div>'+
  playerHero()+
  '<div class="pw-lobby-layout">'+
  '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
