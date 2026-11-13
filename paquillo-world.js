@@ -33,6 +33,7 @@ function playerHero(){
  '<div class="pw-mountain pw-mountain-left" aria-hidden="true"></div><div class="pw-mountain pw-mountain-right" aria-hidden="true"></div>'+
  '<div class="pw-wood-sign"><span class="pw-logo-crown">👑</span><strong><span>PAQUILLO</span><em>WORLD</em></strong><small>Tu grupo. Tus personajes. Tus piques.</small></div>'+
  '<img class="pw-scene-cast" src="paqui-world-cast.webp" alt="La pandilla Paquillo en estilo cartoon" onerror="this.hidden=true">'+
+ playerCard()+
  '<button class="pw-quest-bubble" type="button" data-pw-view="challenges"><span>🌟</span><b>¡Sigue participando!</b><small>Descubre los próximos retos</small></button>'+
  '<span class="pw-island-ribbon" aria-hidden="true">¡PAQUILLO SIEMPRE! 💛</span>'+
  '</div>';
@@ -54,7 +55,6 @@ function homeView(){
  (memberPhoto(m)?image(memberPhoto(m),'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
- '<div class="pw-lobby-hud"><span class="pw-lobby-hud-caption">🎮 <b>MI AVENTURA</b></span>'+playerCard()+'</div>'+
  playerHero()+
  '<div class="pw-lobby-layout">'+
  '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
@@ -181,7 +181,8 @@ async function refresh(){
  try{
   const ctx=window.PaquilloWorldContext?.();
   if(!ctx?.client||!ctx?.currentAuthUser){
-   root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-screen"><div class="pw-demo-notice">Inicia sesión en Paquillo Events para jugar.</div></div></div>';
+   const pending=!!ctx?.authBootstrapping;
+   root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-screen"><div class="pw-demo-notice">'+(pending?'🌴 Recuperando tu sesión de Paquillo Events…':'Inicia sesión en Paquillo Events para jugar.')+'</div></div></div>';
    return;
   }
   state.uid=ctx.currentAuthUser.id;
