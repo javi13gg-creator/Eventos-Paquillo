@@ -4,7 +4,9 @@ const BUCKET='paquillo-characters';
 const REQUIRED=[
  ['adri','Adri'],['carla','Carla'],['david','David'],['diego','Diego'],
  ['ines','Inés'],['ivan','Iván'],['javi','Javi'],['jb','JB'],
- ['joaquin','Joaquín'],['leti','Leti']
+ ['joaquin','Joaquín'],['leti','Leti'],
+ ['alba','Alba'],['jorge-r','Jorge R'],['julia','Julia'],['laura','Laura'],['maria','María'],
+ ['mireia','Mireia'],['richy','Richy'],['roman','Román'],['rodri','Rodri'],['sara','Sara']
 ];
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,8 +23,8 @@ function mount(target,members,client){
  const html='<section id="paquiWorldAvatarAdmin" class="paqui-avatar-import">'+
   '<div class="paqui-avatar-import-head"><span class="paqui-avatar-import-icon">🎭</span><div><h3>Avatares personalizados de Paquillo World</h3>'+
   '<p>Importa personajes completos estilo sticker, sin sustituir las fotos reales ni los XP.</p></div></div>'+
-  '<details id="paquiAvatarDetails"><summary>✨ Gestionar avatares del grupo <span>10 preparados</span></summary>'+
-  '<p class="paqui-avatar-help">Selecciona los archivos <b>adri.webp, carla.webp, david.webp, diego.webp, ines.webp, ivan.webp, javi.webp, jb.webp, joaquin.webp y leti.webp</b> extraídos del paquete aprobado.</p>'+
+  '<details id="paquiAvatarDetails"><summary>✨ Gestionar avatares del grupo <span>20 miembros · 2 packs</span></summary>'+
+  '<p class="paqui-avatar-help">Para importar los renders finales validados, selecciona los archivos con el nombre de cada persona (por ejemplo <b>adri.webp</b>, <b>alba.webp</b>, <b>jorge-r.webp</b>, <b>maria.webp</b>). Los bocetos vectoriales que aparecen en Paquillo World son provisionales y no se asignan a Supabase.</p>'+
   '<label class="paqui-avatar-file-label" for="paquiAvatarFiles">📁 Seleccionar imágenes de los personajes</label>'+
   '<input id="paquiAvatarFiles" type="file" accept="image/webp,image/png,image/jpeg" multiple>'+
   '<div id="paquiAvatarMemberList" class="paqui-avatar-member-grid">'+
@@ -59,7 +61,7 @@ function mount(target,members,client){
    row.classList.toggle('selected',!!m.linked&&chosen.has(m.key));
   }
   upload.disabled=matched.length===0;
-  if(matched.length)show('Preparados '+matched.length+' de los 10 avatares. El botón los subirá y asignará por nombre.');
+  if(matched.length)show('Preparados '+matched.length+' de los '+REQUIRED.length+' avatares. El botón los subirá y asignará por nombre.');
  };
  upload.onclick=async()=>{
   if(!matched.length)return;
