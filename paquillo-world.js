@@ -11,6 +11,7 @@ const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirm
 const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','👥','Equipo'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false};
 let reaction={timer:null,armed:0,phase:'idle'};
+const viewHistory=[];
 let trivia=null;
 let memory=null;
 const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -26,7 +27,9 @@ const memberPhoto=m=>m?(state.profiles.get(m.auth_user_id)?.character_image_url|
 const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
 function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
-function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+(state.view===key?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
+function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+
+ '<button class="pw-nav-btn pw-nav-back" data-pw-back type="button" aria-label="Volver atrás"><i aria-hidden="true">↩️</i><span>Atrás</span></button>'+
+ chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+((state.view===key||(state.view==='challenges'&&key==='games'))?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
 function playerCard(){
  const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
  const pic=memberPhoto(m);
@@ -130,19 +133,31 @@ function renderShell(){
  nav()+
  '<div class="pw-modal" id="pwModal" hidden><div class="pw-modal-card" id="pwModalCard" role="dialog" aria-modal="true" aria-label="Ventana de Paquillo World"></div></div>'+
  '</div>';
- setView(state.view,false);
+ setView(state.view,false,false);
 }
-function setView(view,scroll=true){
+function setView(view,scroll=true,remember=true){
+ if(!['home','games','people','ranking','profile','challenges'].includes(view))view='home';
+ const overlay=document.getElementById('pwModal');
+ if(overlay&&!overlay.hidden)closeModal();
+ if(remember&&state.view!==view){viewHistory.push(state.view);if(viewHistory.length>20)viewHistory.shift();}
  state.view=view;
  root.querySelectorAll('[data-pw-screen]').forEach(x=>{x.hidden=x.dataset.pwScreen!==view});
- root.querySelectorAll('.pw-nav-btn').forEach(x=>{const yes=x.dataset.pwView===view;x.classList.toggle('on',yes);x.setAttribute('aria-current',yes?'page':'false')});
+ root.querySelectorAll('.pw-nav-btn[data-pw-view]').forEach(x=>{const yes=x.dataset.pwView===(view==='challenges'?'games':view);x.classList.toggle('on',yes);x.setAttribute('aria-current',yes?'page':'false')});
  if(scroll){const el=document.getElementById('pwScroll');if(el)el.scrollTop=0}
  clearReaction();
+}
+function goBack(){
+ const overlay=document.getElementById('pwModal');
+ if(overlay&&!overlay.hidden){closeModal();return;}
+ if(viewHistory.length){setView(viewHistory.pop(),true,false);return;}
+ if(state.view!=='home'){setView('home',true,false);return;}
+ toWeb();
 }
 function modal(body){
  const overlay=document.getElementById('pwModal'),c=document.getElementById('pwModalCard');
  if(!overlay||!c)return;
- c.innerHTML=body+'<button type="button" class="pw-secondary-button" data-pw-close>Cerrar ✕</button>';
+ c.innerHTML='<div class="pw-modal-top"><button type="button" class="pw-modal-back" data-pw-close>← Volver</button><span>🎮 PAQUILLO WORLD</span></div>'+body+
+ '<button type="button" class="pw-secondary-button" data-pw-close>Cerrar ✕</button>';
  overlay.hidden=false;
 }
 function closeModal(){
@@ -335,7 +350,7 @@ async function refresh(){
   const ctx=window.PaquilloWorldContext?.();
   if(!ctx?.client||!ctx?.currentAuthUser){
    const pending=!!ctx?.authBootstrapping;
-   root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-screen"><div class="pw-demo-notice">'+(pending?'🌴 Recuperando tu sesión de Paquillo Events…':'Inicia sesión en Paquillo Events para jugar.')+'</div></div></div>';
+   root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-scroll"><div class="pw-screen"><div class="pw-demo-notice">'+(pending?'🌴 Recuperando tu sesión de Paquillo Events…':'Inicia sesión en Paquillo Events para jugar.')+'</div></div></div>'+nav()+'</div>';
    return;
   }
   state.uid=ctx.currentAuthUser.id;
@@ -356,7 +371,7 @@ async function refresh(){
   state.loaded=true;renderShell();
   if(!state.ready){const p=root.querySelector('.pw-screen');p?.insertAdjacentHTML('afterbegin','<div class="pw-demo-notice">⚙️ XP pendiente de activar: ejecuta <b>paquillo-world-fase1.sql</b> en Supabase. Se muestran valores sin experiencia hasta entonces.</div>')}
  }catch(e){
-  root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-screen"><div class="pw-demo-notice">Error cargando Paquillo World: '+esc(e.message||e)+'</div><button class="pw-action-button" data-pw-refresh>Reintentar</button></div></div>';
+  root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-scroll"><div class="pw-screen"><div class="pw-demo-notice">Error cargando Paquillo World: '+esc(e.message||e)+'</div><button class="pw-action-button" data-pw-refresh>Reintentar</button></div></div>'+nav()+'</div>';
  }finally{state.loading=false;}
 }
 root.addEventListener('click',e=>{
@@ -364,18 +379,19 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-exit')){toWeb();return}
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
  if(btn.hasAttribute('data-pw-close')){closeModal();return}
+ if(btn.hasAttribute('data-pw-back')){goBack();return}
  if(btn.hasAttribute('data-pw-trivia-answer')){answerTrivia(Number(btn.dataset.pwTriviaAnswer));return}
  if(btn.hasAttribute('data-pw-trivia-next')){advanceTrivia();return}
  if(btn.hasAttribute('data-pw-trivia-restart')){startTrivia();return}
  if(btn.hasAttribute('data-pw-memory-card')){flipMemory(Number(btn.dataset.pwMemoryCard));return}
  if(btn.hasAttribute('data-pw-memory-restart')){startMemory();return}
- if(btn.dataset.pwView){setView(btn.dataset.pwView);return}
+ if(btn.dataset.pwView){if(root.querySelector('[data-pw-screen]'))setView(btn.dataset.pwView);else if(window.PaquilloWorldContext?.()?.currentAuthUser)refresh();return}
  if(btn.dataset.pwGame){gameAction(btn.dataset.pwGame);return}
  if(btn.dataset.pwMember){showMember(Number(btn.dataset.pwMember));return}
  if(btn.hasAttribute('data-pw-reflex-start')){startReaction();return}
  if(btn.id==='pwReflexPad'){hitReaction();return}
 });
-root.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if((e.key==='Enter'||e.key===' ')&&e.target.id==='pwReflexPad'){e.preventDefault();hitReaction()}});
+root.addEventListener('keydown',e=>{if(e.key==='Escape')goBack();if((e.key==='Enter'||e.key===' ')&&e.target.id==='pwReflexPad'){e.preventDefault();hitReaction()}});
 window.addEventListener('paqui-world-ready',()=>{if(location.hash==='#world')refresh()});
 window.addEventListener('hashchange',()=>{if(location.hash==='#world')refresh();else{closeModal();clearReaction()}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-t="world"]'))setTimeout(refresh,0)});
