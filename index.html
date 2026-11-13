@@ -435,7 +435,34 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 @media(max-width:520px){.paqui-push-diagnostics .paqui-notify-actions{display:grid;grid-template-columns:1fr}.paqui-push-diagnostics .paqui-notify-actions button{width:100%}}
 
 </style>
-<link rel="stylesheet" href="paquillo-world-app.css?v=15">
+
+<style id="paqui-avatar-import-v21">
+.paqui-avatar-import{margin:0 0 1.3rem;padding:13px 15px;border:2px solid #7744b8;border-radius:17px;background:linear-gradient(145deg,color-mix(in srgb,#8d50d7 15%,var(--card)),var(--card));box-shadow:3px 4px 0 color-mix(in srgb,var(--ink) 75%,transparent)}
+.paqui-avatar-import-head{display:flex;align-items:center;gap:12px}
+.paqui-avatar-import-head h3{margin:0;font-size:1.11rem;color:var(--ink)}
+.paqui-avatar-import-head p{margin:4px 0 0;font-size:.8rem;color:var(--mut);line-height:1.35}
+.paqui-avatar-import-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:13px;background:#733abb;font-size:1.45rem}
+.paqui-avatar-import details{margin-top:10px;border-top:1px solid var(--ln);padding-top:10px}
+.paqui-avatar-import summary{display:flex;gap:8px;flex-wrap:wrap;align-items:center;cursor:pointer;font-weight:900;font-size:.89rem;color:var(--ink)}
+.paqui-avatar-import summary span{font-size:.7rem;border-radius:99px;background:#7343b9;color:#fff;padding:3px 8px}
+.paqui-avatar-import .paqui-avatar-help{font-size:.76rem;color:var(--mut);line-height:1.45;margin:9px 0}
+.paqui-avatar-file-label{display:block;font-weight:850;font-size:.83rem;color:var(--ink);margin-bottom:5px}
+#paquiAvatarFiles{max-width:100%;width:100%;font-size:.79rem;background:var(--card);padding:8px;border:1px solid var(--ln);border-radius:10px}
+.paqui-avatar-member-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:12px 0}
+.paqui-avatar-member{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--ln);background:var(--card);border-radius:9px;padding:8px 9px;min-width:0}
+.paqui-avatar-member.selected{border-color:#56a984;background:color-mix(in srgb,#4fcb9b 15%,var(--card))}
+.paqui-avatar-name{font-weight:850;font-size:.83rem}
+.paqui-avatar-status{font-size:.71rem;color:var(--mut);text-align:right;overflow-wrap:anywhere;min-width:0}
+#paquiAvatarUpload{width:100%;min-height:42px}
+#paquiAvatarUpload:disabled{opacity:.5;cursor:not-allowed}
+.paqui-avatar-message{font-size:.79rem;line-height:1.4;color:var(--mut);font-weight:750;margin:10px 0}
+.paqui-avatar-message.error{color:#a92340}
+@media(max-width:600px){
+ .paqui-avatar-import{padding:11px 10px}
+ .paqui-avatar-member-grid{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+<link rel="stylesheet" href="paquillo-world-app.css?v=21">
 <link rel="stylesheet" href="paquillo-race.css?v=1">
 </head>
 <body>
@@ -804,6 +831,7 @@ showTab(location.hash.slice(1));
 </script>
 
 <script src="paquillo-admin-push.js?v=2"></script>
+<script src="paquillo-avatar-admin.js?v=1"></script>
 <script>
 (()=>{
  // CONFIGURACIÓN: sustituye estos dos valores por los de tu proyecto Supabase.
@@ -1710,6 +1738,7 @@ showTab(location.hash.slice(1));
    target.querySelectorAll('.event-status-btn').forEach(btn=>btn.onclick=async()=>{const eventId=btn.dataset.event,nextStatus=btn.dataset.status;btn.disabled=true;btn.textContent='Guardando…';try{const {data:updated,error}=await client.from('group_events').update({status:nextStatus,updated_at:new Date().toISOString()}).eq('id',eventId).select('id,status,title').single();if(error)throw error;if(!updated)throw new Error('Supabase no ha confirmado la actualización del plan.');await loadEventsFromDatabase();await renderPastEvents();await renderOrganizerRanking();await renderAdmin();if(nextStatus==='completed')alert('Plan marcado como realizado. Ya aparece en Eventos pasados.');}catch(error){alert('No se pudo cambiar el estado del plan: '+(error?.message||error));btn.disabled=false;btn.textContent=nextStatus==='completed'?'Marcar realizado':'Reabrir';}});
    $id('refreshStats').onclick=renderAdmin;
    window.PaquilloAdminPush?.mount(target,events||[],client);
+   window.PaquilloAdminAvatars?.mount(target,members||[],client);
  }
  document.querySelectorAll('.tabs [data-t]').forEach(btn=>btn.addEventListener('click',()=>{
    const t=btn.dataset.t;showTab(t);
@@ -1875,8 +1904,8 @@ showTab(location.hash.slice(1));
 })();
 </script>
 
-<script src="paquillo-race.js?v=2"></script>
-<script src="paquillo-world.js?v=20"></script>
+<script src="paquillo-race.js?v=21"></script>
+<script src="paquillo-world.js?v=21"></script>
 <script>
 (()=>{
  const $=id=>document.getElementById(id);
