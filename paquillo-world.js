@@ -67,9 +67,9 @@ function gameTiles(includePlanned=false){
   ['trivia','🧠','Trivial<br>Paquillero','Demuestra cuánto sabes','purple',true],
   ['reflex','⏱️','Duelo de<br>Reflejos','¡A ver quién es más rápido!','blue',true],
   ['memory','🃏','Memoria<br>Paquillera','Encuentra las parejas','green',true],
-  ['challenges','🏆','Retos<br>Semanales','Logros y desafíos','orange',true]
+  ['races','🏁','Carrera<br>Paquillera','¡Escapa del festival!','red',true]
  ];
- if(includePlanned)games.push(['races','🏁','Carreras<br>Paquilleras','Próximamente multijugador','red',false]);
+ if(includePlanned)games.push(['challenges','🏆','Retos<br>Semanales','Logros y desafíos','orange',true]);
  return '<div class="pw-game-grid">'+games.map(([id,ico,title,desc,tone,ready])=>
  '<button type="button" class="pw-game pw-tile-'+tone+'" data-pw-game="'+id+'" aria-disabled="'+(!ready)+'"><span class="pw-tile-glow" aria-hidden="true"></span><span class="pw-game-art" aria-hidden="true">'+ico+'</span>'+
  '<strong>'+title+'</strong><p>'+desc+'</p><span class="pw-play-chip">'+(id==='challenges'?'Ver retos ›':ready?'¡Jugar! ▶':'En desarrollo 🔒')+'</span></button>').join('')+'</div>';
@@ -101,8 +101,8 @@ function homeView(){
 }
 function gamesView(){
  return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
- '<div class="pw-games-board">'+gameTiles()+'</div>'+
- '<p class="pw-games-coming">🏁 Carreras Paquilleras: multijugador en preparación · Los juegos no otorgan XP</p></section>';
+ '<div class="pw-games-board">'+gameTiles(true)+'</div>'+
+ '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking del grupo al activar Supabase · Sin XP por ahora</p></section>';
 }
 
 function rankingView(){
@@ -159,6 +159,7 @@ function challengesView(){
 }
 
 function renderShell(){
+ window.PaquilloRace?.destroy();
  clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
@@ -190,12 +191,13 @@ function goBack(){
 function modal(body){
  const overlay=document.getElementById('pwModal'),c=document.getElementById('pwModalCard');
  if(!overlay||!c)return;
- overlay.dataset.game=body.includes('class="pw-quiz"')?'trivia':body.includes('class="pw-memory"')?'memory':body.includes('pw-reflex-pad')?'reflex':'other';
+ overlay.dataset.game=body.includes('class="pw-quiz"')?'trivia':body.includes('class="pw-memory"')?'memory':body.includes('pw-reflex-pad')?'reflex':body.includes('class="pw-race"')?'race':'other';
  c.innerHTML='<div class="pw-modal-top"><button type="button" class="pw-modal-back" data-pw-close>← Volver</button><span>🎮 PAQUILLO WORLD</span></div>'+body+
  '<button type="button" class="pw-secondary-button" data-pw-close>Cerrar ✕</button>';
  overlay.hidden=false;
 }
 function closeModal(){
+ window.PaquilloRace?.destroy();
  clearReaction();clearMemoryTimer();trivia=null;memory=null;
  const overlay=document.getElementById('pwModal');if(overlay)overlay.hidden=true;
 }
@@ -376,7 +378,19 @@ function gameAction(id){
  if(id==='trivia'){startTrivia();return}
  if(id==='memory'){startMemory();return}
  if(id==='challenges'){setView('challenges');return}
- modal('<div class="pw-modal-icon">🏁</div><h2>Carreras Paquilleras</h2><p>Las carreras multijugador todavía están en construcción. Aquí aparecerán cuando podamos validar los resultados en Supabase.</p>');
+ if(id==='races'){
+  if(!window.PaquilloRace){
+   modal('<div class="pw-modal-icon">🏁</div><h2>Carrera Paquillera</h2><p>No se ha podido cargar el minijuego. Actualiza Paquillo World y vuelve a entrar.</p>');
+   return;
+  }
+  window.PaquilloRace.open({
+   uid:state.uid,member:state.mine,photo:memberPhoto(state.mine),
+   members:state.members,client:window.PaquilloWorldContext?.()?.client,
+   render:modal,onClose:closeModal
+  });
+  return;
+ }
+ modal('<div class="pw-modal-icon">🎮</div><h2>Juego no disponible</h2>');
 }
 async function refresh(){
  if(state.loading)return;
