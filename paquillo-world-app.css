@@ -384,3 +384,49 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-lobby-screen .pw-quest-bubble small{display:block}
  #p-world .pw-lobby-screen .pw-wood-sign{top:109px}
 }
+
+
+/* Paquillo World v10: juegos accesibles y tarjetas completas en móvil. */
+#p-world .pw-tile-red{background:radial-gradient(circle at 50% 22%,#ffadad,#d84974 58%,#842563);border-color:#ffa6b7;box-shadow:0 7px 0 #8b265e,0 11px 18px #86245177}
+#p-world .pw-lobby-screen .pw-game{padding-bottom:18px}
+#p-world .pw-lobby-screen .pw-game .pw-play-chip{margin-bottom:5px;flex-shrink:0}
+#p-world .pw-quiz-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.8rem;font-weight:900;color:#ffe67c;letter-spacing:.01em}
+#p-world .pw-quiz-progress{height:8px;margin:12px 0;border-radius:99px;overflow:hidden;border:1px solid #c9a2ff;background:#241042}
+#p-world .pw-quiz-progress span{display:block;height:100%;background:linear-gradient(90deg,#f9e565,#4fddaa);border-radius:99px}
+#p-world .pw-quiz-type{margin:.6rem 0 .3rem;font-size:.71rem;color:#d8c0ff}
+#p-world .pw-quiz h2{font-size:clamp(1.15rem,4.8vw,1.55rem);line-height:1.16;margin:.6rem 0 1rem}
+#p-world .pw-quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+#p-world .pw-quiz-answer{display:flex;align-items:center;justify-content:center;min-height:62px;padding:10px 8px;border:2px solid #d1b4ff;border-radius:14px;background:linear-gradient(150deg,#7845c8,#4b2392);box-shadow:0 3px 0 #2f175b;color:white;font:900 .91rem/1.2 "Bricolage Grotesque",system-ui,sans-serif;cursor:pointer;word-break:normal;overflow-wrap:anywhere}
+#p-world .pw-quiz-answer.pw-correct{border-color:#b0ffb6;background:linear-gradient(#36bd7a,#126b53);box-shadow:0 3px 0 #155139;color:white}
+#p-world .pw-quiz-answer.pw-wrong{border-color:#ffc4b9;background:linear-gradient(#d94a65,#8f264f);box-shadow:0 3px 0 #6d1836}
+#p-world .pw-quiz-answer:disabled{cursor:default;opacity:1}
+#p-world .pw-quiz-feedback{font-weight:850;font-size:.89rem}
+#p-world .pw-quiz-score{color:#ffe580;font-weight:800}
+#p-world .pw-local-note{margin-top:12px!important;font-size:.71rem!important;color:#d5c3f6!important;line-height:1.35}
+#p-world .pw-game-finish .pw-finish-icon{font-size:4.5rem;line-height:1}
+#p-world .pw-final-score{font-size:2.8rem!important;font-weight:1000;color:#ffe46b!important;margin:.4rem 0}
+#p-world .pw-memory p{margin:.7rem 0}
+#p-world .pw-memory-stats{display:flex;justify-content:space-evenly;gap:10px;padding:8px;background:#30136b;border-radius:11px;font-size:.81rem;color:#ffe980;font-weight:850}
+#p-world .pw-memory-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+#p-world .pw-memory-card{aspect-ratio:1;display:grid;place-items:center;overflow:hidden;padding:5px;border:2px solid #caa0f7;border-radius:13px;background:linear-gradient(150deg,#8f42d8,#5a2489);box-shadow:0 4px 0 #28134f;color:white;font:950 .79rem/1.12 "Bricolage Grotesque",system-ui,sans-serif;cursor:pointer;overflow-wrap:anywhere}
+#p-world .pw-memory-card.flipped{background:linear-gradient(160deg,#ffdf80,#eaa153);border-color:#fff8b9;color:#3c2453}
+#p-world .pw-memory-card.matched{background:linear-gradient(150deg,#a9f0a0,#4ebc81);border-color:#dfffe0;color:#10432c}
+#p-world .pw-memory-card .pw-memory-back{font-size:2rem;filter:drop-shadow(0 3px 2px #461c7d)}
+#p-world .pw-memory-card img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+#p-world .pw-memory-name{font-weight:1000;line-height:1.1}
+#p-world .pw-memory-initials{font-size:1.55rem}
+@media(max-width:690px){
+ #p-world .pw-lobby-screen .pw-lobby-layout{margin-top:-91px}
+ #p-world .pw-lobby-screen .pw-game{min-height:188px;padding:9px 7px 17px}
+ #p-world .pw-lobby-screen .pw-game-art{width:59px;height:59px;font-size:2.6rem;margin-bottom:4px}
+ #p-world .pw-lobby-screen .pw-game p{margin:.3rem 0 .4rem}
+ #p-world .pw-lobby-screen .pw-game .pw-play-chip{margin-bottom:5px}
+ #p-world .pw-memory-grid{gap:6px}
+ #p-world .pw-memory-card{padding:4px;font-size:.71rem;border-radius:10px}
+ #p-world .pw-quiz-answer{min-height:56px;font-size:.83rem}
+}
+@media(max-width:355px){
+ #p-world .pw-quiz-options{gap:7px}
+ #p-world .pw-quiz-answer{font-size:.76rem;min-height:60px;padding:7px}
+ #p-world .pw-memory-name{font-size:.63rem}
+}
