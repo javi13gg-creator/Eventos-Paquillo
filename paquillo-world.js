@@ -33,7 +33,7 @@ const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+es
 const normalizePersonName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').replace(/[^a-z0-9]+/g,' ').trim();
 const defaultPhotoLookup=new Map((window.PaquilloPeople||[]).filter(p=>p?.n&&p?.i).map(p=>[normalizePersonName(p.n),p.i]));
 const memberDefaultPhoto=m=>defaultPhotoLookup.get(normalizePersonName(m?.display_name))||'';
-const latestApprovedCutout=m=>['carla','david'].includes(normalizePersonName(m?.display_name))?(window.PaquilloWorldCharacters?.imageFor(m.display_name)||''):'';
+const latestApprovedCutout=m=>['carla','david','diego','ines','ivan','javi'].includes(normalizePersonName(m?.display_name))?(window.PaquilloWorldCharacters?.imageFor(m.display_name)||''):'';
 const memberPhoto=m=>m?(state.previewCharacters?(latestApprovedCutout(m)||state.profiles.get(m.auth_user_id)?.character_image_url||window.PaquilloWorldCharacters?.imageFor(m.display_name)||m.avatar_url||memberDefaultPhoto(m)):(m.avatar_url||memberDefaultPhoto(m)||state.profiles.get(m.auth_user_id)?.character_image_url||'')):'';
 const hasStoredCharacter=m=>!!state.profiles.get(m?.auth_user_id)?.character_image_url;
 const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
@@ -125,8 +125,8 @@ function peopleView(){
  const page=Math.min(Math.max(0,pageState.people),count-1);pageState.people=page;
  const items=state.ranked.slice(page*size,(page+1)*size);
  return '<section class="pw-screen pw-panel pw-paged-screen pw-people-screen" data-pw-screen="people">'+
- screenTitle('👥 PERSONAJES',state.previewCharacters?'24 personajes: 7 retratos 3D aprobados y 17 bocetos cartoon provisionales':'Fotos reales de perfil y cumpleaños')+
- '<div class="pw-avatar-mode"><span>🎭 24/24 · 7 en 3D</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver personajes')+'</button></div>'+
+ screenTitle('👥 PERSONAJES',state.previewCharacters?'24 personajes: 11 retratos 3D aprobados y 13 bocetos cartoon provisionales':'Fotos reales de perfil y cumpleaños')+
+ '<div class="pw-avatar-mode"><span>🎭 24/24 · 11 en 3D</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver personajes')+'</button></div>'+
  '<div class="pw-person-grid">'+items.map((m,i)=>'<button type="button" data-pw-member="'+(page*size+i)+'" class="pw-person-card"><div class="pw-person-art">'+
  (memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
@@ -235,7 +235,7 @@ function showMember(idx){
  const m=state.ranked[idx];if(!m)return;
  modal('<div class="pw-modal-icon">👑</div><h2>'+esc(m.display_name)+'</h2>'+
  (memberPhoto(m)?memberImage(m,m.display_name,''):'<div class="pw-modal-icon">🦸</div>')+
- '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>'+(window.PaquilloWorldCharacters?.approvedNames?.includes(m.display_name)?'Personaje 3D aprobado y disponible en Paquillo World.':hasStoredCharacter(m)?'Personaje personalizado vinculado desde Supabase.':window.PaquilloWorldCharacters?.has(m.display_name)?'Boceto cartoon provisional: su parecido y render 3D final siguen pendientes de validar.':'Personaje 3D cartoon pendiente de incorporar.')+'</p>');
+ '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>'+(window.PaquilloWorldCharacters?.approvedNames?.some(name=>normalizePersonName(name)===normalizePersonName(m.display_name))?'Personaje 3D aprobado y disponible en Paquillo World.':hasStoredCharacter(m)?'Personaje personalizado vinculado desde Supabase.':window.PaquilloWorldCharacters?.has(m.display_name)?'Boceto cartoon provisional: su parecido y render 3D final siguen pendientes de validar.':'Personaje 3D cartoon pendiente de incorporar.')+'</p>');
 }
 /* Trivial de 10 preguntas: fechas de group_members + cultura general.
    Las respuestas y puntos son locales; nunca se acreditan XP. */
@@ -389,7 +389,7 @@ function gameAction(id){
   const raceApproved=latestApprovedCutout(state.mine);
   const racePhoto=raceApproved||memberPhoto(state.mine);
   const isFullBody=racePhoto.includes('/paquillo-characters/')||
-   /(?:^|\/)paquillo-world-art\/(?:carla-cutout-v27|david-cutout-v27|sandra|santi|sofia|ruben)\.webp(?:\?|$)/.test(racePhoto);
+   /(?:^|\/)paquillo-world-art\/(?:carla-cutout-v27|david-cutout-v27|diego-cutout-v28|ines-cutout-v28|ivan-cutout-v28|javi-cutout-v28|sandra|santi|sofia|ruben)\.webp(?:\?|$)/.test(racePhoto);
   window.PaquilloRace.open({
    uid:state.uid,member:state.mine,photo:racePhoto,sticker:isFullBody,
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
