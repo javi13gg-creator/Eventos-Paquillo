@@ -1,5 +1,5 @@
 /* Paquillo World · galería de 24 personajes.
-   20 bocetos vectoriales y 4 retratos 3D aprobados (Sandra, Santi, Sofía y Rubén).
+   17 bocetos vectoriales y 7 retratos 3D aprobados; Carla y David con recortes transparentes.
    Sin fotografías de referencia privadas; los avatares personalizados de Supabase
    tienen prioridad sobre los recursos publicados aquí. */
 (()=>{'use strict';
@@ -79,8 +79,8 @@ function art(id,person){
 }
 const APPROVED={
  adri:'paquillo-world-art/adri.webp',
- carla:'paquillo-world-art/carla.webp',
- david:'paquillo-world-art/david.webp',
+ carla:'paquillo-world-art/carla-cutout-v27.webp',
+ david:'paquillo-world-art/david-cutout-v27.webp',
  sandra:'paquillo-world-art/sandra.webp',
  santi:'paquillo-world-art/santi.webp',
  sofia:'paquillo-world-art/sofia.webp',
