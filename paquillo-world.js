@@ -137,7 +137,7 @@ function profileView(){
  const page=Math.max(0,Math.min(2,pageState.profile));
  const body=page===0?'<div class="pw-surface pw-player-card">'+(memberPhoto(m)?memberImage(m,m.display_name,''):'<span style="font-size:3rem">🦸</span>')+
  '<div><b>'+esc(m.display_name)+'</b><small>⭐ NIVEL '+level(xp)+' · '+points(xp)+' XP</small><p class="pw-muted">Próximo nivel: '+(250-progress)+' XP</p><div class="pw-xp-track"><i style="width:'+Math.round(progress/250*100)+'%"></i></div></div></div>'+
- '<p class="pw-profile-hint">Tu personaje Paquillero. Próximamente podrás desbloquear nuevos accesorios y avatares.</p>':
+ '<p class="pw-profile-hint">🎭 Tu personaje Paquillero. Los avatares personalizados muestran sus gestos originales y se mueven suavemente.</p>':
  page===1?'<div class="pw-surface"><h3>⚡ Cómo ganar XP</h3><div class="pw-actions-grid">'+
  [['📅 Crear un plan',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div><p class="pw-profile-hint">Los minijuegos aún no dan experiencia.</p>':
  '<div class="pw-surface"><h3>📜 Última actividad</h3>'+
@@ -385,6 +385,7 @@ function gameAction(id){
   }
   window.PaquilloRace.open({
    uid:state.uid,member:state.mine,photo:memberPhoto(state.mine),
+   sticker:memberPhoto(state.mine).includes('/paquillo-characters/'),
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
    render:modal,onClose:closeModal
   });
@@ -458,6 +459,9 @@ root.addEventListener('click',e=>{
 });
 root.addEventListener('keydown',e=>{if(e.key==='Escape')goBack();if((e.key==='Enter'||e.key===' ')&&e.target.id==='pwReflexPad'){e.preventDefault();hitReaction()}});
 window.addEventListener('paqui-world-ready',()=>{if(location.hash==='#world')refresh()});
+window.addEventListener('paqui-world-characters-updated',()=>{
+ if(location.hash==='#world'&&document.getElementById('pwModal')?.hidden!==false)refresh();
+});
 window.addEventListener('resize',()=>{
  if(location.hash!=='#world'||!state.loaded||document.getElementById('pwModal')?.hidden===false)return;
  const area=document.getElementById('pwScroll');
