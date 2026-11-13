@@ -877,3 +877,28 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-player-card img[src*="/paquillo-characters/"],
  #p-world .pw-person-art img[src*="/paquillo-characters/"]{animation:none!important}
 }
+
+
+/* Paquillo World 22: selector compacto de personajes provisionales y originales. */
+#p-world .pw-avatar-mode{
+ display:flex;align-items:center;justify-content:space-between;gap:7px;
+ margin:5px 0 7px;padding:3px 8px;
+ background:#281158da;border:1px solid #be90e5;border-radius:12px;
+ color:#ffe79a;font-weight:900;font-size:.69rem;
+}
+#p-world .pw-avatar-mode button{
+ color:#2b1246;background:linear-gradient(150deg,#ffe997,#ffbe50);border:1px solid #ffeaa9;
+ border-radius:9px;padding:7px 10px;min-height:32px;
+ font:850 .72rem/1.1 "Bricolage Grotesque",system-ui,sans-serif;white-space:nowrap;cursor:pointer;
+}
+#p-world .pw-people-screen .pw-panel-head p{font-size:.69rem;line-height:1.24}
+#p-world .pw-person-art img[src^="data:image/svg+xml"]{
+ object-fit:contain;object-position:center bottom;padding:1px 4px 0;
+ box-sizing:border-box;filter:drop-shadow(0 3px 3px #18083566);
+}
+#p-world .pw-player-card img[src^="data:image/svg+xml"],#p-world .pw-memory-card img[src^="data:image/svg+xml"]{object-fit:contain}
+#p-world .pw-modal-card img[src^="data:image/svg+xml"]{object-fit:contain;max-height:min(47dvh,290px);width:100%}
+@media(max-height:600px){
+ #p-world .pw-avatar-mode{padding:1px 6px;margin:3px 0}
+ #p-world .pw-avatar-mode button{min-height:28px;padding:4px 8px}
+}
