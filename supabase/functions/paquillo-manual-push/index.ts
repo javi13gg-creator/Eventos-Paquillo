@@ -35,6 +35,29 @@ function vapidJwk(pubBase64: string, privBase64: string) {
   };
 }
 type Device = { user_id:string; endpoint:string; subscription:unknown };
+type DeviceStatus = { device:string; result:"accepted"|"failed"; reason?:string };
+type RecipientStatus = {
+  name:string; status:"ready"|"accepted"|"failed"|"partial"|"disabled"|"no_subscription"|"unlinked";
+  devices:number; accepted:number; failed:number; details:DeviceStatus[];
+};
+const providerName=(endpoint:string)=>{
+  try {
+    const host=new URL(endpoint).hostname;
+    if(host.includes("push.apple.com"))return "Apple";
+    if(host.includes("fcm.googleapis.com")||host.includes("googleapis.com"))return "FCM / Google";
+    if(host.includes("mozilla.com")||host.includes("mozilla.org"))return "Mozilla";
+    return "Otro proveedor push";
+  } catch { return "Proveedor desconocido"; }
+};
+const failureReason=(e:unknown)=>{
+  const status=(e as {response?:{status?:number}})?.response?.status;
+  if(status===404||status===410)return "Suscripción caducada o eliminada";
+  if(status===401||status===403)return "Rechazo de autenticación VAPID";
+  if(status===429)return "Límite de solicitudes del proveedor";
+  if(status===400||status===413)return "Suscripción o mensaje inválido";
+  if(typeof status==="number")return "Error del proveedor HTTP "+status;
+  return "Fallo de conexión o envío";
+};
 
 Deno.serve(async (req) => {
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
@@ -61,7 +84,7 @@ Deno.serve(async (req) => {
     const action=body.action;
     if(action==="history"){
       const {data,error}=await db.from("paqui_manual_push_log")
-        .select("created_at,kind,title,body,audience,attempted,sent,failed,status,event_id")
+        .select("created_at,kind,title,body,audience,attempted,sent,failed,status,event_id,delivery_details")
         .order("created_at",{ascending:false}).limit(12);
       if(error)return fail("Falta ejecutar el SQL del historial de avisos",503);
       return json({items:data||[]});
@@ -82,7 +105,7 @@ Deno.serve(async (req) => {
     const [subscriptions,preferences,memberResult]=await Promise.all([
       db.from("paqui_push_subscriptions").select("user_id,endpoint,subscription").limit(1000),
       db.from("paqui_notification_preferences").select("user_id,push_enabled").limit(1000),
-      db.from("group_members").select("id,auth_user_id").eq("is_active",true).limit(1000),
+      db.from("group_members").select("id,auth_user_id,display_name").eq("is_active",true).limit(1000),
     ]);
     if(subscriptions.error||preferences.error||memberResult.error)
       return fail("No se pudieron consultar las suscripciones y las preferencias push",503);
@@ -100,7 +123,22 @@ Deno.serve(async (req) => {
     const devices:Device[]=(subscriptions.data||[]).filter(row=>
       row.endpoint&&row.subscription&&active.has(row.user_id)&&enabled.has(row.user_id)&&
       (!targeted||targeted.has(row.user_id)));
-    if(action==="preview")return json({devices:devices.length,users:new Set(devices.map(d=>d.user_id)).size});
+    const selectedMembers=members.filter(m=>!targeted||targeted.has(m.auth_user_id));
+    const statuses:RecipientStatus[]=selectedMembers.map(m=>{
+      const mine=devices.filter(row=>row.user_id===m.auth_user_id);
+      const status:RecipientStatus["status"]=!m.auth_user_id?"unlinked":
+        !enabled.has(m.auth_user_id)?"disabled":!mine.length?"no_subscription":"ready";
+      return {
+        name:String(m.display_name||"Paquillo"),status,
+        devices:mine.length,accepted:0,failed:0,details:[],
+      };
+    });
+    const memberByUser=new Map<string,RecipientStatus>();
+    selectedMembers.forEach((m,i)=>{if(m.auth_user_id)memberByUser.set(m.auth_user_id,statuses[i]);});
+    if(action==="preview")return json({
+      devices:devices.length,users:new Set(devices.map(d=>d.user_id)).size,
+      recipients:statuses,
+    });
     const title=trim(body.title),message=trim(body.message);
     if(title.length<4||title.length>75||message.length<6||message.length>220)
       return fail("El título debe tener 4–75 caracteres y el mensaje 6–220");
@@ -125,6 +163,36 @@ Deno.serve(async (req) => {
     const privateKey=Deno.env.get("VAPID_PRIVATE_KEY")||"";
     const subject=Deno.env.get("VAPID_SUBJECT")||"";
     let sent=0,failed=0,removed=0;
+    const providerCounts=new Map<string,number>();
+    const deviceRecord=new Map<string,{owner:RecipientStatus|null; entry:DeviceStatus}>();
+    for(const device of devices){
+      const owner=memberByUser.get(device.user_id)||null;
+      const count=(providerCounts.get(device.user_id)||0)+1;
+      providerCounts.set(device.user_id,count);
+      const entry:DeviceStatus={device:"Dispositivo "+count+" · "+providerName(device.endpoint),result:"failed",reason:"Sin respuesta del proveedor"};
+      if(owner)owner.details.push(entry);
+      deviceRecord.set(device.endpoint,{owner,entry});
+    }
+    const settle=(row:Device,result:"accepted"|"failed",reason?:string)=>{
+      const info=deviceRecord.get(row.endpoint);
+      if(info){
+        info.entry.result=result;
+        if(reason)info.entry.reason=reason;
+        else delete info.entry.reason;
+        if(info.owner){
+          if(result==="accepted")info.owner.accepted++;
+          else info.owner.failed++;
+        }
+      }
+    };
+    const finalize=()=>{
+      for(const person of statuses){
+        if(person.status!=="ready")continue;
+        person.status=person.accepted&&person.failed?"partial":
+          person.accepted?"accepted":"failed";
+      }
+      return statuses;
+    };
     try{
       if(!publicKey||!privateKey||!subject.startsWith("mailto:"))
         throw new Error("Configura VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY y VAPID_SUBJECT en Supabase");
@@ -138,12 +206,14 @@ Deno.serve(async (req) => {
         await Promise.all(devices.slice(i,i+8).map(async row=>{
           try{
             const sub=typeof row.subscription==="string"?JSON.parse(row.subscription):row.subscription;
-            if(!sub?.keys?.auth||!sub?.keys?.p256dh||sub.endpoint!==row.endpoint){failed++;return;}
+            if(!sub?.keys?.auth||!sub?.keys?.p256dh||sub.endpoint!==row.endpoint){
+              failed++;settle(row,"failed","Suscripción inválida o incompleta");return;
+            }
             await server.subscribe({endpoint:row.endpoint,keys:{auth:sub.keys.auth,p256dh:sub.keys.p256dh}})
               .pushTextMessage(payload,{ttl:86400});
-            sent++;
+            sent++;settle(row,"accepted");
           }catch(e){
-            failed++;
+            failed++;settle(row,"failed",failureReason(e));
             const status=(e as {response?:{status?:number}})?.response?.status;
             if(status===404||status===410){
               const {error}=await db.from("paqui_push_subscriptions").delete().eq("endpoint",row.endpoint);
@@ -153,12 +223,21 @@ Deno.serve(async (req) => {
         }));
       }
     }catch(e){
-      await db.from("paqui_manual_push_log").update({status:"error",sent:0,failed:devices.length}).eq("request_id",requestId);
+      finalize();
+      await db.from("paqui_manual_push_log").update({
+        status:"error",sent:0,failed:devices.length,delivery_details:statuses
+      }).eq("request_id",requestId);
       return fail(e instanceof Error?e.message:"No fue posible enviar avisos",503);
     }
-    await db.from("paqui_manual_push_log")
-      .update({sent,failed,status:failed?(sent?"partial":"error"):"sent"})
+    finalize();
+    const {error:historyError}=await db.from("paqui_manual_push_log")
+      .update({sent,failed,status:failed?(sent?"partial":"error"):"sent",
+        delivery_details:statuses})
       .eq("request_id",requestId);
-    return json({attempted:devices.length,sent,failed,expired_removed:removed});
+    return json({
+      attempted:devices.length,sent,failed,expired_removed:removed,
+      recipients:statuses,history_saved:!historyError,
+      note:"Aceptada significa que el proveedor push admitió el mensaje; no confirma que el móvil lo mostrase."
+    });
   }catch(_e){return fail("Error interno del servidor de notificaciones",500);}
 });
