@@ -290,22 +290,97 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 }
 
 
-/* HUD superior: ficha del jugador fuera de la escena para no tapar el logotipo */
-#p-world .pw-lobby-hud{position:relative;z-index:9;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:82px;padding:9px 20px;background:linear-gradient(115deg,#24135a 0%,#4d2590 65%,#261354 100%);border-bottom:3px solid #e9ba64;box-shadow:0 5px 13px #23125144}
-#p-world .pw-lobby-hud-caption{display:flex;gap:7px;align-items:center;color:#ffe797;font-size:clamp(.7rem,1.5vw,1rem);font-weight:950;letter-spacing:.04em;white-space:nowrap;text-shadow:0 2px #160c3c}
-#p-world .pw-lobby-hud .pw-hero-player{position:relative;top:auto;left:auto;right:auto;bottom:auto;transform:none;z-index:1;display:flex;align-items:center;min-width:0;max-width:min(310px,100%);margin:0;padding:7px 12px;background:linear-gradient(135deg,#7040bc,#34146b);border-radius:14px;box-shadow:0 3px 0 #1e0a4e;flex-shrink:0}
-#p-world .pw-lobby-hud .pw-hero-player:focus-visible{outline:3px solid #ffe760;outline-offset:2px}
-#p-world .pw-lobby-hud .pw-hero-player-stats{flex:1}
-#p-world .pw-lobby-hud .pw-hero-player-stats small{display:block;white-space:nowrap}
-@media(max-width:690px){
- #p-world .pw-lobby-hud{min-height:68px;padding:7px 10px;gap:6px}
- #p-world .pw-lobby-hud-caption{font-size:.72rem;letter-spacing:0}
- #p-world .pw-lobby-hud .pw-hero-player{max-width:75%;padding:5px 8px;gap:7px}
- #p-world .pw-lobby-hud .pw-hero-player img,#p-world .pw-lobby-hud .pw-avatar-placeholder{width:41px;height:41px;flex-basis:41px}
- #p-world .pw-lobby-hud .pw-hero-player-stats small{font-size:.6rem}
+/* PANTALLA v9: tarjetas simétricas dentro del escenario, sin tapar el logotipo */
+#p-world .pw-lobby-screen .pw-scene{
+ --pw-upper-card-width:230px;
+ --pw-upper-card-height:82px;
 }
-@media(max-width:390px){
- #p-world .pw-lobby-hud-caption{font-size:0;gap:0}
- #p-world .pw-lobby-hud-caption::first-letter{font-size:1.45rem}
- #p-world .pw-lobby-hud .pw-hero-player{max-width:82%}
+#p-world .pw-lobby-screen .pw-hero-player,
+#p-world .pw-lobby-screen .pw-quest-bubble{
+ position:absolute;
+ z-index:8;
+ top:18px;
+ bottom:auto;
+ height:var(--pw-upper-card-height);
+ min-height:var(--pw-upper-card-height);
+ width:var(--pw-upper-card-width);
+ min-width:0;
+ max-width:none;
+ transform:none;
+ box-sizing:border-box;
+ margin:0;
+ padding:10px 12px;
+ border-radius:17px;
+}
+#p-world .pw-lobby-screen .pw-hero-player{
+ left:18px;
+ right:auto;
+ display:flex;
+ align-items:center;
+ gap:9px;
+ text-align:left;
+ font:inherit;
+ color:#fff;
+ background:linear-gradient(135deg,#492080ed,#201047ee);
+ box-shadow:0 5px 0 #270945,0 10px 20px #27114566;
+ border:2px solid #d6aeff;
+ cursor:pointer;
+}
+#p-world .pw-lobby-screen .pw-quest-bubble{
+ right:18px;
+ left:auto;
+ display:grid;
+ grid-template-columns:auto minmax(0,1fr);
+ align-content:center;
+ align-items:center;
+ gap:3px 8px;
+}
+#p-world .pw-lobby-screen .pw-hero-player img,
+#p-world .pw-lobby-screen .pw-avatar-placeholder{
+ width:48px;
+ height:48px;
+ flex:0 0 48px;
+ border:3px solid #ffda67;
+ border-radius:50%;
+ object-fit:cover;
+ background:#7953b4;
+}
+#p-world .pw-lobby-screen .pw-avatar-placeholder{display:grid;place-items:center;font-size:1.6rem}
+#p-world .pw-lobby-screen .pw-hero-player-stats{display:block;flex:1;min-width:0}
+#p-world .pw-lobby-screen .pw-hero-player-stats b{display:block;font-size:.82rem;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#p-world .pw-lobby-screen .pw-hero-player-stats small{display:block;font-size:.61rem;line-height:1.15;white-space:nowrap}
+#p-world .pw-lobby-screen .pw-hero-player .pw-xp-track{display:block;width:100%;max-width:115px;height:6px;margin-top:5px}
+#p-world .pw-lobby-screen .pw-hero-chevron{margin:0;font-size:1.2rem}
+#p-world .pw-lobby-screen .pw-quest-bubble b{font-size:.8rem}
+#p-world .pw-lobby-screen .pw-quest-bubble small{font-size:.66rem}
+@media(max-width:1060px){
+ /* En anchos intermedios, la marca baja por debajo de las dos tarjetas */
+ #p-world .pw-lobby-screen .pw-wood-sign{top:120px}
+}
+@media(max-width:690px){
+ #p-world .pw-lobby-screen .pw-scene{
+  --pw-upper-card-width:min(160px,calc(50% - 14px));
+  --pw-upper-card-height:74px;
+ }
+ #p-world .pw-lobby-screen .pw-hero-player,
+ #p-world .pw-lobby-screen .pw-quest-bubble{top:10px;padding:6px 7px;border-radius:12px}
+ #p-world .pw-lobby-screen .pw-hero-player{left:9px;right:auto;gap:5px}
+ #p-world .pw-lobby-screen .pw-quest-bubble{right:9px;left:auto;gap:2px 5px}
+ #p-world .pw-lobby-screen .pw-hero-player img,
+ #p-world .pw-lobby-screen .pw-avatar-placeholder{flex-basis:36px;width:36px;height:36px;border-width:2px}
+ #p-world .pw-lobby-screen .pw-avatar-placeholder{font-size:1.3rem}
+ #p-world .pw-lobby-screen .pw-hero-player-stats b{font-size:.7rem}
+ #p-world .pw-lobby-screen .pw-hero-player-stats small{font-size:.52rem}
+ #p-world .pw-lobby-screen .pw-hero-chevron{display:none}
+ #p-world .pw-lobby-screen .pw-quest-bubble>span{font-size:1.25rem}
+ #p-world .pw-lobby-screen .pw-quest-bubble b{font-size:.65rem;line-height:1.12}
+ #p-world .pw-lobby-screen .pw-quest-bubble small{font-size:.52rem;line-height:1.2}
+ #p-world .pw-lobby-screen .pw-wood-sign{top:107px}
+}
+@media(max-width:355px){
+ #p-world .pw-lobby-screen .pw-hero-player img,
+ #p-world .pw-lobby-screen .pw-avatar-placeholder{width:32px;height:32px;flex-basis:32px}
+ #p-world .pw-lobby-screen .pw-hero-player-stats b{font-size:.64rem}
+ #p-world .pw-lobby-screen .pw-quest-bubble small{display:block}
+ #p-world .pw-lobby-screen .pw-wood-sign{top:109px}
 }
