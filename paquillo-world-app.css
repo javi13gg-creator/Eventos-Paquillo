@@ -938,3 +938,14 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-memory-card img[src*="jb-cutout-v29.webp"]{
  padding:2px;box-sizing:border-box;
 }
+
+/* Paquillo World v30: Leti, avatar completo de pie y fondo transparente. */
+#p-world img[src*="leti-cutout-v30.webp"]{
+ object-fit:contain!important;object-position:center bottom!important;background:transparent;
+}
+#p-world .pw-person-art img[src*="leti-cutout-v30.webp"]{
+ filter:drop-shadow(0 5px 5px rgba(28,14,68,.40));
+}
+#p-world .pw-memory-card img[src*="leti-cutout-v30.webp"]{
+ padding:2px;box-sizing:border-box;
+}
