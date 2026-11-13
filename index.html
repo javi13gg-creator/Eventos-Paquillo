@@ -291,6 +291,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 @media(max-width:430px){.pw-world{padding:.55rem;border-radius:19px}.pw-hero{grid-template-columns:1fr .72fr;min-height:235px;padding:.85rem}.pw-brandline{font-size:.48rem;gap:.3rem}.pw-brand-icon{width:23px;height:23px}.pw-hero h2{font-size:2.35rem;margin:.8rem 0 .65rem}.pw-hero-copy>p{font-size:.78rem}.pw-hero-tags{gap:.25rem}.pw-hero-tags span{font-size:.45rem;padding:.27rem .35rem}.pw-hero-player{height:185px;width:100%}.pw-hero-avatar{width:110px;height:145px}.pw-hero-avatar .pw-avatar-fallback{width:96px;height:120px;font-size:2rem}.pw-hero-platform{width:135px;height:38px;bottom:32px}.pw-hero-name{bottom:15px;font-size:.54rem}.pw-hero-level{top:12px;right:-2px;min-width:48px;padding:.25rem}.pw-hero-level b{font-size:1rem}.pw-hero-caption{font-size:.38rem}.pw-hero-scribble{display:none}.pw-character-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem}.pw-character-portrait{height:145px}.pw-game-grid{grid-template-columns:1fr}.pw-game-card{grid-template-columns:76px 1fr}.pw-game-art{height:76px}.pw-world .pw-section-heading{align-items:start}.pw-character-info{padding:.55rem}.pw-character-info>b{font-size:.82rem}}
 @media(prefers-reduced-motion:no-preference){.pw-character-card:hover .pw-character-portrait .pw-avatar{transform:translateY(-3px);transition:transform .18s}.pw-hero-platform{animation:pw-platform 4s ease-in-out infinite}@keyframes pw-platform{50%{filter:brightness(1.18);transform:translateX(-50%) rotateX(58deg) scale(1.04)}}}
 </style>
+<link rel="stylesheet" href="paquillo-world-app.css?v=1">
 </head>
 <body>
 <header class="top">
@@ -604,7 +605,7 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
+function showTab(t){if(!$('p-'+t))t='proximos';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 $('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
@@ -1467,7 +1468,7 @@ showTab(location.hash.slice(1));
 })();
 </script>
 
-<script src="paquillo-world.js?v=4"></script>
+<script src="paquillo-world.js?v=5"></script>
 <script>
 (()=>{
  const $=id=>document.getElementById(id);
