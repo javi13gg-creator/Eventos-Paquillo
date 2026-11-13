@@ -146,7 +146,7 @@ function jump(){
 }
 function duck(yes){if(run)run.duck=!!yes&&run.mode==='running';if(yes&&run?.y>0)run.vy=Math.max(run.vy,190);}
 function box(){const h=run.duck&&run.y===0?30:60;return {x:X+12,y:Y-run.y-h+3,w:30,h:h-5};}
-function overlap(a,b){return a.x<a.x+a.w&&a.x<b.x+b.w&&a.x+a.w>b.x&&a.y+a.h>b.y&&a.y<b.y+b.h;}
+function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y+a.h>b.y&&a.y<b.y+b.h;}
 function spawnObstacle(){
  const pool=run.m>120?obstacles:obstacles.filter(o=>!o[3]);
  const spec=pool[Math.floor(Math.random()*pool.length)];
@@ -159,7 +159,7 @@ function spawnItem(power=false){
 function collideObstacle(o){
  if(o.hit||run.inv>0)return;
  const [emoji,size,width,high]=o.spec;
- const obj={x:o.x+3,y:high?Y-119:Y-size+5,w:width-6,h:high?42:size-10};
+ const obj={x:o.x+3,y:high?Y-112:Y-size+5,w:width-6,h:high?65:size-10};
  if(!overlap(box(),obj))return;
  o.hit=true;
  if(run.shield){run.shield--;run.inv=.65;popup('🛡️ ¡ESCUDO SALVADOR!');tone(820);}
@@ -208,7 +208,11 @@ function tick(time){
  update(dt);draw();
  if(run?.mode==='running')raf=requestAnimationFrame(tick);
 }
-function rounded(x,y,w,h,r=7){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+function rounded(x,y,w,h,r=7){
+ r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);
+ ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+ ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
 function draw(){
  if(!ctx||!canvas||!run)return;
  const g=run,z=zones[g.zone];
@@ -234,9 +238,9 @@ function draw(){
  for(const o of g.objects){
   ctx.font=(o.spec[0]==='🎏'?34:o.spec[1])+'px "Apple Color Emoji","Segoe UI Emoji",system-ui';
   if(o.spec[3]){
-   ctx.fillStyle='#ffe47d';rounded(o.x-7,Y-121,o.spec[2]+14,43,5);ctx.fill();
-   ctx.fillStyle='#43266e';ctx.font='bold 12px system-ui';ctx.fillText('AFTER',o.x+o.spec[2]/2,Y-91);
-   ctx.font='27px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText('🎏',o.x+o.spec[2]/2,Y-121);
+   ctx.fillStyle='#ffe47d';rounded(o.x-7,Y-112,o.spec[2]+14,65,5);ctx.fill();
+   ctx.fillStyle='#43266e';ctx.font='bold 13px system-ui';ctx.fillText('AGÁCHATE',o.x+o.spec[2]/2,Y-69);
+   ctx.font='26px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText('🎏',o.x+o.spec[2]/2,Y-112);
   }else ctx.fillText(o.spec[0],o.x+o.spec[2]/2,Y+2);
  }
  for(const it of g.items){ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#fff2a1';ctx.fillStyle='#ffdb63';
