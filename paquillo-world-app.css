@@ -717,3 +717,30 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-quiz-options{min-height:76px}
  #p-world .pw-memory-grid{min-height:120px}
 }
+
+
+/* Ajuste final de v13: el lobby horizontal no muestra columnas laterales
+   cuando la altura no permite verlas completas. */
+@media(min-width:691px) and (max-height:960px){
+ #p-world .pw-lobby-screen .pw-lobby-layout{display:block;margin:-40px 14px 0}
+ #p-world .pw-lobby-screen .pw-shortcut-rail,
+ #p-world .pw-lobby-screen .pw-lobby-right,
+ #p-world .pw-lobby-screen .pw-stage-ticker,
+ #p-world .pw-lobby-screen .pw-lobby-foot{display:none!important}
+ #p-world .pw-lobby-screen .pw-scene{height:clamp(215px,42dvh,380px)}
+ #p-world .pw-lobby-screen .pw-game-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr}
+ #p-world .pw-lobby-screen .pw-game{min-height:clamp(110px,17dvh,165px);padding:7px 5px}
+ #p-world .pw-lobby-screen .pw-game-art{width:clamp(35px,7dvh,65px);height:clamp(35px,7dvh,65px);font-size:clamp(1.5rem,5dvh,3rem);margin:0 auto 5px}
+ #p-world .pw-lobby-screen .pw-game strong{font-size:clamp(.83rem,1.4vw,1.25rem)}
+ #p-world .pw-lobby-screen .pw-game p{min-height:0;font-size:.72rem;margin:3px 0}
+ #p-world .pw-lobby-screen .pw-game .pw-play-chip{margin:0;padding:4px 8px;font-size:.68rem}
+}
+@media(min-width:691px) and (max-height:600px){
+ #p-world .pw-lobby-screen .pw-scene{height:clamp(120px,39dvh,200px)}
+ #p-world .pw-lobby-screen .pw-lobby-layout{margin:-12px 10px 0}
+ #p-world .pw-lobby-screen .pw-wood-sign{top:57px;padding:3px 8px;width:min(40%,200px)}
+ #p-world .pw-lobby-screen .pw-game{min-height:86px;padding:4px}
+ #p-world .pw-lobby-screen .pw-game-art{width:27px;height:27px;font-size:1.35rem;margin:0 auto 2px}
+ #p-world .pw-lobby-screen .pw-game strong{font-size:.74rem}
+ #p-world .pw-lobby-screen .pw-game p,#p-world .pw-lobby-screen .pw-game .pw-play-chip{display:none}
+}
