@@ -11,9 +11,14 @@ const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirm
 const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','👥','Equipo'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false};
 let reaction={timer:null,armed:0,phase:'idle'};
+let trivia=null;
+let memory=null;
+const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const safeBest=(key,score)=>{try{const prev=Number(localStorage.getItem(key))||0;if(score>prev){localStorage.setItem(key,String(score));return score;}return prev;}catch(_){return score;}};
+
 const image=(src,alt,cls)=>src?'<img class="'+(cls||'')+'" src="'+esc(src)+'" alt="'+esc(alt||'')+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
 const memberPhoto=m=>state.profiles.get(m?.auth_user_id)?.character_image_url||m?.avatar_url||'';
-function toWeb(){clearReaction();location.hash='proximos';}
+function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
 function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+(state.view===key?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
 function playerCard(){
@@ -38,13 +43,14 @@ function playerHero(){
  '<span class="pw-island-ribbon" aria-hidden="true">¡PAQUILLO SIEMPRE! 💛</span>'+
  '</div>';
 }
-function gameTiles(){
+function gameTiles(includePlanned=false){
  const games=[
-  ['trivia','🧠','Trivial<br>Paquillero','¿Cuánto sabes del grupo?','purple',false],
+  ['trivia','🧠','Trivial<br>Paquillero','Demuestra cuánto sabes','purple',true],
   ['reflex','⏱️','Duelo de<br>Reflejos','¡A ver quién es más rápido!','blue',true],
-  ['races','🏁','Carreras<br>Paquilleras','Compite con tus amigos','green',false],
+  ['memory','🃏','Memoria<br>Paquillera','Encuentra las parejas','green',true],
   ['challenges','🏆','Retos<br>Semanales','Logros y desafíos','orange',true]
  ];
+ if(includePlanned)games.push(['races','🏁','Carreras<br>Paquilleras','Próximamente multijugador','red',false]);
  return '<div class="pw-game-grid">'+games.map(([id,ico,title,desc,tone,ready])=>
  '<button type="button" class="pw-game pw-tile-'+tone+'" data-pw-game="'+id+'" aria-disabled="'+(!ready)+'"><span class="pw-tile-glow" aria-hidden="true"></span><span class="pw-game-art" aria-hidden="true">'+ico+'</span>'+
  '<strong>'+title+'</strong><p>'+desc+'</p><span class="pw-play-chip">'+(id==='challenges'?'Ver retos ›':ready?'¡Jugar! ▶':'En desarrollo 🔒')+'</span></button>').join('')+'</div>';
@@ -76,8 +82,8 @@ function homeView(){
 }
 function gamesView(){
  return '<section class="pw-screen pw-panel" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Minijuegos rápidos, con tu personaje y contra tus amigos cuando estén listos.')+
- '<h2 class="pw-section-title">🕹️ ¿A QUÉ JUGAMOS?</h2>'+gameTiles()+
- '<div class="pw-demo-notice">⚡ <b>Duelo de reflejos</b> ya permite jugar una prueba individual en este dispositivo. El multijugador, el trivial y las carreras están todavía en desarrollo. Las partidas de prueba no generan XP.</div></section>';
+ '<h2 class="pw-section-title">🕹️ ¿A QUÉ JUGAMOS?</h2>'+gameTiles(true)+
+ '<div class="pw-demo-notice">🎮 <b>Trivial Paquillero, Memoria Paquillera y Duelo de reflejos</b> ya permiten jugar en este dispositivo. Los récords del Trivial y Memoria se guardan solo aquí. Las carreras y el multijugador están pendientes; ningún minijuego otorga XP.</div></section>';
 }
 function rankingView(){
  return '<section class="pw-screen pw-panel" data-pw-screen="ranking">'+screenTitle('🏆 CLASIFICACIÓN','La tabla de honor de los Paquillos, ordenada por XP reales.')+
@@ -110,6 +116,7 @@ function challengesView(){
  '<div class="pw-demo-notice">Los retos están diseñados, pero todavía no hay seguimiento ni recompensas automáticas. Aquí aparecerán cuando se active esa fase.</div></section>';
 }
 function renderShell(){
+ clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
  '<header class="pw-head"><button type="button" class="pw-return" data-pw-exit title="Volver a la web de Paquillo Events"><span>🏠</span><span>WEB</span></button><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div><span class="pw-head-xp">⭐ NV '+lvl+' · '+points(state.xp)+' XP</span></header>'+
@@ -133,7 +140,7 @@ function modal(body){
  overlay.hidden=false;
 }
 function closeModal(){
- clearReaction();
+ clearReaction();clearMemoryTimer();trivia=null;memory=null;
  const overlay=document.getElementById('pwModal');if(overlay)overlay.hidden=true;
 }
 function clearReaction(){
@@ -169,11 +176,151 @@ function showMember(idx){
  (memberPhoto(m)?image(memberPhoto(m),m.display_name,''):'<div class="pw-modal-icon">🦸</div>')+
  '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>Personaje 3D cartoon pendiente de incorporar.</p>');
 }
+/* Trivial de 10 preguntas: fechas de group_members + cultura general.
+   Las respuestas y puntos son locales; nunca se acreditan XP. */
+const generalQuiz=[
+ ['¿Cuántas caras tiene un dado convencional?','6','4','8','12'],
+ ['¿Cuántos jugadores tiene cada equipo en pista en baloncesto?','5','6','7','11'],
+ ['¿Cuál es la capital de Portugal?','Lisboa','Oporto','Coímbra','Braga'],
+ ['¿Cuántas casillas tiene un tablero de ajedrez?','64','48','60','72'],
+ ['¿Qué planeta se conoce como el planeta rojo?','Marte','Venus','Júpiter','Saturno'],
+ ['¿En qué ciudad se celebran los Sanfermines?','Pamplona','Burgos','León','Zaragoza'],
+ ['¿Qué mide el IBU de una cerveza?','Su amargor','Su color','Su alcohol','Su espuma'],
+ ['¿Cuántas cartas tiene una baraja francesa sin comodines?','52','40','48','54'],
+ ['¿Qué símbolo químico corresponde al oro?','Au','Ag','Fe','O'],
+ ['¿Cuál es el océano de mayor superficie?','Pacífico','Índico','Atlántico','Ártico'],
+ ['¿En qué país está el monte Fuji?','Japón','China','Tailandia','Corea del Sur'],
+ ['¿Cuántos minutos dura cada tiempo reglamentario de fútbol?','45','30','40','60'],
+ ['¿Qué animal es un mamífero?','Delfín','Tiburón','Pulpo','Trucha'],
+ ['¿Cuántos continentes se suelen representar en el modelo de seis continentes?','6','4','5','8'],
+ ['¿Cuántas caras tiene un cubo?','6','8','12','4'],
+ ['¿Cuál es la unidad habitual de la intensidad de corriente eléctrica?','Amperio','Vatio','Voltio','Ohmio'],
+ ['¿Qué instrumento musical tiene teclas blancas y negras?','Piano','Trompeta','Violín','Flauta'],
+ ['¿Qué deporte utiliza una canasta y un balón?','Baloncesto','Tenis','Balonmano','Rugby']
+];
+function quizQuestions(){
+ const general=generalQuiz.map(row=>({q:row[0],correct:row[1],options:row.slice(1),origin:'Cultura general'}));
+ const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+ const local=[];
+ for(const m of state.members){
+  if(!m.display_name||!m.birthday)continue;
+  const date=String(m.birthday).match(/^\d{4}-(\d\d)-(\d\d)/);
+  if(!date)continue;
+  const mo=Number(date[1]),day=Number(date[2]);
+  if(mo<1||mo>12||day<1||day>31)continue;
+  const month=months[mo-1];
+  const wrongMonths=shuffle(months.filter(x=>x!==month)).slice(0,3);
+  local.push({q:'¿En qué mes cumple años '+m.display_name+'?',correct:month,options:[month,...wrongMonths],origin:'Cumpleaños del grupo'});
+  const days=shuffle(Array.from({length:31},(_,i)=>String(i+1)).filter(x=>x!==String(day))).slice(0,3);
+  local.push({q:'¿Qué día del mes cumple años '+m.display_name+'?',correct:String(day),options:[String(day),...days],origin:'Cumpleaños del grupo'});
+ }
+ const selected=[...shuffle(local).slice(0,6),...shuffle(general).slice(0,local.length>=6?4:10)];
+ return shuffle(selected).slice(0,10).map(q=>({...q,options:shuffle(q.options)}));
+}
+function startTrivia(){
+ trivia={questions:quizQuestions(),index:0,score:0,selected:null};
+ renderTrivia();
+}
+function renderTrivia(){
+ if(!trivia)return;
+ const item=trivia.questions[trivia.index],selected=trivia.selected;
+ if(!item){finishTrivia();return;}
+ const answered=selected!==null;
+ modal('<div class="pw-quiz"><div class="pw-quiz-head"><span>🧠 TRIVIAL PAQUILLERO</span><b>'+(trivia.index+1)+' / '+trivia.questions.length+'</b></div>'+
+ '<div class="pw-quiz-progress"><span style="width:'+(trivia.index/trivia.questions.length*100)+'%"></span></div>'+
+ '<p class="pw-quiz-type">'+esc(item.origin)+'</p><h2>'+esc(item.q)+'</h2>'+
+ '<div class="pw-quiz-options">'+item.options.map((answer,i)=>'<button type="button" class="pw-quiz-answer'+(answered?(answer===item.correct?' pw-correct':i===selected?' pw-wrong':''):'')+'" data-pw-trivia-answer="'+i+'" '+(answered?'disabled':'')+'>'+esc(answer)+'</button>').join('')+'</div>'+
+ (answered?'<p class="pw-quiz-feedback" aria-live="polite">'+(item.options[selected]===item.correct?'✅ ¡Correcto!':'💡 La respuesta era '+esc(item.correct))+'.</p><button type="button" class="pw-action-button" data-pw-trivia-next>'+(trivia.index+1===trivia.questions.length?'Ver resultado 🏆':'Siguiente pregunta ›')+'</button>':'<p class="pw-quiz-score">⭐ Aciertos: '+trivia.score+'</p>')+
+ '<p class="pw-local-note">Partida local · No da XP ni modifica el ranking</p></div>');
+}
+function answerTrivia(choice){
+ if(!trivia||trivia.selected!==null)return;
+ const q=trivia.questions[trivia.index];if(!q||!Number.isInteger(choice)||choice<0||choice>=q.options.length)return;
+ trivia.selected=choice;
+ if(q.options[choice]===q.correct)trivia.score++;
+ renderTrivia();
+}
+function advanceTrivia(){
+ if(!trivia||trivia.selected===null)return;
+ trivia.index++;trivia.selected=null;
+ if(trivia.index>=trivia.questions.length)finishTrivia();else renderTrivia();
+}
+function finishTrivia(){
+ if(!trivia)return;
+ const total=trivia.questions.length,score=trivia.score;
+ const best=safeBest('paqui_world_trivia_best_'+(state.uid||'guest'),score);
+ trivia=null;
+ modal('<div class="pw-game-finish"><span class="pw-finish-icon">🏆</span><h2>¡TRIVIAL COMPLETADO!</h2><p class="pw-final-score">'+score+' / '+total+'</p>'+
+ '<p>'+(score===total?'¡Pleno de aciertos! 🔥':score>=7?'¡Qué bien conoces el mundo! 😎':'¡La próxima ronda será mejor! 💪')+'</p><p>Tu récord en este dispositivo: <b>'+best+' aciertos</b></p>'+
+ '<p class="pw-local-note">Estos puntos no son XP y no cuentan para la clasificación.</p><button type="button" class="pw-action-button" data-pw-trivia-restart>Otra partida ▶</button></div>');
+}
+/* Memoria Paquillera: empareja retratos y nombres reales de group_members.
+   Sin fotos se muestran iniciales. Los resultados son únicamente locales. */
+function clearMemoryTimer(){if(memory?.timeout){clearTimeout(memory.timeout);memory.timeout=null;}}
+function startMemory(){
+ clearMemoryTimer();
+ const members=state.members.filter(m=>m.id&&m.display_name);
+ if(members.length<3){
+  modal('<div class="pw-game-finish"><span class="pw-finish-icon">🃏</span><h2>Memoria Paquillera</h2><p>Aún no hay suficientes perfiles del grupo para esta partida. Vuelve cuando se hayan cargado los Paquillos.</p></div>');
+  return;
+ }
+ const withPhotos=shuffle(members.filter(m=>!!memberPhoto(m)));
+ const others=shuffle(members.filter(m=>!memberPhoto(m)));
+ const picked=[...withPhotos,...others].slice(0,Math.min(6,members.length));
+ const cards=shuffle(picked.flatMap(m=>[{id:m.id,m,kind:'photo'},{id:m.id,m,kind:'name'}]));
+ memory={cards,flipped:[],matched:new Set(),moves:0,startedAt:Date.now(),timeout:null,locked:false};
+ renderMemory();
+}
+function renderMemory(){
+ if(!memory)return;
+ const win=memory.matched.size===memory.cards.length/2;
+ if(win){finishMemory();return;}
+ modal('<div class="pw-memory"><div class="pw-quiz-head"><span>🃏 MEMORIA PAQUILLERA</span><b>'+memory.matched.size+' / '+(memory.cards.length/2)+'</b></div>'+
+ '<p>Encuentra las parejas: <b>foto + nombre</b> de cada Paquillo.</p><div class="pw-memory-stats"><span>🎯 '+memory.moves+' intentos</span><span>✅ '+memory.matched.size+' parejas</span></div>'+
+ '<div class="pw-memory-grid">'+memory.cards.map((c,i)=>{
+ const face=memory.matched.has(c.id)||memory.flipped.includes(i);
+ const content=!face?'<span class="pw-memory-back">❔</span>':c.kind==='name'?'<span class="pw-memory-name">'+esc(c.m.display_name)+'</span>':memberPhoto(c.m)?image(memberPhoto(c.m),'Foto de '+c.m.display_name,'pw-memory-photo'):'<span class="pw-memory-initials">'+esc(nameInitial(c.m.display_name))+'</span>';
+ return '<button type="button" class="pw-memory-card'+(face?' flipped':'')+(memory.matched.has(c.id)?' matched':'')+'" data-pw-memory-card="'+i+'" '+(face?'disabled':'')+' aria-label="'+(face?'Carta descubierta':'Carta oculta '+(i+1))+'">'+content+'</button>';
+ }).join('')+'</div><p class="pw-local-note">Partida en este dispositivo · Sin XP</p><button class="pw-secondary-button" type="button" data-pw-memory-restart>Reiniciar ↻</button></div>');
+}
+function flipMemory(i){
+ if(!memory||memory.locked||!Number.isInteger(i)||i<0||i>=memory.cards.length)return;
+ if(memory.flipped.includes(i)||memory.matched.has(memory.cards[i].id))return;
+ memory.flipped.push(i);
+ if(memory.flipped.length===2){
+  memory.moves++;
+  const [a,b]=memory.flipped.map(idx=>memory.cards[idx]);
+  if(a.id===b.id){
+   memory.matched.add(a.id);memory.flipped=[];renderMemory();
+  }else{
+   memory.locked=true;renderMemory();
+   const running=memory;
+   running.timeout=setTimeout(()=>{
+    if(memory!==running)return;
+    running.flipped=[];running.locked=false;running.timeout=null;
+    if(!document.getElementById('pwModal')?.hidden)renderMemory();
+   },1100);
+  }
+ }else renderMemory();
+}
+function finishMemory(){
+ if(!memory)return;
+ const moves=memory.moves,seconds=Math.max(1,Math.round((Date.now()-memory.startedAt)/1000));
+ const key='paqui_world_memory_best_'+(state.uid||'guest');
+ let best=moves;
+ try{const old=Number(localStorage.getItem(key));if(!old||moves<old){localStorage.setItem(key,String(moves));}else best=old;}catch(_){}
+ memory=null;
+ modal('<div class="pw-game-finish"><span class="pw-finish-icon">🎊</span><h2>¡MEMORIA COMPLETADA!</h2>'+
+ '<p class="pw-final-score">'+moves+' intentos</p><p>⏱️ '+seconds+' segundos · Mejor partida local: '+best+' intentos.</p>'+
+ '<p class="pw-local-note">No modifica la clasificación ni suma XP.</p><button class="pw-action-button" type="button" data-pw-memory-restart>Jugar otra vez ▶</button></div>');
+}
+
 function gameAction(id){
  if(id==='reflex'){reactionDialog();return}
+ if(id==='trivia'){startTrivia();return}
+ if(id==='memory'){startMemory();return}
  if(id==='challenges'){setView('challenges');return}
- const names={trivia:'Trivial Paquillero',races:'Carreras Paquilleras'};
- modal('<div class="pw-modal-icon">🎮</div><h2>'+esc(names[id]||'Minijuego')+'</h2><p>Este minijuego está todavía en construcción. Pronto podrás competir con tus amigos desde Paquillo World.</p>');
+ modal('<div class="pw-modal-icon">🏁</div><h2>Carreras Paquilleras</h2><p>Las carreras multijugador todavía están en construcción. Aquí aparecerán cuando podamos validar los resultados en Supabase.</p>');
 }
 async function refresh(){
  if(state.loading)return;
@@ -188,7 +335,7 @@ async function refresh(){
   state.uid=ctx.currentAuthUser.id;
   const db=ctx.client;
   const [mr,pr,lr]=await Promise.all([
-   db.from('group_members').select('id,display_name,avatar_url,auth_user_id').eq('is_active',true).order('display_name'),
+   db.from('group_members').select('id,display_name,avatar_url,auth_user_id,birthday').eq('is_active',true).order('display_name'),
    db.from('paqui_world_profiles').select('user_id,total_xp,character_image_url,character_name'),
    db.from('paqui_world_xp_ledger').select('user_id,points,action,created_at').order('created_at',{ascending:false}).limit(250)
   ]);
@@ -211,6 +358,11 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-exit')){toWeb();return}
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
  if(btn.hasAttribute('data-pw-close')){closeModal();return}
+ if(btn.hasAttribute('data-pw-trivia-answer')){answerTrivia(Number(btn.dataset.pwTriviaAnswer));return}
+ if(btn.hasAttribute('data-pw-trivia-next')){advanceTrivia();return}
+ if(btn.hasAttribute('data-pw-trivia-restart')){startTrivia();return}
+ if(btn.hasAttribute('data-pw-memory-card')){flipMemory(Number(btn.dataset.pwMemoryCard));return}
+ if(btn.hasAttribute('data-pw-memory-restart')){startMemory();return}
  if(btn.dataset.pwView){setView(btn.dataset.pwView);return}
  if(btn.dataset.pwGame){gameAction(btn.dataset.pwGame);return}
  if(btn.dataset.pwMember){showMember(Number(btn.dataset.pwMember));return}
