@@ -329,9 +329,6 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 }
 #tabs .settings-option:hover,#tabs .settings-option:focus-visible{background:color-mix(in srgb,var(--yl) 15%,var(--card));border-color:var(--ln)}
 #tabs .settings-option.settings-logout{border-top:1px solid var(--ln);border-radius:0;margin-top:9px;color:var(--pk)}
-#tabs .settings-option.news-bell{min-width:0;height:auto}
-#tabs .settings-option .news-bell-count{position:static;display:inline-grid;margin-left:auto;min-width:21px;height:21px;line-height:1;font-size:.7rem}
-#tabs .settings-option .news-bell-count[hidden]{display:none!important}
 @media(max-width:820px){
  #tabs .world-launch{padding:5px 7px}
  #tabs .world-launch-name{font-size:.7rem}
@@ -354,6 +351,23 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
  #tabs .settings-panel{top:calc(env(safe-area-inset-top,0px) + 6.7rem);right:.5rem;z-index:95}
  #tabs .menu-panel{top:calc(env(safe-area-inset-top,0px) + 6.7rem)}
  .news-panel{top:calc(env(safe-area-inset-top,0px) + 6.7rem)}
+}
+/* Accesos independientes y compactos en la cabecera */
+#tabs .world-launch{min-height:40px;padding:4px 8px;gap:4px;font-size:.71rem}
+#tabs .world-launch-icon{font-size:1.2rem}
+#tabs .world-launch-play{width:18px;height:18px}
+#tabs .news-bell{flex:0 0 43px;min-width:43px;width:43px;height:43px;padding:0!important;font-size:1.3rem}
+#tabs .news-bell-count{position:absolute;top:-7px;right:-7px}
+@media(max-width:560px){
+ #tabs .world-launch{order:1;flex:1 1 auto;min-width:88px;height:39px;min-height:39px;padding:3px 5px;gap:4px}
+ #tabs .world-launch-icon{font-size:1.08rem}
+ #tabs .world-launch-name{display:flex;flex-direction:column;align-items:flex-start;font-size:.63rem;line-height:1.05;letter-spacing:0}
+ #tabs .news-bell{order:2;flex:0 0 39px;min-width:39px;width:39px;height:39px;font-size:1.15rem}
+ #tabs .settings-wrap{order:3}
+ #tabs .settings-toggle{width:39px;height:39px}
+ #tabs .menu-toggle{order:4}
+ #tabs #installAppButton{order:5}
+ #tabs .global-search{order:6}
 }
 </style>
 
@@ -481,11 +495,11 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <div class="global-search"><input id="globalSearch" type="search" placeholder="🔎 Buscar planes o Paquillos" aria-label="Buscar planes o miembros"><div id="globalSearchResults" class="global-search-results" hidden></div></div>
   <button type="button" id="installAppButton" class="btn secondary" hidden>📲 Instalar</button>
   <button type="button" id="worldLaunch" class="world-launch" data-t="world" title="Entrar a Paquillo World" aria-label="Entrar a Paquillo World"><span aria-hidden="true" class="world-launch-icon">🎮</span><span class="world-launch-name">PAQUILLO <b>WORLD</b></span><span aria-hidden="true" class="world-launch-play">▶</span></button>
+  <button type="button" id="newsBell" class="news-bell" aria-label="Novedades" aria-expanded="false" aria-controls="newsPanel" title="Novedades" hidden>🔔<span id="newsBellCount" class="news-bell-count" hidden>0</span></button>
   <div class="settings-wrap" id="settingsWrap">
-    <button type="button" id="settingsToggle" class="settings-toggle" aria-label="Abrir ajustes" aria-controls="settingsPanel" aria-haspopup="true" aria-expanded="false" title="Ajustes y notificaciones"><span aria-hidden="true">⚙️</span><span class="settings-unread" id="settingsUnread" hidden>0</span></button>
+    <button type="button" id="settingsToggle" class="settings-toggle" aria-label="Abrir ajustes" aria-controls="settingsPanel" aria-haspopup="true" aria-expanded="false" title="Ajustes"><span aria-hidden="true">⚙️</span></button>
     <div id="settingsPanel" class="settings-panel" aria-label="Ajustes de Paquillo Events" hidden>
       <div class="settings-panel-heading"><b>⚙️ Ajustes</b><small>Hola, <span id="settingsGreeting">Paquillo</span></small></div>
-      <button type="button" id="newsBell" class="news-bell settings-option" aria-label="Novedades" aria-expanded="false" aria-controls="newsPanel" title="Novedades" hidden>🔔 <span>Novedades</span><span id="newsBellCount" class="news-bell-count" hidden>0</span></button>
       <button type="button" class="settings-option" id="notifySettingsBtn">📲 <span>Notificaciones push</span></button>
       <button type="button" class="settings-option settings-admin-option" id="adminToggle" hidden>🛠️ <span>Administración</span></button>
       <button type="button" class="settings-option settings-logout" id="logoutBtn">🚪 <span>Cerrar sesión</span></button>
@@ -512,8 +526,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
         <button type="button" class="menu-link" role="tab" data-t="gastos">Gastos y caja común <span>›</span></button>
       </section>
       <section class="menu-group"><h3>🎉 Entretenimiento</h3>
-        <button type="button" class="menu-link" role="tab" data-t="juegos">Juegos 🎲 <span>›</span></button>
-        <button type="button" class="menu-link" role="tab" data-t="world">Paquillo World 🌍 <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="juegos">🍺 Juegos de beber <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="stickers">Stickers <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="horno">Ideas y recuerdos <span>›</span></button>
       </section>
@@ -624,7 +637,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </section>
 <section class="panel" id="p-juegos" hidden>
   <div class="games-heading">
-    <div><span class="games-kicker">PAQUILLO ARCADE</span><h2>🎲 Juegos</h2><p class="sub">Elige juego, prepara la partida y que la suerte reparta.</p></div>
+    <div><span class="games-kicker">PAQUILLO ARCADE</span><h2>🍺 Juegos de beber</h2><p class="sub">Elige juego, prepara la partida y que la suerte reparta.</p></div>
     <div class="games-stamp">🎉<small>Que empiece<br>el pique</small></div>
   </div>
   <div class="game-settings">
@@ -787,7 +800,7 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');const settings=$('settingsPanel'),gear=$('settingsToggle');if(settings)settings.hidden=true;if(gear)gear.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
+function showTab(t){if(!$('p-'+t))t='proximos';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos de beber',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');const settings=$('settingsPanel'),gear=$('settingsToggle');if(settings)settings.hidden=true;if(gear)gear.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 $('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
@@ -1578,7 +1591,6 @@ showTab(location.hash.slice(1));
      const {data:reads,error:readErr}=await client.from('paqui_news_reads').select('news_key').eq('user_id',currentAuthUser.id);if(readErr)throw readErr;
      const readSet=new Set((reads||[]).map(x=>x.news_key));paquiNewsItems=items.map(x=>({...x,read:readSet.has(x.key)}));
      const unread=paquiNewsItems.filter(x=>!x.read).length;const count=$id('newsBellCount');count.textContent=unread>99?'99+':String(unread);count.hidden=unread===0;
-     const gearUnread=$id('settingsUnread');if(gearUnread){gearUnread.textContent=unread>99?'99+':String(unread);gearUnread.hidden=unread===0;}
      bell.setAttribute('aria-label',unread?`Novedades, ${unread} sin leer`:'Novedades');
      list.innerHTML=paquiNewsItems.length?paquiNewsItems.map((x,i)=>'<article class="news-item '+(x.read?'':'unread')+'"><div class="news-icon">'+x.icon+'</div><button class="news-open" type="button" data-news-index="'+i+'"><span class="news-copy"><b>'+esc(x.title)+'</b><small>'+esc(newsDate(x.date))+(x.read?' · Leída':' · Nueva')+'</small><p>'+esc(x.detail)+'</p></span></button></article>').join(''):'<div class="news-empty">✨ No tienes novedades pendientes.<br><small>Cuando alguien publique algo nuevo, aparecerá aquí.</small></div>';
      list.querySelectorAll('[data-news-index]').forEach(b=>b.onclick=()=>openPaquiNewsItem(Number(b.dataset.newsIndex)));
