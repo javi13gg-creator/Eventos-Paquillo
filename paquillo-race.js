@@ -16,7 +16,7 @@ const achievements=[[100,'👟 Primeros pasos'],[500,'🎪 Superviviente del Fes
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rnd=(a,b)=>a+Math.random()*(b-a),q=id=>document.getElementById(id);
 let options={},run=null,canvas=null,ctx=null,raf=0,last=0,portrait=null,life=0,handlers=[],soundOn=true,audio=null;
-let scores=[],online=false,loadingBoard=false,rankView='all';
+let scores=[],weekScores=[],online=false,loadingBoard=false,rankView='all';
 function bind(el,name,fn,opts){if(!el)return;el.addEventListener(name,fn,opts);handlers.push(()=>el.removeEventListener(name,fn,opts));}
 function key(){return 'paqui_race_v1_'+(options.uid||'guest');}
 function week(){
@@ -88,7 +88,7 @@ function open(config){
  canvas=q('raceCanvas');if(!canvas)return;
  ctx=canvas.getContext?.('2d',{alpha:false});
  if(!ctx){cover('Juego no compatible','Tu navegador no admite Canvas 2D.','close','Volver');return;}
- run=initial();last=0;rankView='all';scores=[];online=false;loadingBoard=false;
+ run=initial();last=0;rankView='all';scores=[];weekScores=[];online=false;loadingBoard=false;
  try{soundOn=localStorage.getItem('paqui_race_sound')!=='off';}catch(_){soundOn=true;}
  if(q('raceSound'))q('raceSound').textContent=soundOn?'🔊':'🔇';
  newPortrait();controls();resize();updateUI(true);draw();
@@ -317,7 +317,7 @@ function controls(){
 function name(id){return options.members?.find(m=>m.auth_user_id===id)?.display_name||'Paquillo';}
 function rankRows(){
  const latest=new Map(),from=new Date(week()+'T00:00:00');
- for(const s of scores){
+ for(const s of (rankView==='week'?weekScores:scores)){
   if(rankView==='week'&&new Date(s.created_at)<from)continue;
   const prev=latest.get(s.user_id);
   if(!prev||s.distance_m>prev.distance_m)latest.set(s.user_id,s);
@@ -343,9 +343,15 @@ async function loadRanking(){
  const token=life;if(!options.client||loadingBoard){renderRank();return;}
  loadingBoard=true;
  try{
-  const {data,error}=await options.client.from('paqui_world_race_scores')
-   .select('user_id,distance_m,created_at').order('distance_m',{ascending:false}).limit(200);
-  if(token!==life)return;if(error)throw error;scores=data||[];online=true;
+  const [allRes,weekRes]=await Promise.all([
+   options.client.from('paqui_world_race_scores')
+    .select('user_id,distance_m,created_at').order('distance_m',{ascending:false}).limit(180),
+   options.client.from('paqui_world_race_scores')
+    .select('user_id,distance_m,created_at').gte('created_at',new Date(week()+'T00:00:00').toISOString())
+    .order('distance_m',{ascending:false}).limit(180)
+  ]);
+  if(token!==life)return;if(allRes.error||weekRes.error)throw allRes.error||weekRes.error;
+  scores=allRes.data||[];weekScores=weekRes.data||[];online=true;
  }catch(_){if(token!==life)return;online=false;}
  finally{loadingBoard=false;if(token===life)renderRank();}
 }
