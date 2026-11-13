@@ -744,3 +744,113 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-lobby-screen .pw-game strong{font-size:.74rem}
  #p-world .pw-lobby-screen .pw-game p,#p-world .pw-lobby-screen .pw-game .pw-play-chip{display:none}
 }
+
+
+/* Paquillo World v15 · recuperación de apertura y navegación estable.
+   Layout FLEX: el marco nunca colapsa; se habilita desplazamiento cuando es
+   necesario por accesibilidad en vez de ocultar los controles. */
+#p-world:not([hidden]){
+ position:fixed!important;inset:0!important;
+ display:block!important;height:100dvh!important;max-height:100dvh!important;
+ overflow:hidden!important;z-index:120!important;
+}
+#p-world #paquiWorldContent{height:100%!important;min-height:0!important;display:block}
+#p-world .pw-shell{
+ position:relative!important;display:flex!important;flex-direction:column!important;
+ width:100%!important;height:100%!important;min-height:0!important;
+ max-height:none!important;overflow:hidden!important;
+ --pw-nav-h:calc(76px + env(safe-area-inset-bottom,0px));
+}
+#p-world .pw-head{
+ position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+ flex:0 0 auto!important;width:100%!important;height:auto!important;
+ min-height:54px!important;padding:6px 10px!important;box-sizing:border-box;
+}
+#p-world .pw-scroll{
+ position:relative!important;top:auto!important;right:auto!important;
+ bottom:auto!important;left:auto!important;
+ flex:1 1 auto!important;min-height:0!important;max-height:none!important;
+ height:auto!important;padding:0!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch;
+ touch-action:pan-y!important;
+}
+#p-world .pw-screen:not([hidden]){
+ display:block;position:relative!important;
+ height:auto!important;min-height:100%!important;max-height:none!important;
+ overflow:visible!important;
+ box-sizing:border-box;
+}
+#p-world .pw-games-screen:not([hidden]),
+#p-world .pw-paged-screen:not([hidden]),
+#p-world .pw-challenges-screen:not([hidden]){display:flex!important}
+#p-world .pw-bottom-nav{
+ position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+ z-index:200!important;
+ flex:0 0 var(--pw-nav-h)!important;width:100%!important;
+ height:var(--pw-nav-h)!important;min-height:var(--pw-nav-h)!important;
+ display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;
+ padding:6px 5px calc(13px + env(safe-area-inset-bottom,0px))!important;
+ box-sizing:border-box!important;
+}
+#p-world .pw-nav-btn{min-height:42px!important;max-height:none!important}
+#p-world .pw-modal{
+ position:absolute!important;inset:54px 0 var(--pw-nav-h) 0!important;
+ top:54px!important;bottom:var(--pw-nav-h)!important;
+ z-index:110!important;overflow:hidden!important;max-height:none!important;
+ padding:8px 10px!important;
+}
+#p-world .pw-modal-card{
+ width:min(100%,560px)!important;max-height:100%!important;height:auto!important;
+ min-height:0!important;display:block!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ -webkit-overflow-scrolling:touch;
+ padding:8px 12px 12px!important;
+ box-sizing:border-box!important;
+}
+#p-world .pw-modal-top{position:sticky!important;top:-8px!important;z-index:3}
+#p-world .pw-modal-card>.pw-quiz,
+#p-world .pw-modal-card>.pw-memory{
+ display:block!important;min-height:0!important;flex:none!important;
+ height:auto!important;overflow:visible!important;
+}
+#p-world .pw-quiz-options{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:none!important;gap:8px!important;
+ margin:8px 0!important;min-height:0!important;
+}
+#p-world .pw-quiz-answer{
+ display:flex!important;min-height:54px!important;height:auto!important;
+ white-space:normal!important;overflow:visible!important;
+ word-break:normal;overflow-wrap:anywhere;line-height:1.22;
+ padding:10px 7px!important;font-size:clamp(.77rem,3.1vw,.97rem)!important;
+}
+#p-world .pw-memory-grid{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-template-rows:none!important;min-height:0!important;
+ height:auto!important;gap:6px!important;margin:8px 0!important;
+}
+#p-world .pw-memory-card{aspect-ratio:1!important;height:auto!important;min-height:0!important}
+#p-world .pw-paged-screen{height:auto!important}
+#p-world .pw-paged-surface{flex:0 0 auto!important;overflow:visible!important}
+#p-world .pw-people-screen .pw-person-grid{
+ flex:0 0 auto!important;grid-template-rows:none!important;
+ overflow:visible!important;
+}
+#p-world .pw-games-board{flex:0 0 auto!important;overflow:visible!important}
+#p-world .pw-games-board .pw-game-grid{height:auto!important;grid-template-rows:none!important}
+#p-world .pw-games-board .pw-game{min-height:155px!important;height:auto!important}
+@media(max-width:690px){
+ #p-world .pw-lobby-screen:not([hidden]){height:auto!important}
+ #p-world .pw-lobby-land{height:auto!important;min-height:0!important;overflow:visible!important}
+ #p-world .pw-lobby-screen .pw-lobby-layout{margin:-26px 8px 14px!important}
+ #p-world .pw-lobby-screen .pw-game-grid{grid-template-rows:none!important}
+ #p-world .pw-lobby-screen .pw-game{height:auto!important;min-height:125px!important}
+ #p-world .pw-paged-screen .pw-person-grid{grid-template-rows:none!important}
+ #p-world .pw-people-screen .pw-person-card{min-height:135px!important}
+}
+@media(min-width:600px) and (max-height:520px){
+ #p-world .pw-quiz-options{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ #p-world .pw-memory-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+ #p-world .pw-bottom-nav{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
+}
