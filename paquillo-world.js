@@ -33,7 +33,7 @@ const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+es
 const normalizePersonName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').replace(/[^a-z0-9]+/g,' ').trim();
 const defaultPhotoLookup=new Map((window.PaquilloPeople||[]).filter(p=>p?.n&&p?.i).map(p=>[normalizePersonName(p.n),p.i]));
 const memberDefaultPhoto=m=>defaultPhotoLookup.get(normalizePersonName(m?.display_name))||'';
-const memberPhoto=m=>m?(state.profiles.get(m.auth_user_id)?.character_image_url||(state.previewCharacters?window.PaquilloWorldCharacters?.imageFor(m.display_name):'')||m.avatar_url||memberDefaultPhoto(m)):'';
+const memberPhoto=m=>m?(state.previewCharacters?(state.profiles.get(m.auth_user_id)?.character_image_url||window.PaquilloWorldCharacters?.imageFor(m.display_name)||m.avatar_url||memberDefaultPhoto(m)):(m.avatar_url||memberDefaultPhoto(m)||state.profiles.get(m.auth_user_id)?.character_image_url||'')):'';
 const hasStoredCharacter=m=>!!state.profiles.get(m?.auth_user_id)?.character_image_url;
 const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
 function toWeb(){closeModal();location.hash='proximos';}
