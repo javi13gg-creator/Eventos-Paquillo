@@ -854,3 +854,26 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-memory-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important}
  #p-world .pw-bottom-nav{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
 }
+
+
+/* Paquillo World v21 · retratos personalizados completos estilo sticker. */
+@keyframes pw-sticker-hello{0%,100%{transform:translateY(0) rotate(-1deg)}45%{transform:translateY(-6px) rotate(1deg)}}
+#p-world .pw-player-card img[src*="/paquillo-characters/"]{
+ width:105px!important;height:140px!important;flex:0 0 105px;
+ border:0!important;border-radius:0!important;
+ object-fit:contain!important;background:transparent!important;
+ animation:pw-sticker-hello 3.2s ease-in-out infinite;
+ filter:drop-shadow(0 5px 4px #24134480);
+}
+#p-world .pw-person-art img[src*="/paquillo-characters/"]{
+ object-fit:contain!important;
+ animation:pw-sticker-hello 3.7s ease-in-out infinite;
+ filter:drop-shadow(0 5px 4px #25155a78);
+}
+#p-world .pw-rank-row img[src*="/paquillo-characters/"]{
+ object-fit:contain!important;background:radial-gradient(circle,#643aab,#2a155b)!important;
+}
+@media(prefers-reduced-motion:reduce){
+ #p-world .pw-player-card img[src*="/paquillo-characters/"],
+ #p-world .pw-person-art img[src*="/paquillo-characters/"]{animation:none!important}
+}
