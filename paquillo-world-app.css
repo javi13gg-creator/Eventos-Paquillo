@@ -902,3 +902,16 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-avatar-mode{padding:1px 6px;margin:3px 0}
  #p-world .pw-avatar-mode button{min-height:28px;padding:4px 8px}
 }
+
+/* Paquillo World v27 · avatares oficiales recortados para equipo y minijuegos. */
+#p-world img[src*="-cutout-v27.webp"]{
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  background:transparent;
+}
+#p-world .pw-person-art img[src*="-cutout-v27.webp"]{
+  filter:drop-shadow(0 5px 5px rgba(28,14,68,.40));
+}
+#p-world .pw-memory-card img[src*="-cutout-v27.webp"]{
+  padding:2px;box-sizing:border-box;
+}
