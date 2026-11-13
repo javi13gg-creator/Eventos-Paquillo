@@ -9,7 +9,7 @@ const nameInitial=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||
 const points=n=>Number(n||0).toLocaleString('es-ES');
 const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta'};
 const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','👥','Equipo'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
-let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false};
+let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
 const viewHistory=[];
 const pageState={people:0,ranking:0,profile:0};
@@ -33,7 +33,8 @@ const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+es
 const normalizePersonName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es').replace(/[^a-z0-9]+/g,' ').trim();
 const defaultPhotoLookup=new Map((window.PaquilloPeople||[]).filter(p=>p?.n&&p?.i).map(p=>[normalizePersonName(p.n),p.i]));
 const memberDefaultPhoto=m=>defaultPhotoLookup.get(normalizePersonName(m?.display_name))||'';
-const memberPhoto=m=>m?(state.profiles.get(m.auth_user_id)?.character_image_url||m.avatar_url||memberDefaultPhoto(m)):'';
+const memberPhoto=m=>m?(state.profiles.get(m.auth_user_id)?.character_image_url||(state.previewCharacters?window.PaquilloWorldCharacters?.imageFor(m.display_name):'')||m.avatar_url||memberDefaultPhoto(m)):'';
+const hasStoredCharacter=m=>!!state.profiles.get(m?.auth_user_id)?.character_image_url;
 const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m));
 function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
@@ -123,7 +124,8 @@ function peopleView(){
  const page=Math.min(Math.max(0,pageState.people),count-1);pageState.people=page;
  const items=state.ranked.slice(page*size,(page+1)*size);
  return '<section class="pw-screen pw-panel pw-paged-screen pw-people-screen" data-pw-screen="people">'+
- screenTitle('👥 PERSONAJES','Conoce a los Paquillos')+
+ screenTitle('👥 PERSONAJES',state.previewCharacters?'20 bocetos cartoon en revisión · no son renders 3D finales':'Fotos reales de perfil y cumpleaños')+
+ '<div class="pw-avatar-mode"><span>🎭 Personajes 20/24</span><button type="button" data-pw-avatar-toggle>'+(state.previewCharacters?'📷 Ver fotos':'🎨 Ver bocetos')+'</button></div>'+
  '<div class="pw-person-grid">'+items.map((m,i)=>'<button type="button" data-pw-member="'+(page*size+i)+'" class="pw-person-card"><div class="pw-person-art">'+
  (memberPhoto(m)?memberImage(m,'Retrato de '+m.display_name,''):'<span class="pw-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '</div><b>'+esc(m.display_name)+'</b><small>NIVEL '+level(m.xp)+' · '+points(m.xp)+' XP</small></button>').join('')+'</div>'+
@@ -232,7 +234,7 @@ function showMember(idx){
  const m=state.ranked[idx];if(!m)return;
  modal('<div class="pw-modal-icon">👑</div><h2>'+esc(m.display_name)+'</h2>'+
  (memberPhoto(m)?memberImage(m,m.display_name,''):'<div class="pw-modal-icon">🦸</div>')+
- '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>Personaje 3D cartoon pendiente de incorporar.</p>');
+ '<p><b>⭐ Nivel '+level(m.xp)+'</b> · '+points(m.xp)+' XP</p><p>'+(hasStoredCharacter(m)?'Personaje personalizado vinculado desde Supabase.':window.PaquilloWorldCharacters?.has(m.display_name)?'Boceto cartoon provisional: su parecido y render 3D final siguen pendientes de validar.':'Personaje 3D cartoon pendiente de incorporar.')+'</p>');
 }
 /* Trivial de 10 preguntas: fechas de group_members + cultura general.
    Las respuestas y puntos son locales; nunca se acreditan XP. */
@@ -429,6 +431,7 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-exit')){toWeb();return}
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
  if(btn.hasAttribute('data-pw-close')){closeModal();return}
+ if(btn.hasAttribute('data-pw-avatar-toggle')){state.previewCharacters=!state.previewCharacters;renderShell();return}
  if(btn.hasAttribute('data-pw-back')){goBack();return}
  if(btn.hasAttribute('data-pw-page')){
   const kind=btn.dataset.pwPage,idx=Number(btn.dataset.pwPageIndex);
