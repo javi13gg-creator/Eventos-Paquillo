@@ -15,6 +15,10 @@ create table if not exists public.paqui_manual_push_log (
  failed integer not null default 0 check (failed>=0),
  status text not null default 'sending' check (status in ('sending','sent','partial','error'))
 );
+-- Compatible con instalaciones existentes: conserva todos los envíos previos.
+-- El detalle solo se almacenará para avisos realizados desde la nueva función.
+alter table public.paqui_manual_push_log
+ add column if not exists delivery_details jsonb not null default '[]'::jsonb;
 create index if not exists paqui_manual_push_log_created_idx
  on public.paqui_manual_push_log(created_at desc);
 create index if not exists paqui_manual_push_log_admin_idx
