@@ -961,3 +961,81 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-memory-card img[src*="laura-cutout-v31.webp"]{
  padding:2px;box-sizing:border-box;
 }
+
+/* Paquillo World v32 · Galería completa: pequeñas burbujas como el ranking. */
+#p-world .pw-people-screen .pw-person-grid{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(3,minmax(0,1fr))!important;
+ gap:8px!important;
+}
+#p-world .pw-people-screen .pw-person-card{
+ display:flex!important;flex-direction:row!important;
+ align-items:center;justify-content:flex-start;gap:7px;
+ min-height:0!important;height:100%;min-width:0;
+ padding:5px 7px!important;overflow:hidden;
+ text-align:left!important;border:2px solid #dcb5ff;
+ border-radius:15px;background:linear-gradient(145deg,#512891,#2e155d);
+ box-shadow:0 3px 0 #241048;
+}
+#p-world .pw-people-screen .pw-person-art{
+ flex:0 0 clamp(35px,10vw,49px)!important;
+ width:clamp(35px,10vw,49px)!important;height:clamp(35px,10vw,49px)!important;
+ min-height:0!important;max-height:49px;overflow:hidden;
+ border-radius:50%;border:2px solid #ffe173;box-sizing:border-box;
+ background:radial-gradient(circle at 50% 42%,#9368d6,#392077);
+}
+#p-world .pw-people-screen .pw-person-art:after{display:none!important}
+#p-world .pw-people-screen .pw-person-art img{
+ display:block;width:100%!important;height:100%!important;
+ object-fit:contain!important;object-position:center center!important;
+ padding:3px!important;box-sizing:border-box;
+ background:transparent!important;
+}
+#p-world .pw-people-screen .pw-person-copy{
+ display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;
+ gap:3px;overflow:hidden;
+}
+#p-world .pw-people-screen .pw-person-copy b{
+ display:block;max-width:100%;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;font-size:.79rem;
+ line-height:1.08;padding:0!important;
+}
+#p-world .pw-people-screen .pw-person-copy small{
+ display:block;max-width:100%;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;
+ font-size:.6rem;line-height:1.1;padding:0!important;
+}
+/* La cabeza nunca se recorta: personaje completo y centrado en cada burbuja. */
+#p-world .pw-hero-player img,
+#p-world .pw-lobby-screen .pw-hero-player img,
+#p-world .pw-rank-row img,
+#p-world .pw-league-row img{
+ object-fit:contain!important;object-position:center center!important;
+ box-sizing:border-box!important;padding:3px!important;
+ border-radius:50%!important;
+ background:radial-gradient(circle at 50% 42%,#8d63cd,#382067)!important;
+}
+#p-world .pw-player-card img,
+#p-world .pw-memory-card img{
+ object-fit:contain!important;object-position:center center!important;
+ box-sizing:border-box;
+}
+#p-world .pw-person-art img[src*="-cutout-v32.webp"]{
+ object-fit:contain!important;object-position:center center!important;
+ background:transparent!important;
+}
+@media(min-width:720px){
+ #p-world .pw-people-screen .pw-person-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
+ }
+}
+@media(max-width:355px){
+ #p-world .pw-people-screen .pw-person-art{
+  flex-basis:34px!important;width:34px!important;height:34px!important;
+ }
+ #p-world .pw-people-screen .pw-person-card{padding:4px!important;gap:5px}
+ #p-world .pw-people-screen .pw-person-copy b{font-size:.69rem}
+ #p-world .pw-people-screen .pw-person-copy small{font-size:.53rem}
+}
