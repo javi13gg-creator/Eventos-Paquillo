@@ -915,3 +915,15 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-memory-card img[src*="-cutout-v27.webp"]{
   padding:2px;box-sizing:border-box;
 }
+
+/* Paquillo World v28: avatares completos de Diego, Inés, Iván y Javi. */
+#p-world img[src*="-cutout-v28.webp"]{
+ object-fit:contain!important;object-position:center bottom!important;
+ background:transparent;
+}
+#p-world .pw-person-art img[src*="-cutout-v28.webp"]{
+ filter:drop-shadow(0 5px 5px rgba(28,14,68,.4));
+}
+#p-world .pw-memory-card img[src*="-cutout-v28.webp"]{
+ padding:2px;box-sizing:border-box;
+}
