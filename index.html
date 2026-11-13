@@ -1421,6 +1421,12 @@ showTab(location.hash.slice(1));
      try {
        const enable=checkbox.checked,remindersEnabled=$id('paquiRemindersEnabled').checked;
        let subscription=null;
+       // Solicita el permiso directamente desde el toque del usuario,
+       // antes de cualquier espera de red: Safari/iOS exige activación.
+       if(enable&&'Notification' in window&&Notification.permission!=='granted'){
+         const permission=await Notification.requestPermission();
+         if(permission!=='granted')throw new Error('No has concedido permiso para notificaciones.');
+       }
        const reg=await getPaquiServiceWorker();
        if(enable){
          if(!('PushManager' in window)||!('Notification' in window))throw new Error('Este navegador no admite notificaciones push.');
@@ -1428,10 +1434,6 @@ showTab(location.hash.slice(1));
          const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
          if(ios&&!navigator.standalone&&!window.matchMedia?.('(display-mode: standalone)').matches)
            throw new Error('En iPhone abre la app desde el icono de la pantalla de inicio, no desde una pestaña del navegador.');
-         if(Notification.permission!=='granted'){
-           const permission=await Notification.requestPermission();
-           if(permission!=='granted')throw new Error('No has concedido permiso para notificaciones.');
-         }
          subscription=await reg.pushManager.getSubscription();
          if(subscription&&!paquiSubscriptionMatchesKey(subscription)){
            const oldEndpoint=subscription.endpoint;
