@@ -422,6 +422,18 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
  .amp-recipient-row{padding:7px 8px}
 }
 
+
+/* Notificaciones v18 · diagnóstico y estado real por dispositivo */
+.paqui-push-diagnostics{margin:12px 0 9px;padding:12px;border:1.5px solid var(--ln);border-radius:13px;background:var(--bg)}
+.paqui-push-diagnostics>b{display:block;margin-bottom:3px;font-size:.95rem}
+.paqui-push-diagnostics p{margin:4px 0 10px}
+.paqui-push-diagnostics .paqui-notify-actions{margin:5px 0}
+#paquiPushDiagnosticReport{margin:9px 0 0;padding:10px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink);font:500 .76rem/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.paqui-notify-option>span{min-width:0}
+.paqui-notify-msg{white-space:pre-wrap;line-height:1.4}
+.paqui-notify-actions button:disabled{opacity:.53;cursor:progress}
+@media(max-width:520px){.paqui-push-diagnostics .paqui-notify-actions{display:grid;grid-template-columns:1fr}.paqui-push-diagnostics .paqui-notify-actions button{width:100%}}
+
 </style>
 <link rel="stylesheet" href="paquillo-world-app.css?v=15">
 </head>
@@ -1249,35 +1261,241 @@ showTab(location.hash.slice(1));
 
  const PAQUI_VAPID_PUBLIC_KEY='BEJirS-f2dJ28DSVlQKH9JZ8c-CEMfsDuuhfEc7U5ZUadBbhssL2u4z8WxXTDIKJDlyvXJGFBsbY8L_6K5FKpvw';
  const PAQUI_SITE_URL='https://javi13gg-creator.github.io/Eventos-Paquillo/';
+
  let paquiSwRegistration=null;
- function b64ToBytes(base64){const pad='='.repeat((4-base64.length%4)%4);const raw=atob((base64+pad).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));}
+ function b64ToBytes(base64){
+   const pad='='.repeat((4-base64.length%4)%4);
+   const raw=atob((base64+pad).replace(/-/g,'+').replace(/_/g,'/'));
+   return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+ }
+ function paquiPushKeyValid(){
+   try {const key=b64ToBytes(PAQUI_VAPID_PUBLIC_KEY);return key.byteLength===65&&key[0]===4;}
+   catch(_){return false;}
+ }
+ function paquiSubscriptionMatchesKey(sub){
+   if(!sub?.options?.applicationServerKey)return true;
+   const current=new Uint8Array(sub.options.applicationServerKey),expected=b64ToBytes(PAQUI_VAPID_PUBLIC_KEY);
+   return current.length===expected.length&&current.every((b,i)=>b===expected[i]);
+ }
+ function paquiPushFailure(err){
+   const technical=(err?.name?err.name+': ':'')+(err?.message||String(err));
+   const message=String(err?.message||err||'');
+   if(/Registration failed - push service error|push service not available|could not connect to push server/i.test(message)){
+     return 'El navegador no ha podido registrar este dispositivo en su servicio push. No es un fallo de la contraseña ni del panel de administración. Prueba con otra red (Wi-Fi/datos), desactiva temporalmente VPN/DNS privado o bloqueadores, actualiza el navegador y comprueba los servicios de Google Play si utilizas Android. Después pulsa Guardar para reintentar.\nError técnico: '+technical;
+   }
+   if(err?.name==='NotAllowedError'||/permission denied|no has concedido permiso/i.test(message))
+     return 'Las notificaciones están bloqueadas. Permítelas desde Ajustes del navegador o del teléfono y vuelve a intentarlo.\nError técnico: '+technical;
+   if(err?.name==='InvalidAccessError'||/applicationServerKey/i.test(message))
+     return 'No se ha podido validar la clave de la suscripción push. Comprueba que el navegador esté actualizado.\nError técnico: '+technical;
+   return technical;
+ }
  async function getPaquiServiceWorker(){
-   if(!('serviceWorker' in navigator))throw new Error('Este navegador no admite notificaciones push.');
-   if(!window.isSecureContext)throw new Error('Las notificaciones requieren HTTPS.');
+   if(!('serviceWorker' in navigator))throw new Error('Este navegador no admite Service Workers.');
+   if(!window.isSecureContext)throw new Error('Las notificaciones requieren una conexión HTTPS.');
    paquiSwRegistration=await navigator.serviceWorker.register(PAQUI_SITE_URL+'paquillo-sw.js',{scope:'/Eventos-Paquillo/'});
-   await navigator.serviceWorker.ready;return paquiSwRegistration;
+   if(!paquiSwRegistration.active)await navigator.serviceWorker.ready;
+   return paquiSwRegistration;
+ }
+ async function paquiPushDeviceInfo(){
+   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1;
+   const standalone=!!(navigator.standalone||window.matchMedia?.('(display-mode: standalone)').matches);
+   const info={
+     https:!!window.isSecureContext,
+     workerSupported:'serviceWorker' in navigator,
+     pushSupported:'PushManager' in window,
+     notificationsSupported:'Notification' in window,
+     permission:'Notification' in window?Notification.permission:'no disponible',
+     browser:navigator.userAgentData?.brands?.map(x=>x.brand).join(', ')||navigator.userAgent.match(/(Chrome|Firefox|Edg|Safari|Brave|Opera|OPR)\/[\d.]+/g)?.join(' ')||'No identificado',
+     ios,standalone,
+     publicKeyValid:paquiPushKeyValid(),
+     worker:'sin comprobar',
+     subscribed:false,
+     keyMatches:null,
+     pushPermission:'sin comprobar',
+     registrationError:''
+   };
+   if(info.workerSupported&&info.https){
+     try {
+       const reg=await getPaquiServiceWorker();
+       info.worker=reg.active?'activo':reg.installing?'instalando':reg.waiting?'esperando':'sin activar';
+       if(reg.pushManager){
+         try{
+           const sub=await reg.pushManager.getSubscription();
+           info.subscribed=!!sub;
+           if(sub)info.keyMatches=paquiSubscriptionMatchesKey(sub);
+         }catch(e){info.registrationError='Consulta de suscripción: '+(e?.message||String(e));}
+         try{
+           if(reg.pushManager.permissionState)info.pushPermission=await reg.pushManager.permissionState({
+             userVisibleOnly:true,applicationServerKey:b64ToBytes(PAQUI_VAPID_PUBLIC_KEY)
+           });
+         }catch(e){info.pushPermission='No disponible: '+(e?.message||String(e));}
+       }
+     } catch(e){info.registrationError='Service Worker: '+(e?.message||String(e));}
+   }
+   return info;
  }
  async function openNotificationSettings(){
    const prior=document.getElementById('paquiNotifyOverlay');if(prior)prior.remove();
    const overlay=document.createElement('div');overlay.id='paquiNotifyOverlay';overlay.className='paqui-notify-overlay';
-   overlay.innerHTML='<section class="paqui-notify-card" role="dialog" aria-modal="true" aria-labelledby="paquiNotifyTitle"><div class="paqui-notify-head"><h2 id="paquiNotifyTitle">🔔 Notificaciones push</h2><button type="button" class="paqui-notify-close" id="paquiNotifyClose" aria-label="Cerrar">✕</button></div><p class="paqui-notify-muted">Activa los avisos push para recibir novedades y nuevos planes aunque no tengas Paquillo Events abierto. No se envían correos electrónicos.</p><div class="paqui-notify-option"><input id="paquiPushEnabled" type="checkbox"><span><b>Recibir notificaciones push</b><br><span class="paqui-notify-muted" id="paquiPushState">Este dispositivo recibirá avisos aunque la web no esté abierta.</span></span></div><div class="paqui-notify-option"><input id="paquiRemindersEnabled" type="checkbox" checked><span><b>Recordatorios antes de los planes</b><br><span class="paqui-notify-muted">Avisos push 3 días y 1 día antes.</span></span></div><p class="paqui-notify-msg" id="paquiNotifyMsg" aria-live="polite"></p><div class="paqui-notify-actions"><button type="button" class="btn" id="paquiSaveNotify">Guardar preferencias</button><button type="button" class="btn secondary" id="paquiDisablePush">Desactivar push en este dispositivo</button></div><p class="paqui-notify-muted">Cada dispositivo se suscribe por separado. En iPhone debes añadir la web a la pantalla de inicio para recibir push.</p></section>';
+   overlay.innerHTML='<section class="paqui-notify-card" role="dialog" aria-modal="true" aria-labelledby="paquiNotifyTitle">'+
+     '<div class="paqui-notify-head"><h2 id="paquiNotifyTitle">🔔 Notificaciones push</h2><button type="button" class="paqui-notify-close" id="paquiNotifyClose" aria-label="Cerrar">✕</button></div>'+
+     '<p class="paqui-notify-muted">Las notificaciones se activan por dispositivo. Los permisos concedidos no significan que el móvil esté suscrito.</p>'+
+     '<label class="paqui-notify-option"><input id="paquiPushEnabled" type="checkbox"><span><b>Recibir notificaciones push en este dispositivo</b><span class="paqui-notify-muted" id="paquiPushState">Comprobando suscripción…</span></span></label>'+
+     '<label class="paqui-notify-option"><input id="paquiRemindersEnabled" type="checkbox" checked><span><b>Recordatorios antes de los planes</b><span class="paqui-notify-muted">Avisos de 3 días y 1 día antes, cuando estén configurados en el servidor.</span></span></label>'+
+     '<p class="paqui-notify-msg" id="paquiNotifyMsg" aria-live="polite"></p>'+
+     '<div class="paqui-notify-actions"><button type="button" class="btn" id="paquiSaveNotify">Guardar / Reintentar push</button><button type="button" class="btn secondary" id="paquiDisablePush">Desactivar en este dispositivo</button></div>'+
+     '<div class="paqui-push-diagnostics"><b>🩺 Diagnóstico de este móvil</b><p class="paqui-notify-muted">Comprueba el navegador y prueba el sistema de notificaciones sin mandar avisos al grupo.</p>'+
+     '<div class="paqui-notify-actions"><button type="button" class="btn secondary" id="paquiCheckPush">Diagnosticar dispositivo</button><button type="button" class="btn secondary" id="paquiLocalPushTest">Probar notificación local</button></div>'+
+     '<pre id="paquiPushDiagnosticReport" hidden></pre></div>'+
+     '<p class="paqui-notify-muted">En iPhone/iPad necesitas abrir la aplicación desde un icono añadido a la pantalla de inicio. En Android, verifica también los permisos de notificaciones del navegador y de la aplicación instalada.</p></section>';
    document.body.appendChild(overlay);
-   const close=()=>overlay.remove();$id('paquiNotifyClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
-   const msg=$id('paquiNotifyMsg');
-   try{
-     const {data:pref,error}=await client.from('paqui_notification_preferences').select('push_enabled,reminders_enabled').eq('user_id',currentAuthUser.id).maybeSingle();
+   const close=()=>overlay.remove();$id('paquiNotifyClose').onclick=close;
+   overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+   const msg=$id('paquiNotifyMsg'),checkbox=$id('paquiPushEnabled'),stateLabel=$id('paquiPushState'),report=$id('paquiPushDiagnosticReport');
+   const save=$id('paquiSaveNotify'),disable=$id('paquiDisablePush'),diagnose=$id('paquiCheckPush'),localTest=$id('paquiLocalPushTest');
+   const setBusy=on=>{save.disabled=on;disable.disabled=on;diagnose.disabled=on;localTest.disabled=on;};
+   async function refreshDeviceStatus(){
+     const info=await paquiPushDeviceInfo();
+     checkbox.checked=!!info.subscribed&&info.keyMatches!==false&&info.permission==='granted';
+     stateLabel.textContent=checkbox.checked?'✅ Este dispositivo tiene una suscripción push registrada.':
+       info.subscribed&&info.keyMatches===false?'⚠️ Hay una suscripción antigua con otra clave VAPID. Guarda para renovarla.':
+       info.permission==='denied'?'🔕 Permiso de notificaciones bloqueado por el navegador o el sistema.':
+       '📵 Este dispositivo aún no está suscrito al servicio push.';
+     return info;
+   }
+   try {
+     const {data:pref,error}=await client.from('paqui_notification_preferences')
+       .select('push_enabled,reminders_enabled').eq('user_id',currentAuthUser.id).maybeSingle();
      if(error)throw error;
-     if(pref){$id('paquiPushEnabled').checked=!!pref.push_enabled;$id('paquiRemindersEnabled').checked=pref.reminders_enabled!==false;}
-     const reg=await getPaquiServiceWorker().catch(()=>null);if(reg){const sub=await reg.pushManager.getSubscription();if(sub)$id('paquiPushEnabled').checked=true;}
-   }catch(e){msg.textContent='No se pudieron cargar las preferencias: '+e.message;}
-   $id('paquiSaveNotify').onclick=async()=>{msg.textContent='Guardando…';try{
-     const pushEnabled=$id('paquiPushEnabled').checked,remindersEnabled=$id('paquiRemindersEnabled').checked;
-     let pushSub=null;
-     if(pushEnabled){if(!('PushManager' in window)||!('Notification' in window))throw new Error('Este navegador no admite push.');if(PAQUI_VAPID_PUBLIC_KEY.startsWith('PEGA_AQUI'))throw new Error('Falta configurar la clave pública VAPID en el HTML.');const permission=await Notification.requestPermission();if(permission!=='granted')throw new Error('No has concedido permiso para notificaciones.');const reg=await getPaquiServiceWorker();pushSub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(PAQUI_VAPID_PUBLIC_KEY)});const {error:subErr}=await client.from('paqui_push_subscriptions').upsert({user_id:currentAuthUser.id,endpoint:pushSub.endpoint,subscription:pushSub.toJSON(),updated_at:new Date().toISOString()},{onConflict:'endpoint'});if(subErr)throw subErr;}
-     const {error:saveErr}=await client.from('paqui_notification_preferences').upsert({user_id:currentAuthUser.id,email_enabled:false,push_enabled:pushEnabled,reminders_enabled:remindersEnabled,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(saveErr)throw saveErr;
-     msg.textContent='Preferencias guardadas. Solo recibirás notificaciones push. 🎉';$id('paquiPushState').textContent=pushEnabled?'Avisos push activados en este dispositivo.':'Avisos push desactivados.';
-   }catch(e){msg.textContent=e.message||'No se pudieron guardar las preferencias.';}};
-   $id('paquiDisablePush').onclick=async()=>{try{const reg=await getPaquiServiceWorker(),sub=await reg.pushManager.getSubscription();if(sub){const endpoint=sub.endpoint;await sub.unsubscribe();const {error}=await client.from('paqui_push_subscriptions').delete().eq('endpoint',endpoint);if(error)throw error;}await client.from('paqui_notification_preferences').update({push_enabled:false,updated_at:new Date().toISOString()}).eq('user_id',currentAuthUser.id);$id('paquiPushEnabled').checked=false;$id('paquiPushState').textContent='Push desactivado en este dispositivo.';msg.textContent='Notificaciones push desactivadas.';}catch(e){msg.textContent='No se pudo desactivar: '+e.message;}};
+     if(pref)$id('paquiRemindersEnabled').checked=pref.reminders_enabled!==false;
+     const info=await refreshDeviceStatus();
+     if(pref?.push_enabled===true&&!info.subscribed)msg.textContent='Tu cuenta tiene push activado, pero este móvil no consta como suscrito. Marca la opción y guarda para registrarlo.';
+   }catch(e){msg.textContent='No se pudo cargar el estado del dispositivo: '+paquiPushFailure(e);}
+   diagnose.onclick=async()=>{
+     diagnose.disabled=true;msg.textContent='Comprobando navegador, Service Worker y suscripción…';
+     try {
+       const info=await refreshDeviceStatus();
+       const data=[
+         'HTTPS: '+(info.https?'sí':'no'),
+         'Service Worker: '+info.worker,
+         'Push API: '+(info.pushSupported?'compatible':'no disponible'),
+         'Notificaciones API: '+(info.notificationsSupported?'compatible':'no disponible'),
+         'Permiso: '+info.permission,
+         'Permiso Push API: '+info.pushPermission,
+         'Suscripción de este móvil: '+(info.subscribed?'sí':'no'),
+         'Clave VAPID pública válida: '+(info.publicKeyValid?'sí':'no'),
+         'Clave de suscripción actual: '+(info.keyMatches===null?'no comprobable':info.keyMatches?'sí':'no, debe renovarse'),
+         'iOS/iPadOS: '+(info.ios?'sí':'no'),
+         'App independiente instalada/abierta: '+(info.standalone?'sí':'no'),
+         'Navegador: '+info.browser,
+       ];
+       if(info.registrationError)data.push('Error: '+info.registrationError);
+       report.textContent=data.join('\n');report.hidden=false;
+       msg.textContent=info.subscribed?'Se detecta una suscripción del navegador. Si no llegan los avisos, revisa permisos del móvil y el resultado del envío en Administración.':
+         'No hay suscripción activa en este móvil. Puedes probar la notificación local y reintentar el registro.';
+     }catch(e){msg.textContent=paquiPushFailure(e);}
+     finally{diagnose.disabled=false;}
+   };
+   localTest.onclick=async()=>{
+     localTest.disabled=true;msg.textContent='Probando notificación local…';
+     try {
+       if(!('Notification' in window))throw new Error('El navegador no tiene Notifications API.');
+       if(Notification.permission!=='granted'){
+         const permission=await Notification.requestPermission();
+         if(permission!=='granted')throw new Error('El permiso de notificaciones no está concedido.');
+       }
+       const reg=await getPaquiServiceWorker();
+       await reg.showNotification('🔔 Paquillo Events: prueba local',{
+         body:'Si ves este aviso, el móvil puede mostrar notificaciones. Aún falta probar el registro push.',
+         icon:'/Eventos-Paquillo/favicon.png',
+         tag:'paquillo-local-test',
+         data:{url:PAQUI_SITE_URL}
+       });
+       msg.textContent='✅ Solicitud de notificación local enviada al sistema. Si no aparece, revisa los permisos de notificaciones del móvil; esto no prueba la conexión push.';
+     }catch(e){msg.textContent='❌ Falló la prueba local: '+paquiPushFailure(e);}
+     finally{localTest.disabled=false;}
+   };
+   save.onclick=async()=>{
+     setBusy(true);
+     msg.textContent='Guardando…';
+     try {
+       const enable=checkbox.checked,remindersEnabled=$id('paquiRemindersEnabled').checked;
+       let subscription=null;
+       const reg=await getPaquiServiceWorker();
+       if(enable){
+         if(!('PushManager' in window)||!('Notification' in window))throw new Error('Este navegador no admite notificaciones push.');
+         if(!paquiPushKeyValid())throw new Error('La clave pública VAPID no tiene un formato válido.');
+         const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+         if(ios&&!navigator.standalone&&!window.matchMedia?.('(display-mode: standalone)').matches)
+           throw new Error('En iPhone abre la app desde el icono de la pantalla de inicio, no desde una pestaña del navegador.');
+         if(Notification.permission!=='granted'){
+           const permission=await Notification.requestPermission();
+           if(permission!=='granted')throw new Error('No has concedido permiso para notificaciones.');
+         }
+         subscription=await reg.pushManager.getSubscription();
+         if(subscription&&!paquiSubscriptionMatchesKey(subscription)){
+           const oldEndpoint=subscription.endpoint;
+           const unsubscribed=await subscription.unsubscribe();
+           if(!unsubscribed)throw new Error('El navegador no ha podido retirar la antigua suscripción.');
+           const {error:oldError}=await client.from('paqui_push_subscriptions').delete().eq('endpoint',oldEndpoint);
+           if(oldError)console.warn('No se pudo limpiar la suscripción antigua de Supabase:',oldError.message);
+           subscription=null;
+         }
+         if(!subscription){
+           try {
+             subscription=await reg.pushManager.subscribe({
+               userVisibleOnly:true,applicationServerKey:b64ToBytes(PAQUI_VAPID_PUBLIC_KEY)
+             });
+           }catch(err){
+             checkbox.checked=false;
+             stateLabel.textContent='❌ Este móvil no ha podido registrarse en el servicio push.';
+             throw err;
+           }
+         }
+         const {error:subError}=await client.from('paqui_push_subscriptions').upsert({
+           user_id:currentAuthUser.id,
+           endpoint:subscription.endpoint,
+           subscription:subscription.toJSON(),
+           updated_at:new Date().toISOString()
+         },{onConflict:'endpoint'});
+         if(subError)throw new Error('La suscripción existe, pero no se pudo guardar en Supabase: '+subError.message);
+       }else{
+         subscription=await reg.pushManager.getSubscription();
+         if(subscription){
+           const endpoint=subscription.endpoint;
+           const unsubscribed=await subscription.unsubscribe();
+           if(!unsubscribed)throw new Error('No se ha podido cancelar la suscripción de este móvil.');
+           const {error:removeError}=await client.from('paqui_push_subscriptions').delete().eq('endpoint',endpoint);
+           if(removeError)throw removeError;
+         }
+       }
+       // Preferencia por usuario: mantener push habilitado si siguen existiendo otros dispositivos.
+       let accountPushEnabled=enable;
+       if(!enable){
+         const {count,error:countError}=await client.from('paqui_push_subscriptions')
+           .select('endpoint',{count:'exact',head:true}).eq('user_id',currentAuthUser.id);
+         if(countError)throw countError;
+         accountPushEnabled=(count||0)>0;
+       }
+       const {error:prefError}=await client.from('paqui_notification_preferences').upsert({
+         user_id:currentAuthUser.id,email_enabled:false,
+         push_enabled:accountPushEnabled,reminders_enabled:remindersEnabled,updated_at:new Date().toISOString()
+       },{onConflict:'user_id'});
+       if(prefError)throw prefError;
+       const info=await refreshDeviceStatus();
+       msg.textContent=enable?
+         '✅ Suscripción creada y guardada en Supabase. Ya se puede intentar recibir push en este dispositivo.':
+         'Push desactivado en este dispositivo'+(accountPushEnabled?'; otros dispositivos permanecen suscritos.':'.');
+       if(enable&&!info.subscribed)msg.textContent='⚠️ Se guardó la configuración, pero el navegador no devuelve una suscripción activa. Reintenta.';
+     }catch(e){
+       msg.textContent='❌ '+paquiPushFailure(e);
+       try{await refreshDeviceStatus();}catch(_){}
+     }finally{setBusy(false);}
+   };
+   disable.onclick=async()=>{
+     checkbox.checked=false;
+     await save.onclick();
+   };
  }
  async function notifyNewEvent(eventId){try{const {data,error}=await client.functions.invoke('paquillo-notify',{body:{action:'notify-new-event',event_id:eventId}});if(error)console.warn('El plan se creó, pero no se pudo lanzar el aviso:',error.message);else if(data?.error)console.warn('Avisos no enviados:',data.error);else console.info('Avisos del nuevo plan procesados:',data?.sent);}catch(e){console.warn('No se pudo lanzar la notificación:',e);}}
 
