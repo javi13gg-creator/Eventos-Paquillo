@@ -86,6 +86,7 @@ const APPROVED={
  ivan:'paquillo-world-art/ivan-cutout-v28.webp',
  javi:'paquillo-world-art/javi-cutout-v28.webp',
  jb:'paquillo-world-art/jb-cutout-v29.webp',
+ leti:'paquillo-world-art/leti-cutout-v30.webp',
  sandra:'paquillo-world-art/sandra.webp',
  santi:'paquillo-world-art/santi.webp',
  sofia:'paquillo-world-art/sofia.webp',
@@ -101,7 +102,7 @@ const imageFor=name=>{
 window.PaquilloWorldCharacters={
  imageFor,has:name=>!!(APPROVED[normSlug(name)]||R[normSlug(name)]),
  names:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
- approvedNames:['Adri','Carla','David','Diego','Inés','Iván','Javi','JB','Sandra','Santi','Sofía','Rubén'],
+ approvedNames:['Adri','Carla','David','Diego','Inés','Iván','Javi','JB','Leti','Sandra','Santi','Sofía','Rubén'],
  isPreview:true
 };
 })();
