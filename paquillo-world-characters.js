@@ -1,7 +1,6 @@
-/* Paquillo World · galería de 24 personajes.
-   17 bocetos vectoriales y 7 retratos 3D aprobados; Carla y David con recortes transparentes.
-   Sin fotografías de referencia privadas; los avatares personalizados de Supabase
-   tienen prioridad sobre los recursos publicados aquí. */
+/* Paquillo World · galería completa de 24 personajes 3D aprobados.
+   Retratos de cuerpo completo optimizados para móvil y juegos; las fotografías
+   originales y los avatares personalizados de Supabase se conservan aparte. */
 (()=>{'use strict';
 const R={
  adri:['Adri','m','#d29d72','#332019','#b8f0df','#27334b','short','tee',0,1],
@@ -88,6 +87,16 @@ const APPROVED={
  jb:'paquillo-world-art/jb-cutout-v29.webp',
  leti:'paquillo-world-art/leti-cutout-v30.webp',
  laura:'paquillo-world-art/laura-cutout-v31.webp',
+ joaquin:'paquillo-world-art/joaquin-cutout-v32.webp',
+ mireia:'paquillo-world-art/mireia-cutout-v32.webp',
+ julia:'paquillo-world-art/julia-cutout-v32.webp',
+ alba:'paquillo-world-art/alba-cutout-v32.webp',
+ roman:'paquillo-world-art/roman-cutout-v32.webp',
+ rodri:'paquillo-world-art/rodri-cutout-v32.webp',
+ sara:'paquillo-world-art/sara-cutout-v32.webp',
+ richy:'paquillo-world-art/richy-cutout-v32.webp',
+ 'jorge-r':'paquillo-world-art/jorge_r-cutout-v32.webp',
+ maria:'paquillo-world-art/maria-cutout-v32.webp',
  sandra:'paquillo-world-art/sandra.webp',
  santi:'paquillo-world-art/santi.webp',
  sofia:'paquillo-world-art/sofia.webp',
@@ -103,7 +112,7 @@ const imageFor=name=>{
 window.PaquilloWorldCharacters={
  imageFor,has:name=>!!(APPROVED[normSlug(name)]||R[normSlug(name)]),
  names:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
- approvedNames:['Adri','Carla','David','Diego','Inés','Iván','Javi','JB','Leti','Laura','Sandra','Santi','Sofía','Rubén'],
- isPreview:true
+ approvedNames:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
+ isPreview:false
 };
 })();
