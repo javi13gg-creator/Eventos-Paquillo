@@ -134,3 +134,23 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-person-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){#p-world *{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Liga y medallas, formato de juego */
+#p-world .pw-home-lower{display:grid;grid-template-columns:1.2fr .8fr;gap:13px;margin:22px 1px 6px}
+#p-world .pw-league,#p-world .pw-achievements{background:linear-gradient(155deg,#412083ed,#261050f7);border:2px solid #b87ef4;border-radius:19px;padding:11px 13px;box-shadow:0 5px 0 #42136a,0 9px 18px #5a268c6b}
+#p-world .pw-home-lower header{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:7px}
+#p-world .pw-home-lower h2{font-size:1.03rem;font-weight:1000;background:none;padding:0;margin:0;color:#ffdf65}
+#p-world .pw-home-lower header button{background:#7f38d1;color:#fff;border:1px solid #d7a2ff;border-radius:100px;white-space:nowrap;font-size:.68rem;font-weight:900;padding:5px 10px;cursor:pointer}
+#p-world .pw-league-row{display:flex;align-items:center;gap:8px;width:100%;padding:8px 3px;background:transparent;border:0;border-top:1px solid #9865ca88;color:white;text-align:left;font:inherit;cursor:pointer}
+#p-world .pw-league-row .pw-medal{flex:0 0 25px;text-align:center;font-weight:1000}
+#p-world .pw-league-row img,#p-world .pw-small-initial{width:35px;height:35px;object-fit:cover;border-radius:50%;border:2px solid #ffdf69;background:#744bc6}
+#p-world .pw-small-initial{display:grid;place-items:center;color:#ffe568;font-size:.65rem;font-weight:900}
+#p-world .pw-league-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem}
+#p-world .pw-league-row strong{white-space:nowrap;color:#ffe06c;font-size:.76rem}
+#p-world .pw-achievements{display:flex;flex-direction:column}
+#p-world .pw-medal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+#p-world .pw-medal-grid span{display:grid;place-items:center;aspect-ratio:1;background:linear-gradient(155deg,#7d50da,#4a249f);border:2px solid #e0b7ff;border-radius:16px;font-size:clamp(1.4rem,4vw,2.3rem);box-shadow:0 3px 0 #30105b}
+#p-world .pw-achievements p{font-size:.87rem;font-weight:850;line-height:1.25;margin:auto 0 8px}
+#p-world .pw-achievements small{color:#ffe777;font-size:.67rem}
+@media(max-width:620px){#p-world .pw-home-lower{grid-template-columns:1fr;gap:14px;margin-top:24px}#p-world .pw-medal-grid{grid-template-columns:repeat(6,1fr);gap:5px}#p-world .pw-medal-grid span{border-radius:11px;font-size:1.3rem}#p-world .pw-home-lower h2{font-size:.98rem}}
