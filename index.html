@@ -356,6 +356,46 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
  .news-panel{top:calc(env(safe-area-inset-top,0px) + 6.7rem)}
 }
 </style>
+
+<style id="paqui-manual-push-v16">
+.admin-manual-push{margin:0 0 1.7rem;padding:clamp(.8rem,2vw,1.2rem);border:2px solid #6730c4;border-radius:18px;background:linear-gradient(150deg,color-mix(in srgb,#9364f0 13%,var(--card)),var(--card));box-shadow:4px 5px 0 color-mix(in srgb,var(--ink) 80%,transparent)}
+.amp-heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.amp-bubble{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#6833bc,#a653df);color:#fff;font-size:1.55rem;box-shadow:2px 3px 0 #4c277a}
+.admin-manual-push h3{margin:0;font-size:1.22rem;color:var(--ink)}.amp-heading p{margin:2px 0 0;color:var(--mut);font-size:.85rem;line-height:1.3}
+.amp-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.amp-fields label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;font-weight:800;color:var(--ink)}
+.amp-fields label[hidden]{display:none!important}
+.amp-fields label.amp-full{grid-column:1/-1}
+.amp-fields select,.amp-fields input,.amp-fields textarea{min-width:0;width:100%;padding:9px 10px;border:1.5px solid var(--ln);border-radius:11px;background:var(--card);color:var(--ink);font:500 .9rem/1.3 "Bricolage Grotesque",system-ui,sans-serif}
+.amp-fields textarea{resize:vertical;min-height:67px;max-height:220px}
+.amp-fields select:focus-visible,.amp-fields input:focus-visible,.amp-fields textarea:focus-visible{outline:3px solid var(--mint);outline-offset:1px}
+.amp-preview{margin:11px 0;padding:11px 12px;border:1.5px solid var(--ln);border-left:5px solid #8e43d2;border-radius:12px;background:var(--bg);display:grid;gap:4px}
+.amp-preview b{font-size:.75rem;color:var(--mut)}
+.amp-preview strong{font-size:.95rem;color:var(--ink);overflow-wrap:anywhere}
+.amp-preview span{font-size:.86rem;color:var(--mut);white-space:pre-wrap;overflow-wrap:anywhere}
+.amp-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.amp-actions button{min-height:41px;cursor:pointer}
+.amp-actions button:disabled{opacity:.5;cursor:not-allowed}
+.amp-status{font-size:.84rem;color:var(--mut);font-weight:700;line-height:1.4;margin:10px 0}
+.amp-status.amp-error{color:#b31e42}
+.amp-tip{display:block;line-height:1.45;font-size:.74rem;color:var(--mut)}
+.amp-history{border-top:1px solid var(--ln);margin-top:15px;padding-top:12px}
+.amp-history h4{margin:0 0 7px;color:var(--ink);font-size:.95rem}
+.amp-history-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--ln);font-size:.8rem}
+.amp-history-row div{min-width:0;flex:1}.amp-history-row b{display:block;overflow-wrap:anywhere}.amp-history-row small{display:block;color:var(--mut);font-size:.71rem}
+.amp-history-row p{margin:3px 0 0;line-height:1.3;color:var(--mut)}
+.amp-history-row>span{flex:0 0 auto;font-weight:800;color:var(--ink);font-size:.72rem;white-space:nowrap}
+.amp-empty{color:var(--mut);font-size:.84rem}
+@media(max-width:560px){
+ .admin-manual-push{margin:0 0 14px;padding:10px}
+ .amp-fields{grid-template-columns:minmax(0,1fr);gap:9px}
+ .amp-fields label.amp-full{grid-column:1}
+ .amp-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+ .amp-actions button{width:100%}
+ .amp-history-row{display:block}
+ .amp-history-row>span{display:block;margin-top:5px}
+}
+</style>
 <link rel="stylesheet" href="paquillo-world-app.css?v=15">
 </head>
 <body>
@@ -723,6 +763,7 @@ window.syncPaquilloBirthdays=function(rows){
 showTab(location.hash.slice(1));
 </script>
 
+<script src="paquillo-admin-push.js?v=1"></script>
 <script>
 (()=>{
  // CONFIGURACIÓN: sustituye estos dos valores por los de tu proyecto Supabase.
@@ -1409,6 +1450,7 @@ showTab(location.hash.slice(1));
    target.querySelectorAll('.approve-event-btn').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;const {error}=await client.from('group_events').update({status:'planned',updated_at:new Date().toISOString()}).eq('id',btn.dataset.event);if(error){alert('No se pudo aprobar: '+error.message);btn.disabled=false;return;}await loadEventsFromDatabase();await renderAdmin();});
    target.querySelectorAll('.event-status-btn').forEach(btn=>btn.onclick=async()=>{const eventId=btn.dataset.event,nextStatus=btn.dataset.status;btn.disabled=true;btn.textContent='Guardando…';try{const {data:updated,error}=await client.from('group_events').update({status:nextStatus,updated_at:new Date().toISOString()}).eq('id',eventId).select('id,status,title').single();if(error)throw error;if(!updated)throw new Error('Supabase no ha confirmado la actualización del plan.');await loadEventsFromDatabase();await renderPastEvents();await renderOrganizerRanking();await renderAdmin();if(nextStatus==='completed')alert('Plan marcado como realizado. Ya aparece en Eventos pasados.');}catch(error){alert('No se pudo cambiar el estado del plan: '+(error?.message||error));btn.disabled=false;btn.textContent=nextStatus==='completed'?'Marcar realizado':'Reabrir';}});
    $id('refreshStats').onclick=renderAdmin;
+   window.PaquilloAdminPush?.mount(target,events||[],client);
  }
  document.querySelectorAll('.tabs [data-t]').forEach(btn=>btn.addEventListener('click',()=>{
    const t=btn.dataset.t;showTab(t);
