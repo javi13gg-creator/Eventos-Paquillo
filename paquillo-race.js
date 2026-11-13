@@ -246,6 +246,20 @@ function draw(){
  for(const it of g.items){ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#fff2a1';ctx.fillStyle='#ffdb63';
   ctx.beginPath();ctx.arc(it.x,it.y,17,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
   ctx.textBaseline='middle';ctx.font='23px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText(it.power?it.power[0]:'🎟️',it.x,it.y);ctx.restore();}
+ // Personalized full-body sticker: preserve the original gesture while running.
+ if(options.sticker&&portrait?.complete&&portrait.naturalWidth){
+  ctx.save();
+  ctx.globalAlpha=g.inv>0?.55+.45*Math.sin(g.time*48):1;
+  const bob=g.mode==='running'&&g.y===0?Math.sin(g.time*18)*2.5:0;
+  const height=g.duck&&g.y===0?78:111,width=g.duck&&g.y===0?75:85;
+  const offsetX=X+(85-width)/2-4;
+  ctx.drawImage(portrait,offsetX,Y-g.y-height+bob,width,height);
+  if(g.shield){
+   ctx.strokeStyle='#a7fff0';ctx.lineWidth=3;ctx.beginPath();
+   ctx.arc(X+32,Y-g.y-52,60,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();ctx.textAlign='left';ctx.setTransform(1,0,0,1,0,0);return;
+ }
  // Player is a cartoon body with current profile avatar/initial.
  const crouched=g.duck&&g.y===0,headY=Y-g.y-(crouched?53:75);
  ctx.save();ctx.globalAlpha=g.inv>0?.55+.45*Math.sin(g.time*48):1;
