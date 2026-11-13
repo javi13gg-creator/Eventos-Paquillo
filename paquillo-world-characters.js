@@ -1,6 +1,7 @@
-/* Paquillo World · previews vectoriales volumétricos (NO son los renders 3D definitivos).
-   Inspirados en vestimenta y pelo de las referencias autorizadas; sin fotos originales públicas.
-   Los retratos 3D aprobados en Supabase tienen prioridad sobre estos diseños provisionales. */
+/* Paquillo World · galería de 24 personajes.
+   20 bocetos vectoriales y 4 retratos 3D aprobados (Sandra, Santi, Sofía y Rubén).
+   Sin fotografías de referencia privadas; los avatares personalizados de Supabase
+   tienen prioridad sobre los recursos publicados aquí. */
 (()=>{'use strict';
 const R={
  adri:['Adri','m','#d29d72','#332019','#b8f0df','#27334b','short','tee',0,1],
@@ -76,6 +77,23 @@ function art(id,person){
  '</g></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
-const imageFor=name=>{const id=normSlug(name),person=R[id];if(!person)return '';if(!cache.has(id))cache.set(id,art(id,person));return cache.get(id)};
-window.PaquilloWorldCharacters={imageFor,has:name=>!!R[normSlug(name)],names:Object.values(R).map(x=>x[0]),isPreview:true};
+const APPROVED={
+ sandra:'paquillo-world-art/sandra.webp',
+ santi:'paquillo-world-art/santi.webp',
+ sofia:'paquillo-world-art/sofia.webp',
+ ruben:'paquillo-world-art/ruben.webp'
+};
+const imageFor=name=>{
+ const id=normSlug(name);
+ if(APPROVED[id])return APPROVED[id];
+ const person=R[id];if(!person)return '';
+ if(!cache.has(id))cache.set(id,art(id,person));
+ return cache.get(id);
+};
+window.PaquilloWorldCharacters={
+ imageFor,has:name=>!!(APPROVED[normSlug(name)]||R[normSlug(name)]),
+ names:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
+ approvedNames:['Sandra','Santi','Sofía','Rubén'],
+ isPreview:true
+};
 })();
