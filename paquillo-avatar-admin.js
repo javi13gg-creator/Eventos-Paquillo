@@ -25,7 +25,7 @@ function mount(target,members,client){
   '<div class="paqui-avatar-import-head"><span class="paqui-avatar-import-icon">🎭</span><div><h3>Avatares personalizados de Paquillo World</h3>'+
   '<p>Importa personajes completos estilo sticker, sin sustituir las fotos reales ni los XP.</p></div></div>'+
   '<details id="paquiAvatarDetails"><summary>✨ Gestionar avatares del grupo <span>24 miembros · 3 packs</span></summary>'+
-  '<p class="paqui-avatar-help">Para importar los renders finales validados, selecciona los archivos con el nombre de cada persona (por ejemplo <b>adri.webp</b>, <b>alba.webp</b>, <b>jorge-r.webp</b>, <b>maria.webp</b>). Los 20 bocetos vectoriales son provisionales; Sandra, Santi, Sofía y Rubén ya tienen retratos 3D publicados directamente en la web. La asignación opcional a Supabase es independiente.</p>'+
+  '<p class="paqui-avatar-help">Para importar los renders finales validados, selecciona los archivos con el nombre de cada persona (por ejemplo <b>adri.webp</b>, <b>alba.webp</b>, <b>jorge-r.webp</b>, <b>maria.webp</b>). Los 24 personajes 3D están publicados en Paquillo World. Este importador permite vincular imágenes personalizadas a Supabase de forma opcional e independiente de los avatares oficiales.</p>'+
   '<label class="paqui-avatar-file-label" for="paquiAvatarFiles">📁 Seleccionar imágenes de los personajes</label>'+
   '<input id="paquiAvatarFiles" type="file" accept="image/webp,image/png,image/jpeg" multiple>'+
   '<div id="paquiAvatarMemberList" class="paqui-avatar-member-grid">'+
