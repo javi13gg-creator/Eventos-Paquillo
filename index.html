@@ -395,6 +395,33 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
  .amp-history-row{display:block}
  .amp-history-row>span{display:block;margin-top:5px}
 }
+
+/* v17 · desglose de notificaciones push por destinatario y dispositivo */
+.amp-delivery-section{margin-top:14px;padding:12px;border:1.5px solid var(--ln);border-radius:13px;background:var(--card)}
+.amp-delivery-section[hidden]{display:none!important}
+.amp-delivery-section h4{font-size:.98rem;margin:0 0 7px;color:var(--ink)}
+.amp-recipients>p{font-size:.78rem;line-height:1.45;color:var(--mut);margin:4px 0 10px}
+.amp-recipient-list{display:grid;gap:7px}
+.amp-recipient-row{padding:8px 10px;border:1px solid var(--ln);border-radius:10px;background:var(--bg)}
+.amp-recipient-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px}
+.amp-recipient-top>b{font-size:.86rem;color:var(--ink)}
+.amp-recipient-status{font-size:.72rem;font-weight:800;line-height:1.22;border-radius:50px;background:color-mix(in srgb,var(--card) 70%,#bcabeb);padding:4px 7px;color:var(--ink)}
+.amp-status-accepted{background:color-mix(in srgb,#58cf9a 27%,var(--card))}
+.amp-status-partial{background:color-mix(in srgb,#ffc94e 30%,var(--card))}
+.amp-status-failed{background:color-mix(in srgb,#ef607b 25%,var(--card))}
+.amp-recipient-row>small{display:block;color:var(--mut);font-size:.72rem;margin-top:2px}
+.amp-recipient-row ul{padding:4px 0 0 20px;margin:3px 0 0;font-size:.72rem;line-height:1.38;color:var(--ink)}
+.amp-recipient-row li{padding:2px 0;overflow-wrap:anywhere}
+.amp-history-details{border:1px solid var(--ln);border-top:none;border-radius:0 0 10px 10px;padding:7px 10px;margin:0 0 7px}
+.amp-history-details summary{font-weight:800;font-size:.8rem;color:var(--ink);cursor:pointer}
+.amp-history-details .amp-recipients{padding-top:8px}
+.amp-legacy-note{color:var(--mut);font-size:.69rem;margin:0 0 8px}
+@media(max-width:560px){
+ .amp-recipient-top{align-items:flex-start;flex-direction:column}
+ .amp-recipient-status{font-size:.68rem}
+ .amp-recipient-row{padding:7px 8px}
+}
+
 </style>
 <link rel="stylesheet" href="paquillo-world-app.css?v=15">
 </head>
@@ -763,7 +790,7 @@ window.syncPaquilloBirthdays=function(rows){
 showTab(location.hash.slice(1));
 </script>
 
-<script src="paquillo-admin-push.js?v=1"></script>
+<script src="paquillo-admin-push.js?v=2"></script>
 <script>
 (()=>{
  // CONFIGURACIÓN: sustituye estos dos valores por los de tu proyecto Supabase.
