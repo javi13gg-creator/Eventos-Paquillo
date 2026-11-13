@@ -927,3 +927,14 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-memory-card img[src*="-cutout-v28.webp"]{
  padding:2px;box-sizing:border-box;
 }
+
+/* World v29: JB approved full-body avatar for people, memory and cards. */
+#p-world img[src*="jb-cutout-v29.webp"]{
+ object-fit:contain!important;object-position:center bottom!important;background:transparent;
+}
+#p-world .pw-person-art img[src*="jb-cutout-v29.webp"]{
+ filter:drop-shadow(0 5px 5px rgba(28,14,68,.40));
+}
+#p-world .pw-memory-card img[src*="jb-cutout-v29.webp"]{
+ padding:2px;box-sizing:border-box;
+}
