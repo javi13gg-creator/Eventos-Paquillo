@@ -37,11 +37,18 @@ function gameTiles(){
  '<button type="button" class="pw-game '+cls+'" data-pw-game="'+id+'" aria-disabled="'+(!ready)+'"><span class="pw-game-art">'+ico+'</span><strong>'+title+'</strong><p>'+desc+'</p><span class="pw-play-chip">'+(id==='challenges'?'Ver retos':ready?'Jugar ▶':'Muy pronto 🔒')+'</span></button>').join('')+'</div>';
 }
 function homeView(){
- const top=state.ranked.slice(0,3);
+ const top=state.ranked.slice(0,5);
+ const rankingRows=top.map((m,i)=>'<button class="pw-league-row" data-pw-view="ranking" type="button"><span class="pw-medal">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.')+'</span>'+
+ (memberPhoto(m)?image(memberPhoto(m),'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
+ '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen" data-pw-screen="home">'+playerHero()+
  '<h2 class="pw-section-title">🎮 ELIGE TU AVENTURA</h2>'+gameTiles()+
- '<button type="button" class="pw-bottom-motto" data-pw-view="ranking" style="display:block;width:100%;cursor:pointer">🏆 TOP PAQUILLERO: '+(top.length?top.map((m,i)=>(i+1)+'. '+esc(m.display_name)).join(' · '):'Preparando clasificación')+' <em>Ver ranking ›</em></button>'+
- '<div class="pw-bottom-motto">✨ Sigue participando para desbloquear nuevas recompensas. <em>¡Paquillo siempre!</em></div></section>';
+ '<div class="pw-home-lower"><section class="pw-league"><header><h2>🏆 CLASIFICACIÓN</h2><button type="button" data-pw-view="ranking">Ver todo ›</button></header>'+
+ (rankingRows||'<p>Esperando jugadores…</p>')+'</section>'+
+ '<section class="pw-achievements"><header><h2>🏅 TUS LOGROS</h2><button type="button" data-pw-game="challenges">Ver retos ›</button></header>'+
+ '<div class="pw-medal-grid"><span>🎉</span><span>🏆</span><span>🚀</span><span>🌴</span><span>⭐</span><span>🎯</span></div>'+
+ '<p>¡Sigue participando para desbloquear accesorios y recompensas!</p><small>Premios en preparación</small></section></div>'+
+ '<div class="pw-bottom-motto">✨ Tu grupo. Tus personajes. Tus piques. <em>¡Paquillo siempre!</em></div></section>';
 }
 function gamesView(){
  return '<section class="pw-screen pw-panel" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Minijuegos rápidos, con tu personaje y contra tus amigos cuando estén listos.')+
