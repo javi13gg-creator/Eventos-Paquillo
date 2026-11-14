@@ -122,3 +122,8 @@ body.pw-race-app-open{overflow:hidden!important}
 #pw-race-app .pw-race-ready .pw-race-session-tools{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 #pw-race-app .pw-race-rotated.pw-race-playing{position:absolute!important;top:0!important;left:100vw!important;width:100dvh!important;height:100vw!important;transform-origin:top left!important;transform:rotate(90deg)!important;padding:8px!important}
 #pw-race-app .pw-race-rotated .pw-race-buttons button{min-height:clamp(48px,11vw,75px)!important}
+
+/* Corrección de proporciones: el canvas conserva un escenario 16:9 sin estirar imágenes. */
+#pw-race-app .pw-race-stage{display:flex!important;align-items:center!important;justify-content:center!important;background:#160e3b!important;overflow:hidden!important;min-width:0!important}
+#pw-race-app .pw-race-stage canvas{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;aspect-ratio:auto!important}
+#pw-race-app .pw-race-playing .pw-race-stage{max-width:100%!important}
