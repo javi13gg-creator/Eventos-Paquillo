@@ -221,6 +221,14 @@ function modal(body){
  '<button type="button" class="pw-secondary-button" data-pw-close>Cerrar ✕</button>';
  overlay.hidden=false;
 }
+function openRaceApp(body){
+ closeRaceApp();
+ const app=document.createElement('div');app.id='pw-race-app';app.setAttribute('role','dialog');app.setAttribute('aria-label','Carrera Paquillera');
+ app.innerHTML=body;document.body.appendChild(app);document.body.classList.add('pw-race-app-open');
+}
+function closeRaceApp(){
+ window.PaquilloRace?.destroy();document.getElementById('pw-race-app')?.remove();document.body.classList.remove('pw-race-app-open');
+}
 function closeModal(){
  window.PaquilloRace?.destroy();
  clearReaction();clearMemoryTimer();trivia=null;memory=null;
@@ -418,7 +426,7 @@ function gameAction(id){
   window.PaquilloRace.open({
    uid:state.uid,member:state.mine,photo:racePhoto,sticker:isFullBody,
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
-   render:modal,onClose:closeModal,onScore:(distance)=>submitGlobalScore('races',distance)
+   render:openRaceApp,onClose:closeRaceApp,onScore:(distance)=>submitGlobalScore('races',distance)
   });
   return;
  }
