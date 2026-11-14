@@ -26,6 +26,19 @@ function pageButtons(kind,current,total){return total<=1?'':'<nav class="pw-pagi
 let trivia=null;
 let memory=null;
 const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+async function submitGlobalScore(game,score){
+ const ctx=window.PaquilloWorldContext?.();
+ if(!state.uid||!ctx?.client)return false;
+ try{
+  const {error}=await ctx.client.rpc('paqui_world_submit_score',{p_game:game,p_score:Math.round(score)});
+  if(error)throw error;
+  const {data,error:readError}=await ctx.client.from('paqui_world_daily_scores').select('user_id,game,day,score,updated_at').order('day',{ascending:false}).limit(10000);
+  if(readError)throw readError;
+  historicalScores=data||[];dailyScores=historicalScores.filter(x=>x.day===madridDay());
+  const panel=root.querySelector('[data-pw-screen="games"]');if(panel)panel.outerHTML=gamesView();
+  return true;
+ }catch(e){console.warn('Paquillo World: error publicando puntuación',e);return false;}
+}
 const safeBest=(key,score)=>{try{const prev=Number(localStorage.getItem(key))||0;if(score>prev){localStorage.setItem(key,String(score));return score;}return prev;}catch(_){return score;}};
 
 const image=(src,alt,cls,fallback='')=>src?'<img class="'+(cls||'')+'" src="'+esc(src)+'" alt="'+esc(alt||'')+'" loading="lazy"'+
@@ -105,12 +118,12 @@ function homeView(){
  '</aside></div><div class="pw-lobby-foot"><span>🌴 Juntos es mejor</span><span>Paquillo siempre 💛</span></div>'+
  '</div></section>';
 }
-function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>🥇 +100 XP · 🥈 +60 XP · 🥉 +30 XP · cierre 00:00 (Madrid)</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&x.day===day).sort((a,b)=>b.score-a.score||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin marcas verificadas todavía.</p>')}).join('')+'<p class="pw-local-note">Solo se publicarán marcas verificadas por el servidor. Los récords locales no cuentan.</p></section>';}
-function allTimeRanking(){return '<section class="pw-surface"><h3>👑 RÉCORDS HISTÓRICOS · TOP 3</h3><p>La mejor marca de cada persona en toda la historia, con su autor y fecha.</p>'+Object.entries(gameLabels).map(([id,label])=>{const best=new Map();for(const x of historicalScores){if(x.game!==id)continue;const prev=best.get(x.user_id);if(!prev||x.score>prev.score||(x.score===prev.score&&x.day<prev.day))best.set(x.user_id,x)}const rows=[...best.values()].sort((a,b)=>b.score-a.score||a.day.localeCompare(b.day)).slice(0,3);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+['🥇','🥈','🥉'][i]+'</span><b>'+esc(m?.display_name||'Paquillo')+'<small style="display:block;opacity:.75">'+esc(x.day)+'</small></b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Todavía no hay récords verificados.</p>')}).join('')+'</section>';}
+function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>Clasificación compartida · sin premios XP hasta validar partidas</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&x.day===day).sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin puntuaciones compartidas todavía.</p>')}).join('')+'<p class="pw-local-note">Ranking global provisional: puntuaciones de jugadores, no verificadas contra trampas. Sin XP.</p></section>';}
+function allTimeRanking(){return '<section class="pw-surface"><h3>👑 RÉCORDS HISTÓRICOS · TOP 3</h3><p>La mejor marca de cada persona en toda la historia, con su autor y fecha.</p>'+Object.entries(gameLabels).map(([id,label])=>{const best=new Map();for(const x of historicalScores){if(x.game!==id)continue;const prev=best.get(x.user_id);if(!prev||(id==='reflex'||id==='memory'?x.score<prev.score:x.score>prev.score)||(x.score===prev.score&&x.day<prev.day))best.set(x.user_id,x)}const rows=[...best.values()].sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.day.localeCompare(b.day)).slice(0,3);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+['🥇','🥈','🥉'][i]+'</span><b>'+esc(m?.display_name||'Paquillo')+'<small style="display:block;opacity:.75">'+esc(x.day)+'</small></b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Todavía no hay récords compartidos.</p>')}).join('')+'</section>';}
 function gamesView(){
  return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
  '<div class="pw-games-board">'+gameTiles(true)+'</div>'+dailyRanking()+allTimeRanking()+
- '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking del grupo al activar Supabase · Sin XP por ahora</p></section>';
+ '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking compartido · Sin XP por ahora</p></section>';
 }
 
 function rankingView(){
@@ -236,7 +249,8 @@ function hitReaction(){
  }else if(reaction.phase==='go'){
   const ms=Math.max(0,Math.round(performance.now()-reaction.armed));
   clearReaction();p.className='pw-reflex-pad';p.textContent=ms+' ms';score.textContent=ms<220?'¡Reflejos de leyenda! 🔥':ms<350?'¡Muy buena reacción! 😎':'¡La próxima será más rápida! 💪';
-  const key='paqui_world_reflex_best_'+state.uid;
+  void submitGlobalScore('reflex',ms);
+   const key='paqui_world_reflex_best_'+state.uid;
   try{const best=Number(localStorage.getItem(key)||0);if(!best||ms<best){localStorage.setItem(key,String(ms));score.textContent+=' · ¡Nuevo récord personal!'}}catch(e){}
  }
 }
@@ -319,10 +333,11 @@ function finishTrivia(){
  if(!trivia)return;
  const total=trivia.questions.length,score=trivia.score;
  const best=safeBest('paqui_world_trivia_best_'+(state.uid||'guest'),score);
+ void submitGlobalScore('trivia',score);
  trivia=null;
  modal('<div class="pw-game-finish"><span class="pw-finish-icon">🏆</span><h2>¡TRIVIAL COMPLETADO!</h2><p class="pw-final-score">'+score+' / '+total+'</p>'+
  '<p>'+(score===total?'¡Pleno de aciertos! 🔥':score>=7?'¡Qué bien conoces el mundo! 😎':'¡La próxima ronda será mejor! 💪')+'</p><p>Tu récord en este dispositivo: <b>'+best+' aciertos</b></p>'+
- '<p class="pw-local-note">Estos puntos no son XP y no cuentan para la clasificación.</p><button type="button" class="pw-action-button" data-pw-trivia-restart>Otra partida ▶</button></div>');
+ '<p class="pw-local-note">La puntuación se envía al ranking global si está habilitado. Sin XP.</p><button type="button" class="pw-action-button" data-pw-trivia-restart>Otra partida ▶</button></div>');
 }
 /* Memoria Paquillera: empareja retratos y nombres reales de group_members.
    Sin fotos se muestran iniciales. Los resultados son únicamente locales. */
@@ -380,9 +395,10 @@ function finishMemory(){
  let best=moves;
  try{const old=Number(localStorage.getItem(key));if(!old||moves<old){localStorage.setItem(key,String(moves));}else best=old;}catch(_){}
  memory=null;
+ void submitGlobalScore('memory',moves);
  modal('<div class="pw-game-finish"><span class="pw-finish-icon">🎊</span><h2>¡MEMORIA COMPLETADA!</h2>'+
  '<p class="pw-final-score">'+moves+' intentos</p><p>⏱️ '+seconds+' segundos · Mejor partida local: '+best+' intentos.</p>'+
- '<p class="pw-local-note">No modifica la clasificación ni suma XP.</p><button class="pw-action-button" type="button" data-pw-memory-restart>Jugar otra vez ▶</button></div>');
+ '<p class="pw-local-note">Se envía al ranking global si está habilitado. Sin XP.</p><button class="pw-action-button" type="button" data-pw-memory-restart>Jugar otra vez ▶</button></div>');
 }
 
 function gameAction(id){
@@ -402,7 +418,7 @@ function gameAction(id){
   window.PaquilloRace.open({
    uid:state.uid,member:state.mine,photo:racePhoto,sticker:isFullBody,
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
-   render:modal,onClose:closeModal
+   render:modal,onClose:closeModal,onScore:(distance)=>submitGlobalScore('races',distance)
   });
   return;
  }
