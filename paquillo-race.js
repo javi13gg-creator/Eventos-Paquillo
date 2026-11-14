@@ -16,7 +16,7 @@ const achievements=[[100,'👟 Primeros pasos'],[500,'🎪 Superviviente del Fes
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rnd=(a,b)=>a+Math.random()*(b-a),q=id=>document.getElementById(id);
 let options={},run=null,canvas=null,ctx=null,raf=0,last=0,portrait=null,life=0,handlers=[],soundOn=true,audio=null;
-let scores=[],weekScores=[],online=false,loadingBoard=false,rankView='all';
+let scores=[],weekScores=[],online=false,loadingBoard=false,rankView='all',rankingError='';
 function bind(el,name,fn,opts){if(!el)return;el.addEventListener(name,fn,opts);handlers.push(()=>el.removeEventListener(name,fn,opts));}
 function key(){return 'paqui_race_v1_'+(options.uid||'guest');}
 function week(){
@@ -345,7 +345,7 @@ function renderRank(){
  if(!online){
   const b=best();el.innerHTML='<div class="pw-race-ranking-row"><b>👑 '+esc(options.member?.display_name||'Tú')+
    '</b><strong>'+(rankView==='all'?b.all:b.weekly)+' m</strong></div>'+
-   '<p>🏠 Récord local. Activa el SQL de carreras en Supabase para ver las marcas de todo el grupo.</p>';
+   '<p>🏠 Récord guardado en este dispositivo.</p>'+(rankingError?'<p role="alert">⚠️ '+esc(rankingError)+'</p>':'<p>El ranking compartido aún no está disponible.</p>');
   return;
  }
  const top=rankRows();el.innerHTML=top.length?top.map((s,i)=>
@@ -365,8 +365,8 @@ async function loadRanking(){
     .order('distance_m',{ascending:false}).limit(180)
   ]);
   if(token!==life)return;if(allRes.error||weekRes.error)throw allRes.error||weekRes.error;
-  scores=allRes.data||[];weekScores=weekRes.data||[];online=true;
- }catch(_){if(token!==life)return;online=false;}
+  scores=allRes.data||[];weekScores=weekRes.data||[];online=true;rankingError='';
+ }catch(e){if(token!==life)return;online=false;rankingError=e?.code==='42P01'||e?.code==='PGRST205'?'Falta ejecutar paquillo-race-ranking.sql en Supabase.':'Error al cargar clasificación global: '+(e?.message||'comprueba la conexión y los permisos.');console.warn('Carrera Paquillera: error de ranking',e);}
  finally{loadingBoard=false;if(token===life)renderRank();}
 }
 async function saveScore(distance,tickets,duration){
@@ -378,7 +378,7 @@ async function saveScore(distance,tickets,duration){
    user_id:options.uid,distance_m:distance,tickets,duration_s:clamp(duration,1,600)
   });
   if(error)throw error;if(token===life)await loadRanking();
- }catch(_){if(token===life){online=false;renderRank();}}
+ }catch(e){if(token===life){rankingError='No se ha podido guardar la carrera: '+(e?.message||'comprueba Supabase.');console.warn('Carrera Paquillera: error guardando puntuación',e);renderRank();}}
 }
 window.PaquilloRace={
  open,destroy,
