@@ -91,3 +91,10 @@ body.pw-race-lock{overflow:hidden!important}
 #p-world .pw-race-playing .pw-race-overlay button{min-height:44px!important;font-size:clamp(.85rem,3vw,1.1rem)!important}
 #p-world .pw-race-playing .pw-race-overlay button.pw-race-secondary{background:#49287e!important;color:white!important;border-color:#cfb6fa!important}
 @media(max-height:440px){#p-world .pw-race-playing .pw-race-title small,#p-world .pw-race-playing .pw-race-progress small{display:none!important}#p-world .pw-race-playing .pw-race-title b{font-size:.8rem!important}#p-world .pw-race-playing .pw-race-stats b{padding:3px!important}#p-world .pw-race-playing .pw-race-buttons button{min-height:54px!important}#p-world .pw-race-playing .pw-race-session-tools button{min-height:29px!important}}
+
+/* Carrera: orientación opcional con rotación de la superficie jugable. */
+#p-world .pw-race-playing .pw-race-session-tools{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#p-world .pw-race-playing .pw-race-session-tools button{min-width:0!important;padding:5px 2px!important}
+#p-world .pw-race-playing.pw-race-rotated{inset:auto!important;top:0!important;left:100vw!important;width:100dvh!important;height:100vw!important;max-height:none!important;transform-origin:top left!important;transform:rotate(90deg)!important;z-index:999999!important}
+#p-world .pw-race-playing.pw-race-rotated .pw-race-buttons button{min-height:clamp(48px,12vw,72px)!important}
+#p-world .pw-race-playing.pw-race-rotated .pw-race-session-tools button{min-height:30px!important}
