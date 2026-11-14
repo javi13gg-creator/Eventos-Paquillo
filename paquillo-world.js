@@ -9,7 +9,7 @@ const nameInitial=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||
 const points=n=>Number(n||0).toLocaleString('es-ES');
 const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta',event_approved:'Plan validado por administración',daily_game:'Podio diario',weekly_challenge:'Reto semanal'};
 const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','👥','Equipo'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
-let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v=k=>p.find(x=>x.type===k)?.value;return `${v('year')}-${v('month')}-${v('day')}`;};const scoreDay=v=>String(v||'').slice(0,10);let scoreError='';
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
 const viewHistory=[];
@@ -28,16 +28,16 @@ let memory=null;
 const shuffle=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 async function submitGlobalScore(game,score){
  const ctx=window.PaquilloWorldContext?.();
- if(!state.uid||!ctx?.client)return false;
+ if(!state.uid||!ctx?.client){scoreError='Inicia sesión para compartir resultados.';return false;}
  try{
   const {error}=await ctx.client.rpc('paqui_world_submit_score',{p_game:game,p_score:Math.round(score)});
   if(error)throw error;
   const {data,error:readError}=await ctx.client.from('paqui_world_daily_scores').select('user_id,game,day,score,updated_at').order('day',{ascending:false}).limit(10000);
   if(readError)throw readError;
-  historicalScores=data||[];dailyScores=historicalScores.filter(x=>x.day===madridDay());
+  historicalScores=data||[];scoreError='';dailyScores=historicalScores.filter(x=>scoreDay(x.day)===madridDay());
   const panel=root.querySelector('[data-pw-screen="games"]');if(panel)panel.outerHTML=gamesView();
   return true;
- }catch(e){console.warn('Paquillo World: error publicando puntuación',e);return false;}
+ }catch(e){scoreError='No se pudo compartir el resultado: '+(e.message||String(e));console.warn('Paquillo World: error publicando puntuación',e);const panel=root.querySelector('[data-pw-screen="games"]');if(panel)panel.outerHTML=gamesView();return false;}
 }
 const safeBest=(key,score)=>{try{const prev=Number(localStorage.getItem(key))||0;if(score>prev){localStorage.setItem(key,String(score));return score;}return prev;}catch(_){return score;}};
 
@@ -118,11 +118,11 @@ function homeView(){
  '</aside></div><div class="pw-lobby-foot"><span>🌴 Juntos es mejor</span><span>Paquillo siempre 💛</span></div>'+
  '</div></section>';
 }
-function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>Clasificación compartida · sin premios XP hasta validar partidas</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&x.day===day).sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin puntuaciones compartidas todavía.</p>')}).join('')+'<p class="pw-local-note">Ranking global provisional: puntuaciones de jugadores, no verificadas contra trampas. Sin XP.</p></section>';}
+function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>Clasificación compartida · sin premios XP hasta validar partidas</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&scoreDay(x.day)===day).sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin puntuaciones compartidas todavía.</p>')}).join('')+'<p class="pw-local-note">Ranking global provisional: puntuaciones de jugadores, no verificadas contra trampas. Sin XP.</p></section>';}
 function allTimeRanking(){return '<section class="pw-surface"><h3>👑 RÉCORDS HISTÓRICOS · TOP 3</h3><p>La mejor marca de cada persona en toda la historia, con su autor y fecha.</p>'+Object.entries(gameLabels).map(([id,label])=>{const best=new Map();for(const x of historicalScores){if(x.game!==id)continue;const prev=best.get(x.user_id);if(!prev||(id==='reflex'||id==='memory'?x.score<prev.score:x.score>prev.score)||(x.score===prev.score&&x.day<prev.day))best.set(x.user_id,x)}const rows=[...best.values()].sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.day.localeCompare(b.day)).slice(0,3);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+['🥇','🥈','🥉'][i]+'</span><b>'+esc(m?.display_name||'Paquillo')+'<small style="display:block;opacity:.75">'+esc(x.day)+'</small></b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Todavía no hay récords compartidos.</p>')}).join('')+'</section>';}
 function gamesView(){
  return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
- '<div class="pw-games-board">'+gameTiles(true)+'</div>'+dailyRanking()+allTimeRanking()+
+ '<div class="pw-games-board">'+gameTiles(true)+'</div>'+(scoreError?'<p class="pw-demo-notice" role="alert">⚠️ '+esc(scoreError)+'</p>':'')+dailyRanking()+allTimeRanking()+
  '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking compartido · Sin XP por ahora</p></section>';
 }
 
@@ -446,7 +446,7 @@ async function refresh(){
   state.ready=!pr.error&&!lr.error;
   state.members=mr.data||[];
   state.profiles=new Map((pr.data||[]).map(x=>[x.user_id,x]));
-  state.ledger=lr.data||[];historicalScores=dr.error?[]:(dr.data||[]);dailyScores=historicalScores.filter(x=>x.day===madridDay());
+  state.ledger=lr.data||[];historicalScores=dr.error?[]:(dr.data||[]);scoreError=dr.error?'No se pudo cargar el ranking global: '+dr.error.message:'';if(dr.error)console.warn('Paquillo World: error de ranking global',dr.error);dailyScores=historicalScores.filter(x=>scoreDay(x.day)===madridDay());
   state.mine=state.members.find(x=>x.auth_user_id===state.uid)||null;
   state.xp=state.ready?Number(state.profiles.get(state.uid)?.total_xp)||0:0;
   state.ranked=state.members.map(m=>({...m,xp:state.ready?(Number(state.profiles.get(m.auth_user_id)?.total_xp)||0):0})).sort((a,b)=>b.xp-a.xp||a.display_name.localeCompare(b.display_name,'es'));
