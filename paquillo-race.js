@@ -370,6 +370,7 @@ async function loadRanking(){
  finally{loadingBoard=false;if(token===life)renderRank();}
 }
 async function saveScore(distance,tickets,duration){
+ if(distance>=1)void options.onScore?.(Math.floor(distance));
  if(distance<1||!options.client||!options.uid){renderRank();return;}
  const token=life;
  try{
