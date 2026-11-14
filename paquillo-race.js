@@ -16,6 +16,7 @@ const achievements=[[100,'👟 Primeros pasos'],[500,'🎪 Superviviente del Fes
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),rnd=(a,b)=>a+Math.random()*(b-a),q=id=>document.getElementById(id);
 let options={},run=null,canvas=null,ctx=null,raf=0,last=0,portrait=null,life=0,handlers=[],soundOn=true,audio=null;
+let landscapeWanted=false;
 let scores=[],weekScores=[],online=false,loadingBoard=false,rankView='all',rankingError='';
 function bind(el,name,fn,opts){if(!el)return;el.addEventListener(name,fn,opts);handlers.push(()=>el.removeEventListener(name,fn,opts));}
 function key(){return 'paqui_race_v1_'+(options.uid||'guest');}
@@ -54,7 +55,7 @@ function markup(){
  '<div id="raceOverlay" class="pw-race-overlay"><div id="raceOverlayContent" class="pw-race-overlay-content"></div></div></div>'+
  '<div class="pw-race-buttons"><button id="raceJump" type="button">⬆️ <b>SALTAR</b></button>'+
  '<button id="raceDuck" type="button">⬇️ <b>AGACHARSE</b></button>'+
- '</div><div class="pw-race-session-tools"><button id="racePause" type="button" aria-label="Pausar la carrera">⏸ Pausa</button><button id="raceExit" type="button">✕ Salir</button></div>'+
+ '</div><div class="pw-race-session-tools"><button id="racePause" type="button" aria-label="Pausar la carrera">⏸ Pausa</button><button id="raceExit" type="button">✕ Salir</button><button id="raceRotate" type="button">↔️ Horizontal</button></div>'+
  '<p class="pw-race-help">También puedes tocar la pista para saltar o usar ↑ / ↓ en el teclado.</p>'+
  '<div class="pw-race-personal"><span>🥇 Récord <b id="raceBest">0 m</b></span>'+
  '<span>📅 Semana <b id="raceWeek">0 m</b></span><span>🎟️ Acumulados <b id="raceTotalTickets">0</b></span></div>'+
@@ -91,14 +92,14 @@ function open(config){
  run=initial();last=0;rankView='all';scores=[];weekScores=[];online=false;loadingBoard=false;
  try{soundOn=localStorage.getItem('paqui_race_sound')!=='off';}catch(_){soundOn=true;}
  if(q('raceSound'))q('raceSound').textContent=soundOn?'🔊':'🔇';
- newPortrait();controls();resize();updateUI(true);draw();
+ landscapeWanted=false;newPortrait();controls();resize();updateUI(true);draw();
  cover('¡ESCAPE DEL FESTIVAL!','Corre por el mundo Paquillo, salta obstáculos, agáchate bajo carteles y recoge tickets y power-ups. ¡Tienes 3 vidas!','start','¡A CORRER! ▶','Récords guardados en tu dispositivo · Controles táctiles.');
  loadRanking().catch(()=>{});
 }
 function destroy(){
  life++;if(raf)cancelAnimationFrame(raf);raf=0;
  for(const unbind of handlers)try{unbind()}catch(_){}
- handlers=[];document.body.classList.remove('pw-race-lock');q('pwRace')?.classList.remove('pw-race-playing');run=null;canvas=null;ctx=null;portrait=null;last=0;
+ handlers=[];document.body.classList.remove('pw-race-lock');landscapeWanted=false;q('pwRace')?.classList.remove('pw-race-playing');run=null;canvas=null;ctx=null;portrait=null;last=0;
  if(audio){try{audio.close()}catch(_){}audio=null;}
 }
 function resize(){
@@ -107,8 +108,9 @@ function resize(){
  canvas.height=Math.round(Math.max(1,(r.height||360)*d));
  if(run)draw();
 }
-function gameScreen(active){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-playing',active);document.body.classList.toggle('pw-race-lock',active);if(active){window.scrollTo?.(0,0);}requestAnimationFrame(resize);}
-function leaveGame(){if(!run)return;if(raf)cancelAnimationFrame(raf);raf=0;run.mode='ready';run.duck=false;gameScreen(false);hideCover();updateUI(true);draw();}
+function syncOrientation(){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-rotated',landscapeWanted&&innerHeight>innerWidth);const b=q('raceRotate');if(b)b.textContent=landscapeWanted?'↕️ Vertical':'↔️ Horizontal';requestAnimationFrame(resize);}
+function gameScreen(active){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-playing',active);document.body.classList.toggle('pw-race-lock',active);if(active){window.scrollTo?.(0,0);}syncOrientation();}
+function leaveGame(){if(!run)return;if(raf)cancelAnimationFrame(raf);raf=0;run.mode='ready';run.duck=false;landscapeWanted=false;gameScreen(false);hideCover();updateUI(true);draw();}
 function begin(){
  if(!run)return;if(raf)cancelAnimationFrame(raf);
  run=initial();run.mode='running';last=0;gameScreen(true);hideCover();updateUI(true);tone(650);
@@ -216,6 +218,7 @@ function rounded(x,y,w,h,r=7){
  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
 }
+function drawArt(icon,x,y,r,type){ctx.save();ctx.translate(x,y);const grad=ctx.createRadialGradient(-r*.3,-r*.4,1,0,0,r);if(type==='power'){grad.addColorStop(0,'#fffbbd');grad.addColorStop(.5,'#63e8ff');grad.addColorStop(1,'#6840ca');}else if(type==='obstacle'){grad.addColorStop(0,'#ffc68d');grad.addColorStop(1,'#b92c64');}else{grad.addColorStop(0,'#fff4ab');grad.addColorStop(1,'#ef8b25');}ctx.shadowBlur=type==='power'?18:10;ctx.shadowColor=type==='power'?'#8afaff':'#ffcf76';ctx.fillStyle=grad;ctx.strokeStyle='#fff2b1';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.font=Math.round(r*1.15)+'px "Apple Color Emoji","Segoe UI Emoji",system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(icon,0,1);ctx.restore();}
 function draw(){
  if(!ctx||!canvas||!run)return;
  const g=run,z=zones[g.zone];
@@ -244,11 +247,11 @@ function draw(){
    ctx.fillStyle='#ffe47d';rounded(o.x-7,Y-112,o.spec[2]+14,65,5);ctx.fill();
    ctx.fillStyle='#43266e';ctx.font='bold 13px system-ui';ctx.fillText('AGÁCHATE',o.x+o.spec[2]/2,Y-69);
    ctx.font='26px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText('🎏',o.x+o.spec[2]/2,Y-112);
-  }else ctx.fillText(o.spec[0],o.x+o.spec[2]/2,Y+2);
+  }else drawArt(o.spec[0],o.x+o.spec[2]/2,Y-21,Math.max(19,o.spec[1]*.57),'obstacle');
  }
  for(const it of g.items){ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#fff2a1';ctx.fillStyle='#ffdb63';
   ctx.beginPath();ctx.arc(it.x,it.y,17,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-  ctx.textBaseline='middle';ctx.font='23px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText(it.power?it.power[0]:'🎟️',it.x,it.y);ctx.restore();}
+  ctx.textBaseline='middle';ctx.font='23px "Apple Color Emoji","Segoe UI Emoji"';drawArt(it.power?it.power[0]:'🎟️',it.x,it.y,it.power?21:16,it.power?'power':'ticket');ctx.restore();}
  // Personalized full-body sticker: preserve the original gesture while running.
  if(options.sticker&&portrait?.complete&&portrait.naturalWidth){
   ctx.save();
@@ -308,6 +311,7 @@ function controls(){
  bind(duckBtn,'click',e=>{if(e.detail===0){duck(true);setTimeout(()=>duck(false),450);}});
  bind(q('racePause'),'click',pause);
  bind(q('raceExit'),'click',leaveGame);
+ bind(q('raceRotate'),'click',()=>{landscapeWanted=!landscapeWanted;syncOrientation();});
  bind(q('raceSound'),'click',()=>{soundOn=!soundOn;q('raceSound').textContent=soundOn?'🔊':'🔇';
   try{localStorage.setItem('paqui_race_sound',soundOn?'on':'off')}catch(_){}});
  let pressed=null;
@@ -322,7 +326,7 @@ function controls(){
  });
  bind(q('raceRankAll'),'click',()=>{rankView='all';renderRank();});
  bind(q('raceRankWeek'),'click',()=>{rankView='week';renderRank();});
- bind(window,'resize',resize);
+ bind(window,'resize',syncOrientation);
  bind(document,'visibilitychange',()=>{if(document.hidden&&run?.mode==='running')pause();});
  bind(document,'keydown',e=>{
   if(!run||!stage||e.target?.matches?.('input,textarea,select'))return;
