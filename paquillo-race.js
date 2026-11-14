@@ -50,6 +50,7 @@ function markup(){
  '<button id="raceSound" class="pw-race-small" type="button" aria-label="Alternar sonido">🔊</button></header>'+
  '<div class="pw-race-stats"><b id="raceDist">🏁 0 m</b><b id="raceTickets">🎟️ 0</b><b id="raceLives">❤️❤️❤️</b></div>'+
  '<div class="pw-race-progress"><i id="raceProgress"></i><strong id="raceZone">🎪 Festival</strong><small id="raceNext">Siguiente: Ruta viajera</small></div>'+
+ '<div class="pw-race-launch"><div class="pw-race-launch-icon">🏁</div><h2>CARRERA PAQUILLERA</h2><p>Esquiva obstáculos, recoge potenciadores y supera tu récord.</p><button id="raceStart" type="button">▶ INICIAR PARTIDA</button></div>'+ 
  '<div class="pw-race-stage"><canvas id="raceCanvas" width="640" height="360" role="img" aria-label="Pista de carrera, usa Saltar y Agacharse para superar obstáculos"></canvas>'+
  '<div id="raceToast" class="pw-race-toast" hidden></div>'+
  '<div id="raceOverlay" class="pw-race-overlay"><div id="raceOverlayContent" class="pw-race-overlay-content"></div></div></div>'+
@@ -92,14 +93,14 @@ function open(config){
  run=initial();last=0;rankView='all';scores=[];weekScores=[];online=false;loadingBoard=false;
  try{soundOn=localStorage.getItem('paqui_race_sound')!=='off';}catch(_){soundOn=true;}
  if(q('raceSound'))q('raceSound').textContent=soundOn?'🔊':'🔇';
- landscapeWanted=false;newPortrait();controls();resize();updateUI(true);draw();
- cover('¡ESCAPE DEL FESTIVAL!','Corre por el mundo Paquillo, salta obstáculos, agáchate bajo carteles y recoge tickets y power-ups. ¡Tienes 3 vidas!','start','¡A CORRER! ▶','Récords guardados en tu dispositivo · Controles táctiles.');
+ landscapeWanted=false;newPortrait();controls();gameScreen(false);resize();updateUI(true);draw();
+ hideCover();
  loadRanking().catch(()=>{});
 }
 function destroy(){
  life++;if(raf)cancelAnimationFrame(raf);raf=0;
  for(const unbind of handlers)try{unbind()}catch(_){}
- handlers=[];document.body.classList.remove('pw-race-lock');landscapeWanted=false;q('pwRace')?.classList.remove('pw-race-playing');run=null;canvas=null;ctx=null;portrait=null;last=0;
+ handlers=[];landscapeWanted=false;q('pwRace')?.classList.remove('pw-race-playing');run=null;canvas=null;ctx=null;portrait=null;last=0;
  if(audio){try{audio.close()}catch(_){}audio=null;}
 }
 function resize(){
@@ -109,7 +110,7 @@ function resize(){
  if(run)draw();
 }
 function syncOrientation(){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-rotated',landscapeWanted&&innerHeight>innerWidth);const b=q('raceRotate');if(b)b.textContent=landscapeWanted?'↕️ Vertical':'↔️ Horizontal';requestAnimationFrame(resize);}
-function gameScreen(active){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-playing',active);document.body.classList.toggle('pw-race-lock',active);if(active){window.scrollTo?.(0,0);}syncOrientation();}
+function gameScreen(active){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-playing',active);el.classList.toggle('pw-race-ready',!active);syncOrientation();}
 function leaveGame(){if(!run)return;if(raf)cancelAnimationFrame(raf);raf=0;run.mode='ready';run.duck=false;landscapeWanted=false;gameScreen(false);hideCover();updateUI(true);draw();}
 function begin(){
  if(!run)return;if(raf)cancelAnimationFrame(raf);
@@ -310,7 +311,8 @@ function controls(){
   duck(false);duckBtn.classList.remove('held');});
  bind(duckBtn,'click',e=>{if(e.detail===0){duck(true);setTimeout(()=>duck(false),450);}});
  bind(q('racePause'),'click',pause);
- bind(q('raceExit'),'click',leaveGame);
+ bind(q('raceExit'),'click',()=>options.onClose?.());
+ bind(q('raceStart'),'click',begin);
  bind(q('raceRotate'),'click',()=>{landscapeWanted=!landscapeWanted;syncOrientation();});
  bind(q('raceSound'),'click',()=>{soundOn=!soundOn;q('raceSound').textContent=soundOn?'🔊':'🔇';
   try{localStorage.setItem('paqui_race_sound',soundOn?'on':'off')}catch(_){}});
