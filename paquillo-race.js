@@ -250,10 +250,17 @@ function draw(){
  for(const o of g.objects){
   ctx.font=(o.spec[0]==='🎏'?34:o.spec[1])+'px "Apple Color Emoji","Segoe UI Emoji",system-ui';
   if(o.spec[3]){
-   ctx.fillStyle='#ffe47d';rounded(o.x-7,Y-112,o.spec[2]+14,65,5);ctx.fill();
-   ctx.fillStyle='#43266e';ctx.font='bold 13px system-ui';ctx.fillText('AGÁCHATE',o.x+o.spec[2]/2,Y-69);
-   ctx.font='26px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText('🎏',o.x+o.spec[2]/2,Y-112);
-  }else drawArt(o.spec[0],o.x+o.spec[2]/2,Y-21,Math.max(19,o.spec[1]*.57),'obstacle');
+   // Festival banner: suspended low overhead, with decorative bunting and no lettering.
+   const bx=o.x-8,bw=o.spec[2]+16,by=Y-102;
+   ctx.save();ctx.shadowColor='#160b42';ctx.shadowBlur=9;ctx.shadowOffsetY=4;
+   const banner=ctx.createLinearGradient(bx,by,bx+bw,by+38);
+   banner.addColorStop(0,'#ef4e9e');banner.addColorStop(.5,'#8048d7');banner.addColorStop(1,'#3bc9dc');
+   ctx.fillStyle=banner;rounded(bx,by,bw,37,6);ctx.fill();ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+   ctx.strokeStyle='#fff2b1';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(bx+3,by+5);ctx.lineTo(bx+bw-3,by+5);ctx.stroke();
+   ctx.fillStyle='#ffe38a';for(let k=0;k<4;k++){const px=bx+7+k*(bw-14)/4;ctx.beginPath();ctx.moveTo(px,by+32);ctx.lineTo(px+7,by+45);ctx.lineTo(px+14,by+32);ctx.fill();}
+   ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='25px "Apple Color Emoji","Segoe UI Emoji",system-ui';ctx.fillText('🎉',bx+bw/2,by+19);
+   ctx.restore();
+  }else{ctx.save();ctx.shadowColor='#26113c';ctx.shadowBlur=5;ctx.shadowOffsetY=3;ctx.font=Math.round(o.spec[1]*1.23)+'px "Apple Color Emoji","Segoe UI Emoji",system-ui';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(o.spec[0],o.x+o.spec[2]/2,Y+2);ctx.restore();}
  }
  for(const it of g.items){drawArt(it.power?it.power[0]:'🎟️',it.x,it.y,it.power?21:16,it.power?'power':'ticket');}
  // Personalized full-body sticker: preserve the original gesture while running.
