@@ -9,7 +9,7 @@ const nameInitial=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||
 const points=n=>Number(n||0).toLocaleString('es-ES');
 const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta',event_approved:'Plan validado por administración',daily_game:'Podio diario',weekly_challenge:'Reto semanal'};
 const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','👥','Equipo'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
-let dailyScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
 const viewHistory=[];
@@ -106,9 +106,10 @@ function homeView(){
  '</div></section>';
 }
 function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>🥇 +100 XP · 🥈 +60 XP · 🥉 +30 XP · cierre 00:00 (Madrid)</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&x.day===day).sort((a,b)=>b.score-a.score||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin marcas verificadas todavía.</p>')}).join('')+'<p class="pw-local-note">Solo se publicarán marcas verificadas por el servidor. Los récords locales no cuentan.</p></section>';}
+function allTimeRanking(){return '<section class="pw-surface"><h3>👑 RÉCORDS HISTÓRICOS · TOP 3</h3><p>La mejor marca de cada persona en toda la historia, con su autor y fecha.</p>'+Object.entries(gameLabels).map(([id,label])=>{const best=new Map();for(const x of historicalScores){if(x.game!==id)continue;const prev=best.get(x.user_id);if(!prev||x.score>prev.score||(x.score===prev.score&&x.day<prev.day))best.set(x.user_id,x)}const rows=[...best.values()].sort((a,b)=>b.score-a.score||a.day.localeCompare(b.day)).slice(0,3);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+['🥇','🥈','🥉'][i]+'</span><b>'+esc(m?.display_name||'Paquillo')+'<small style="display:block;opacity:.75">'+esc(x.day)+'</small></b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Todavía no hay récords verificados.</p>')}).join('')+'</section>';}
 function gamesView(){
  return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
- '<div class="pw-games-board">'+gameTiles(true)+'</div>'+dailyRanking()+
+ '<div class="pw-games-board">'+gameTiles(true)+'</div>'+dailyRanking()+allTimeRanking()+
  '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking del grupo al activar Supabase · Sin XP por ahora</p></section>';
 }
 
@@ -423,13 +424,13 @@ async function refresh(){
    db.from('group_members').select('id,display_name,avatar_url,auth_user_id,birthday').eq('is_active',true).order('display_name'),
    db.from('paqui_world_profiles').select('user_id,total_xp,character_image_url,character_name'),
    db.from('paqui_world_xp_ledger').select('user_id,points,action,created_at').order('created_at',{ascending:false}).limit(250),
-   db.from('paqui_world_daily_scores').select('user_id,game,day,score,updated_at').eq('day',madridDay()).limit(1000)
+   db.from('paqui_world_daily_scores').select('user_id,game,day,score,updated_at').order('day',{ascending:false}).limit(10000)
   ]);
   if(mr.error)throw mr.error;
   state.ready=!pr.error&&!lr.error;
   state.members=mr.data||[];
   state.profiles=new Map((pr.data||[]).map(x=>[x.user_id,x]));
-  state.ledger=lr.data||[];dailyScores=dr.error?[]:(dr.data||[]);
+  state.ledger=lr.data||[];historicalScores=dr.error?[]:(dr.data||[]);dailyScores=historicalScores.filter(x=>x.day===madridDay());
   state.mine=state.members.find(x=>x.auth_user_id===state.uid)||null;
   state.xp=state.ready?Number(state.profiles.get(state.uid)?.total_xp)||0:0;
   state.ranked=state.members.map(m=>({...m,xp:state.ready?(Number(state.profiles.get(m.auth_user_id)?.total_xp)||0):0})).sort((a,b)=>b.xp-a.xp||a.display_name.localeCompare(b.display_name,'es'));
