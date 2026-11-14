@@ -127,3 +127,28 @@ body.pw-race-app-open{overflow:hidden!important}
 #pw-race-app .pw-race-stage{display:flex!important;align-items:center!important;justify-content:center!important;background:#160e3b!important;overflow:hidden!important;min-width:0!important}
 #pw-race-app .pw-race-stage canvas{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;aspect-ratio:auto!important}
 #pw-race-app .pw-race-playing .pw-race-stage{max-width:100%!important}
+
+/* Modo apaisado: ocupa el viewport completo y reserva espacio para el escenario. */
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated{
+ position:absolute!important;top:0!important;left:100vw!important;
+ width:100dvh!important;height:100vw!important;max-width:none!important;
+ transform:rotate(90deg)!important;transform-origin:top left!important;
+ padding:5px 8px!important;gap:3px!important;
+}
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated .pw-race-title small,
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated .pw-race-progress small{display:none!important}
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated .pw-race-stats b{padding:2px!important;font-size:12px!important}
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated .pw-race-progress{min-height:18px!important;padding:1px 6px!important}
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated .pw-race-buttons button{min-height:45px!important;font-size:14px!important}
+#pw-race-app .pw-race.pw-race-playing.pw-race-rotated .pw-race-session-tools button{min-height:26px!important;font-size:11px!important}
+@media(orientation:landscape){
+ #pw-race-app .pw-race.pw-race-playing{gap:3px!important;padding:4px 8px!important}
+ #pw-race-app .pw-race-playing .pw-race-title small,#pw-race-app .pw-race-playing .pw-race-progress small{display:none!important}
+ #pw-race-app .pw-race-playing .pw-race-title b{font-size:13px!important}
+ #pw-race-app .pw-race-playing .pw-race-title .pw-race-small{height:27px!important;width:32px!important;flex-basis:32px!important}
+ #pw-race-app .pw-race-playing .pw-race-stats b{padding:2px!important;font-size:12px!important}
+ #pw-race-app .pw-race-playing .pw-race-progress{min-height:17px!important;padding:1px 6px!important}
+ #pw-race-app .pw-race-playing .pw-race-buttons button{min-height:43px!important;font-size:14px!important}
+ #pw-race-app .pw-race-playing .pw-race-session-tools button{min-height:27px!important;font-size:11px!important}
+ #pw-race-app .pw-race-playing .pw-race-stage{flex:1 1 0!important;min-height:0!important}
+}
