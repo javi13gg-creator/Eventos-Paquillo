@@ -54,7 +54,7 @@ function markup(){
  '<div id="raceOverlay" class="pw-race-overlay"><div id="raceOverlayContent" class="pw-race-overlay-content"></div></div></div>'+
  '<div class="pw-race-buttons"><button id="raceJump" type="button">⬆️ <b>SALTAR</b></button>'+
  '<button id="raceDuck" type="button">⬇️ <b>AGACHARSE</b></button>'+
- '<button id="racePause" type="button" aria-label="Pausar la carrera">⏸</button></div>'+
+ '</div><div class="pw-race-session-tools"><button id="racePause" type="button" aria-label="Pausar la carrera">⏸ Pausa</button><button id="raceExit" type="button">✕ Salir</button></div>'+
  '<p class="pw-race-help">También puedes tocar la pista para saltar o usar ↑ / ↓ en el teclado.</p>'+
  '<div class="pw-race-personal"><span>🥇 Récord <b id="raceBest">0 m</b></span>'+
  '<span>📅 Semana <b id="raceWeek">0 m</b></span><span>🎟️ Acumulados <b id="raceTotalTickets">0</b></span></div>'+
@@ -98,7 +98,7 @@ function open(config){
 function destroy(){
  life++;if(raf)cancelAnimationFrame(raf);raf=0;
  for(const unbind of handlers)try{unbind()}catch(_){}
- handlers=[];run=null;canvas=null;ctx=null;portrait=null;last=0;
+ handlers=[];document.body.classList.remove('pw-race-lock');q('pwRace')?.classList.remove('pw-race-playing');run=null;canvas=null;ctx=null;portrait=null;last=0;
  if(audio){try{audio.close()}catch(_){}audio=null;}
 }
 function resize(){
@@ -107,22 +107,24 @@ function resize(){
  canvas.height=Math.round(Math.max(1,(r.height||360)*d));
  if(run)draw();
 }
+function gameScreen(active){const el=q('pwRace');if(!el)return;el.classList.toggle('pw-race-playing',active);document.body.classList.toggle('pw-race-lock',active);if(active){window.scrollTo?.(0,0);}requestAnimationFrame(resize);}
+function leaveGame(){if(!run)return;if(raf)cancelAnimationFrame(raf);raf=0;run.mode='ready';run.duck=false;gameScreen(false);hideCover();updateUI(true);draw();}
 function begin(){
  if(!run)return;if(raf)cancelAnimationFrame(raf);
- run=initial();run.mode='running';last=0;hideCover();updateUI(true);tone(650);
+ run=initial();run.mode='running';last=0;gameScreen(true);hideCover();updateUI(true);tone(650);
  raf=requestAnimationFrame(tick);
 }
 function pause(){
  if(!run)return;
  if(run.mode==='running'){
   run.mode='paused';if(raf)cancelAnimationFrame(raf);raf=0;
-  if(q('racePause'))q('racePause').textContent='▶';
+  if(q('racePause'))q('racePause').textContent='▶ Continuar';
   cover('CARRERA EN PAUSA','Estás a salvo mientras descansas.','resume','CONTINUAR ▶');
  }else if(run.mode==='paused')resume();
 }
 function resume(){
  if(!run||run.mode!=='paused')return;
- run.mode='running';last=0;if(q('racePause'))q('racePause').textContent='⏸';
+ run.mode='running';last=0;if(q('racePause'))q('racePause').textContent='⏸ Pausa';
  hideCover();raf=requestAnimationFrame(tick);
 }
 function finish(){
@@ -137,7 +139,8 @@ function finish(){
  cover(m>old.all?'🏆 ¡NUEVO RÉCORD!':'¡FIN DE CARRERA!',
   'Has llegado a '+m+' metros, recogido '+g.tickets+' tickets y esquivado '+g.passed+' obstáculos. '+
   (unlocked.length?'Logros: '+unlocked.map(x=>x[1]).join(' · ')+'.':'¡A por una marca mejor!'),
-  'start','VOLVER A CORRER ▶','Récord: '+g.allBest+' m · Los tickets no otorgan XP de World.');
+  'start','🔄 OTRA PARTIDA','Récord: '+g.allBest+' m · Los tickets no otorgan XP de World.');
+ const content=q('raceOverlayContent');if(content)content.insertAdjacentHTML('beforeend','<button type="button" data-race-action="stats" class="pw-race-secondary">🏆 Volver a estadísticas</button>');
  saveScore(m,g.tickets,Math.max(1,Math.floor(g.time))).catch(()=>{});
 }
 function jump(){
@@ -304,6 +307,7 @@ function controls(){
   duck(false);duckBtn.classList.remove('held');});
  bind(duckBtn,'click',e=>{if(e.detail===0){duck(true);setTimeout(()=>duck(false),450);}});
  bind(q('racePause'),'click',pause);
+ bind(q('raceExit'),'click',leaveGame);
  bind(q('raceSound'),'click',()=>{soundOn=!soundOn;q('raceSound').textContent=soundOn?'🔊':'🔇';
   try{localStorage.setItem('paqui_race_sound',soundOn?'on':'off')}catch(_){}});
  let pressed=null;
@@ -314,7 +318,7 @@ function controls(){
  bind(stage,'pointercancel',()=>{pressed=null;duck(false);});
  bind(q('pwRace'),'click',e=>{
   const action=e.target.closest('[data-race-action]')?.dataset.raceAction;
-  if(action==='start')begin();else if(action==='resume')resume();else if(action==='close')options.onClose?.();
+  if(action==='start')begin();else if(action==='resume')resume();else if(action==='stats')leaveGame();else if(action==='close')options.onClose?.();
  });
  bind(q('raceRankAll'),'click',()=>{rankView='all';renderRank();});
  bind(q('raceRankWeek'),'click',()=>{rankView='week';renderRank();});
