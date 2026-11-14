@@ -223,7 +223,12 @@ function drawArt(icon,x,y,r,type){ctx.save();ctx.translate(x,y);const grad=ctx.c
 function draw(){
  if(!ctx||!canvas||!run)return;
  const g=run,z=zones[g.zone];
- ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);
+ // Preserve the game's 16:9 coordinate system on any viewport: no stretched sprites.
+ const scale=Math.min(canvas.width/W,canvas.height/H);
+ const left=(canvas.width-W*scale)/2,top=(canvas.height-H*scale)/2;
+ ctx.setTransform(1,0,0,1,0,0);
+ ctx.fillStyle='#160e3b';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.setTransform(scale,0,0,scale,left,top);
  const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,z[1]);grad.addColorStop(1,z[2]);
  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
  const scroll=g.m*3.8;
@@ -250,9 +255,7 @@ function draw(){
    ctx.font='26px "Apple Color Emoji","Segoe UI Emoji"';ctx.fillText('🎏',o.x+o.spec[2]/2,Y-112);
   }else drawArt(o.spec[0],o.x+o.spec[2]/2,Y-21,Math.max(19,o.spec[1]*.57),'obstacle');
  }
- for(const it of g.items){ctx.save();ctx.shadowBlur=12;ctx.shadowColor='#fff2a1';ctx.fillStyle='#ffdb63';
-  ctx.beginPath();ctx.arc(it.x,it.y,17,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-  ctx.textBaseline='middle';ctx.font='23px "Apple Color Emoji","Segoe UI Emoji"';drawArt(it.power?it.power[0]:'🎟️',it.x,it.y,it.power?21:16,it.power?'power':'ticket');ctx.restore();}
+ for(const it of g.items){drawArt(it.power?it.power[0]:'🎟️',it.x,it.y,it.power?21:16,it.power?'power':'ticket');}
  // Personalized full-body sticker: preserve the original gesture while running.
  if(options.sticker&&portrait?.complete&&portrait.naturalWidth){
   ctx.save();
@@ -260,7 +263,10 @@ function draw(){
   const bob=g.mode==='running'&&g.y===0?Math.sin(g.time*18)*2.5:0;
   const height=g.duck&&g.y===0?78:111,width=g.duck&&g.y===0?75:85;
   const offsetX=X+(85-width)/2-4;
-  ctx.drawImage(portrait,offsetX,Y-g.y-height+bob,width,height);
+  // Preserve original proportions of the user's full-body avatar.
+  const ratio=portrait.naturalWidth/portrait.naturalHeight;
+  const fittedW=Math.min(width,height*ratio),fittedH=Math.min(height,width/ratio);
+  ctx.drawImage(portrait,offsetX+(width-fittedW)/2,Y-g.y-fittedH+bob,fittedW,fittedH);
   if(g.shield){
    ctx.strokeStyle='#a7fff0';ctx.lineWidth=3;ctx.beginPath();
    ctx.arc(X+32,Y-g.y-52,60,0,Math.PI*2);ctx.stroke();
