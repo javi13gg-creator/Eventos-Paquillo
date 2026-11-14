@@ -7,8 +7,9 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const level=xp=>Math.floor(Math.max(0,Number(xp)||0)/250)+1;
 const nameInitial=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
 const points=n=>Number(n||0).toLocaleString('es-ES');
-const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta'};
+const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta',event_approved:'Plan validado por administración',daily_game:'Podio diario',weekly_challenge:'Reto semanal'};
 const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','👥','Equipo'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
+let dailyScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
 const viewHistory=[];
@@ -104,9 +105,10 @@ function homeView(){
  '</aside></div><div class="pw-lobby-foot"><span>🌴 Juntos es mejor</span><span>Paquillo siempre 💛</span></div>'+
  '</div></section>';
 }
+function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>🥇 +100 XP · 🥈 +60 XP · 🥉 +30 XP · cierre 00:00 (Madrid)</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&x.day===day).sort((a,b)=>b.score-a.score||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin marcas verificadas todavía.</p>')}).join('')+'<p class="pw-local-note">Solo se publicarán marcas verificadas por el servidor. Los récords locales no cuentan.</p></section>';}
 function gamesView(){
  return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
- '<div class="pw-games-board">'+gameTiles(true)+'</div>'+
+ '<div class="pw-games-board">'+gameTiles(true)+'</div>'+dailyRanking()+
  '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking del grupo al activar Supabase · Sin XP por ahora</p></section>';
 }
 
@@ -145,7 +147,7 @@ function profileView(){
  '<div><b>'+esc(m.display_name)+'</b><small>⭐ NIVEL '+level(xp)+' · '+points(xp)+' XP</small><p class="pw-muted">Próximo nivel: '+(250-progress)+' XP</p><div class="pw-xp-track"><i style="width:'+Math.round(progress/250*100)+'%"></i></div></div></div>'+
  '<p class="pw-profile-hint">🎭 Tu personaje Paquillero. Los avatares personalizados muestran sus gestos originales y se mueven suavemente.</p>':
  page===1?'<div class="pw-surface"><h3>⚡ Cómo ganar XP</h3><div class="pw-actions-grid">'+
- [['📅 Crear un plan',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div><p class="pw-profile-hint">Los minijuegos aún no dan experiencia.</p>':
+ [['📅 Plan aprobado por Javi',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div><p class="pw-profile-hint">Los podios diarios darán XP cuando se active la validación segura de resultados.</p>':
  '<div class="pw-surface"><h3>📜 Última actividad</h3>'+
  (actions.length?actions.map(x=>'<div class="pw-rank-row"><span>✨</span><b>'+esc(actionNames[x.action]||'Actividad')+'</b><strong>+'+x.points+' XP</strong></div>').join(''):'<p class="pw-muted">No hay puntos registrados todavía.</p>')+'</div>';
  return '<section class="pw-screen pw-panel pw-paged-screen pw-profile-screen" data-pw-screen="profile">'+screenTitle('⭐ MI PERSONAJE','Tu progreso en Paquillo World')+
@@ -154,13 +156,16 @@ function profileView(){
 }
 
 function challengesView(){
- return '<section class="pw-screen pw-panel pw-challenges-screen" data-pw-screen="challenges">'+
- screenTitle('🏆 RETOS Y LOGROS','Desafíos Paquilleros en preparación')+
- '<div class="pw-surface"><h3>🎯 Próximos retos</h3>'+
- '<div class="pw-rank-row"><span>📅</span><b>Organizador nato</b><strong>Próximamente</strong></div>'+
- '<div class="pw-rank-row"><span>🧠</span><b>Trivial de la semana</b><strong>Próximamente</strong></div>'+
- '<div class="pw-rank-row"><span>🏃</span><b>Campeón de reflejos</b><strong>Próximamente</strong></div></div>'+
- '<p class="pw-paged-hint">Los retos aún no otorgan recompensas. Mientras tanto, prueba los minijuegos.</p>'+
+ const challenges=[
+ ['📅','Organizador nato','Consigue que administración valide un plan','+75 XP'],
+ ['🧠','Cerebrito semanal','Termina entre los tres primeros del Trivial durante la semana','+50 XP'],
+ ['⚡','Relámpago','Termina entre los tres primeros en Reflejos durante la semana','+50 XP'],
+ ['🎮','Todoterreno','Consigue una marca válida en los cuatro minijuegos en una semana','+80 XP'],
+ ['🏆','Rey de la isla','Consigue tres podios diarios en una semana','+100 XP']
+ ];
+ return '<section class="pw-screen pw-panel pw-challenges-screen" data-pw-screen="challenges">'+screenTitle('🏆 RETOS SEMANALES','Objetivos y recompensas propuestas')+
+ '<div class="pw-surface">'+challenges.map(([icon,name,desc,xp])=>'<div class="pw-rank-row"><span>'+icon+'</span><div><b>'+name+'</b><p>'+desc+'</p></div><strong>'+xp+'</strong></div>').join('')+'</div>'+
+ '<p class="pw-paged-hint">Retos definidos, pendientes de verificación y activación de recompensas en Supabase. No se acreditan XP automáticamente todavía.</p>'+
  '<button type="button" class="pw-action-button pw-challenges-games" data-pw-view="games">🎮 Ir a Juegos</button></section>';
 }
 
@@ -414,16 +419,17 @@ async function refresh(){
   }
   state.uid=ctx.currentAuthUser.id;
   const db=ctx.client;
-  const [mr,pr,lr]=await Promise.all([
+  const [mr,pr,lr,dr]=await Promise.all([
    db.from('group_members').select('id,display_name,avatar_url,auth_user_id,birthday').eq('is_active',true).order('display_name'),
    db.from('paqui_world_profiles').select('user_id,total_xp,character_image_url,character_name'),
-   db.from('paqui_world_xp_ledger').select('user_id,points,action,created_at').order('created_at',{ascending:false}).limit(250)
+   db.from('paqui_world_xp_ledger').select('user_id,points,action,created_at').order('created_at',{ascending:false}).limit(250),
+   db.from('paqui_world_daily_scores').select('user_id,game,day,score,updated_at').eq('day',madridDay()).limit(1000)
   ]);
   if(mr.error)throw mr.error;
   state.ready=!pr.error&&!lr.error;
   state.members=mr.data||[];
   state.profiles=new Map((pr.data||[]).map(x=>[x.user_id,x]));
-  state.ledger=lr.data||[];
+  state.ledger=lr.data||[];dailyScores=dr.error?[]:(dr.data||[]);
   state.mine=state.members.find(x=>x.auth_user_id===state.uid)||null;
   state.xp=state.ready?Number(state.profiles.get(state.uid)?.total_xp)||0:0;
   state.ranked=state.members.map(m=>({...m,xp:state.ready?(Number(state.profiles.get(m.auth_user_id)?.total_xp)||0):0})).sort((a,b)=>b.xp-a.xp||a.display_name.localeCompare(b.display_name,'es'));
