@@ -20,11 +20,34 @@
  function drawFilters(){
   filters.innerHTML=Object.entries(kindLabels).map(([k,label])=>'<button type="button" class="ps-filter'+(k===state.filter?' active':'')+'" data-ps-action="filter" data-kind="'+k+'" aria-pressed="'+(k===state.filter)+'">'+label+'</button>').join('');
  }
+ const EVENT_MONTHS=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+ function dateBadge(value){
+  const parts=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value||'').slice(0,10));
+  const month=parts?Number(parts[2]):0,day=parts?Number(parts[3]):0;
+  if(!parts||month<1||month>12||day<1||day>31)return '<span class="paqui-calendar-month">FECHA</span><span class="paqui-calendar-day">?</span>';
+  return '<span class="paqui-calendar-month">'+EVENT_MONTHS[month-1]+'</span><span class="paqui-calendar-day">'+day+'</span>';
+ }
+ function feedLink(item){
+  const action=' type="button" data-ps-action="navigate" data-tab="'+esc(item.tab)+'" data-entity="'+esc(item.entity||'')+'"';
+  if(item.kind==='event'){
+   const date=String(item.eventDate||'');
+   const attendees=Number.isInteger(item.yesCount)?'<span class="ps-event-attendees" aria-label="'+item.yesCount+' confirmados">👥 '+item.yesCount+' '+(item.status==='completed'?'apuntados':'van')+'</span>':'';
+   const dateLabel=date?' · '+labelDate(date+'T12:00:00'):'';
+   return '<button class="ps-feed-link ps-feed-event"'+action+' aria-label="Abrir plan '+esc(item.title+dateLabel)+'">'+
+    '<span class="paqui-plan-summary-icon ps-feed-date" aria-hidden="true">'+dateBadge(date)+'</span>'+
+    '<span class="ps-feed-copy"><strong>'+esc(item.title)+'</strong>'+attendees+'</span>'+
+    '<span class="ps-feed-arrow" aria-hidden="true">›</span></button>';
+  }
+  return '<button class="ps-feed-link ps-feed-other"'+action+' aria-label="Abrir '+esc(item.category.toLowerCase()+': '+item.title)+'">'+
+   '<span class="ps-feed-mini-icon" aria-hidden="true">'+item.icon+'</span>'+
+   '<span class="ps-feed-copy"><strong>'+esc(item.title)+'</strong><small>'+esc(item.category)+'</small></span>'+
+   '<span class="ps-feed-arrow" aria-hidden="true">›</span></button>';
+ }
  function drawFeed(){
   drawFilters();
   const items=state.items.filter(x=>state.filter==='all'||x.kind===state.filter);
   if(!items.length){feed.innerHTML='<p class="ps-empty">No hay novedades de este tipo por ahora. ¡El próximo plan será el primero!</p>';more.innerHTML='';return;}
-  feed.innerHTML=items.slice(0,state.visible).map(x=>'<article class="ps-post"><div class="ps-post-icon" aria-hidden="true">'+x.icon+'</div><div class="ps-post-body"><div class="ps-post-meta"><span>'+esc(x.category)+'</span><time datetime="'+esc(x.at)+'">'+esc(labelDate(x.at))+'</time></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p><button type="button" class="ps-open" data-ps-action="navigate" data-tab="'+esc(x.tab)+'" data-entity="'+esc(x.entity||'')+'">Ver '+esc(x.linkLabel)+' <span aria-hidden="true">›</span></button></div></article>').join('');
+  feed.innerHTML=items.slice(0,state.visible).map(feedLink).join('');
   more.innerHTML=items.length>state.visible?'<button class="ps-load-more" type="button" data-ps-action="more">Mostrar más novedades ('+(items.length-state.visible)+')</button>':'';
  }
  function quickCard(icon,value,label,description,tab,entity){
@@ -50,8 +73,17 @@
    let el=null;
    if(tab==='votaciones')el=document.getElementById('poll-'+entity);
    else if(tab==='horno')el=document.getElementById('memory-'+entity);
-   else if(tab==='planes')el=Array.from(document.querySelectorAll('#events [data-event-db]')).find(x=>x.dataset.eventDb===entity);
-   if(el){if(el.tagName==='DETAILS')el.open=true;el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800);}
+   else if(tab==='pasados'){
+    const history=Array.from(document.querySelectorAll('#pastEvents [data-history-detail]')).find(x=>x.dataset.historyDetail===entity);
+    if(history){history.click();return;}
+   }
+   else if(tab==='planes')el=Array.from(document.querySelectorAll('#events details.paqui-plan-fold[data-event-db]')).find(x=>x.dataset.eventDb===entity);
+   if(el){
+    if(el.tagName==='DETAILS')el.open=true;
+    const focusEl=el.closest('.paqui-plan-card')||el;
+    focusEl.scrollIntoView({behavior:'smooth',block:'center'});
+    focusEl.classList.add('flash');setTimeout(()=>focusEl.classList.remove('flash'),1800);
+   }
    else if(++attempts<24)setTimeout(tryFocus,250);
   };
   setTimeout(tryFocus,180);
@@ -116,7 +148,23 @@
     if(!a.error)attendance=a.data||[];
     else console.warn('Paquillo Social: no se pudo cargar asistencia');
    }
+   // Recuento de confirmados: solo un campo, en un máximo de 30 planes recientes.
+   // No requiere nuevas tablas ni consultas de información personal.
+   const recentIds=[...new Set((recentEvents||[]).filter(x=>x.id&&x.status!=='cancelled'&&x.status!=='draft').slice(0,30).map(x=>x.id))];
+   let recentYes=null;
+   if(recentIds.length){
+    try{
+     const a=await db.from('event_attendance').select('event_id').eq('status','yes').in('event_id',recentIds);
+     if(!a.error)recentYes=a.data||[];
+    }catch(e){console.warn('Paquillo Social: recuento no disponible',e);}
+   }
    if(token!==state.loadId)return;
+   const yesCounts=new Map();
+   if(attendance)attendance.forEach(a=>{if(a.status==='yes'){const id=String(a.event_id);yesCounts.set(id,(yesCounts.get(id)||0)+1);}});
+   if(recentYes){
+    recentIds.forEach(id=>yesCounts.set(String(id),0));
+    recentYes.forEach(a=>{const id=String(a.event_id);yesCounts.set(id,(yesCounts.get(id)||0)+1);});
+   }
    const mine=new Map((attendance||[]).filter(a=>a.member_id===member?.id).map(a=>[String(a.event_id),a.status]));
    const yes=validFuture.filter(x=>mine.get(String(x.id))==='yes');
    const toAnswer=member&&attendance?validFuture.filter(x=>!mine.has(String(x.id))):null;
@@ -138,7 +186,10 @@
    const items=[];
    (recentEvents||[]).forEach(x=>{
     if(!x.created_at||x.status==='cancelled')return;
-    items.push({kind:'event',icon:x.status==='completed'?'🏁':'📅',category:'Planes',title:x.title,description:(x.status==='completed'?'Plan realizado':'Nuevo plan en la agenda')+(x.event_date?' · '+labelDate(x.event_date+'T12:00:00'):' · Fecha pendiente'),at:x.created_at,tab:x.status==='completed'?'pasados':'planes',entity:x.id,linkLabel:'plan'});
+    const id=String(x.id);
+    items.push({kind:'event',icon:'📅',category:'Planes',title:x.title,at:x.created_at,eventDate:x.event_date||'',status:x.status,
+      yesCount:yesCounts.has(id)?yesCounts.get(id):null,
+      tab:x.status==='completed'?'pasados':'planes',entity:x.id,linkLabel:'plan'});
    });
    (polls||[]).forEach(x=>{
     if(!x.created_at||x.status==='draft')return;
@@ -148,17 +199,7 @@
     if(!x.created_at)return;
     items.push({kind:'memory',icon:'📸',category:'Recuerdos',title:x.title,description:'Compartido por '+(x.group_members?.display_name||'un Paquillo'),at:x.created_at,tab:'horno',entity:x.id,linkLabel:'recuerdo'});
    });
-   if(attendance&&members){
-    const upcomingById=new Map(validFuture.map(x=>[String(x.id),x]));
-    const recentCutoff=Date.now()-14*86400000,grouped=new Map();
-    attendance.forEach(a=>{
-     const time=safeDate(a.updated_at)?.getTime()||0,ev=upcomingById.get(String(a.event_id));
-     if(a.status!=='yes'||!ev||time<recentCutoff||!memberByAuth.size)return;
-     const k=String(a.event_id),g=grouped.get(k)||{count:0,last:0,event:ev};
-     g.count++;g.last=Math.max(g.last,time);grouped.set(k,g);
-    });
-    Array.from(grouped.values()).sort((a,b)=>b.last-a.last).slice(0,5).forEach(g=>items.push({kind:'event',icon:'🙌',category:'Confirmaciones',title:g.event.title,description:g.count+' '+(g.count===1?'persona ha confirmado':'personas han confirmado')+' asistencia recientemente',at:new Date(g.last).toISOString(),tab:'planes',entity:g.event.id,linkLabel:'asistentes'}));
-   }
+   // Evitar duplicados: las confirmaciones ya se muestran como recuentos en cada plan.
    state.items=items.filter(x=>safeDate(x.at)).sort((a,b)=>new Date(b.at)-new Date(a.at));
    state.lastFetch=Date.now();
    drawFeed();
