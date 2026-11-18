@@ -1,0 +1,64 @@
+/* Paquillo Events · Reacciones a planes · responsive y táctil */
+.paqui-reaction-teaser{
+ display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+ padding:5px 9px;border-radius:999px;
+ background:color-mix(in srgb,var(--pk) 11%,var(--card));
+ border:1px solid color-mix(in srgb,var(--pk) 20%,var(--ln));
+ color:var(--ink);font:850 .72rem/1.2 "Bricolage Grotesque",system-ui,sans-serif;
+ white-space:nowrap;letter-spacing:-.02em;
+}
+.paqui-reaction-teaser[hidden]{display:none!important}
+.paqui-reaction-box{
+ margin:12px 0 14px;padding:13px 14px;border-radius:15px;
+ border:1px solid color-mix(in srgb,var(--pk) 22%,var(--ln));
+ background:color-mix(in srgb,var(--pk) 4%,var(--card));
+ min-width:0;
+}
+.paqui-react-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;margin:0 0 10px}
+.paqui-react-head strong{font-size:.9rem;color:var(--ink)}
+.paqui-react-head>span{font-size:.72rem;font-weight:800;color:var(--mut)}
+.paqui-react-choices{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.paqui-react-option{
+ border:1px solid var(--ln);border-radius:12px;
+ display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;
+ min-width:0;min-height:53px;padding:5px 1px;
+ background:var(--card);color:var(--ink);
+ font-family:inherit;cursor:pointer;transition:transform .12s,border-color .12s,background .12s;
+}
+.paqui-react-option>span{font-size:1.35rem;line-height:1.3}
+.paqui-react-option>b{font:900 .75rem/1.25 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.paqui-react-option:hover,.paqui-react-option:focus-visible{
+ border-color:var(--pk);background:color-mix(in srgb,var(--pk) 9%,var(--card));outline:none
+}
+.paqui-react-option:focus-visible{outline:2px solid var(--pk);outline-offset:2px}
+.paqui-react-option:active{transform:scale(.94)}
+.paqui-react-option.is-active{
+ background:color-mix(in srgb,var(--pk) 14%,var(--card));
+ border:2px solid var(--pk);box-shadow:inset 0 0 0 1px var(--pk);
+}
+.paqui-react-option:disabled{opacity:.68;cursor:progress}
+.paqui-react-foot{display:flex;align-items:flex-start;flex-wrap:wrap;gap:8px 15px;margin:9px 0 0}
+.paqui-react-foot>small{flex:1 1 160px;font-size:.72rem;color:var(--mut);line-height:1.45}
+.paqui-react-people{flex:0 1 auto;font-size:.75rem;color:var(--ink)}
+.paqui-react-people summary{cursor:pointer;color:var(--pk);font-weight:850;padding:2px 0}
+.paqui-react-people[open]{flex-basis:100%}
+.paqui-react-people-list{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+.paqui-react-person{font-size:.77rem;font-weight:750;padding:6px 9px;border:1px solid var(--ln);border-radius:18px;background:var(--card);overflow-wrap:anywhere}
+.paqui-react-loading,.paqui-react-error{font-size:.8rem;color:var(--mut);line-height:1.5;margin:0}
+.paqui-react-error code{font-size:.75rem}
+.paqui-react-retry{border:0;background:var(--pk);color:#fff;padding:5px 10px;border-radius:9px;cursor:pointer;font:800 .75rem system-ui,sans-serif;margin-left:5px}
+.paqui-reaction-details{margin:17px 0}
+@media(max-width:700px){
+ .paqui-reaction-teaser{font-size:.65rem;padding:4px 6px}
+ .paqui-reaction-box{margin:10px 0 12px;padding:11px 10px}
+ .paqui-react-choices{gap:5px}
+ .paqui-react-option{min-height:48px;border-radius:10px}
+ .paqui-react-option>span{font-size:1.2rem}
+ .paqui-react-option>b{font-size:.69rem}
+}
+@media(max-width:360px){
+ .paqui-react-choices{gap:3px}
+ .paqui-react-option{padding:5px 0}
+ .paqui-react-option>span{font-size:1.05rem}
+ .paqui-reaction-teaser{display:none!important}
+}
