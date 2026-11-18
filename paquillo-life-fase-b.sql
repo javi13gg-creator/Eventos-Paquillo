@@ -24,7 +24,7 @@ declare
 begin
  if v_uid is null or not exists (
   select 1 from public.user_profiles p
-  where p.id = v_uid and lower(btrim(p.username)) = 'javi' and p.role = 'admin'
+  where p.user_id = v_uid and lower(btrim(p.username)) = 'javi' and p.role = 'admin'
  ) then
   raise exception 'Acceso no autorizado a Paquillo Life' using errcode = '42501';
  end if;
@@ -66,4 +66,4 @@ end;
 $$;
 revoke all on function public.paqui_life_care(text) from public, anon;
 grant execute on function public.paqui_life_care(text) to authenticated;
--- Comprobar antes de ejecutar: user_profiles.id debe ser auth.users.id.
+-- Autorización por user_profiles.user_id, igual que el frontend actual.
