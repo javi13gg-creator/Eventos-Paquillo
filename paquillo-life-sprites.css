@@ -176,3 +176,29 @@
 #paquiLifePreview.pl-model-active .pl-person-figure.pl-has-sprite{
  animation:none!important
 }
+
+/* LIFE v12: modo híbrido. MiniJavi ilustrado conserva rostro y ropa; el
+   cuerpo WebGL solo aporta profundidad/sombra, sin sustituir su identidad. */
+#paquiLifePreview.pl-model-active .pl-sprite-character{
+ visibility:visible!important;position:relative;z-index:3;
+ filter:drop-shadow(0 7px 5px #23113d88);
+}
+#paquiLifePreview.pl-model-active .pl-model3d-canvas{
+ z-index:1!important;opacity:.24;filter:blur(2px);
+ transform:translate(4%,2%) scale(.97);transform-origin:50% 90%;
+}
+#paquiLifePreview.pl-model-active.pl-walking .pl-sprite-character{
+ animation:pl-hybrid-walk .58s ease-in-out infinite!important;
+}
+#paquiLifePreview.pl-model-active.pl-idle-rest .pl-sprite-character{
+ animation:pl-depth-idle 3s ease-in-out infinite!important;
+}
+@keyframes pl-hybrid-walk{
+ 0%,100%{transform:translateY(0) rotateZ(-1.3deg) rotateY(-5deg)}
+ 25%{transform:translateY(-5px) rotateZ(.8deg) rotateY(0)}
+ 50%{transform:translateY(-1px) rotateZ(1.3deg) rotateY(5deg)}
+ 75%{transform:translateY(-6px) rotateZ(-.8deg) rotateY(0)}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview.pl-model-active .pl-sprite-character{animation:none!important}
+}
