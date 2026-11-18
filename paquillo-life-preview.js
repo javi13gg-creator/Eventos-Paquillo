@@ -290,7 +290,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v10</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v11</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -381,17 +381,33 @@
      const token=++modelRequest;
      button.disabled=true;button.textContent='⏳ Cargando 3D…';
      const host=room.querySelector('.pl-person-figure');
-     window.PaquilloLifeModel3D?.create(host).then(model=>{
-      if(token!==modelRequest||!room){model.destroy();return;}
+     const loader=window.PaquilloLifeModel3D?.create;
+     // Protección adicional: el botón siempre recupera el control aunque falle la red.
+     let completed=false;
+     const timer=setTimeout(()=>{
+      if(completed||token!==modelRequest||!room)return;
+      completed=true;modelRequest++;
+      button.disabled=false;button.textContent='🧍 Reintentar modelo 3D (beta)';
+      setStatus('El modelo 3D tardó demasiado en cargar. Comprueba la conexión; el MiniJavi original sigue activo.');
+     },8500);
+     Promise.resolve().then(()=>{
+      if(typeof loader!=='function')throw Error('Módulo 3D no disponible');
+      return loader(host);
+     }).then(model=>{
+      if(completed||token!==modelRequest||!room){model?.destroy();return;}
+      completed=true;clearTimeout(timer);
       model3d=model;room.classList.add('pl-model-active');
       button.setAttribute('aria-pressed','true');button.textContent='↩ Volver al MiniJavi original';
       setStatus('Modelo 3D articulado de prueba. El sprite original sigue disponible.');
-     }).catch(()=>{
-      if(token===modelRequest&&room){
-       setStatus('No se pudo iniciar WebGL. Se mantiene el MiniJavi original.');
-       button.textContent='🧍 Probar modelo 3D (beta)';
-      }
-     }).finally(()=>{if(token===modelRequest&&room)button.disabled=false;});
+     }).catch(error=>{
+      if(completed||token!==modelRequest||!room)return;
+      completed=true;clearTimeout(timer);
+      console.warn('Paquillo Life 3D:',error);
+      setStatus('No se pudo cargar el 3D ('+(error?.message||'error de red')+'). El MiniJavi original sigue disponible.');
+      button.textContent='🧍 Reintentar modelo 3D (beta)';
+     }).finally(()=>{
+      if(token===modelRequest&&room)button.disabled=false;
+     });
     }
     return;
    }
