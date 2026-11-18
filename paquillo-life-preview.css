@@ -242,3 +242,23 @@ body.paqui-life-room-open{overflow:hidden!important}
 #paquiLifePreview .pl-needs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;padding:4px 10px 8px}
 #paquiLifePreview .pl-needs label{display:flex;flex-direction:column;gap:4px;font-size:clamp(10px,2.6vw,13px);font-weight:700;color:#fff;text-align:center;min-width:0}
 #paquiLifePreview .pl-needs progress{width:100%;height:9px;accent-color:#6ce9aa;border-radius:20px;overflow:hidden}
+
+/* Fase C: estado emocional visual, sin modificar el spritesheet ni las necesidades. */
+#paquiLifePreview .pl-mood-chip{
+ justify-self:center;max-width:100%;padding:5px 12px;
+ border-radius:999px;border:1px solid #f9e7a9a6;
+ background:linear-gradient(110deg,#5e339b,#8d52b4);
+ color:#fff;font-size:clamp(10px,2.5vw,12px);font-weight:850;
+ box-shadow:0 2px 9px #13092e50;transition:background .25s ease
+}
+#paquiLifePreview[data-pl-mood="great"] .pl-mood-chip{background:linear-gradient(110deg,#188f83,#4166b9)}
+#paquiLifePreview[data-pl-mood="calm"] .pl-mood-chip{background:linear-gradient(110deg,#7655a1,#4e638a)}
+#paquiLifePreview[data-pl-mood="tired"] .pl-mood-chip{background:linear-gradient(110deg,#55417b,#394769)}
+#paquiLifePreview[data-pl-mood="tired"] .pl-sunbeam{opacity:.3}
+#paquiLifePreview[data-pl-mood="great"] .pl-ambient{filter:drop-shadow(0 0 8px #fff0a0)}
+#paquiLifePreview[data-pl-mood="tired"] .pl-sprite-character:not(:is(.pl-action-eat,.pl-action-sleep,.pl-action-shower)){
+ animation-duration:5.6s
+}
+@media(max-height:660px){
+ #paquiLifePreview .pl-mood-chip{padding:3px 9px;font-size:10px}
+}
