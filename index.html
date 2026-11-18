@@ -992,7 +992,17 @@ showTab(location.hash.slice(1));
      const calendarMonth=dateParts?['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'][Number(dateParts[2])-1]:'FECHA';
      out+='<details class="paqui-plan-fold" id="'+esc(e.id)+'" data-event-db="'+esc(e.dbId)+'"><summary class="paqui-plan-summary"><span class="paqui-plan-summary-icon" aria-label="'+esc(dateParts?calendarDay+' de '+calendarMonth:'Fecha pendiente')+'"><span class="paqui-calendar-month">'+calendarMonth+'</span><span class="paqui-calendar-day">'+calendarDay+'</span></span><span class="paqui-plan-summary-text"><strong>'+esc(e.t)+'</strong><small>'+esc(e.when)+' · '+esc(e.where)+'</small></span>'+(e.status==='draft'||e.status==='cancelled'?'':'<span class="paqui-reaction-teaser" data-paqui-reaction-teaser="'+esc(e.dbId)+'" hidden></span>')+'<span class="paqui-plan-chevron" aria-hidden="true">⌄</span></summary><article class="ev-card'+(e.status==='draft'||e.status==='cancelled'?' tent':'')+'"><div><span class="badge">'+statusLabel+'</span><h3>'+esc(e.t)+'</h3><p class="meta"><b>Cuándo:</b> '+esc(e.when)+'<br><b>Dónde:</b> '+esc(e.where)+'<br><b>Organiza:</b> '+esc(e.by)+'</p></div><p style="margin:0">'+esc(e.desc)+'</p>'+(e.poster?'<div class="poster"><img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy"></div>':'')+(e.map?'<div><a class="btn" href="'+esc(e.map)+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+(e.photos?'<div><a class="btn secondary" href="'+esc(e.photos)+'" target="_blank" rel="noopener noreferrer">📸 Ver álbum de fotos</a></div>':'')+'<div class="event-quick-actions"><button class="btn secondary" type="button" data-event-detail="'+esc(e.dbId)+'">📋 Ver ficha completa</button><button class="btn secondary" type="button" data-share-event="'+esc(e.dbId)+'">📲 Compartir por WhatsApp</button><button class="btn secondary" type="button" data-remind-event="'+esc(e.dbId)+'">🔔 Recordatorio WhatsApp</button><span class="attendance-prompt">🙋 ¿Te apuntas?</span><button class="btn attendance-choice" type="button" data-attendance-choice="yes" data-event="'+esc(e.dbId)+'">✅ Voy</button><button class="btn attendance-choice" type="button" data-attendance-choice="maybe" data-event="'+esc(e.dbId)+'">🤔 Quizá</button><button class="btn attendance-choice" type="button" data-attendance-choice="no" data-event="'+esc(e.dbId)+'">❌ No voy</button><button class="btn secondary" type="button" data-event-calendar="'+esc(e.dbId)+'">📆 Descargar .ics</button><button class="btn secondary" type="button" data-google-calendar="'+esc(e.dbId)+'">Google Calendar</button><button class="btn secondary" type="button" data-event-expenses="'+esc(e.dbId)+'">💸 Gastos del plan</button></div>'+(e.status==='draft'||e.status==='cancelled'?'':'<section class="paqui-reaction-box" data-paqui-reaction-box="'+esc(e.dbId)+'" aria-label="Reacciones al plan"><p class="paqui-react-loading">Cargando reacciones…</p></section>')+'<div class="attendance-panel" data-attendance-info="'+esc(e.dbId)+'"><p class="f6-muted">Cargando respuestas…</p></div>'+(canManage?'<div class="event-manage"><button class="btn secondary" type="button" data-edit-event="'+esc(e.dbId)+'">✏️ Editar plan</button><button class="btn danger" type="button" data-delete-event="'+esc(e.dbId)+'">🗑️ Eliminar plan</button></div>':'')+'<div class="event-poll-actions"><button class="btn" type="button" data-create-event-poll="'+esc(e.dbId)+'">➕ Crear encuesta</button><span data-event-poll-link="'+esc(e.dbId)+'"></span></div><button class="paqui-plan-collapse" type="button" data-paqui-plan-close>↑ Cerrar plan</button></article></details>';
    });
-   $('events').addEventListener('click',function(e){const b=e.target.closest('[data-paqui-plan-close]');if(!b)return;const d=b.closest('.paqui-plan-fold');if(d){d.open=false;d.querySelector('summary')?.focus({preventScroll:true});d.scrollIntoView({behavior:'smooth',block:'nearest'});}});
+   if(!$('events').dataset.paquiCloseBound){
+     $('events').dataset.paquiCloseBound='1';
+     $('events').addEventListener('click',function(e){
+       const b=e.target.closest('[data-paqui-plan-close]');if(!b)return;
+       const d=b.closest('.paqui-plan-fold');if(d){
+         d.open=false;
+         d.closest('.paqui-plan-card')?.querySelector('.paqui-plan-top')?.focus({preventScroll:true});
+         d.closest('.paqui-plan-card')?.scrollIntoView({behavior:'smooth',block:'nearest'});
+       }
+     });
+   }
    $('events').innerHTML=out||'<div class="empty">Todavía no hay planes. ¡Que alguien proponga uno!</div>';
    window.PaquilloCompactPlans?.mount($('events'));
    window.PaquilloReacciones?.mount($('events'));
@@ -2172,7 +2182,7 @@ K: Inventa una regla nueva que dure una ronda.`;
 <script src="paquillo-social.js?v=4"></script>
 <script src="paquillo-ayuda.js?v=5"></script>
 <script src="paquillo-navigation.js?v=2"></script>
-<script src="paquillo-planes-compact.js?v=1"></script>
-<script src="paquillo-reacciones.js?v=3"></script>
+<script src="paquillo-planes-compact.js?v=2"></script>
+<script src="paquillo-reacciones.js?v=4"></script>
 </body>
 </html>
