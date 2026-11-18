@@ -8,7 +8,7 @@
  const reactionRows=new Map();
  const namesByUser=new Map();
  const busy=new Set();
- let loaded=false,loadError='',sequence=0,userId='',mountedRoot=null,fetchingMembers=false;
+ let loaded=false,loadError='',sequence=0,userId='',mountedRoot=null,fetchingMembers=false,lastLoadedAt=0;
  const isMissingTable=err=>['42P01','PGRST205','PGRST116'].includes(String(err?.code||''))||/relation .*paqui_event_reactions.* does not exist|could not find the table.*paqui_event_reactions/i.test(String(err?.message||''));
  const validId=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));
  function sectionsFor(id){
@@ -97,7 +97,7 @@
     if(!validId(row.event_id)||!EMOJIS.includes(row.emoji))return;
     reactionRows.get(row.event_id)?.push({user_id:row.user_id,emoji:row.emoji});
    }));
-   loaded=true;loadError='';
+   loaded=true;loadError='';lastLoadedAt=Date.now();
    renderAll();
    loadMembers(ctx.client);
   }catch(err){
@@ -114,7 +114,7 @@
   el.dataset.paquiReactionBox=id;
   el.innerHTML='<p class="paqui-react-loading">Cargando reacciones…</p>';
   host.appendChild(el);
-  if(reactionRows.has(id)&&loaded&&!loadError){renderEvent(id);return;}
+  if(reactionRows.has(id)&&loaded&&!loadError)renderEvent(id);
   const ctx=context();
   if(!ctx?.client||!ctx.currentAuthUser)return;
   userId=ctx.currentAuthUser.id;
@@ -165,4 +165,6 @@
  });
  window.PaquilloReacciones={mount,detail,refresh:()=>mount(mountedRoot)};
  window.addEventListener('paqui-world-ready',()=>{if(mountedRoot)mount(mountedRoot)});
+ window.addEventListener('focus',()=>{if(mountedRoot&&Date.now()-lastLoadedAt>90000)mount(mountedRoot)});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mountedRoot&&Date.now()-lastLoadedAt>90000)mount(mountedRoot)});
 })();
