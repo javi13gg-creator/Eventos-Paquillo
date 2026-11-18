@@ -34,3 +34,18 @@ begin
 end $$;
 revoke all on function public.paqui_world_duel(text,uuid,uuid,text,integer) from public,anon;
 grant execute on function public.paqui_world_duel(text,uuid,uuid,text,integer) to authenticated;
+
+-- Push: idempotencia, ejecutada únicamente por la Edge Function con service_role.
+alter table public.paqui_world_duels add column if not exists push_claimed_at timestamptz;
+create or replace function public.paqui_duel_claim_push(p_duel uuid) returns boolean
+language plpgsql security definer set search_path=public,pg_temp as $$
+declare changed integer;
+begin
+ if auth.role() <> 'service_role' then raise exception 'Forbidden';end if;
+ update public.paqui_world_duels set push_claimed_at=now()
+ where id=p_duel and status='pending' and push_claimed_at is null;
+ get diagnostics changed=row_count;
+ return changed=1;
+end $$;
+revoke all on function public.paqui_duel_claim_push(uuid) from public,anon,authenticated;
+grant execute on function public.paqui_duel_claim_push(uuid) to service_role;
