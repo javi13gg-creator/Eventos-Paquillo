@@ -1039,3 +1039,24 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-people-screen .pw-person-copy b{font-size:.69rem}
  #p-world .pw-people-screen .pw-person-copy small{font-size:.53rem}
 }
+
+/* World v40 · Barrio privado de prueba */
+.pw-neighborhood-entry{display:block;width:calc(100% - 24px);margin:10px 12px;padding:13px;border:2px solid #a8efff;border-radius:15px;background:linear-gradient(115deg,#146d81,#58429e);color:#fff;font-weight:900;font-size:14px}
+.pw-neighborhood-screen{overflow:auto}
+.pw-neighborhood-map{padding:13px;border-radius:22px;background:linear-gradient(#71d8f5,#b7f0c9 48%,#8bd477 49%,#66b46e);border:3px solid #e6f9cf;box-shadow:inset 0 -20px 40px #2d75583b}
+.pw-neighborhood-road{text-align:center;background:#b69b7a;border:3px dashed #f8e5c5;border-radius:15px;padding:9px;color:#32273e;font-weight:950;font-size:12px;margin:10px 0}
+.pw-neighborhood-houses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.pw-house{display:flex;flex-direction:column;align-items:center;justify-content:end;gap:3px;min-width:0;min-height:130px;padding:7px 3px 9px;border:2px solid #fff3c4;border-radius:17px;background:linear-gradient(#ffedd0 0 45%,#b57f9f 45%);box-shadow:0 5px 0 #765d72;color:#35203b;text-align:center}
+.pw-house:nth-child(4n+2){background:linear-gradient(#e8e2ff 0 45%,#7bafc9 45%)}
+.pw-house:nth-child(4n+3){background:linear-gradient(#f5df9e 0 45%,#c9a16a 45%)}
+.pw-house-roof{font-size:32px;line-height:1}
+.pw-house-avatar{display:flex;align-items:center;justify-content:center;width:49px;height:49px;border-radius:50%;background:#fff9e7;overflow:hidden;border:2px solid #fff}
+.pw-house-avatar img{width:100%;height:100%;object-fit:cover}
+.pw-house b{font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pw-house small{font-size:10px}
+.pw-house-detail{text-align:center}
+.pw-house-portrait{max-width:110px;max-height:120px;object-fit:contain}
+.pw-house-record{display:flex;justify-content:space-between;gap:12px;padding:7px 4px;border-bottom:1px solid #ffffff30;text-align:left}
+.pw-house-challenges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+.pw-house-challenges button{padding:10px 5px;background:#5e3c9a;border:1px solid #e6c5ff;border-radius:10px;color:white;font-weight:850}
+@media(max-width:370px){.pw-neighborhood-houses{grid-template-columns:repeat(2,minmax(0,1fr))}}
