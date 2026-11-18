@@ -1,12 +1,22 @@
 # Paquillo World · Evolución hacia Paquillo Life
 Documento de diseño de juego y plan técnico. 18/11/2026.
 
-**Estado: primer prototipo visual de habitación integrado en World bajo feature flag; no es aún el modo Life jugable completo.**
+**Estado: habitación alfa animada e integración con Memoria bajo acceso privado Javi/admin; no es aún el modo Life completo.**
 
 ## Política de visibilidad para próximas fases
 La vista previa de Life es privada para la **cuenta de Javi**, no para todos los administradores ni para cualquiera que conozca el enlace. En World se consulta `PaquilloLifePreview.enabled` (getter dinámico); `open()` valida la identidad de nuevo. El perfil procede de `user_profiles` mediante la sesión Auth actual. No volver a habilitar funciones nuevas con simples parámetros de URL.
 
 **Limitación importante:** esta compuerta JavaScript protege la interfaz frente a otros usuarios normales, pero no es un control de acceso a recursos públicos de GitHub Pages. Antes de guardar estado personal, imágenes privadas o XP, crear RLS y RPC en Supabase vinculadas al `auth.uid()` autorizado o a un permiso de testers validado en servidor. La fuente y los assets estáticos siguen siendo públicos, sin datos privados.
+
+## Avance posterior · Animaciones del MiniPaquillo y enlace con Memoria
+- Se introduce una secuencia de estados: reposo → desplazamiento a mueble → acción específica → regreso al centro.
+- Cuatro destinos coordinados con el escenario: nevera, ducha, cama y recreativa. La recreativa pasa al Arcade **después** de una transición visual, no de golpe.
+- La vista previa utiliza el avatar aprobado existente y añade efectos animados de comida, sueño y ducha; alivia la sensación de imagen estática aunque **todavía no son spritesheets finales de un personaje riggeado**.
+- El juego **Memoria Paquillera** ahora muestra `🏡 Volver a mi hogar · ¡celebrar!` al completarse, únicamente si se accedió al Arcade desde Life. Al volver aparece una celebración sin sumar XP nuevo.
+- Nuevo CSS aislado `paquillo-life-animations.css` cargado después del CSS original de preview; el JavaScript de la escena mantiene comprobación de cuenta Javi/admin y cancela acciones pendientes si pierde autorización.
+- No se ha añadido ninguna escritura a Supabase, ni monedas, ni decay de necesidades; todas las animaciones son provisionales para validar ritmo, rutas y composición visual.
+- Pruebas con DOM y temporizadores simulados: acceso de propietario y rechazo anónimo, trayecto/comida/retorno, salto a Arcade, celebración y revocación de acceso. Pendiente QA visual en Android e iOS reales.
+- Próximo escalón de calidad: arte del personaje piloto por poses consistentes, no solo transformaciones de un PNG. Después, motor de escena y cuidados persistentes con RLS.
 
 ## Avance 18/11/2026 · Fase A — primer hogar en modo prueba
 - Ilustración vectorial `paquillo-life-room.svg`: casa tropical con mar, cama, nevera, recreativa, zona de ducha y espacio libre para el protagonista.
