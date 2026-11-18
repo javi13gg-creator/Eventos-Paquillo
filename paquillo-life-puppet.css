@@ -1,0 +1,121 @@
+/* Paquillo Life · PILOTO ARTICULADO (Javi). Animación verdadera de brazos,
+   piernas, cabeza y expresiones mediante piezas SVG independientes. */
+#paquiLifePreview .pl-person-figure.pl-has-rig{
+ width:100%;height:100%;max-width:260px;
+ animation:none!important;
+ transform:none!important;
+ filter:drop-shadow(0 10px 9px #32124c7d)
+}
+#paquiLifePreview .pl-rig-character{
+ width:100%;height:100%;
+ display:flex;align-items:flex-end;justify-content:center;
+ overflow:visible;
+ animation:pl-rig-idle 3.8s ease-in-out infinite
+}
+#paquiLifePreview .pl-rig-svg{
+ width:100%;height:100%;max-width:100%;
+ display:block;overflow:visible;
+}
+#paquiLifePreview .pl-rig-svg .pl-leg,
+#paquiLifePreview .pl-rig-svg .pl-arm,
+#paquiLifePreview .pl-rig-svg .pl-head{transform-box:view-box}
+#paquiLifePreview .pl-leg-front{transform-origin:111px 267px}
+#paquiLifePreview .pl-leg-rear{transform-origin:133px 267px}
+#paquiLifePreview .pl-arm-front{transform-origin:88px 193px}
+#paquiLifePreview .pl-arm-rear{transform-origin:160px 193px}
+#paquiLifePreview .pl-head{transform-origin:121px 167px}
+#paquiLifePreview .pl-eyes-open{transform-origin:121px 116px;animation:pl-rig-blink 5.6s linear infinite}
+#paquiLifePreview .pl-eyes-closed,
+#paquiLifePreview .pl-mouth-eat{display:none}
+#paquiLifePreview .pl-effect-heart{opacity:0;transform-origin:193px 73px}
+#paquiLifePreview .pl-ground{transform-origin:121px 342px}
+/* Andar: paso izquierdo y derecho alternos y brazos contrarios; no mueve la imagen entera. */
+#paquiLifePreview.pl-walking .pl-person-figure.pl-has-rig .pl-rig-character{
+ animation:pl-rig-walk-body .34s ease-in-out infinite!important
+}
+#paquiLifePreview.pl-walking .pl-leg-front{animation:pl-rig-stride-front .54s ease-in-out infinite alternate}
+#paquiLifePreview.pl-walking .pl-leg-rear{animation:pl-rig-stride-rear .54s ease-in-out infinite alternate}
+#paquiLifePreview.pl-walking .pl-arm-front{animation:pl-rig-arm-front .54s ease-in-out infinite alternate}
+#paquiLifePreview.pl-walking .pl-arm-rear{animation:pl-rig-arm-rear .54s ease-in-out infinite alternate}
+#paquiLifePreview.pl-walking .pl-head{animation:pl-rig-head-step .54s ease-in-out infinite alternate}
+#paquiLifePreview.pl-walking .pl-rig-svg .pl-ground{animation:pl-rig-ground .34s ease-in-out infinite alternate}
+/* Comer: mano que sube a la boca, boca abierta y gesto expresivo. */
+#paquiLifePreview.pl-action-eat .pl-has-rig .pl-rig-character{animation:pl-rig-munch .68s ease-in-out infinite!important}
+#paquiLifePreview.pl-action-eat .pl-arm-front{animation:pl-rig-hand-mouth 1s ease-in-out infinite}
+#paquiLifePreview.pl-action-eat .pl-arm-rear{animation:pl-rig-arm-plate 1.2s ease-in-out infinite alternate}
+#paquiLifePreview.pl-action-eat .pl-mouth-happy{display:none}
+#paquiLifePreview.pl-action-eat .pl-mouth-eat{display:block;animation:pl-rig-chew .28s ease-in-out infinite alternate}
+/* Dormir: ojos cerrados, brazos recogidos, inclinación física del tronco y cabeza. */
+#paquiLifePreview.pl-action-sleep .pl-has-rig .pl-rig-character{animation:pl-rig-drowse 2.3s ease-in-out infinite!important;transform-origin:50% 93%}
+#paquiLifePreview.pl-action-sleep .pl-eyes-open{display:none}
+#paquiLifePreview.pl-action-sleep .pl-eyes-closed{display:block}
+#paquiLifePreview.pl-action-sleep .pl-head{animation:pl-rig-nod 2.3s ease-in-out infinite}
+#paquiLifePreview.pl-action-sleep .pl-arm-front{transform:rotate(-25deg)}
+#paquiLifePreview.pl-action-sleep .pl-arm-rear{transform:rotate(27deg)}
+/* Ducha: brazos se alzan alternos y cuerpo se lava. */
+#paquiLifePreview.pl-action-shower .pl-has-rig .pl-rig-character{animation:pl-rig-shower-body .7s ease-in-out infinite!important}
+#paquiLifePreview.pl-action-shower .pl-arm-front{animation:pl-rig-scrub-front .6s ease-in-out infinite alternate}
+#paquiLifePreview.pl-action-shower .pl-arm-rear{animation:pl-rig-scrub-rear .6s ease-in-out infinite alternate}
+#paquiLifePreview.pl-action-shower .pl-head{animation:pl-rig-shower-head 1s ease-in-out infinite alternate}
+#paquiLifePreview.pl-action-play .pl-arm-front{animation:pl-rig-arm-front .3s ease-in-out infinite alternate}
+#paquiLifePreview.pl-action-play .pl-arm-rear{animation:pl-rig-arm-rear .3s ease-in-out infinite alternate}
+/* Victoria: brazos arriba, saltos y cara sonriente; no confundir con paseo. */
+#paquiLifePreview.pl-celebrating .pl-person-figure.pl-has-rig .pl-rig-character{
+ animation:pl-rig-jump .78s cubic-bezier(.28,.8,.24,1) infinite!important
+}
+#paquiLifePreview.pl-celebrating .pl-arm-front{animation:pl-rig-cheer-front .78s ease-in-out infinite alternate}
+#paquiLifePreview.pl-celebrating .pl-arm-rear{animation:pl-rig-cheer-rear .78s ease-in-out infinite alternate}
+#paquiLifePreview.pl-celebrating .pl-leg-front{animation:pl-rig-dance-front .78s ease-in-out infinite alternate}
+#paquiLifePreview.pl-celebrating .pl-leg-rear{animation:pl-rig-dance-rear .78s ease-in-out infinite alternate}
+#paquiLifePreview.pl-celebrating .pl-effect-heart{animation:pl-rig-heart .95s ease-in-out infinite}
+@keyframes pl-rig-idle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.012)}}
+@keyframes pl-rig-walk-body{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-9px) rotate(1deg)}}
+@keyframes pl-rig-stride-front{from{transform:rotate(-27deg) translateY(-3px)}to{transform:rotate(26deg) translateY(2px)}}
+@keyframes pl-rig-stride-rear{from{transform:rotate(27deg) translateY(2px)}to{transform:rotate(-26deg) translateY(-3px)}}
+@keyframes pl-rig-arm-front{from{transform:rotate(18deg)}to{transform:rotate(-26deg)}}
+@keyframes pl-rig-arm-rear{from{transform:rotate(-23deg)}to{transform:rotate(24deg)}}
+@keyframes pl-rig-head-step{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
+@keyframes pl-rig-ground{from{transform:scaleX(1);opacity:.4}to{transform:scaleX(.73);opacity:.23}}
+@keyframes pl-rig-blink{0%,9%,11%,44%,46%,100%{transform:scaleY(1)}10%,45%{transform:scaleY(.14)}}
+@keyframes pl-rig-munch{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes pl-rig-hand-mouth{0%,100%{transform:rotate(-25deg)}30%,72%{transform:rotate(-148deg)}}
+@keyframes pl-rig-arm-plate{from{transform:rotate(0)}to{transform:rotate(32deg)}}
+@keyframes pl-rig-chew{from{transform:scaleY(.62)}to{transform:scaleY(1.12)}}
+@keyframes pl-rig-drowse{0%,100%{transform:translateY(8px) rotate(8deg) scale(.98)}50%{transform:translateY(12px) rotate(10deg) scale(.97)}}
+@keyframes pl-rig-nod{0%,100%{transform:rotate(8deg)}50%{transform:rotate(16deg)}}
+@keyframes pl-rig-shower-body{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes pl-rig-scrub-front{from{transform:rotate(-105deg)}to{transform:rotate(-145deg)}}
+@keyframes pl-rig-scrub-rear{from{transform:rotate(56deg)}to{transform:rotate(98deg)}}
+@keyframes pl-rig-shower-head{from{transform:rotate(-3deg)}to{transform:rotate(5deg)}}
+@keyframes pl-rig-jump{0%,100%{transform:translateY(0) scale(1)}37%{transform:translateY(-36px) scale(1.02)}65%{transform:translateY(-6px) scale(.97)}}
+@keyframes pl-rig-cheer-front{from{transform:rotate(135deg)}to{transform:rotate(164deg)}}
+@keyframes pl-rig-cheer-rear{from{transform:rotate(-135deg)}to{transform:rotate(-165deg)}}
+@keyframes pl-rig-dance-front{from{transform:rotate(-9deg)}to{transform:rotate(20deg)}}
+@keyframes pl-rig-dance-rear{from{transform:rotate(10deg)}to{transform:rotate(-20deg)}}
+@keyframes pl-rig-heart{0%{opacity:0;transform:translate(0,12px) scale(.6)}30%{opacity:1}100%{opacity:0;transform:translate(-12px,-28px) scale(1.23)}}
+/* Acceso directo a Memoria sin pasar por dos menús. */
+#paquiLifePreview .pl-memory-shortcut{
+ display:flex;align-items:center;justify-content:center;gap:9px;
+ min-height:43px;padding:7px 16px;margin:0 auto 5px;
+ width:min(94%,360px);border:2px solid #fce7a3;border-radius:13px;
+ background:linear-gradient(130deg,#ec9c3a,#d85f85 70%,#a44fcf);
+ color:#fff;box-shadow:0 3px 0 #66316d;
+ font:950 .88rem/1.1 "Bricolage Grotesque",system-ui,sans-serif;
+ text-shadow:0 1px 2px #63274f
+}
+#paquiLifePreview .pl-memory-shortcut span:first-child{font-size:1.15rem}
+#paquiLifePreview .pl-memory-shortcut:active{transform:translateY(2px);box-shadow:0 1px 0 #66316d}
+#p-world .pw-life-return-button{display:block;width:100%;margin:12px 0 7px!important;background:linear-gradient(145deg,#8542cf,#462394);border:2px solid #ffdd97;color:#fff}
+@media(max-height:690px){
+ #paquiLifePreview .pl-memory-shortcut{min-height:38px;margin-bottom:2px;font-size:.75rem;padding:5px 10px}
+ #paquiLifePreview .pl-foot{min-height:72px}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview .pl-rig-character,
+ #paquiLifePreview .pl-rig-svg .pl-leg,
+ #paquiLifePreview .pl-rig-svg .pl-arm,
+ #paquiLifePreview .pl-rig-svg .pl-head,
+ #paquiLifePreview .pl-rig-svg .pl-eyes-open,
+ #paquiLifePreview .pl-rig-svg .pl-mouth-eat,
+ #paquiLifePreview .pl-effect-heart{animation:none!important}
+}
