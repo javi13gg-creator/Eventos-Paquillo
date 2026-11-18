@@ -13,6 +13,31 @@
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
  let lifeLevel=1,roomTheme='island';
+
+ const lifeAchievements={
+  eat:['🥥','Primer tentempié'],shower:['🚿','Como nuevo'],sleep:['💤','Descanso merecido'],memory:['🃏','Memoria completada']
+ };
+ let achievementState={};
+ function loadAchievements(){
+  try{achievementState=JSON.parse(localStorage.getItem('paqui-life-achievements-javi')||'{}')||{}}catch(_){achievementState={}}
+ }
+ function renderAchievements(){
+  const holder=room?.querySelector('[data-pl-achievements]');
+  if(!holder)return;
+  holder.innerHTML=Object.entries(lifeAchievements).map(([key,[icon,name]])=>
+   '<div class="pl-achievement'+(achievementState[key]?' is-earned':'')+'"><span>'+icon+'</span><b>'+name+'</b><small>'+(achievementState[key]?'✓ Conseguido':'Pendiente')+'</small></div>'
+  ).join('');
+  const count=Object.keys(lifeAchievements).filter(k=>achievementState[k]).length;
+  const summary=room.querySelector('[data-pl-achievements-summary]');
+  if(summary)summary.textContent='🏅 Logros · '+count+'/4';
+ }
+ function earnAchievement(key){
+  if(!lifeAchievements[key]||achievementState[key]||!allowed())return;
+  achievementState[key]=true;
+  try{localStorage.setItem('paqui-life-achievements-javi',JSON.stringify(achievementState))}catch(_){}
+  renderAchievements();
+  setStatus('🏅 Nuevo logro: '+lifeAchievements[key][1]+' · sin XP');
+ }
  const unlockAllThemesForPrivatePreview=true; // Solo la vista privada de Javi; no altera XP ni desbloqueos del servidor.
  const themeUnlocked=item=>unlockAllThemesForPrivatePreview||lifeLevel>=item.min;
  const themes={island:{label:'🏝️ Isla',min:1},sunset:{label:'🌅 Atardecer',min:3},night:{label:'🌙 Noche',min:7}};
@@ -237,7 +262,7 @@
     if(!careBusy){
      careBusy=true;
      setStatus('Guardando cuidado… ☁️');
-     care(action).then(saved=>{if(saved&&room)setStatus('¡Cuidado guardado! ✨');}).finally(()=>{careBusy=false;});
+     care(action).then(saved=>{if(saved&&room)earnAchievement(action);}).finally(()=>{careBusy=false;});
     }else setStatus('Todavía se está guardando el cuidado anterior.');
    }else{
     improveNeeds(action);
@@ -268,6 +293,7 @@
   room.classList.add('pl-celebrating');
   speech('¡Memoria completada! ¡Grande! 🏆');
   if(!careReady)improveNeeds('play');
+  earnAchievement('memory');
   setStatus('¡Tu MiniPaquillo celebra la victoria!');
   later(()=>{
    room?.classList.remove('pl-celebrating');
@@ -308,7 +334,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v19</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v20</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -336,6 +362,7 @@
    '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
    '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Modo híbrido: aspecto original de MiniJavi y profundidad 3D experimental">✨ Probar modo híbrido</button>'+ 
    '<div class="pl-theme-picker" role="group" aria-label="Decoración de mi hogar"><span>🎨 Mi hogar · Nv '+lifeLevel+'</span><button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button><button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
+   '<details class="pl-achievements"><summary data-pl-achievements-summary>🏅 Logros · 0/4</summary><div class="pl-achievements-grid" data-pl-achievements></div><small>Prueba privada: logros locales, sin XP ni recompensas.</small></details>'+ 
    '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
@@ -370,6 +397,7 @@
   needs={energy:75,mood:75,wellbeing:75};
   document.body.appendChild(room);
   renderNeeds();renderMood();
+  loadAchievements();renderAchievements();
   let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
   chooseTheme(themes[savedTheme]&&themeUnlocked(themes[savedTheme])?savedTheme:'island',false);
   document.body.classList.add('paqui-life-room-open');
