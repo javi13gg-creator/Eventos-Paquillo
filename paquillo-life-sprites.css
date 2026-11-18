@@ -162,3 +162,17 @@
 @media(prefers-reduced-motion:reduce){
  #paquiLifePreview.pl-depth-mode .pl-sprite-character{animation:none!important;transform:none!important}
 }
+
+/* Fase H: el prototipo WebGL vive sobre el sprite aprobado y se puede retirar. */
+#paquiLifePreview .pl-person-figure{position:relative}
+#paquiLifePreview .pl-model3d-canvas{
+ position:absolute;inset:0;width:100%;height:100%;display:block;
+ pointer-events:none;z-index:2
+}
+#paquiLifePreview.pl-model-active .pl-sprite-character{visibility:hidden}
+#paquiLifePreview .pl-model-toggle{border-color:#ffdf82}
+#paquiLifePreview .pl-model-toggle[aria-pressed="true"]{background:#126b72}
+#paquiLifePreview .pl-model-toggle:disabled{opacity:.7}
+#paquiLifePreview.pl-model-active .pl-person-figure.pl-has-sprite{
+ animation:none!important
+}
