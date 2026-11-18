@@ -99,3 +99,13 @@
  #paquiLifePreview.pl-idle-wave .pl-sprite-character,
  #paquiLifePreview.pl-idle-rest .pl-sprite-character{animation:none!important}
 }
+
+/* Fase E: ciclo de pasos continuo durante los paseos autónomos. */
+#paquiLifePreview.pl-roaming .pl-sprite-character{
+ animation:pl-sprite-walk .47s step-end infinite!important
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview.pl-roaming .pl-sprite-character{
+  animation:none!important;background-position:0% 0%!important
+ }
+}
