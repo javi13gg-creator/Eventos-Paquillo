@@ -944,7 +944,14 @@ showTab(location.hash.slice(1));
  let currentAuthUser=null;
  // World comparte el mismo cliente y la sesión Auth de Events; no depende de abrir el login.
  let paquiAuthBootstrapping=true;
- window.PaquilloWorldContext=()=>({client,currentAuthUser,authBootstrapping:paquiAuthBootstrapping});
+ // Life es una preview privada. El perfil procede de Supabase user_profiles,
+ // vinculado al user_id autenticado; el enlace compartido no cambia permisos.
+ window.PaquilloWorldContext=()=>({
+   client,currentAuthUser,authBootstrapping:paquiAuthBootstrapping,
+   lifePreviewAllowed:!!currentAuthUser&&!paquiAuthBootstrapping&&
+     currentProfile?.role==='admin'&&
+     String(currentProfile?.username||'').trim().toLocaleLowerCase('es')==='javi'
+ });
  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  const safeExternalUrl=value=>{try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:'';}catch(_){return '';}};
  // Compartir por WhatsApp: abre la aplicación con un texto preparado; nunca envía mensajes automáticamente.
@@ -2283,7 +2290,7 @@ showTab(location.hash.slice(1));
 
 <script src="paquillo-race.js?v=26"></script>
 <script src="paquillo-world-characters.js?v=34"></script>
-<script src="paquillo-life-preview.js?v=1"></script>
+<script src="paquillo-life-preview.js?v=2"></script>
 <script src="paquillo-world.js?v=35"></script>
 <script>
 (()=>{
