@@ -222,3 +222,39 @@
  filter:brightness(.7) saturate(1.16) hue-rotate(18deg);
 }
 #paquiLifePreview[data-pl-theme="night"] .pl-decor-light{opacity:.85;filter:drop-shadow(0 0 9px #fff1a1)}
+
+/* LIFE v14: evitar que el panel inferior tape la selección en móviles pequeños. */
+#paquiLifePreview .pl-foot{
+ flex:0 1 auto!important;
+ max-height:min(43dvh,340px);
+ min-height:0;
+ overflow-y:auto!important;
+ overflow-x:hidden;
+ overscroll-behavior:contain;
+ -webkit-overflow-scrolling:touch;
+ display:flex!important;
+ flex-direction:column;
+ align-items:center;
+ justify-content:flex-start;
+ gap:5px;
+ padding-top:7px;
+}
+#paquiLifePreview .pl-foot>*{flex:0 0 auto;max-width:100%}
+#paquiLifePreview .pl-theme-picker{
+ order:-2;width:100%;
+ padding:7px 5px;
+ background:#25114f;
+ border:1px solid #ad8bde;
+ border-radius:12px;
+}
+#paquiLifePreview .pl-theme-picker span{
+ width:100%;font-size:12px;
+}
+#paquiLifePreview .pl-theme-picker button{
+ min-height:35px;font-size:12px;padding:7px 10px
+}
+#paquiLifePreview .pl-mood-chip{order:-1}
+@media(max-height:620px){
+ #paquiLifePreview .pl-foot{max-height:48dvh}
+ #paquiLifePreview .pl-theme-picker{padding:4px}
+}
