@@ -19,6 +19,7 @@
   if(idleTimer!==null)clearTimeout(idleTimer);
   idleTimer=null;
   room?.classList.remove('pl-idle-wave','pl-idle-rest','pl-roaming','pl-walking');
+  room?.querySelector('#plPerson')?.style.removeProperty('--pl-facing');
  }
  function scheduleIdle(){
   stopIdle();
@@ -53,6 +54,7 @@
    if(actor){
     actor.style.setProperty('--pl-roam-duration',duration+'ms');
     actor.dataset.plFacing=dest.left<roamPosition.left?'left':'right';
+    actor.style.setProperty('--pl-facing',dest.left<roamPosition.left?'-1':'1');
    }
    room.classList.add('pl-roaming','pl-walking');
    // Primer destino se elige inmediatamente y cada trayecto tiene distancia y velocidad variables.
@@ -285,7 +287,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Versión de movimiento continuo y decoración">LIFE v8</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v9</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -310,6 +312,7 @@
    '</main>'+
    '<footer class="pl-foot">'+
    '<div class="pl-mood-chip" data-pl-mood role="status" aria-live="polite">😊 Todo marcha bien</div>'+ 
+   '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
    '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
@@ -362,6 +365,14 @@
     return;
    }
    if(!allowed()){close();return;}
+   if(event.target.closest('[data-pl-depth]')){
+    const button=event.target.closest('[data-pl-depth]');
+    const enabled=room.classList.toggle('pl-depth-mode');
+    button.setAttribute('aria-pressed',String(enabled));
+    button.textContent=enabled?'🎭 Movimiento 2.5D: ON':'🎭 Movimiento 2.5D: OFF';
+    setStatus(enabled?'Profundidad experimental activada · aspecto original conservado.':'Animación clásica restaurada.');
+    return;
+   }
    if(event.target.closest('[data-pl-memory]')){
     const play=memoryAction;
     if(!play){setStatus('Memoria no está disponible. Abre Arcade para jugar.');return;}
