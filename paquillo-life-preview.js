@@ -373,6 +373,7 @@
      '<div class="pl-decor-light" aria-hidden="true">✦ ✦ ✦</div>'+ 
      '<button class="pl-decor pl-decor-lamp" type="button" data-pl-decor="lamp" aria-label="Encender o apagar guirnalda" aria-pressed="false">💡</button>'+ 
      '<button class="pl-decor pl-decor-plant" type="button" data-pl-decor="plant" aria-label="Saludar a la palmera">🌴</button>'+
+     '<div class="pl-bed-preset" aria-hidden="true"><div class="pl-bed-headboard"></div><div class="pl-bed-blanket"></div></div>'+ 
      '<div class="pl-person" id="plPerson"></div>'+
      '<div class="pl-action-prop" aria-hidden="true"><span class="pl-prop-eat">🥥</span><span class="pl-prop-sleep">💤</span><span class="pl-prop-shower">🫧</span><span class="pl-prop-play">🎮</span></div>'+
      '<div class="pl-speech" role="status" aria-live="polite" hidden></div>'+
