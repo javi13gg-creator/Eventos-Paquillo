@@ -2,7 +2,8 @@
 (()=>{
  'use strict';
  const root=document.getElementById('paquiSocial');
- if(!root)return;
+ const feedRoot=document.getElementById('paquiSocialFeed');
+ if(!root||!feedRoot)return;
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
  const safeDate=x=>{const d=new Date(x);return Number.isFinite(d.getTime())?d:null;};
  const labelDate=x=>{const d=safeDate(x);return d?d.toLocaleDateString('es-ES',{day:'numeric',month:'short'}):'Sin fecha';};
@@ -10,11 +11,12 @@
  const getContext=()=>window.PaquilloWorldContext?.();
  const state={filter:'all',visible:6,items:[],loading:false,uid:null,lastFetch:0,loadId:0};
  const kindLabels={all:'Todo',event:'📅 Planes',poll:'🗳️ Encuestas',memory:'📸 Recuerdos'};
- root.innerHTML='<div class="ps-header"><div><span class="ps-kicker">✨ TU COMUNIDAD</span><h2 id="psHello">Tu rincón paquillero</h2><p>Lo que tienes pendiente y lo que se mueve en el grupo.</p></div><div class="ps-head-actions"><button class="ps-help-link" type="button" data-ps-action="navigate" data-tab="ayuda">❔ Ayuda</button><button class="ps-refresh" type="button" data-ps-action="refresh" aria-label="Actualizar novedades">↻ Actualizar</button></div></div><div class="ps-quick" id="psQuick" aria-live="polite"><p class="ps-empty">Preparando tu inicio…</p></div><div class="ps-pending-polls" id="psPendingPolls" hidden></div><div class="ps-feed-head"><div><h2>📢 Muro Paquillero</h2><p>Novedades del grupo, sin ruido ni publicaciones inventadas.</p></div></div><div class="ps-filters" id="psFilters" role="group" aria-label="Filtrar actividad"></div><div id="psFeed" class="ps-feed" aria-live="polite"><p class="ps-empty">Cargando actividad…</p></div><div class="ps-more" id="psMore"></div>';
- const filters=root.querySelector('#psFilters');
+ root.innerHTML='<div class="ps-header"><div><span class="ps-kicker">✨ TU COMUNIDAD</span><h2 id="psHello">Tu rincón paquillero</h2><p>Tu resumen y lo que tienes pendiente.</p></div><div class="ps-head-actions"><button class="ps-help-link" type="button" data-ps-action="navigate" data-tab="ayuda" aria-label="Abrir ayuda" title="Ayuda">❔</button><button class="ps-refresh" type="button" data-ps-action="refresh" aria-label="Actualizar novedades" title="Actualizar novedades">↻</button></div></div><div class="ps-quick" id="psQuick" aria-live="polite"><p class="ps-empty">Preparando tu inicio…</p></div><div class="ps-pending-polls" id="psPendingPolls" hidden></div>';
+ feedRoot.innerHTML='<div class="ps-feed-head"><div><h2>📢 Muro Paquillero</h2><p>Novedades del grupo, sin ruido ni publicaciones inventadas.</p></div></div><div class="ps-filters" id="psFilters" role="group" aria-label="Filtrar actividad"></div><div id="psFeed" class="ps-feed" aria-live="polite"><p class="ps-empty">Cargando actividad…</p></div><div class="ps-more" id="psMore"></div>';
+ const filters=feedRoot.querySelector('#psFilters');
  const quick=root.querySelector('#psQuick');
- const feed=root.querySelector('#psFeed');
- const more=root.querySelector('#psMore');
+ const feed=feedRoot.querySelector('#psFeed');
+ const more=feedRoot.querySelector('#psMore');
  function drawFilters(){
   filters.innerHTML=Object.entries(kindLabels).map(([k,label])=>'<button type="button" class="ps-filter'+(k===state.filter?' active':'')+'" data-ps-action="filter" data-kind="'+k+'" aria-pressed="'+(k===state.filter)+'">'+label+'</button>').join('');
  }
@@ -26,7 +28,7 @@
   more.innerHTML=items.length>state.visible?'<button class="ps-load-more" type="button" data-ps-action="more">Mostrar más novedades ('+(items.length-state.visible)+')</button>':'';
  }
  function quickCard(icon,value,label,description,tab,entity){
-  return '<button class="ps-quick-card" type="button" data-ps-action="navigate" data-tab="'+esc(tab)+'" data-entity="'+esc(entity||'')+'"><span class="ps-card-icon">'+icon+'</span><span class="ps-card-number">'+esc(value)+'</span><strong>'+esc(label)+'</strong><small>'+esc(description)+'</small></button>';
+  return '<button class="ps-quick-card" type="button" data-ps-action="navigate" data-tab="'+esc(tab)+'" data-entity="'+esc(entity||'')+'" aria-label="'+esc(label+': '+value+'. '+description)+'" title="'+esc(description)+'"><span class="ps-card-icon" aria-hidden="true">'+icon+'</span><span class="ps-card-number">'+esc(value)+'</span><strong>'+esc(label)+'</strong><small>'+esc(description)+'</small></button>';
  }
  function getBirthdays(members,today){
   const parts=today.split('-').map(Number),base=new Date(parts[0],parts[1]-1,parts[2]);
@@ -54,15 +56,17 @@
   };
   setTimeout(tryFocus,180);
  }
- root.addEventListener('click',e=>{
+ function onSocialClick(e){
   const b=e.target.closest('[data-ps-action]');
-  if(!b||!root.contains(b))return;
+  if(!b)return;
   const action=b.dataset.psAction;
   if(action==='refresh')refresh(true);
   if(action==='filter'){state.filter=Object.prototype.hasOwnProperty.call(kindLabels,b.dataset.kind)?b.dataset.kind:'all';state.visible=6;drawFeed();}
   if(action==='more'){state.visible+=6;drawFeed();}
   if(action==='navigate')goTab(b.dataset.tab,b.dataset.entity);
- });
+ }
+ root.addEventListener('click',onSocialClick);
+ feedRoot.addEventListener('click',onSocialClick);
  async function refresh(force){
   const context=getContext();
   if(!context?.client||!context.currentAuthUser||context.authBootstrapping)return;
@@ -128,7 +132,7 @@
     const pending=myPollStatus?.pending||[];
     const unverified=myPollStatus?.unknown||[];
     pendingEl.hidden=!pending.length&&!unverified.length;
-    pendingEl.innerHTML=(pending.length?'<div class="ps-pending-title">🗳️ Te falta responder</div><div class="ps-pending-list">'+pending.slice(0,4).map(x=>'<button type="button" data-ps-action="navigate" data-tab="votaciones" data-entity="'+esc(x.poll.id)+'">'+esc(x.poll.title)+' <span>Responder ›</span></button>').join('')+'</div>':'')+
+    pendingEl.innerHTML=(pending.length?'<div class="ps-pending-title">🗳️ Te falta responder</div><div class="ps-pending-list">'+pending.slice(0,4).map(x=>'<button type="button" data-ps-action="navigate" data-tab="votaciones" data-entity="'+esc(x.poll.id)+'" title="'+esc(x.poll.title)+'"><span class="ps-pending-name">'+esc(x.poll.title)+'</span><span>Votar ›</span></button>').join('')+'</div>':'')+
       (unverified.length?'<p class="ps-pending-unknown">'+unverified.length+' '+(unverified.length===1?'encuesta no comprobada':'encuestas no comprobadas')+' (por privacidad o permisos). Revisa Votaciones para saber si te falta responder.</p>':'');
    }
    const items=[];
