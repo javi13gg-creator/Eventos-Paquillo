@@ -1998,7 +1998,6 @@ showTab(location.hash.slice(1));
        const count=(k)=>byStatus[k].length;
        const list=(title,items,emoji)=>'<div class="attendance-name-group"><b>'+emoji+' '+title+' ('+items.length+')</b><span>'+ (items.length?items.map(esc).join(' · '):'<span class="f6-muted">Nadie todavía</span>')+'</span></div>';
        slot.innerHTML='<div class="attendance-counts"><span>✅ <b>'+count('yes')+'</b> van</span><span>🤔 <b>'+count('maybe')+'</b> quizá</span><span>❌ <b>'+count('no')+'</b> no van</span><span>⏳ <b>'+pending.length+'</b> sin responder</span></div>'+
-         '<p class="attendance-mine">'+(mine?'Tu respuesta: <b>'+label[mine]+'</b>':'Todavía no has respondido')+'</p>'+
          '<details class="attendance-details"><summary>Ver quién va, quién no y quién falta</summary>'+list('Van',byStatus.yes,'✅')+list('Quizá',byStatus.maybe,'🤔')+list('No van',byStatus.no,'❌')+list('Sin responder',pending,'⏳')+'</details>';
        const card=slot.closest('.paqui-plan-card')||slot.closest('.ev-card');
        if(card){
@@ -2007,12 +2006,18 @@ showTab(location.hash.slice(1));
            btn.classList.toggle('is-selected',active);
            btn.setAttribute('aria-pressed',active?'true':'false');
          });
-         const mini=card.querySelector('[data-paqui-attendance-mini]');
-         if(mini)mini.innerHTML='✅ <b>'+count('yes')+'</b>'+(count('maybe')?' · 🤔 '+count('maybe'):'')+(mine?' · Tu respuesta: '+esc(label[mine]):'');
+         card.querySelectorAll('[data-paqui-attendance-counter]').forEach(total=>{
+           const status=total.dataset.paquiAttendanceCounter;
+           if(!['yes','maybe','no'].includes(status))return;
+           const n=count(status);
+           total.textContent=String(n);
+           total.setAttribute('aria-label',n+' respuestas: '+label[status]);
+         });
        }
      });
    }catch(e){console.warn('Asistencia:',e.message);document.querySelectorAll('[data-attendance-info]').forEach(slot=>slot.innerHTML='<p class="f6-muted">No se pudieron cargar las respuestas.</p>');}
  }
+ window.PaquilloRenderAttendanceCounts=renderAttendanceCounts;
  async function renderFinance(selectedEvent=null){try{const [members,events]=await Promise.all([getActiveMembers(),client.from('group_events').select('id,title,event_date').order('event_date',{ascending:false})]);const evs=events.data||[];$id('expenseEvent').innerHTML='<option value="">Selecciona un plan</option>'+evs.map(e=>'<option value="'+e.id+'">'+esc(e.title)+' · '+esc(e.event_date||'sin fecha')+'</option>').join('');if(selectedEvent)$id('expenseEvent').value=selectedEvent;$id('expensePayer').innerHTML=members.map(m=>'<option value="'+m.id+'" '+(m.auth_user_id===currentAuthUser.id?'selected':'')+'>'+esc(m.display_name)+'</option>').join('');$id('expenseParticipants').innerHTML=members.map(m=>'<option value="'+m.id+'" selected>'+esc(m.display_name)+'</option>').join('');await loadEventExpenses();await loadFund();}catch(e){$id('expenseSummary').innerHTML='<p class="form-msg">No se pudo cargar: '+esc(e.message)+'</p>';}}
  function settlementHtml(balance){const debtors=balance.filter(x=>x.v<-.009).map(x=>({name:x.name,v:-x.v})),creditors=balance.filter(x=>x.v>.009).map(x=>({name:x.name,v:x.v}));const transfers=[];let i=0,j=0;while(i<debtors.length&&j<creditors.length){const amount=Math.min(debtors[i].v,creditors[j].v);if(amount>.009)transfers.push('<div class="f6-item"><span>👉 <b>'+esc(debtors[i].name)+'</b> paga a <b>'+esc(creditors[j].name)+'</b></span><strong>'+amount.toFixed(2)+' €</strong></div>');debtors[i].v-=amount;creditors[j].v-=amount;if(debtors[i].v<.009)i++;if(creditors[j].v<.009)j++;}return '<h4>🤝 Propuesta para saldar cuentas</h4><div class="f6-list">'+(transfers.join('')||'<p class="f6-muted">Todo está saldado.</p>')+'</div><p class="f6-muted">Es una propuesta de compensación calculada a partir de los gastos registrados; no realiza pagos.</p>';}
  async function loadEventExpenses(){
