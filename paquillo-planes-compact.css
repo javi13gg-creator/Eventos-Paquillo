@@ -68,3 +68,69 @@
  #p-planes .paqui-plan-primary-tools .btn{gap:3px;font-size:.69rem}
  #p-planes .paqui-plan-extra-items{grid-template-columns:1fr}
 }
+
+/* Reacciones: resumen siempre visible; selector de emojis solo bajo demanda. */
+.paqui-reaction-box.paqui-reaction-inline,.paqui-reaction-box.paqui-reaction-details{
+ position:relative;margin:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;min-width:0
+}
+.paqui-reaction-box .paqui-react-toolbar{
+ display:flex;align-items:center;flex-wrap:wrap;gap:5px 9px;min-height:34px
+}
+.paqui-reaction-box .paqui-react-trigger{
+ flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:5px;
+ padding:6px 9px;min-height:33px;border:1px solid color-mix(in srgb,var(--pk) 42%,var(--ln));
+ border-radius:10px;background:color-mix(in srgb,var(--pk) 9%,var(--card));
+ color:var(--ink);font:850 .73rem/1.1 system-ui,sans-serif;cursor:pointer;
+}
+.paqui-reaction-box .paqui-react-trigger.has-reacted{
+ background:color-mix(in srgb,var(--pk) 17%,var(--card));border-color:var(--pk)
+}
+.paqui-reaction-box .paqui-react-trigger span:first-child{font-size:1.05rem}
+.paqui-reaction-box .paqui-react-trigger:focus-visible{
+ outline:2px solid var(--pk);outline-offset:2px
+}
+.paqui-reaction-box .paqui-react-trigger:disabled{opacity:.6;cursor:progress}
+.paqui-reaction-box .paqui-react-totals{
+ display:flex;align-items:center;flex:1 1 auto;flex-wrap:wrap;gap:4px;
+ min-width:0;font-size:.74rem
+}
+.paqui-reaction-box .paqui-react-chip{
+ display:inline-flex;align-items:center;gap:3px;min-height:28px;
+ padding:4px 7px;border-radius:20px;
+ background:var(--card);border:1px solid var(--ln);
+ color:var(--ink);font-size:.77rem;white-space:nowrap
+}
+.paqui-reaction-box .paqui-react-chip b{font-size:.72rem;font-weight:950;font-variant-numeric:tabular-nums}
+.paqui-reaction-box .paqui-react-empty{font-size:.7rem;color:var(--mut)}
+.paqui-reaction-box .paqui-react-people{flex:0 0 auto;position:relative;font-size:.7rem}
+.paqui-reaction-box .paqui-react-people summary{
+ padding:5px 6px;border-radius:8px;background:var(--card);
+ border:1px solid var(--ln);font-size:.7rem;line-height:1.3;white-space:nowrap
+}
+.paqui-reaction-box .paqui-react-people[open]{flex:1 1 100%;width:100%;position:relative}
+.paqui-reaction-box .paqui-react-people-list{
+ display:flex;flex-wrap:wrap;gap:5px;margin:5px 0;
+ padding:9px;background:var(--card);border:1px solid var(--ln);border-radius:10px
+}
+.paqui-reaction-box .paqui-react-person{font-size:.7rem;padding:5px 8px}
+.paqui-reaction-box .paqui-react-picker[hidden]{display:none!important}
+.paqui-reaction-box .paqui-react-picker{
+ margin-top:8px;padding:10px;border:1px solid var(--ln);border-radius:12px;
+ background:color-mix(in srgb,var(--pk) 5%,var(--card))
+}
+.paqui-reaction-box .paqui-react-choices{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.paqui-reaction-box .paqui-react-option{
+ min-height:43px;border-radius:10px;padding:4px 0;gap:1px;
+ box-shadow:none;background:var(--card)
+}
+.paqui-reaction-box .paqui-react-option>span{font-size:1.15rem}
+.paqui-reaction-box .paqui-react-option>b{font-size:.69rem}
+.paqui-reaction-box .paqui-react-picker>small{display:block;margin-top:7px;font-size:.68rem;color:var(--mut)}
+.paqui-reaction-box .paqui-react-loading,.paqui-reaction-box .paqui-react-error{font-size:.72rem;margin:0}
+@media(max-width:390px){
+ .paqui-reaction-box .paqui-react-toolbar{gap:5px}
+ .paqui-reaction-box .paqui-react-trigger{padding:5px 7px;font-size:.68rem}
+ .paqui-reaction-box .paqui-react-chip{padding:4px 5px;font-size:.7rem}
+ .paqui-reaction-box .paqui-react-choices{gap:4px}
+ .paqui-reaction-box .paqui-react-option>span{font-size:1.1rem}
+}
