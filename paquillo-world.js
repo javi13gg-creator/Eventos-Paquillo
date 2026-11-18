@@ -177,9 +177,9 @@ function updateDuelNotice(){
  const key='paqui-duel-seen-'+state.uid;
  let seen='';try{seen=localStorage.getItem(key)||''}catch(_){}
  if(latest&&latest!==seen&&duelSeenKey!==latest){
-  duelSeenKey=latest;
   const bar=root.querySelector('.pw-shell');
   if(bar){
+   duelSeenKey=latest;
    const alert=document.createElement('button');alert.type='button';alert.className='pw-duel-alert';alert.dataset.pwDuelNotice='';
    alert.textContent='📩 Tienes '+pending.length+' reto'+(pending.length===1?'':'s')+' pendiente'+(pending.length===1?'':'s')+' · Ver invitaciones';
    bar.prepend(alert);
