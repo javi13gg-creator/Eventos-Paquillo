@@ -258,3 +258,36 @@
  #paquiLifePreview .pl-foot{max-height:48dvh}
  #paquiLifePreview .pl-theme-picker{padding:4px}
 }
+
+/* LIFE v16 · Inventario visual, optativo y limitado a la vista privada. */
+#paquiLifePreview .pl-inventory{
+ order:-3;width:100%;border:1px solid #a9e7e2;
+ background:#183b60;border-radius:13px;
+ padding:7px 9px;text-align:left;
+}
+#paquiLifePreview .pl-inventory summary{
+ font-weight:900;font-size:13px;cursor:pointer;list-style:revert;
+}
+#paquiLifePreview .pl-inventory-items{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:7px;margin:8px 0;
+}
+#paquiLifePreview .pl-inventory-items button{
+ background:#38256e;color:#fff;border:1px solid #d6c2f5;
+ border-radius:10px;min-height:38px;font-size:12px;font-weight:800;
+}
+#paquiLifePreview .pl-inventory-items button[aria-pressed="true"]{
+ background:#127d70;border-color:#d6fff0;
+}
+#paquiLifePreview .pl-inventory small{font-size:10px;color:#c5e7ff}
+#paquiLifePreview .pl-furniture{
+ position:absolute;z-index:3;transform:translateX(-50%);
+ font-size:clamp(26px,8vw,44px);line-height:1;
+ filter:drop-shadow(0 7px 4px #21143877);
+ pointer-events:none;user-select:none;
+}
+#paquiLifePreview .pl-furniture-rug{
+ z-index:1;transform:translateX(-50%) scaleX(1.7) scaleY(.48);
+ opacity:.8;
+}
+#paquiLifePreview .pl-furniture-trophy{font-size:clamp(22px,6vw,32px)}
