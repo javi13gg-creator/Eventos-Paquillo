@@ -1,10 +1,12 @@
 /* Paquillo Life · PRIMERA HABITACIÓN (preview visual, sin persistencia).
  * Usa el personaje aprobado de World. No escribe en Supabase, no concede XP,
  * no altera el estado de sus minijuegos ni de Paquillo Events.
- * Acceso de prueba: ?life-preview=1#world. */
+ * Acceso privado: únicamente cuenta autenticada Javi (rol admin),
+ * validada por Paquillo Events mediante user_profiles. */
 (()=>{
  'use strict';
- const enabled=new URLSearchParams(window.location.search).get('life-preview')==='1';
+ // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
+ const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
  let room=null,activeTimer=0,previousFocus=null,arcadeAction=null;
  const labels={eat:'Comer',sleep:'Descansar',shower:'Ducharse',play:'Jugar'};
  const reactions={
@@ -44,7 +46,7 @@
   previousFocus=null;arcadeAction=null;
  }
  function open(options={}){
-  if(!enabled)return false;
+  if(!allowed())return false;
   if(room)close();
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
@@ -126,5 +128,5 @@
   return true;
  }
  window.addEventListener('hashchange',()=>{if(room&&location.hash!=='#world')close();});
- window.PaquilloLifePreview={enabled,open,close,get isOpen(){return !!room;}};
+ window.PaquilloLifePreview={get enabled(){return allowed();},open,close,get isOpen(){return !!room;}};
 })();
