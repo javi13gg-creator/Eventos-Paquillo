@@ -48,9 +48,6 @@
   const rsvp=make('div','paqui-plan-rsvp');
   rsvp.setAttribute('role','group');
   rsvp.setAttribute('aria-label','Confirmar asistencia a '+title);
-  const titleRsvp=make('span','paqui-plan-rsvp-label');
-  titleRsvp.textContent='Asistencia:';
-  rsvp.append(titleRsvp);
   const choiceLabels={yes:'Voy',maybe:'Quizá',no:'No voy'};
   const choiceIcons={yes:'✅',maybe:'🤔',no:'❌'};
   quick.querySelector('.attendance-prompt')?.remove();
@@ -59,19 +56,23 @@
    if(!choiceLabels[kind])return;
    button.innerHTML='<span aria-hidden="true">'+choiceIcons[kind]+'</span><span class="paqui-rsvp-text">'+choiceLabels[kind]+'</span>';
    button.setAttribute('aria-label',choiceLabels[kind]);
-   rsvp.append(button);
+   const cell=make('div','paqui-rsvp-choice');
+   cell.append(button);
+   const total=make('small','paqui-rsvp-total');
+   total.dataset.paquiAttendanceCounter=kind;
+   total.setAttribute('aria-live','polite');
+   total.setAttribute('aria-label','Cargando respuestas: '+choiceLabels[kind]);
+   total.textContent='…';
+   cell.append(total);
+   rsvp.append(cell);
   });
-  const mini=make('span','paqui-attendance-mini');
-  mini.dataset.paquiAttendanceMini=details.dataset.eventDb||'';
-  mini.setAttribute('aria-live','polite');
-  mini.textContent='…';
-  rsvp.append(mini);
-  interact.append(rsvp);
   const reaction=article.querySelector('[data-paqui-reaction-box]');
   if(reaction){
    reaction.classList.add('paqui-reaction-inline');
-   interact.append(reaction);
+   rsvp.classList.add('has-reactions');
+   rsvp.append(reaction);
   }
+  interact.append(rsvp);
   card.insertBefore(interact,details);
   // Acciones más frecuentes, una fila de tres iconos.
   const primary=make('div','paqui-plan-primary-tools');
@@ -141,5 +142,9 @@
  window.PaquilloCompactPlans={mount};
  // En sesiones ya restauradas, la consulta de planes puede terminar antes de cargar este archivo.
  const initial=document.getElementById('events');
- if(initial?.querySelector('.paqui-plan-fold'))mount(initial);
+ if(initial?.querySelector('.paqui-plan-fold')){
+  mount(initial);
+  // Restaura los contadores si la asistencia llegó antes que el módulo compacto.
+  window.PaquilloRenderAttendanceCounts?.();
+ }
 })();
