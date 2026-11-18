@@ -10,7 +10,7 @@
  const getContext=()=>window.PaquilloWorldContext?.();
  const state={filter:'all',visible:6,items:[],loading:false,uid:null,lastFetch:0,loadId:0};
  const kindLabels={all:'Todo',event:'📅 Planes',poll:'🗳️ Encuestas',memory:'📸 Recuerdos'};
- root.innerHTML='<div class="ps-header"><div><span class="ps-kicker">✨ TU COMUNIDAD</span><h2 id="psHello">Tu rincón paquillero</h2><p>Lo que tienes pendiente y lo que se mueve en el grupo.</p></div><button class="ps-refresh" type="button" data-ps-action="refresh" aria-label="Actualizar novedades">↻ Actualizar</button></div><div class="ps-quick" id="psQuick" aria-live="polite"><p class="ps-empty">Preparando tu inicio…</p></div><div class="ps-pending-polls" id="psPendingPolls" hidden></div><div class="ps-feed-head"><div><h2>📢 Muro Paquillero</h2><p>Novedades del grupo, sin ruido ni publicaciones inventadas.</p></div></div><div class="ps-filters" id="psFilters" role="group" aria-label="Filtrar actividad"></div><div id="psFeed" class="ps-feed" aria-live="polite"><p class="ps-empty">Cargando actividad…</p></div><div class="ps-more" id="psMore"></div>';
+ root.innerHTML='<div class="ps-header"><div><span class="ps-kicker">✨ TU COMUNIDAD</span><h2 id="psHello">Tu rincón paquillero</h2><p>Lo que tienes pendiente y lo que se mueve en el grupo.</p></div><div class="ps-head-actions"><button class="ps-help-link" type="button" data-ps-action="navigate" data-tab="ayuda">❔ Ayuda</button><button class="ps-refresh" type="button" data-ps-action="refresh" aria-label="Actualizar novedades">↻ Actualizar</button></div></div><div class="ps-quick" id="psQuick" aria-live="polite"><p class="ps-empty">Preparando tu inicio…</p></div><div class="ps-pending-polls" id="psPendingPolls" hidden></div><div class="ps-feed-head"><div><h2>📢 Muro Paquillero</h2><p>Novedades del grupo, sin ruido ni publicaciones inventadas.</p></div></div><div class="ps-filters" id="psFilters" role="group" aria-label="Filtrar actividad"></div><div id="psFeed" class="ps-feed" aria-live="polite"><p class="ps-empty">Cargando actividad…</p></div><div class="ps-more" id="psMore"></div>';
  const filters=root.querySelector('#psFilters');
  const quick=root.querySelector('#psQuick');
  const feed=root.querySelector('#psFeed');
@@ -98,7 +98,8 @@
       if(error||!Array.isArray(rows)||!rows.length)return {poll,state:'unknown'};
       const pending=rows.some(x=>String(x.pending_name||'').trim()===String(member.display_name||'').trim());
       if(pending)return {poll,state:'pending'};
-      if(poll.vote_visibility==='named')return {poll,state:'answered'};
+      // Total == votos registrados: incluso un voto secreto queda comprobado sin identificar a nadie.
+      if(poll.vote_visibility==='named'||rows.some(x=>Number(x.total_members)>0&&Number(x.voted_count)>=Number(x.total_members)))return {poll,state:'answered'};
       return {poll,state:'unknown'};
      }catch(_){return {poll,state:'unknown'};}
     }));
