@@ -285,3 +285,20 @@
  background:linear-gradient(110deg,#197b83,#3c6cba);color:white;
  border:2px solid #b9f8ff;border-radius:12px;font-size:13px;font-weight:900;
 }
+
+/* LIFE v22 · accesos fiables y visibles en móvil */
+#paquiLifePreview .pl-neighborhood-top{
+ flex:0 0 auto;position:relative;z-index:10;padding:7px 9px;
+ min-height:38px;border:1px solid #b7efff;border-radius:11px;
+ background:#175c87;color:white;font-size:12px;font-weight:900;
+}
+#paquiLifePreview .pl-quick-actions{
+ order:-5;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:5px;width:100%;position:relative;z-index:10;
+}
+#paquiLifePreview .pl-quick-actions button{
+ min-height:44px;padding:6px 2px;border:1px solid #c5e8ff;
+ border-radius:10px;background:#314a87;color:white;
+ font-size:11px;font-weight:900;touch-action:manipulation;
+}
+#paquiLifePreview .pl-quick-actions button:active{background:#1a9183}
