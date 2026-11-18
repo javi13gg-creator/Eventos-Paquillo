@@ -12,6 +12,21 @@
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
+ let lifeLevel=1,roomTheme='island';
+ const themes={island:{label:'🏝️ Isla',min:1},sunset:{label:'🌅 Atardecer',min:3},night:{label:'🌙 Noche',min:7}};
+ function chooseTheme(key,announce=true){
+  if(!room||!themes[key]||lifeLevel<themes[key].min)return;
+  roomTheme=key;room.dataset.plTheme=key;
+  room.querySelectorAll('[data-pl-theme]').forEach(button=>{
+   const item=themes[button.dataset.plTheme];
+   button.disabled=lifeLevel<item.min;
+   button.setAttribute('aria-pressed',String(key===button.dataset.plTheme));
+   button.textContent=item.label+(lifeLevel<item.min?' · Nv '+item.min+' 🔒':'');
+  });
+  try{localStorage.setItem('paqui-life-theme-javi',key)}catch(_){}
+  if(announce)setStatus('Decoración aplicada: '+themes[key].label+' · guardada en este dispositivo.');
+ }
+
  let idleTimer=null,idleSequence=0,roamIndex=0;
  let roamPosition={left:48,bottom:15};
  const random=(min,max)=>min+Math.random()*(max-min);
@@ -275,7 +290,8 @@
  function open(options={}){
   if(!allowed())return false;
   if(room)close();
-  careSession++;careReady=false;careBusy=false;moodMessage='';roamIndex=0;roamPosition={left:48,bottom:15};
+  careSession++;careReady=false;careBusy=false;moodMessage='';roamIndex=0;
+  lifeLevel=Math.floor(Math.max(0,Number(options.xp)||0)/250)+1;roamPosition={left:48,bottom:15};
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
@@ -290,7 +306,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v12</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v13</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -351,6 +367,8 @@
   needs={energy:75,mood:75,wellbeing:75};
   document.body.appendChild(room);
   renderNeeds();renderMood();
+  let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
+  chooseTheme(themes[savedTheme]&&lifeLevel>=themes[savedTheme].min?savedTheme:'island',false);
   document.body.classList.add('paqui-life-room-open');
   care();
   room.addEventListener('click',event=>{
@@ -369,6 +387,9 @@
     return;
    }
    if(!allowed()){close();return;}
+   if(event.target.closest('[data-pl-theme]')){
+    chooseTheme(event.target.closest('[data-pl-theme]').dataset.plTheme);return;
+   }
    if(event.target.closest('[data-pl-model]')){
     const button=event.target.closest('[data-pl-model]');
     if(model3d){
