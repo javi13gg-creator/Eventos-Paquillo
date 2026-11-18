@@ -501,10 +501,11 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <link rel="stylesheet" href="paquillo-ayuda.css?v=1">
 <link rel="stylesheet" href="paquillo-navigation.css?v=1">
 <link rel="stylesheet" href="paquillo-admin-refresh.css?v=2">
+<link rel="stylesheet" href="paquillo-planes.css?v=1">
 </head>
 <body>
 <nav class="tabs" id="tabs" aria-label="Navegación principal">
-  <button type="button" id="homeButton" class="home-button on" role="tab" data-t="proximos" aria-label="Ir al inicio: calendario y próximos eventos" title="Inicio">🏠</button>
+  <button type="button" id="homeButton" class="home-button on" role="tab" data-t="proximos" aria-label="Ir al inicio: calendario y muro" title="Inicio">🏠</button>
   <div class="nav-brand"><span class="nav-brand-mark">P</span><span>Paquillo Events</span></div>
   <button type="button" id="paquiSearchToggle" aria-label="Buscar planes o Paquillos" title="Buscar" aria-controls="globalSearch" aria-expanded="false">🔎</button>
   <span class="nav-current" id="navCurrent">Agenda</span>
@@ -528,7 +529,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
     <div class="menu-panel-head"><div><b>Explora Paquillo Events</b><small>Todos los planes y secciones, a un toque</small></div><button type="button" id="menuClose" class="menu-close" aria-label="Cerrar menú">✕</button></div>
     <div class="menu-grid">
       <section class="menu-group"><h3>📅 Agenda</h3>
-        <button type="button" class="menu-link on" role="tab" data-t="proximos">Calendario y próximos eventos <span>›</span></button>
+        <button type="button" class="menu-link on" role="tab" data-t="proximos">Inicio · Calendario y muro <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="planes">📅 Próximos planes <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="cumples">Cumpleaños <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="pasados">Planes pasados <span>›</span></button>
       </section>
@@ -602,6 +604,11 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <section id="paquiSocial" class="paqui-social" aria-label="Inicio social y novedades del grupo"></section>
 
 
+
+
+</section>
+<section class="panel" id="p-planes" hidden>
+  <div class="paqui-plans-intro"><span class="paqui-plans-kicker">📅 AGENDA DE PLANES</span><h2>Todos nuestros próximos planes</h2><p>Consulta las quedadas, confirma si vienes o propón la siguiente aventura.</p></div>
 <div id="paquiPlansAnchor" aria-hidden="true"></div>
 <div class="f6-row" style="justify-content:space-between"><h2>Próximos planes</h2><button class="btn secondary" type="button" id="exportAllCalendar">📆 Exportar calendario</button></div>
 <p class="sub">Apunta las fechas y avisa si no vas a poder.</p>
@@ -615,8 +622,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <p class="form-msg">La propuesta quedará pendiente de aprobación por administración.</p>
 </form></div>
 <div id="events"></div>
-
 </section>
+
 <section class="panel" id="p-cumples" hidden>
 <div class="c"><h2>Cumpleaños</h2>
 <p class="sub">Los cumpleaños también aparecen marcados en el calendario de Inicio. Toca un día para ver quién cumple.</p></div>
@@ -803,7 +810,19 @@ if(nxt){const n=Math.round((nxt.t-today)/864e5);
 $('count').onclick=()=>go(nxt.e.id);
 }else{$('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';$('count').disabled=true;$('count').style.cursor='default'}
 
-function go(id){showTab('proximos');const el=$(id);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+function go(id){
+ const e=EV.find(x=>String(x.id)===String(id));
+ if(e?.status==='completed'){
+   document.querySelector('#tabs [data-t="pasados"]')?.click();
+   setTimeout(()=>{const b=document.querySelector('[data-history-detail="'+e.dbId+'"]');if(b)b.click();},180);
+   return;
+ }
+ showTab('planes');
+ const el=$(id);if(!el)return;
+ if(el.tagName==='DETAILS')el.open=true;
+ el.scrollIntoView({behavior:'smooth',block:'center'});
+ el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+}
 
 function cal(){
  const y=cur.getFullYear(),m=cur.getMonth();
@@ -853,7 +872,7 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';const previousTab=document.querySelector('main>.panel:not([hidden])')?.id?.slice(2)||'';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={ayuda:'Ayuda',versiones:'Novedades',proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos de beber',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');const settings=$('settingsPanel'),gear=$('settingsToggle');if(settings)settings.hidden=true;if(gear)gear.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t);window.PaquilloMobileNav?.sync(t);if(previousTab&&previousTab!==t&&t!=='world')window.scrollTo(0,0)}
+function showTab(t){if(!$('p-'+t))t='proximos';const previousTab=document.querySelector('main>.panel:not([hidden])')?.id?.slice(2)||'';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={ayuda:'Ayuda',versiones:'Novedades',proximos:'Inicio',planes:'Planes',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos de beber',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');const settings=$('settingsPanel'),gear=$('settingsToggle');if(settings)settings.hidden=true;if(gear)gear.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t);window.PaquilloMobileNav?.sync(t);if(previousTab&&previousTab!==t&&t!=='world')window.scrollTo(0,0)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);window.scrollTo({top:0,behavior:'instant'})});
 $('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
@@ -930,7 +949,7 @@ showTab(location.hash.slice(1));
    if(e.by)lines.push('◆ ORGANIZA · '+e.by);
    if(e.desc)lines.push('',e.desc);
    if(includePosterLink&&e.poster){let poster='';try{const u=new URL(String(e.poster),window.location.href);if(['http:','https:'].includes(u.protocol))poster=u.href;}catch(_){}if(poster)lines.push('','◆ CARTEL · '+poster);}
-   lines.push('','◆ INFO Y CONFIRMACION · '+paquiShareUrl('proximos'));
+   lines.push('','◆ INFO Y CONFIRMACION · '+paquiShareUrl('planes'));
    return lines.filter(Boolean).join('\n');
  }
  async function shareEventWhatsApp(e,reminder=false){
@@ -1167,7 +1186,7 @@ showTab(location.hash.slice(1));
    }
    target.innerHTML=html;
    target.querySelectorAll('[data-share-poll]').forEach(b=>b.onclick=()=>{const p=polls.find(x=>String(x.id)===b.dataset.sharePoll);if(!p)return;const opts=(p.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).map((o,i)=>(i+1)+'. '+o.option_text);shareWhatsAppText(['🗳️ ENCUESTA PAQUILLO',p.title,p.description||'','Tipo: '+(p.poll_type==='multiple'?'Varias respuestas':'Una respuesta'),'Estado: '+(p.status==='open'?'ABIERTA':'CERRADA'),'',...opts,'','En Paquillo Events → Votaciones busca: «'+p.title+'»',paquiShareUrl('votaciones')].filter(Boolean).join('\n'));});
-   target.querySelectorAll('[data-go-event]').forEach(b=>b.onclick=()=>{showTab('proximos');setTimeout(()=>{const ev=document.querySelector('[data-event-db="'+b.dataset.goEvent+'"]');if(ev){ev.scrollIntoView({behavior:'smooth'});ev.classList.add('flash')}},120)});
+   target.querySelectorAll('[data-go-event]').forEach(b=>b.onclick=()=>{showTab('planes');setTimeout(()=>{const ev=document.querySelector('[data-event-db="'+b.dataset.goEvent+'"]');if(ev){ev.scrollIntoView({behavior:'smooth'});ev.classList.add('flash')}},120)});
    target.querySelectorAll('[data-go-trip]').forEach(b=>b.onclick=()=>{showTab('viajes');setTimeout(()=>{const tr=document.querySelector('[data-trip-db="'+b.dataset.goTrip+'"]');if(tr){tr.scrollIntoView({behavior:'smooth'});tr.classList.add('flash')}},120)});
    target.querySelectorAll('[data-view-voters]').forEach(btn=>btn.onclick=async()=>{
      const id=btn.dataset.viewVoters,panel=target.querySelector('[data-voters-panel="'+id+'"]');
@@ -1638,7 +1657,7 @@ showTab(location.hash.slice(1));
      const errors=requests.filter(x=>x.status==='rejected'||(x.status==='fulfilled'&&x.value.error));
      if(errors.length)console.warn('Algunas fuentes del centro de novedades no están disponibles:',errors);
      const items=[];
-     rows[0].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'event:'+x.id,type:'event',icon:'📅',title:'Nuevo plan: '+x.title,detail:x.description||'Se ha publicado un nuevo plan.',date:x.created_at,target:x.id,tab:'proximos'});});
+     rows[0].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'event:'+x.id,type:'event',icon:'📅',title:'Nuevo plan: '+x.title,detail:x.description||'Se ha publicado un nuevo plan.',date:x.created_at,target:x.id,tab:'planes'});});
      rows[1].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'poll:'+x.id,type:'poll',icon:'🗳️',title:'Nueva encuesta: '+x.title,detail:x.description||'Hay una votación disponible.',date:x.created_at,target:x.id,tab:'votaciones'});});
      rows[2].forEach(x=>{if(x.created_by===currentAuthUser.id)return;items.push({key:'trip:'+x.id,type:'trip',icon:'🧳',title:'Nuevo viaje: '+x.title,detail:x.description||'Se ha propuesto un viaje.',date:x.created_at,target:x.id,tab:'viajes'});});
      rows[3].forEach(x=>{if(x.created_by_user_id===currentAuthUser.id)return;items.push({key:'idea:'+x.id,type:'idea',icon:'💡',title:'Nueva idea: '+x.title,detail:x.description||'Alguien ha propuesto un plan.',date:x.created_at,target:x.id,tab:'horno'});});
