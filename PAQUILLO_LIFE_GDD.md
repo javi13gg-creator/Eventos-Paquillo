@@ -8,6 +8,15 @@ La vista previa de Life es privada para la **cuenta de Javi**, no para todos los
 
 **Limitación importante:** esta compuerta JavaScript protege la interfaz frente a otros usuarios normales, pero no es un control de acceso a recursos públicos de GitHub Pages. Antes de guardar estado personal, imágenes privadas o XP, crear RLS y RPC en Supabase vinculadas al `auth.uid()` autorizado o a un permiso de testers validado en servidor. La fuente y los assets estáticos siguen siendo públicos, sin datos privados.
 
+## MiniJavi sin gafas: sprite 3D ilustrado integrado (18/11/2026)
+- El usuario solicitó mejorar el parecido y retirar las gafas. Se ha generado un **MiniJavi sin gafas**, peinado oscuro, barba, sudadera morada y pantalones cortos beige, en estilo 3D cartoon tropical.
+- Recurso binario de GitHub `paquillo-life-minijavi-sprites.png` (1218×1292 px; 3 columnas × 3 filas), con nueve poses del **mismo personaje**: reposo, dos pasos, comer, dormir, ducha, victoria, saludo y descanso sonriente.
+- `paquillo-life-sprites.js` reconoce únicamente la cuenta/piloto Javi. `paquillo-life-sprites.css` utiliza background-position con secuencias de dos fotogramas para caminar y poses específicas de cuidado, juego y celebración.
+- `paquillo-life-preview.js` usa este personaje antes del SVG articulado antiguo. Los avatares originales aprobados del resto del World no se han reemplazado.
+- Acceso privado existente: sesión Javi/admin con `lifePreviewAllowed`. **Sin nueva SQL ni recompensas de XP**. Las acciones son animaciones, sin persistencia de necesidades.
+- Verificación de GitHub: archivo PNG presente en árbol de `main`, referencias y scripts correctos; simulación de creación del personaje para Javi y exclusión de otros. Falta verificación visual en móvil real y aprobación final del parecido.
+- En siguientes fases: optimizar sprites con WebP o atlas recortado, pulir ritmo de pasos, sombreados y ajuste de posición. No asumir que esto equivale a rigging 3D real: son **poses 3D renderizadas como imágenes**.
+
 ## Corrección tras prueba de usuario · piloto articulado y Memoria directa
 - El usuario confirmó que mover la imagen aprobada completa no se percibe como caminar. El límite del recurso estático se resuelve para el piloto con **un nuevo muñeco SVG articulado de Javi**, con cabeza, ojos, boca, brazos y piernas separados. Los 24 retratos aprobados quedan intactos.
 - Las piezas tienen animaciones independientes: alternancia de pasos, balanceo de brazos, parpadeo, masticación con mano a la boca, sueño con ojos cerrados, ducha con brazos en movimiento y celebración con salto.
