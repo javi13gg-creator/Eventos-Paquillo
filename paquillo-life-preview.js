@@ -13,7 +13,7 @@
  let moodMessage='';
  let idleTimer=null,idleEndTimer=null,idleSequence=0,roamIndex=0;
  const roamPlaces=[
-  {left:48,bottom:15},{left:35,bottom:17},{left:55,bottom:19},
+  {left:35,bottom:17},{left:55,bottom:19},{left:48,bottom:15},
   {left:67,bottom:16},{left:44,bottom:18},{left:29,bottom:15}
  ];
  function stopIdle(){
@@ -21,7 +21,7 @@
   if(idleTimer!==null)clearTimeout(idleTimer);
   if(idleEndTimer!==null)clearTimeout(idleEndTimer);
   idleTimer=null;idleEndTimer=null;
-  room?.classList.remove('pl-idle-wave','pl-idle-rest','pl-roaming');
+  room?.classList.remove('pl-idle-wave','pl-idle-rest','pl-roaming','pl-walking');
  }
  function scheduleIdle(){
   stopIdle();
@@ -41,12 +41,12 @@
     idleTimer=setTimeout(next,2600);
    }else{
     room.classList.remove('pl-idle-rest','pl-idle-wave');
-    room.classList.add('pl-roaming');
+    room.classList.add('pl-roaming','pl-walking');
     const spot=roamPlaces[roamIndex++%roamPlaces.length];
     moveTo('home',spot);
     idleTimer=setTimeout(()=>{
      if(token!==idleSequence||!room)return;
-     room.classList.remove('pl-roaming');
+     room.classList.remove('pl-roaming','pl-walking');
      if(roamIndex%3===0)room.classList.add('pl-idle-wave');
      idleTimer=setTimeout(next,850);
     },2200);
@@ -272,7 +272,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Función experimental privada">ALFA</span>'+
+   '<span class="pl-preview-tag" title="Versión de movimiento continuo y decoración">LIFE v7</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
