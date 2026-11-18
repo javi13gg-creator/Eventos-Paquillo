@@ -11,36 +11,49 @@
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
- let idleTimer=null,idleEndTimer=null,idleSequence=0;
+ let idleTimer=null,idleEndTimer=null,idleSequence=0,roamIndex=0;
+ const roamPlaces=[
+  {left:48,bottom:15},{left:35,bottom:17},{left:55,bottom:19},
+  {left:67,bottom:16},{left:44,bottom:18},{left:29,bottom:15}
+ ];
  function stopIdle(){
   idleSequence++;
   if(idleTimer!==null)clearTimeout(idleTimer);
   if(idleEndTimer!==null)clearTimeout(idleEndTimer);
   idleTimer=null;idleEndTimer=null;
-  room?.classList.remove('pl-idle-wave','pl-idle-rest');
+  room?.classList.remove('pl-idle-wave','pl-idle-rest','pl-roaming');
  }
  function scheduleIdle(){
   stopIdle();
-  if(!room||!allowed()||document.hidden||prefersLessMotion())return;
+  if(!room||!allowed()||document.hidden)return;
   const token=idleSequence;
-  idleTimer=setTimeout(()=>{
-   idleTimer=null;
-   if(token!==idleSequence||!room||!allowed()||document.hidden||careBusy||room.classList.contains('pl-walking')||room.classList.contains('pl-performing')||room.classList.contains('pl-celebrating')){
-    if(token===idleSequence)scheduleIdle();
+  function next(){
+   if(token!==idleSequence||!room||!allowed()||document.hidden)return;
+   if(careBusy||room.classList.contains('pl-performing')||room.classList.contains('pl-celebrating')){idleTimer=setTimeout(next,1200);return;}
+   if(prefersLessMotion()){
+    room.classList.remove('pl-roaming','pl-idle-wave','pl-idle-rest');
     return;
    }
-   const tired=lifeMood().id==='tired';
-   const rest=tired||Math.random()<.4;
-   room.classList.add(rest?'pl-idle-rest':'pl-idle-wave');
-   speech(rest?'Un ratito contemplando la isla… 🌴':'¡Ey! ¿Qué se cuenta la cuadrilla? 👋');
-   idleEndTimer=setTimeout(()=>{
-    idleEndTimer=null;
-    if(token!==idleSequence||!room)return;
+   const rest=lifeMood().id==='tired'&&roamIndex%3===0;
+   if(rest){
+    room.classList.remove('pl-roaming','pl-idle-wave');
+    room.classList.add('pl-idle-rest');
+    idleTimer=setTimeout(next,2600);
+   }else{
     room.classList.remove('pl-idle-rest','pl-idle-wave');
-    const bubble=room.querySelector('.pl-speech');if(bubble)bubble.hidden=true;
-    scheduleIdle();
-   },rest?3400:2500);
-  },11000+Math.floor(Math.random()*9000));
+    room.classList.add('pl-roaming');
+    const spot=roamPlaces[roamIndex++%roamPlaces.length];
+    moveTo('home',spot);
+    idleTimer=setTimeout(()=>{
+     if(token!==idleSequence||!room)return;
+     room.classList.remove('pl-roaming');
+     if(roamIndex%3===0)room.classList.add('pl-idle-wave');
+     idleTimer=setTimeout(next,850);
+    },2200);
+   }
+  }
+  // Primer movimiento casi inmediato; el sprite respira también entre paseos.
+  idleTimer=setTimeout(next,450);
  }
 
  function lifeMood(){
@@ -133,9 +146,9 @@
   const speech=room.querySelector('.pl-speech');
   if(speech){speech.hidden=true;speech.textContent='';}
  }
- function moveTo(place){
+ function moveTo(place,override=null){
   if(!room)return;
-  const data=places[place]||places.home;
+  const data=override?{...places.home,...override}:places[place]||places.home;
   const actor=room.querySelector('#plPerson');
   if(actor){
    actor.style.setProperty('--pl-person-left',data.left+'%');
@@ -267,7 +280,10 @@
      '<div class="pl-sunbeam" aria-hidden="true"></div>'+
      '<div class="pl-ambient pl-ambient-a" aria-hidden="true">✦</div>'+
      '<div class="pl-ambient pl-ambient-b" aria-hidden="true">✧</div>'+
-     '<div class="pl-character-spot" aria-hidden="true"></div>'+
+     '<div class="pl-character-spot" aria-hidden="true"></div>'+ 
+     '<div class="pl-decor-light" aria-hidden="true">✦ ✦ ✦</div>'+ 
+     '<button class="pl-decor pl-decor-lamp" type="button" data-pl-decor="lamp" aria-label="Encender o apagar guirnalda" aria-pressed="false">💡</button>'+ 
+     '<button class="pl-decor pl-decor-plant" type="button" data-pl-decor="plant" aria-label="Saludar a la palmera">🌴</button>'+
      '<div class="pl-person" id="plPerson"></div>'+
      '<div class="pl-action-prop" aria-hidden="true"><span class="pl-prop-eat">🥥</span><span class="pl-prop-sleep">💤</span><span class="pl-prop-shower">🫧</span><span class="pl-prop-play">🎮</span></div>'+
      '<div class="pl-speech" role="status" aria-live="polite" hidden></div>'+
@@ -318,6 +334,20 @@
   document.body.classList.add('paqui-life-room-open');
   care();
   room.addEventListener('click',event=>{
+   const decoration=event.target.closest('[data-pl-decor]');
+   if(decoration){
+    const item=decoration.dataset.plDecor;
+    if(item==='lamp'){
+     const on=room.classList.toggle('pl-lamp-on');
+     decoration.setAttribute('aria-pressed',String(on));
+     setStatus(on?'💡 Guirnalda encendida':'💡 Guirnalda apagada');
+    }else if(item==='plant'){
+     room.classList.add('pl-plant-happy');
+     setStatus('🌿 ¡La palmera está encantada!');
+     setTimeout(()=>room?.classList.remove('pl-plant-happy'),1300);
+    }
+    return;
+   }
    if(!allowed()){close();return;}
    if(event.target.closest('[data-pl-memory]')){
     const play=memoryAction;
