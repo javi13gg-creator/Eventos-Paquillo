@@ -1087,3 +1087,7 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 .pw-duel-row>small{opacity:.8}
 .pw-duel-row p{font-size:12px;margin:7px 0}
 .pw-duel-row button{margin:4px;padding:9px 12px;background:#8a61db;color:white;border:1px solid #e4ceff;border-radius:9px;font-weight:800}
+
+/* Retos pendientes al abrir Paquillo World */
+.pw-duel-alert{position:relative;z-index:15;width:calc(100% - 22px);margin:8px 11px;padding:12px;border:2px solid #ffdd79;border-radius:14px;background:#5d368c;color:white;font-weight:900;text-align:center;box-shadow:0 4px 12px #0005}
+.pw-duel-badge:not([hidden]){position:absolute;z-index:12;right:8px;top:59px;background:#f6c44e;color:#261344;border-radius:18px;padding:4px 9px;font-size:11px;font-weight:900}
