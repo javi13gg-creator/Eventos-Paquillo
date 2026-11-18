@@ -100,6 +100,8 @@ function homeView(){
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
  playerHero()+
+ (window.PaquilloLifePreview?.enabled?
+  '<div class="pw-life-preview-strip"><button type="button" data-pw-life-open aria-label="Abrir nueva habitación en vista previa"><span aria-hidden="true">🏡</span> Mi hogar · Conoce tu habitación <small>VISTA PREVIA ›</small></button></div>':'')+
  '<div class="pw-lobby-layout">'+
  '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
  '<button type="button" data-pw-view="profile"><span>🦸</span>Mi personaje</button>'+
@@ -468,6 +470,13 @@ root.addEventListener('click',e=>{
  const btn=e.target.closest('button,[data-pw-close],#pwReflexPad');if(!btn)return;
  if(btn.hasAttribute('data-pw-exit')){toWeb();return}
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
+ if(btn.hasAttribute('data-pw-life-open')){
+  window.PaquilloLifePreview?.open({
+   name:state.mine?.display_name||'Paquillo',
+   onArcade:()=>setView('games')
+  });
+  return;
+ }
  if(btn.hasAttribute('data-pw-close')){closeModal();return}
  if(btn.hasAttribute('data-pw-avatar-toggle')){state.previewCharacters=!state.previewCharacters;renderShell();return}
  if(btn.hasAttribute('data-pw-back')){goBack();return}
