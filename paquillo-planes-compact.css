@@ -1,0 +1,70 @@
+/* Paquillo Events · Planes compactos, mobile first · 2026-11 */
+#p-planes #events{display:grid;gap:11px}
+#p-planes #events>.yr{margin:12px 0 0}
+#p-planes .paqui-plan-card{position:relative;min-width:0;max-width:100%;border:1px solid color-mix(in srgb,var(--pk) 24%,var(--ln));background:var(--card);border-radius:18px;box-shadow:0 4px 14px #16103812;overflow:visible}
+#p-planes .paqui-plan-card>.paqui-plan-top{display:flex;gap:10px;align-items:center;width:100%;min-width:0;text-align:left;border:0;background:linear-gradient(125deg,color-mix(in srgb,var(--pk) 7%,var(--card)),var(--card));border-radius:17px 17px 0 0;padding:12px 13px 10px;color:var(--ink);font:inherit;cursor:pointer}
+#p-planes .paqui-plan-top:focus-visible,#p-planes .paqui-plan-fold summary:focus-visible{outline:2px solid var(--pk);outline-offset:-2px}
+#p-planes .paqui-plan-top .paqui-plan-summary-icon{flex-basis:43px;width:43px;height:43px;box-shadow:none}
+#p-planes .paqui-plan-top .paqui-plan-summary-text{flex:1;min-width:0}
+#p-planes .paqui-plan-top .paqui-plan-summary-text strong{font-size:clamp(.88rem,3vw,1.02rem);line-height:1.24}
+#p-planes .paqui-plan-top .paqui-plan-summary-text small{font-size:.71rem;line-height:1.3}
+#p-planes .paqui-plan-top .paqui-plan-chevron{width:28px;flex:0 0 28px;height:28px;font-size:19px;box-shadow:none}
+#p-planes .paqui-plan-card.is-expanded .paqui-plan-top .paqui-plan-chevron{transform:rotate(180deg)}
+#p-planes .paqui-plan-interact{display:flex;flex-direction:column;gap:8px;padding:0 12px 11px}
+#p-planes .paqui-plan-rsvp{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+#p-planes .paqui-plan-rsvp .paqui-plan-rsvp-label{font-size:.71rem;color:var(--mut);font-weight:850;margin-right:3px}
+#p-planes .paqui-plan-rsvp .attendance-choice{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:34px;padding:6px 9px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--ink);font:850 .73rem/1 system-ui,sans-serif;box-shadow:none;white-space:nowrap}
+#p-planes .paqui-plan-rsvp .attendance-choice.is-selected{background:color-mix(in srgb,var(--mint) 28%,var(--card));border:2px solid #15934b;color:var(--ink);box-shadow:none}
+#p-planes .paqui-plan-rsvp .attendance-choice[data-attendance-choice="maybe"].is-selected{border-color:#df9b0a;background:color-mix(in srgb,var(--yl) 38%,var(--card))}
+#p-planes .paqui-plan-rsvp .attendance-choice[data-attendance-choice="no"].is-selected{border-color:#b83653;background:color-mix(in srgb,#f57594 19%,var(--card))}
+#p-planes .paqui-plan-rsvp .attendance-choice:focus-visible{outline:2px solid var(--pk);outline-offset:2px}
+#p-planes .paqui-attendance-mini{margin-left:auto;font-size:.68rem;color:var(--mut);font-weight:800;white-space:nowrap}
+#p-planes .paqui-attendance-mini b{color:var(--ink)}
+#p-planes .paqui-plan-fold{margin:0!important;border:0!important;border-top:1px solid var(--ln)!important;border-radius:0 0 17px 17px!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+#p-planes .paqui-plan-fold>summary.paqui-plan-detail-toggle{display:flex;align-items:center;justify-content:center;gap:8px;min-height:32px;padding:5px 12px;cursor:pointer;list-style:none;font-size:.73rem;font-weight:850;color:var(--pk);text-align:center}
+#p-planes .paqui-plan-fold>summary.paqui-plan-detail-toggle::-webkit-details-marker{display:none}
+#p-planes .paqui-plan-fold>summary.paqui-plan-detail-toggle .paqui-fold-arrow{display:inline-block;transition:transform .18s}
+#p-planes .paqui-plan-fold[open]>summary.paqui-plan-detail-toggle .paqui-fold-arrow{transform:rotate(180deg)}
+#p-planes .paqui-plan-fold>.ev-card{margin:0;border:0;border-top:1px solid var(--ln);border-radius:0 0 17px 17px;box-shadow:none;padding:12px;gap:10px}
+#p-planes .paqui-plan-fold>.ev-card>.paqui-plan-facts{display:grid;gap:6px}
+#p-planes .paqui-plan-facts h3{font-size:.99rem;margin:0}
+#p-planes .paqui-plan-facts .meta{margin:0;font-size:.8rem;line-height:1.55}
+#p-planes .paqui-plan-details-description{font-size:.82rem;line-height:1.5;margin:0;color:var(--ink);overflow-wrap:anywhere}
+#p-planes .paqui-plan-primary-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#p-planes .paqui-plan-primary-tools .btn{min-width:0;min-height:38px;padding:7px 4px;border-radius:10px;display:flex;justify-content:center;align-items:center;gap:5px;font-weight:850;font-size:.75rem;white-space:normal;line-height:1.2}
+#p-planes .paqui-plan-primary-tools .paqui-tool-emoji{font-size:1.05rem}
+#p-planes .paqui-plan-extra,#p-planes .paqui-plan-attendees,#p-planes .paqui-plan-poster{border:1px solid var(--ln);border-radius:11px;background:color-mix(in srgb,var(--bg) 65%,var(--card));overflow:visible;min-width:0}
+#p-planes .paqui-plan-extra>summary,#p-planes .paqui-plan-attendees>summary,#p-planes .paqui-plan-poster>summary{cursor:pointer;padding:10px 12px;font-weight:850;color:var(--ink);font-size:.78rem;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:6px}
+#p-planes .paqui-plan-extra>summary::-webkit-details-marker,#p-planes .paqui-plan-attendees>summary::-webkit-details-marker,#p-planes .paqui-plan-poster>summary::-webkit-details-marker{display:none}
+#p-planes .paqui-plan-extra[open]>summary,#p-planes .paqui-plan-attendees[open]>summary,#p-planes .paqui-plan-poster[open]>summary{border-bottom:1px solid var(--ln)}
+#p-planes .paqui-plan-extra-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:10px}
+#p-planes .paqui-plan-extra-items>.btn,#p-planes .paqui-plan-extra-items>a.btn{min-width:0;display:flex;align-items:center;justify-content:center;white-space:normal;font-size:.76rem;line-height:1.25;padding:8px 7px;min-height:39px;border-radius:9px}
+#p-planes .paqui-plan-extra-items .event-poll-actions,#p-planes .paqui-plan-extra-items .event-manage{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:0;margin:0}
+#p-planes .paqui-plan-extra-items .event-poll-actions>*,#p-planes .paqui-plan-extra-items .event-manage>*{flex:1 1 auto;font-size:.76rem;margin:0;white-space:normal}
+#p-planes .paqui-plan-extra-items .event-poll-actions span[data-event-poll-link]{min-width:0}
+#p-planes .paqui-plan-extra-items .event-poll-actions span[data-event-poll-link] button{white-space:normal;font-size:.75rem}
+#p-planes .paqui-plan-attendees .attendance-panel{margin:0;border:0;border-radius:0 0 10px 10px;background:transparent;padding:10px;font-size:.76rem;line-height:1.45}
+#p-planes .paqui-plan-poster .poster{padding:10px;margin:0}
+#p-planes .paqui-plan-poster .poster img{display:block;width:auto;max-width:100%;max-height:300px;object-fit:contain;margin:auto;border-radius:9px}
+#p-planes .paqui-plan-fold .paqui-plan-collapse{width:auto;display:inline-flex;align-items:center;justify-content:center;margin:2px 0 0 auto;border:1px solid var(--ln);border-radius:9px;padding:7px 12px;font-size:.75rem;background:var(--card);color:var(--pk);box-shadow:none;font-weight:850;min-height:32px}
+#p-planes .paqui-plan-card:has(.paqui-react-picker:not([hidden])){z-index:4}
+@media(max-width:600px){
+ #p-planes #events{gap:9px}
+ #p-planes .paqui-plan-card>.paqui-plan-top{padding:10px 9px 9px;gap:8px}
+ #p-planes .paqui-plan-top .paqui-plan-summary-icon{flex-basis:37px;width:37px;height:37px}
+ #p-planes .paqui-plan-top .paqui-plan-summary-text strong{font-size:.89rem}
+ #p-planes .paqui-plan-top .paqui-plan-summary-text small{font-size:.68rem}
+ #p-planes .paqui-plan-interact{padding:0 9px 9px;gap:7px}
+ #p-planes .paqui-plan-rsvp{gap:5px}
+ #p-planes .paqui-plan-rsvp .paqui-plan-rsvp-label{display:none}
+ #p-planes .paqui-plan-rsvp .attendance-choice{padding:6px 7px;min-height:33px;font-size:.7rem}
+ #p-planes .paqui-attendance-mini{font-size:.67rem}
+ #p-planes .paqui-plan-fold>.ev-card{padding:9px}
+}
+@media(max-width:359px){
+ #p-planes .paqui-plan-rsvp .attendance-choice{min-width:35px;padding:6px 5px;font-size:.66rem}
+ #p-planes .paqui-plan-rsvp .paqui-rsvp-text{display:none}
+ #p-planes .paqui-attendance-mini{font-size:.6rem}
+ #p-planes .paqui-plan-primary-tools .btn{gap:3px;font-size:.69rem}
+ #p-planes .paqui-plan-extra-items{grid-template-columns:1fr}
+}
