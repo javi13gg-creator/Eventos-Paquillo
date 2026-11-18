@@ -291,3 +291,17 @@
  opacity:.8;
 }
 #paquiLifePreview .pl-furniture-trophy{font-size:clamp(22px,6vw,32px)}
+
+/* LIFE v17: acceso al inventario siempre visible, sin depender del scroll. */
+#paquiLifePreview .pl-inventory-shortcut{
+ flex:0 0 auto;min-height:37px;padding:6px 9px;
+ border:1px solid #a9f3df;border-radius:10px;
+ background:#146b70;color:white;font-size:12px;font-weight:900;
+ box-shadow:0 2px 0 #073d45;
+}
+#paquiLifePreview .pl-inventory{scroll-margin-top:8px}
+@media(max-width:390px){
+ #paquiLifePreview .pl-inventory-shortcut{font-size:11px;padding:5px 6px}
+ #paquiLifePreview .pl-header{gap:5px}
+ #paquiLifePreview .pl-back{min-width:65px;padding:5px}
+}
