@@ -1,0 +1,239 @@
+/* PAQUILLO LIFE · Habitación alfa. Namespace completamente aislado del resto de la web. */
+body.paqui-life-room-open{overflow:hidden!important}
+#paquiLifePreview,#paquiLifePreview *{box-sizing:border-box}
+#paquiLifePreview{
+ --pl-purple:#4a1b8b;--pl-gold:#ffdc65;--pl-turq:#49f1ed;
+ position:fixed;z-index:320;inset:0;
+ display:flex;flex-direction:column;overflow:hidden;
+ background:#311857;color:#fff;
+ font-family:"Bricolage Grotesque",system-ui,-apple-system,sans-serif;
+ overscroll-behavior:contain;
+ isolation:isolate
+}
+#paquiLifePreview button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+#paquiLifePreview button:focus-visible{outline:3px solid var(--pl-gold);outline-offset:3px}
+#paquiLifePreview .pl-header{
+ flex:0 0 auto;display:flex;align-items:center;gap:12px;
+ padding:calc(8px + env(safe-area-inset-top,0px)) max(13px,env(safe-area-inset-right,0px)) 8px max(13px,env(safe-area-inset-left,0px));
+ min-height:66px;z-index:9;
+ background:linear-gradient(180deg,#200a4b 0%,#40217c 100%);
+ border-bottom:2px solid #8b58d4;
+ box-shadow:0 7px 18px #230a5155
+}
+#paquiLifePreview .pl-back{
+ flex:0 0 auto;display:flex;align-items:center;gap:5px;
+ min-height:41px;min-width:86px;
+ padding:6px 11px;border:2px solid #e0acff;border-radius:13px;
+ background:linear-gradient(145deg,#9043e8,#5925a5);
+ color:#fff;text-shadow:0 2px 2px #310c6b;
+ box-shadow:0 3px 0 #2d1164;
+ font-size:.84rem;font-weight:950
+}
+#paquiLifePreview .pl-back span:first-child{font-size:1.8rem;line-height:1}
+#paquiLifePreview .pl-header-title{display:grid;gap:0;min-width:0;flex:1;text-align:center}
+#paquiLifePreview .pl-header-title small{
+ color:#f8d56b;font:950 .63rem/1.3 system-ui,sans-serif;letter-spacing:.09em
+}
+#paquiLifePreview .pl-header-title b{
+ font:1000 1.17rem/1.16 "Bricolage Grotesque",system-ui,sans-serif;
+ text-shadow:0 2px 0 #2f1362
+}
+#paquiLifePreview .pl-preview-tag{
+ flex:0 0 auto;border:1px solid #fee49c;
+ background:#eea23e;color:#451f3b;
+ border-radius:9px;padding:6px 7px;
+ font:1000 .63rem/1 system-ui,sans-serif;
+ box-shadow:0 2px 0 #a66b37
+}
+#paquiLifePreview .pl-world{position:relative;flex:1 1 auto;min-height:0;width:100%;overflow:hidden;display:flex;justify-content:center}
+#paquiLifePreview .pl-world::after{
+ content:"";position:absolute;inset:0;z-index:8;pointer-events:none;
+ background:linear-gradient(90deg,#26114a23,transparent 8%,transparent 91%,#26114a23);
+}
+#paquiLifePreview .pl-stage{
+ position:relative;width:100%;height:100%;max-width:680px;
+ margin:auto;overflow:hidden;isolation:isolate;
+ background:#9151b9
+}
+#paquiLifePreview .pl-background{
+ position:absolute;inset:0;z-index:0;
+ width:100%;height:100%;
+ display:block;object-fit:fill;
+ user-select:none;-webkit-user-drag:none;pointer-events:none
+}
+#paquiLifePreview .pl-sunbeam{
+ position:absolute;z-index:1;pointer-events:none;inset:0;
+ background:linear-gradient(119deg,transparent 24%,#fff2bb16 34%,transparent 51%);
+ animation:pl-sun 8s ease-in-out infinite alternate
+}
+#paquiLifePreview .pl-character-spot{
+ position:absolute;z-index:2;left:50%;bottom:12.5%;
+ width:42%;height:9%;transform:translateX(-50%);
+ border-radius:50%;pointer-events:none;
+ background:radial-gradient(ellipse,#29104066 0%,#2f175533 48%,transparent 72%)
+}
+#paquiLifePreview .pl-person{
+ position:absolute;z-index:4;
+ bottom:15%;left:48%;transform:translateX(-50%);
+ width:42%;height:43%;
+ pointer-events:none;
+ display:flex;align-items:flex-end;justify-content:center
+}
+#paquiLifePreview .pl-person-figure{
+ display:flex;align-items:flex-end;justify-content:center;
+ width:100%;height:100%;max-width:250px;
+ transform-origin:50% 88%;
+ animation:pl-breathe 3.7s ease-in-out infinite;
+ filter:drop-shadow(0 9px 6px #3413436b)
+}
+#paquiLifePreview .pl-person-figure>img{
+ width:100%;height:100%;object-fit:contain;object-position:center bottom;
+ user-select:none;-webkit-user-drag:none
+}
+#paquiLifePreview .pl-person-fallback{
+ font-size:clamp(4.5rem,31vw,8rem);
+ line-height:1;align-items:center;filter:drop-shadow(0 8px 4px #38134777)
+}
+#paquiLifePreview .pl-ambient{position:absolute;z-index:2;color:#fff7a2;pointer-events:none;text-shadow:0 0 10px #fff3a2}
+#paquiLifePreview .pl-ambient-a{top:23%;left:43%;font-size:23px;animation:pl-twinkle 4.2s ease-in-out infinite}
+#paquiLifePreview .pl-ambient-b{top:47%;left:17%;font-size:16px;animation:pl-twinkle 3.6s -1.5s ease-in-out infinite}
+#paquiLifePreview .pl-object{
+ position:absolute;z-index:6;
+ display:flex;align-items:center;justify-content:center;
+ flex-direction:column;gap:2px;
+ min-width:65px;min-height:62px;
+ padding:7px 9px 6px;
+ border:2px solid #fff7d3;
+ border-radius:17px;
+ background:linear-gradient(155deg,#412176ec,#251257e8);
+ color:#fff;
+ box-shadow:0 4px 0 #25114d,0 8px 14px #210c4b75;
+ font-weight:1000;font-size:.67rem;line-height:1.1;
+ text-align:center;text-shadow:0 1px 1px #26103e;
+ transition:transform .12s,filter .12s
+}
+#paquiLifePreview .pl-object:active{
+ transform:translateY(3px) scale(.96);
+ box-shadow:0 1px 0 #25114d,0 4px 8px #210c4b65
+}
+#paquiLifePreview .pl-object:hover{filter:brightness(1.12)}
+#paquiLifePreview .pl-object[aria-pressed="true"]{
+ border-color:#f8de73;background:linear-gradient(155deg,#8551dd,#5321a5)
+}
+#paquiLifePreview .pl-object-icon{
+ display:grid;place-items:center;width:30px;height:29px;
+ font-size:1.35rem;line-height:1;filter:drop-shadow(0 2px 1px #26113b88)
+}
+#paquiLifePreview .pl-object-eat{top:48%;left:3%}
+#paquiLifePreview .pl-object-shower{top:24%;right:4%}
+#paquiLifePreview .pl-object-play{top:47%;right:29%}
+#paquiLifePreview .pl-object-sleep{top:70%;right:3%}
+#paquiLifePreview .pl-speech{
+ position:absolute;z-index:7;top:48%;left:50%;
+ transform:translate(-50%,-100%);
+ max-width:74%;padding:10px 13px;
+ background:#fffae8;color:#52257e;border:3px solid #ffffff;
+ border-radius:18px;
+ box-shadow:0 5px 0 #8b49a0,0 9px 19px #3d1a5188;
+ font-size:.8rem;line-height:1.23;font-weight:950;
+ text-align:center;pointer-events:none;
+ animation:pl-pop .23s cubic-bezier(.2,1.7,.5,1) both
+}
+#paquiLifePreview .pl-speech[hidden]{display:none!important}
+#paquiLifePreview .pl-speech:after{
+ content:"";position:absolute;left:46%;bottom:-13px;
+ border-width:10px 9px 0;border-style:solid;
+ border-color:#fffae8 transparent transparent
+}
+#paquiLifePreview .pl-action-stars{
+ position:absolute;z-index:5;bottom:41%;left:38%;
+ display:flex;gap:15px;color:#ffe274;
+ pointer-events:none;opacity:0;
+ text-shadow:0 0 12px #f4c83d
+}
+#paquiLifePreview .pl-action-stars span:nth-child(1){font-size:16px}
+#paquiLifePreview .pl-action-stars span:nth-child(2){font-size:28px}
+#paquiLifePreview .pl-action-stars span:nth-child(3){font-size:19px}
+#paquiLifePreview[class*="pl-action-"] .pl-action-stars{
+ opacity:1;animation:pl-sparkle 1.4s ease-in-out 2
+}
+#paquiLifePreview.pl-action-eat .pl-person-figure{animation:pl-eat .36s ease-in-out 4 alternate}
+#paquiLifePreview.pl-action-sleep .pl-person-figure{animation:pl-sleep .85s ease-in-out 1 forwards}
+#paquiLifePreview.pl-action-shower .pl-person-figure{animation:pl-shower .25s ease-in-out 7 alternate}
+#paquiLifePreview .pl-floor-caption{
+ position:absolute;z-index:6;left:10px;bottom:11px;
+ max-width:65%;display:flex;align-items:flex-start;flex-direction:column;gap:1px;
+ padding:8px 12px;border-radius:12px;
+ border:1px solid #fff7d388;
+ background:linear-gradient(135deg,#431971d9,#24104cde);
+ box-shadow:0 5px 12px #2a0e5666
+}
+#paquiLifePreview .pl-floor-caption b{font-size:.83rem;line-height:1.1}
+#paquiLifePreview .pl-floor-caption small{font-size:.64rem;color:#f5dba9}
+#paquiLifePreview .pl-foot{
+ z-index:9;flex:0 0 auto;display:grid;place-content:center;gap:3px;
+ text-align:center;
+ min-height:69px;
+ padding:10px 12px calc(9px + env(safe-area-inset-bottom,0px));
+ background:linear-gradient(180deg,#301362,#190839);
+ border-top:2px solid #7941be;box-shadow:0 -6px 16px #220a4e55
+}
+#paquiLifePreview .pl-foot p{
+ margin:0;font-size:.8rem;line-height:1.3;font-weight:850
+}
+#paquiLifePreview .pl-foot p span{font-size:1.01rem}
+#paquiLifePreview .pl-foot small{
+ color:#d7c0f2;font-size:.65rem;line-height:1.2
+}
+@keyframes pl-breathe{0%,100%{transform:translateY(0) rotate(-.7deg) scale(1)}50%{transform:translateY(-4px) rotate(.8deg) scale(1.013)}}
+@keyframes pl-eat{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-14px) rotate(4deg) scale(1.03)}}
+@keyframes pl-shower{from{transform:translateX(-5px) rotate(-3deg)}to{transform:translateX(5px) rotate(3deg)}}
+@keyframes pl-sleep{0%{transform:rotate(0) translateY(0)}60%{transform:rotate(17deg) translate(7px,16px)}100%{transform:rotate(13deg) translate(5px,11px)}}
+@keyframes pl-twinkle{0%,100%{opacity:.3;transform:scale(.65)}50%{opacity:.95;transform:scale(1.15)}}
+@keyframes pl-sun{from{opacity:.4;transform:translateX(-5%)}to{opacity:1;transform:translateX(6%)}}
+@keyframes pl-sparkle{0%{opacity:0;transform:translateY(15px) scale(.6)}40%{opacity:1;transform:translateY(-9px) scale(1.1)}100%{opacity:0;transform:translateY(-36px) scale(.8)}}
+@keyframes pl-pop{from{opacity:0;transform:translate(-50%,-90%) scale(.7)}to{opacity:1;transform:translate(-50%,-100%) scale(1)}}
+/* Prueba de integración: entrada discreta en el lobby, solo con ?life-preview=1. */
+#p-world .pw-life-preview-strip{
+ position:relative;z-index:10;width:calc(100% - 24px);max-width:920px;
+ margin:3px auto 0
+}
+#p-world .pw-life-preview-strip button{
+ display:flex;align-items:center;gap:9px;
+ width:100%;min-height:45px;padding:8px 13px;
+ border-radius:15px;border:2px solid #ffe695;
+ background:linear-gradient(120deg,#4b219dcc,#b648abdd);
+ box-shadow:0 4px 0 #64297d,0 8px 14px #1c0c4955;
+ color:#fff;font:950 .81rem/1.2 "Bricolage Grotesque",system-ui,sans-serif;
+ text-align:left;cursor:pointer
+}
+#p-world .pw-life-preview-strip button>span:first-child{font-size:1.3rem}
+#p-world .pw-life-preview-strip button>small{margin-left:auto;color:#ffe58c;font-size:.62rem;white-space:nowrap}
+@media(max-width:600px){
+ #paquiLifePreview .pl-object{min-width:56px;min-height:56px;padding:5px 6px;border-radius:14px;font-size:.62rem}
+ #paquiLifePreview .pl-object-icon{font-size:1.24rem}
+ #paquiLifePreview .pl-object-eat{left:1%;top:49%}
+ #paquiLifePreview .pl-object-shower{right:2%;top:24%}
+ #paquiLifePreview .pl-object-play{right:26%;top:46%}
+ #paquiLifePreview .pl-object-sleep{right:1%;top:70%}
+ #paquiLifePreview .pl-person{left:48%;width:43%;height:41%}
+ #p-world .pw-life-preview-strip{margin-top:0}
+ #p-world .pw-life-preview-strip button{min-height:43px;font-size:.75rem}
+}
+@media(max-height:660px){
+ #paquiLifePreview .pl-header{min-height:50px;padding-top:5px;padding-bottom:5px}
+ #paquiLifePreview .pl-foot{min-height:48px;padding-top:4px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+ #paquiLifePreview .pl-foot p{font-size:.69rem}
+ #paquiLifePreview .pl-foot small{font-size:.59rem}
+ #paquiLifePreview .pl-object{min-height:47px;min-width:53px;padding:4px;font-size:.6rem}
+ #paquiLifePreview .pl-object-icon{font-size:1.05rem}
+}
+@media(min-width:720px){
+ #paquiLifePreview .pl-stage{max-width:510px}
+ #paquiLifePreview .pl-person{width:36%;height:40%}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview .pl-sunbeam,#paquiLifePreview .pl-person-figure,
+ #paquiLifePreview .pl-ambient,#paquiLifePreview .pl-action-stars{animation:none!important}
+ #paquiLifePreview .pl-object{transition:none}
+}
