@@ -139,4 +139,7 @@
   root.querySelectorAll('.paqui-plan-fold').forEach(transform);
  }
  window.PaquilloCompactPlans={mount};
+ // En sesiones ya restauradas, la consulta de planes puede terminar antes de cargar este archivo.
+ const initial=document.getElementById('events');
+ if(initial?.querySelector('.paqui-plan-fold'))mount(initial);
 })();
