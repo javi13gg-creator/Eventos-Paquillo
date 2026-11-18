@@ -1,5 +1,6 @@
 /* Paquillo Events · Recuperación de fotos originales de perfil */
 #myProfile .paqui-profile-photo-row{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+#myProfile .paqui-profile-avatar[hidden]{display:none!important}
 #myProfile .paqui-profile-avatar{
  width:88px;height:88px;flex:0 0 88px;display:block;
  border-radius:50%;object-fit:cover;border:2px solid var(--ln);
