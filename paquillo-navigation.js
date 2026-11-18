@@ -9,7 +9,6 @@
  const menuPanel=document.getElementById('menuPanel');
  const menuBackdrop=document.getElementById('menuBackdrop');
  if(!topNav||!bottom||!menuToggle)return;
- let mainView='home';
  let activeTab=location.hash.slice(1)||'proximos';
  const delay=fn=>setTimeout(fn,0);
  function closeSearch(){
@@ -33,7 +32,7 @@
   activeTab=tab;
   if(tab!=='world')closeMenu();
   else{closeMenu();closeSearch();}
-  let active=tab==='proximos'?mainView:tab==='votaciones'?'polls':tab==='world'?'world':'more';
+  let active=tab==='proximos'?'home':tab==='planes'?'plans':tab==='votaciones'?'polls':tab==='world'?'world':'more';
   for(const btn of bottom.querySelectorAll('[data-mobile-destination]')){
    const current=btn.dataset.mobileDestination===active;
    btn.classList.toggle('active',current);
@@ -46,17 +45,14 @@
   else if(typeof window.showTab==='function')window.showTab(tab);
  }
  function goHome(){
-  mainView='home';
   clickOriginal('proximos');
   sync('proximos');
   window.scrollTo({top:0,behavior:'instant'});
  }
  function goPlans(){
-  mainView='plans';
-  clickOriginal('proximos');
-  sync('proximos');
-  const target=document.getElementById('paquiPlansAnchor');
-  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),70);
+  clickOriginal('planes');
+  sync('planes');
+  window.scrollTo({top:0,behavior:'instant'});
  }
  bottom.addEventListener('click',event=>{
   const button=event.target.closest('[data-mobile-destination]');
