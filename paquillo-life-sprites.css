@@ -1,0 +1,79 @@
+/* MiniJavi sin gafas · sprites 3D, poses ilustradas de cuerpo completo.
+ * La imagen original sigue en World; este sprite sólo aparece en Life de Javi. */
+#paquiLifePreview .pl-person-figure.pl-has-sprite{
+ width:100%;height:100%;max-width:265px;
+ animation:none!important;transform:none!important;
+ filter:drop-shadow(0 8px 5px #22103f72)
+}
+#paquiLifePreview .pl-sprite-character{
+ display:block;width:100%;height:100%;
+ background-image:url("paquillo-life-minijavi-sprites.png?v=1");
+ background-size:300% 300%;background-repeat:no-repeat;
+ background-position:0% 0%;
+ animation:pl-sprite-breathe 3.6s ease-in-out infinite;
+ transform-origin:50% 90%;
+ will-change:background-position,transform;
+}
+#paquiLifePreview.pl-walking .pl-person-figure.pl-has-sprite,
+#paquiLifePreview.pl-performing .pl-person-figure.pl-has-sprite,
+#paquiLifePreview.pl-celebrating .pl-person-figure.pl-has-sprite{
+ animation:none!important;transform:none!important
+}
+/* Fila 1: reposo, paso izquierdo y paso derecho. */
+#paquiLifePreview.pl-walking:not(.pl-performing) .pl-sprite-character{
+ animation:pl-sprite-walk .47s step-end infinite!important
+}
+/* Fila 2: comer, sueño, ducha. */
+#paquiLifePreview.pl-action-eat .pl-sprite-character{
+ background-position:0% 50%;animation:pl-sprite-chew .65s ease-in-out infinite alternate!important
+}
+#paquiLifePreview.pl-action-sleep .pl-sprite-character{
+ background-position:50% 50%;animation:pl-sprite-sleep 2.2s ease-in-out infinite!important
+}
+#paquiLifePreview.pl-action-shower .pl-sprite-character{
+ background-position:100% 50%;animation:pl-sprite-shower .7s ease-in-out infinite alternate!important
+}
+/* Fila 3: victoria, saludo, mirada tranquila. */
+#paquiLifePreview.pl-action-play .pl-sprite-character{
+ background-position:50% 100%;animation:pl-sprite-play .7s ease-in-out infinite!important
+}
+#paquiLifePreview.pl-celebrating .pl-sprite-character{
+ background-position:0% 100%;animation:pl-sprite-victory .85s cubic-bezier(.2,.8,.3,1) infinite!important
+}
+@keyframes pl-sprite-walk{
+ 0%,49.99%{background-position:50% 0%;transform:translateY(-5px) rotate(-1.2deg)}
+ 50%,100%{background-position:100% 0%;transform:translateY(0) rotate(1.2deg)}
+}
+@keyframes pl-sprite-breathe{
+ 0%,100%{transform:translateY(0) scale(1)}
+ 50%{transform:translateY(-3px) scale(1.012)}
+}
+@keyframes pl-sprite-chew{
+ from{transform:translateY(0) rotate(-1.5deg)}
+ to{transform:translateY(-6px) rotate(1.5deg)}
+}
+@keyframes pl-sprite-sleep{
+ 0%,100%{transform:rotate(-1deg) translateY(8px) scale(.99)}
+ 50%{transform:rotate(1.5deg) translateY(12px) scale(.98)}
+}
+@keyframes pl-sprite-shower{
+ from{transform:translateX(-3px) rotate(-2deg)}
+ to{transform:translateX(3px) rotate(2deg)}
+}
+@keyframes pl-sprite-play{
+ 0%,100%{transform:translateY(0) rotate(-2deg)}
+ 50%{transform:translateY(-7px) rotate(3deg)}
+}
+@keyframes pl-sprite-victory{
+ 0%,100%{transform:translateY(0) scale(1)}
+ 35%{transform:translateY(-24px) scale(1.04)}
+ 67%{transform:translateY(-4px) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview .pl-sprite-character{
+  animation:none!important;will-change:auto!important;transform:none!important;
+ }
+ #paquiLifePreview.pl-walking:not(.pl-performing) .pl-sprite-character{
+  background-position:50% 0%
+ }
+}
