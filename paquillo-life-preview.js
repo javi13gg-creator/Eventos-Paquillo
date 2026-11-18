@@ -11,49 +11,61 @@
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
- let idleTimer=null,idleEndTimer=null,idleSequence=0,roamIndex=0;
- const roamPlaces=[
-  {left:35,bottom:17},{left:55,bottom:19},{left:48,bottom:15},
-  {left:67,bottom:16},{left:44,bottom:18},{left:29,bottom:15}
- ];
+ let idleTimer=null,idleSequence=0,roamIndex=0;
+ let roamPosition={left:48,bottom:15};
+ const random=(min,max)=>min+Math.random()*(max-min);
  function stopIdle(){
   idleSequence++;
   if(idleTimer!==null)clearTimeout(idleTimer);
-  if(idleEndTimer!==null)clearTimeout(idleEndTimer);
-  idleTimer=null;idleEndTimer=null;
+  idleTimer=null;
   room?.classList.remove('pl-idle-wave','pl-idle-rest','pl-roaming','pl-walking');
  }
  function scheduleIdle(){
   stopIdle();
-  if(!room||!allowed()||document.hidden)return;
+  if(!room||!allowed()||document.hidden||prefersLessMotion())return;
   const token=idleSequence;
   function next(){
    if(token!==idleSequence||!room||!allowed()||document.hidden)return;
-   if(careBusy||room.classList.contains('pl-performing')||room.classList.contains('pl-celebrating')){idleTimer=setTimeout(next,1200);return;}
-   if(prefersLessMotion()){
-    room.classList.remove('pl-roaming','pl-idle-wave','pl-idle-rest');
-    return;
+   if(careBusy||room.classList.contains('pl-performing')||room.classList.contains('pl-celebrating')){
+    idleTimer=setTimeout(next,700);return;
    }
-   const rest=lifeMood().id==='tired'&&roamIndex%3===0;
-   if(rest){
-    room.classList.remove('pl-roaming','pl-idle-wave');
-    room.classList.add('pl-idle-rest');
-    idleTimer=setTimeout(next,2600);
-   }else{
-    room.classList.remove('pl-idle-rest','pl-idle-wave');
-    room.classList.add('pl-roaming','pl-walking');
-    const spot=roamPlaces[roamIndex++%roamPlaces.length];
-    moveTo('home',spot);
-    idleTimer=setTimeout(()=>{
-     if(token!==idleSequence||!room)return;
-     room.classList.remove('pl-roaming','pl-walking');
-     if(roamIndex%3===0)room.classList.add('pl-idle-wave');
-     idleTimer=setTimeout(next,850);
-    },2200);
+   const tired=lifeMood().id==='tired';
+   const pause=roamIndex>0&&(Math.random()<(tired?.45:.18));
+   if(pause){
+    room.classList.remove('pl-roaming','pl-walking','pl-idle-wave');
+    room.classList.add(tired?'pl-idle-rest':'pl-idle-wave');
+    idleTimer=setTimeout(next,random(700,tired?2500:1550));return;
    }
+   room.classList.remove('pl-idle-wave','pl-idle-rest');
+   // Cada destino es nuevo y cercano, sin repetir una ruta ni teletransportarse.
+   let dest,dist=0;
+   for(let tries=0;tries<10;tries++){
+    dest={
+     left:Math.max(27,Math.min(72,roamPosition.left+random(-21,21))),
+     bottom:Math.max(14,Math.min(24,roamPosition.bottom+random(-6,6)))
+    };
+    dist=Math.hypot(dest.left-roamPosition.left,(dest.bottom-roamPosition.bottom)*1.5);
+    if(dist>8)break;
+   }
+   if(!dest)return;
+   const duration=Math.round(Math.max(1100,Math.min(3500,dist*random(105,150)*(tired?1.35:1))));
+   const actor=room.querySelector('#plPerson');
+   if(actor){
+    actor.style.setProperty('--pl-roam-duration',duration+'ms');
+    actor.dataset.plFacing=dest.left<roamPosition.left?'left':'right';
+   }
+   room.classList.add('pl-roaming','pl-walking');
+   // Primer destino se elige inmediatamente y cada trayecto tiene distancia y velocidad variables.
+   moveTo('home',dest);
+   roamPosition=dest;
+   roamIndex++;
+   idleTimer=setTimeout(()=>{
+    if(token!==idleSequence||!room)return;
+    room.classList.remove('pl-roaming','pl-walking');
+    idleTimer=setTimeout(next,random(180,650));
+   },duration);
   }
-  // Primer movimiento casi inmediato; el sprite respira también entre paseos.
-  idleTimer=setTimeout(next,450);
+  idleTimer=setTimeout(next,120);
  }
 
  function lifeMood(){
@@ -149,6 +161,7 @@
  function moveTo(place,override=null){
   if(!room)return;
   const data=override?{...places.home,...override}:places[place]||places.home;
+  if(!override&&place==='home')roamPosition={left:data.left,bottom:data.bottom};
   const actor=room.querySelector('#plPerson');
   if(actor){
    actor.style.setProperty('--pl-person-left',data.left+'%');
@@ -257,7 +270,7 @@
  function open(options={}){
   if(!allowed())return false;
   if(room)close();
-  careSession++;careReady=false;careBusy=false;moodMessage='';
+  careSession++;careReady=false;careBusy=false;moodMessage='';roamIndex=0;roamPosition={left:48,bottom:15};
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
@@ -272,7 +285,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Versión de movimiento continuo y decoración">LIFE v7</span>'+
+   '<span class="pl-preview-tag" title="Versión de movimiento continuo y decoración">LIFE v8</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
