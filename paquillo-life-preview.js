@@ -11,6 +11,38 @@
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
+ let idleTimer=null,idleEndTimer=null,idleSequence=0;
+ function stopIdle(){
+  idleSequence++;
+  if(idleTimer!==null)clearTimeout(idleTimer);
+  if(idleEndTimer!==null)clearTimeout(idleEndTimer);
+  idleTimer=null;idleEndTimer=null;
+  room?.classList.remove('pl-idle-wave','pl-idle-rest');
+ }
+ function scheduleIdle(){
+  stopIdle();
+  if(!room||!allowed()||document.hidden||prefersLessMotion())return;
+  const token=idleSequence;
+  idleTimer=setTimeout(()=>{
+   idleTimer=null;
+   if(token!==idleSequence||!room||!allowed()||document.hidden||careBusy||room.classList.contains('pl-walking')||room.classList.contains('pl-performing')||room.classList.contains('pl-celebrating')){
+    if(token===idleSequence)scheduleIdle();
+    return;
+   }
+   const tired=lifeMood().id==='tired';
+   const rest=tired||Math.random()<.4;
+   room.classList.add(rest?'pl-idle-rest':'pl-idle-wave');
+   speech(rest?'Un ratito contemplando la isla… 🌴':'¡Ey! ¿Qué se cuenta la cuadrilla? 👋');
+   idleEndTimer=setTimeout(()=>{
+    idleEndTimer=null;
+    if(token!==idleSequence||!room)return;
+    room.classList.remove('pl-idle-rest','pl-idle-wave');
+    const bubble=room.querySelector('.pl-speech');if(bubble)bubble.hidden=true;
+    scheduleIdle();
+   },rest?3400:2500);
+  },11000+Math.floor(Math.random()*9000));
+ }
+
  function lifeMood(){
   const low=Math.min(needs.energy,needs.mood,needs.wellbeing);
   if(low<=35)return {id:'tired',label:'Necesito un descanso',icon:'😴',phrase:'Hoy voy a mi ritmo. ¿Me echas una mano?'};
@@ -92,6 +124,7 @@
  }
  function cancelAction(){
   actionSerial++;
+  stopIdle();
   for(const timer of timers)window.clearTimeout(timer);
   timers.clear();
   if(!room)return;
@@ -134,6 +167,7 @@
     room?.querySelectorAll('[data-pl-place]').forEach(b=>b.setAttribute('aria-pressed','false'));
     setStatus('Toca un objeto para interactuar.');
     renderMood(true);
+    scheduleIdle();
    },prefersLessMotion()?80:900,serial);
   },delay,serial);
  }
@@ -194,6 +228,7 @@
    const bubble=room?.querySelector('.pl-speech');
    if(bubble)bubble.hidden=true;
    setStatus('¡A por la siguiente aventura!');
+   scheduleIdle();
   },prefersLessMotion()?750:3000,serial);
  }
  function close(){
@@ -307,6 +342,7 @@
   });
   room.querySelector('[data-pl-close]')?.focus({preventScroll:true});
   moveTo('home');
+  scheduleIdle();
   if(options.celebrate==='memory'){
    const serial=actionSerial;
    later(()=>celebrateMemory(),prefersLessMotion()?50:220,serial);
@@ -315,7 +351,11 @@
  }
  window.addEventListener('hashchange',()=>{if(room&&location.hash!=='#world')close();});
  window.addEventListener('paqui-world-ready',()=>{if(room&&!allowed())close();});
- document.addEventListener('visibilitychange',()=>{if(room&&document.hidden)cancelAction();});
+ document.addEventListener('visibilitychange',()=>{
+  if(!room)return;
+  if(document.hidden)cancelAction();
+  else if(allowed())scheduleIdle();
+ });
  
  window.PaquilloLifePreview={get enabled(){return allowed();},open,close,get isOpen(){return !!room;}};
 })();
