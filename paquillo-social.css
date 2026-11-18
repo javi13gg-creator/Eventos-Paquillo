@@ -1,0 +1,41 @@
+/* Paquillo Social · Fase 1, mobile first, aislado del resto de pantallas */
+#paquiSocial{margin:0 0 22px;color:var(--ink);font-family:"Bricolage Grotesque",system-ui,sans-serif}
+#paquiSocial *{box-sizing:border-box}
+#paquiSocial button{cursor:pointer;font-family:inherit}
+#paquiSocial button:focus-visible{outline:3px solid var(--pk);outline-offset:3px}
+#paquiSocial .ps-header{display:flex;justify-content:space-between;align-items:center;gap:13px;background:linear-gradient(125deg,#40318b,#7c36a2 58%,#e84785);border-radius:20px 20px 0 0;padding:18px;color:#fff}
+#paquiSocial .ps-kicker{font-size:.68rem;font-weight:900;letter-spacing:.13em;color:#ffe9a0}
+#paquiSocial .ps-header h2{margin:4px 0;font-size:clamp(1.25rem,4.5vw,1.85rem);color:#fff}
+#paquiSocial .ps-header p{margin:0;color:#f5eaff;font-size:.83rem;line-height:1.35}
+#paquiSocial .ps-refresh{flex:0 0 auto;align-self:flex-start;padding:8px 10px;border:1px solid #ffffff77;border-radius:12px;background:#ffffff20;color:#fff;font-size:.75rem;font-weight:850}
+#paquiSocial .ps-quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px;background:var(--card);border:1px solid var(--ln);border-top:0;border-radius:0 0 18px 18px}
+#paquiSocial .ps-quick-card{display:flex;flex-direction:column;text-align:left;align-items:flex-start;gap:2px;min-width:0;border:1px solid var(--ln);border-radius:14px;background:color-mix(in srgb,var(--card) 75%,var(--bg));color:var(--ink);padding:12px;transition:transform .12s,border-color .12s}
+#paquiSocial .ps-quick-card:active{transform:scale(.985)}
+#paquiSocial .ps-card-icon{font-size:1.35rem}
+#paquiSocial .ps-card-number{font-weight:950;font-size:clamp(1.15rem,4vw,1.5rem);color:var(--pk);line-height:1.2}
+#paquiSocial .ps-quick-card strong{font-size:.79rem}
+#paquiSocial .ps-quick-card small{font-size:.69rem;color:var(--mut);line-height:1.35;overflow-wrap:anywhere}
+#paquiSocial .ps-feed-head{display:flex;justify-content:space-between;align-items:flex-end;margin:22px 2px 10px}
+#paquiSocial .ps-feed-head h2{margin:0;font-size:1.24rem;color:var(--ink)}
+#paquiSocial .ps-feed-head p{margin:4px 0 0;color:var(--mut);font-size:.77rem}
+#paquiSocial .ps-filters{display:flex;gap:7px;overflow-x:auto;padding:2px 0 11px;scrollbar-width:none}
+#paquiSocial .ps-filters::-webkit-scrollbar{display:none}
+#paquiSocial .ps-filter{flex:0 0 auto;white-space:nowrap;border:1px solid var(--ln);border-radius:30px;background:var(--card);color:var(--mut);padding:8px 13px;font-weight:800;font-size:.75rem}
+#paquiSocial .ps-filter.active{background:var(--pk);color:#fff;border-color:var(--pk)}
+#paquiSocial .ps-feed{display:grid;gap:9px}
+#paquiSocial .ps-post{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid var(--ln);border-radius:16px;background:var(--card);box-shadow:0 2px 10px #140d3a0a}
+#paquiSocial .ps-post-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:13px;background:color-mix(in srgb,var(--pk) 10%,var(--card));font-size:1.3rem}
+#paquiSocial .ps-post-body{min-width:0;flex:1}
+#paquiSocial .ps-post-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mut);font-size:.68rem;font-weight:800}
+#paquiSocial .ps-post-meta time{white-space:nowrap;font-weight:600}
+#paquiSocial .ps-post h3{margin:5px 0 4px;font-size:.98rem;line-height:1.3;overflow-wrap:anywhere}
+#paquiSocial .ps-post p{margin:0 0 9px;color:var(--mut);font-size:.79rem;line-height:1.45}
+#paquiSocial .ps-open{background:transparent;border:0;color:var(--pk);padding:3px 0;font-size:.81rem;font-weight:950;text-align:left}
+#paquiSocial .ps-open span{font-size:1.1rem}
+#paquiSocial .ps-more{display:flex;justify-content:center}
+#paquiSocial .ps-load-more{width:min(100%,360px);margin:13px 0 3px;padding:11px 15px;border:1px solid var(--ln);border-radius:12px;background:var(--card);color:var(--ink);font-weight:850}
+#paquiSocial .ps-empty,#paquiSocial .ps-partial{grid-column:1/-1;padding:14px;border:1px dashed var(--ln);border-radius:13px;background:var(--card);color:var(--mut);font-size:.8rem;line-height:1.4;margin:0}
+#paquiSocial .ps-partial{margin:9px 0}
+#paquiSocial.ps-loading .ps-refresh{opacity:.6;pointer-events:none}
+@media(min-width:650px){#paquiSocial .ps-quick{grid-template-columns:repeat(4,minmax(0,1fr))}#paquiSocial .ps-quick-card{min-height:134px}}
+@media(max-width:360px){#paquiSocial .ps-header{padding:13px;align-items:flex-start;flex-wrap:wrap}#paquiSocial .ps-quick{padding:8px;gap:7px}#paquiSocial .ps-quick-card{padding:9px}#paquiSocial .ps-post{padding:11px;gap:9px}#paquiSocial .ps-post-icon{width:36px;height:36px;flex-basis:36px}}
