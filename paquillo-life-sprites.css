@@ -109,3 +109,16 @@
   animation:none!important;background-position:0% 0%!important
  }
 }
+
+/* Fase F: desplazamientos con velocidad individual, sin saltos entre puntos prefijados. */
+#paquiLifePreview.pl-roaming .pl-person{
+ transition:left var(--pl-roam-duration,1800ms) linear,
+            bottom var(--pl-roam-duration,1800ms) ease-in-out,
+            transform .88s ease!important;
+}
+#paquiLifePreview.pl-roaming .pl-sprite-character{
+ animation-duration:.54s!important;
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview.pl-roaming .pl-person{transition:none!important}
+}
