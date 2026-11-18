@@ -13,15 +13,17 @@
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
  let lifeLevel=1,roomTheme='island';
+ const unlockAllThemesForPrivatePreview=true; // Solo la vista privada de Javi; no altera XP ni desbloqueos del servidor.
+ const themeUnlocked=item=>unlockAllThemesForPrivatePreview||lifeLevel>=item.min;
  const themes={island:{label:'🏝️ Isla',min:1},sunset:{label:'🌅 Atardecer',min:3},night:{label:'🌙 Noche',min:7}};
  function chooseTheme(key,announce=true){
-  if(!room||!themes[key]||lifeLevel<themes[key].min)return;
+  if(!room||!themes[key]||!themeUnlocked(themes[key]))return;
   roomTheme=key;room.dataset.plTheme=key;
   room.querySelectorAll('[data-pl-theme]').forEach(button=>{
    const item=themes[button.dataset.plTheme];
-   button.disabled=lifeLevel<item.min;
+   button.disabled=!themeUnlocked(item);
    button.setAttribute('aria-pressed',String(key===button.dataset.plTheme));
-   button.textContent=item.label+(lifeLevel<item.min?' · Nv '+item.min+' 🔒':'');
+   button.textContent=item.label+(!themeUnlocked(item)?' · Nv '+item.min+' 🔒':'');
   });
   try{localStorage.setItem('paqui-life-theme-javi',key)}catch(_){}
   if(announce)setStatus('Decoración aplicada: '+themes[key].label+' · guardada en este dispositivo.');
@@ -306,7 +308,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v13</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v15</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -369,7 +371,7 @@
   document.body.appendChild(room);
   renderNeeds();renderMood();
   let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
-  chooseTheme(themes[savedTheme]&&lifeLevel>=themes[savedTheme].min?savedTheme:'island',false);
+  chooseTheme(themes[savedTheme]&&themeUnlocked(themes[savedTheme])?savedTheme:'island',false);
   document.body.classList.add('paqui-life-room-open');
   care();
   room.addEventListener('click',event=>{
