@@ -3,14 +3,20 @@ Documento de diseño de juego y plan técnico. 18/11/2026.
 
 **Estado: habitación alfa animada e integración con Memoria bajo acceso privado Javi/admin; no es aún el modo Life completo.**
 
+## Fase C · Estado emocional y ambiente (18/11/2026)
+- Estado derivado de los tres valores reales: cansado (mínimo <=35), tranquilo (<=60), bien y excelente (mínimo >=85).
+- Indicador emocional y colores ambientales adaptativos, frases de reacción al volver a reposo; MiniJavi conserva el sprite aprobado sin deformaciones.
+- Mensajes de guardado y prevención de acciones simultáneas; sin XP ni nuevas tablas.
+- Migración de fase B ejecutada según confirmación del usuario; verificación real en navegador y Supabase aún pendiente.
+
 ## Fase B · Cuidados persistentes (18/11/2026)
-- Archivo SQL nuevo: `paquillo-life-fase-b.sql` (PENDIENTE de ejecución manual en Supabase).
+- Archivo SQL nuevo: `paquillo-life-fase-b.sql` (ejecutado por el usuario el 18/11/2026).
 - Tabla `paqui_life_needs`: energía, ánimo, bienestar, última acción y fecha; RLS activado y permisos directos revocados.
 - RPC `paqui_life_care(p_action)`: identifica `auth.uid()`, comprueba `user_profiles.user_id`, username Javi y rol admin; lectura y actualización serializada, límite de 30 segundos entre cuidados, recuperación con topes.
 - Decaimiento moderado: una unidad cada 6 horas, máximo 25 por visita y suelo de 20; sin castigos ni XP.
 - El frontend carga los valores al entrar, intenta guardar al completar comer/dormir/ducha y señala claramente si sigue en modo demostración porque la migración no está aplicada.
 - Memoria continúa con celebración visual, pero no modifica necesidades persistentes hasta disponer de verificación de resultado en servidor.
-- **Estado:** código publicado; migración SQL NO confirmada, pruebas en móvil/DB pendientes.
+- **Estado:** código publicado y SQL ejecutado según el usuario; pruebas en móvil/DB pendientes.
 
 ## Política de visibilidad para próximas fases
 La vista previa de Life es privada para la **cuenta de Javi**, no para todos los administradores ni para cualquiera que conozca el enlace. En World se consulta `PaquilloLifePreview.enabled` (getter dinámico); `open()` valida la identidad de nuevo. El perfil procede de `user_profiles` mediante la sesión Auth actual. No volver a habilitar funciones nuevas con simples parámetros de URL.
