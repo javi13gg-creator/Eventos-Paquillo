@@ -1,5 +1,5 @@
-/* Paquillo Life · PRIMERA HABITACIÓN (preview visual, sin persistencia).
- * Usa el personaje aprobado de World. No escribe en Supabase, no concede XP,
+/* Paquillo Life · Habitación alfa con cuidados persistentes opcionales.
+ * Usa el personaje aprobado de World. Solo la RPC autorizada escribe necesidades; no concede XP,
  * no altera el estado de sus minijuegos ni de Paquillo Events.
  * Acceso privado: únicamente cuenta autenticada Javi (rol admin),
  * validada por Paquillo Events mediante user_profiles. */
@@ -10,6 +10,26 @@
  let room=null,previousFocus=null,arcadeAction=null,memoryAction=null;
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
+ let moodMessage='';
+ function lifeMood(){
+  const low=Math.min(needs.energy,needs.mood,needs.wellbeing);
+  if(low<=35)return {id:'tired',label:'Necesito un descanso',icon:'😴',phrase:'Hoy voy a mi ritmo. ¿Me echas una mano?'};
+  if(low<=60)return {id:'calm',label:'Día tranquilo',icon:'🌤️',phrase:'Un poquito de mimo y vuelvo a estar a tope.'};
+  if(low>=85)return {id:'great',label:'¡En plena forma!',icon:'✨',phrase:'¡Hoy tengo energía para todo!'};
+  return {id:'good',label:'Todo marcha bien',icon:'😊',phrase:'¡Qué bien se está en mi rincón tropical!'};
+ }
+ function renderMood(announce=false){
+  if(!room)return;
+  const mood=lifeMood();
+  room.dataset.plMood=mood.id;
+  const el=room.querySelector('[data-pl-mood]');
+  if(el){el.textContent=mood.icon+' '+mood.label;el.title=mood.phrase;}
+  if(announce&&moodMessage!==mood.id&&!room.classList.contains('pl-walking')&&!room.classList.contains('pl-performing')){
+   speech(mood.phrase);
+  }
+  moodMessage=mood.id;
+ }
+
  async function care(action=null){
   const client=window.PaquilloWorldContext?.()?.client;
   if(!allowed()||!client)return false;
@@ -21,13 +41,13 @@
    const result=Array.isArray(data)?data[0]:data;
    if(!result)throw Error('Respuesta vacía');
    needs={energy:result.energy,mood:result.mood,wellbeing:result.wellbeing};
-   careReady=true;renderNeeds();
+   careReady=true;renderNeeds();renderMood();
    room.querySelector('.pl-needs')?.setAttribute('aria-label','Necesidades guardadas en Supabase');
    const note=room.querySelector('[data-pl-persistence]');if(note)note.textContent='☁️ Cuidados guardados · sin XP';
    return true;
   }catch(error){
    if(session===careSession&&room){
-    if(action)setStatus('No se ha guardado el cuidado. Espera o comprueba Supabase.');
+    if(action)setStatus('No se ha guardado: espera 30 segundos entre cuidados o comprueba la conexión.');
     const note=room.querySelector('[data-pl-persistence]');if(note)note.textContent='⚠️ Modo demostración · sin guardar';
    }
    return false;
@@ -45,7 +65,7 @@
  function improveNeeds(action){
   const changes={eat:{energy:8,wellbeing:12},sleep:{energy:20,wellbeing:5},shower:{wellbeing:18,mood:5},play:{mood:12}}[action]||{};
   for(const [key,delta] of Object.entries(changes))needs[key]=Math.min(100,needs[key]+delta);
-  renderNeeds();
+  renderNeeds();renderMood();
  }
  const timers=new Set();
  const places={
@@ -113,6 +133,7 @@
     room?.classList.remove('pl-walking','pl-returning');
     room?.querySelectorAll('[data-pl-place]').forEach(b=>b.setAttribute('aria-pressed','false'));
     setStatus('Toca un objeto para interactuar.');
+    renderMood(true);
    },prefersLessMotion()?80:900,serial);
   },delay,serial);
  }
@@ -133,15 +154,22 @@
   later(()=>{
    room?.classList.remove('pl-action-'+action);
    if(careReady){
-    if(!careBusy){careBusy=true;care(action).finally(()=>{careBusy=false;});}
-   }else improveNeeds(action);
-   setStatus('¡Acción completada! ✨');
+    if(!careBusy){
+     careBusy=true;
+     setStatus('Guardando cuidado… ☁️');
+     care(action).then(saved=>{if(saved&&room)setStatus('¡Cuidado guardado! ✨');}).finally(()=>{careBusy=false;});
+    }else setStatus('Todavía se está guardando el cuidado anterior.');
+   }else{
+    improveNeeds(action);
+    setStatus('Acción de demostración · sin guardar');
+   }
    speech('¡Así se vive en Paquillo World! ⭐');
    goHome(serial,prefersLessMotion()?250:450);
   },prefersLessMotion()?350:step.action,serial);
  }
  function interact(action){
   if(!room||!allowed()||!Object.prototype.hasOwnProperty.call(steps,action))return;
+  if(careBusy){setStatus('Espera a que termine de guardarse el cuidado anterior.');return;}
   cancelAction();
   const serial=actionSerial,step=steps[action];
   const button=room.querySelector('[data-pl-place="'+action+'"]');
@@ -181,7 +209,7 @@
  function open(options={}){
   if(!allowed())return false;
   if(room)close();
-  careSession++;careReady=false;careBusy=false;
+  careSession++;careReady=false;careBusy=false;moodMessage='';
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
@@ -196,7 +224,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="No guarda progreso">ALFA</span>'+
+   '<span class="pl-preview-tag" title="Función experimental privada">ALFA</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -217,7 +245,8 @@
     '</div>'+
    '</main>'+
    '<footer class="pl-foot">'+
-   '<div class="pl-needs" aria-label="Indicadores de prueba, sin guardar"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
+   '<div class="pl-mood-chip" data-pl-mood role="status" aria-live="polite">😊 Todo marcha bien</div>'+ 
+   '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
    '<small data-pl-persistence>⏳ Comprobando guardado · sin XP</small></footer>';
@@ -249,9 +278,8 @@
   slot.append(hero);
   room.querySelector('#plName').textContent=name;
   needs={energy:75,mood:75,wellbeing:75};
-  renderNeeds();
   document.body.appendChild(room);
-  renderNeeds();
+  renderNeeds();renderMood();
   document.body.classList.add('paqui-life-room-open');
   care();
   room.addEventListener('click',event=>{
