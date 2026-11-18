@@ -103,6 +103,7 @@ function homeView(){
  playerHero()+
  (window.PaquilloLifePreview?.enabled?
   '<div class="pw-life-preview-strip"><button type="button" data-pw-life-open aria-label="Abrir nueva habitación en vista previa"><span aria-hidden="true">🏡</span> Mi hogar · Conoce tu habitación <small>VISTA PREVIA ›</small></button></div>':'')+
+ (window.PaquilloLifePreview?.enabled?'<button type="button" class="pw-neighborhood-entry" data-pw-view="neighborhood">🏘️ Explorar barrio · casas y piques ›</button>':'')+
  '<div class="pw-lobby-layout">'+
  '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
  '<button type="button" data-pw-view="profile"><span>🦸</span>Mi personaje</button>'+
@@ -155,6 +156,31 @@ function peopleView(){
  pageButtons('people',page,count)+'</section>';
 }
 
+function neighborhoodView(){
+ const canSee=window.PaquilloLifePreview?.enabled===true;
+ if(!canSee)return '<section class="pw-screen pw-panel" data-pw-screen="neighborhood"><p>Vista privada no disponible.</p></section>';
+ return '<section class="pw-screen pw-panel pw-neighborhood-screen" data-pw-screen="neighborhood">'+
+ screenTitle('🏘️ BARRIO PAQUILLERO','Casas de la pandilla · resultados reales y piques')+
+ '<div class="pw-neighborhood-map"><div class="pw-neighborhood-road">🌴 CALLE PAQUILLO 🌴</div><div class="pw-neighborhood-houses">'+
+ state.ranked.map((m,i)=>'<button type="button" class="pw-house" data-pw-house="'+i+'" aria-label="Visitar casa de '+esc(m.display_name)+'">'+
+ '<span class="pw-house-roof">🏠</span><span class="pw-house-avatar">'+(memberPhoto(m)?memberImage(m,'',''):'<span>'+esc(nameInitial(m.display_name))+'</span>')+'</span>'+
+ '<b>'+esc(m.display_name)+'</b><small>⭐ Nv '+level(m.xp)+'</small></button>').join('')+
+ '</div></div><p class="pw-muted">Las casas son fachadas de prueba; todavía no hay interiores personales ni retos enviados a otros usuarios.</p></section>';
+}
+function showHouse(idx){
+ const m=state.ranked[idx];if(!m)return;
+ const records=Object.entries(gameLabels).map(([game,label])=>{
+  const scores=historicalScores.filter(x=>x.user_id===m.auth_user_id&&x.game===game);
+  const best=scores.sort((a,b)=>game==='reflex'||game==='memory'?a.score-b.score:b.score-a.score)[0];
+  return '<div class="pw-house-record"><span>'+label+'</span><b>'+(best?points(best.score):'Sin marca')+'</b></div>';
+ }).join('');
+ modal('<div class="pw-house-detail"><h2>🏡 Casa de '+esc(m.display_name)+'</h2>'+
+ (memberPhoto(m)?memberImage(m,m.display_name,'pw-house-portrait'):'')+
+ '<p>⭐ Nivel '+level(m.xp)+' · '+points(m.xp)+' XP</p>'+
+ '<h3>🏆 Mejores marcas históricas</h3>'+records+
+ '<h3>⚔️ Supera su marca</h3><p>Elige un juego y compara tu resultado con su récord. No se envía ninguna invitación.</p>'+
+ '<div class="pw-house-challenges">'+Object.entries(gameLabels).map(([id,label])=>'<button type="button" data-pw-house-challenge="'+id+'">'+label+'</button>').join('')+'</div></div>');
+}
 function profileView(){
  const m=state.mine||{display_name:'Paquillo'},xp=state.xp,progress=xp%250;
  const actions=state.ledger.filter(x=>x.user_id===state.uid).slice(0,viewportHeight()<480?3:viewportHeight()<650?4:6);
@@ -192,14 +218,14 @@ function renderShell(){
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
  '<header class="pw-head"><button type="button" class="pw-return" data-pw-exit title="Volver a la web de Paquillo Events"><span>🏠</span><span>WEB</span></button><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div><span class="pw-head-xp">⭐ NV '+lvl+' · '+points(state.xp)+' XP</span></header>'+
- '<div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+'</div>'+
+ '<div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+(window.PaquilloLifePreview?.enabled?neighborhoodView():'')+'</div>'+
  nav()+
  '<div class="pw-modal" id="pwModal" hidden><div class="pw-modal-card" id="pwModalCard" role="dialog" aria-modal="true" aria-label="Ventana de Paquillo World"></div></div>'+
  '</div>';
  setView(state.view,false,false);
 }
 function setView(view,scroll=true,remember=true){
- if(!['home','games','people','ranking','profile','challenges'].includes(view))view='home';
+ if(!['home','games','people','ranking','profile','challenges','neighborhood'].includes(view))view='home';
  const overlay=document.getElementById('pwModal');
  if(overlay&&!overlay.hidden)closeModal();
  if(remember&&state.view!==view){viewHistory.push(state.view);if(viewHistory.length>20)viewHistory.shift();}
@@ -480,10 +506,13 @@ root.addEventListener('click',e=>{
    name:state.mine?.display_name||'Paquillo',
    xp:state.xp,
    onArcade:()=>{enteredFromLife=true;setView('games')},
-   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
+   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()},
+   onNeighborhood:()=>{setView('neighborhood')}
   });
   return;
  }
+ if(btn.hasAttribute('data-pw-house')){if(window.PaquilloLifePreview?.enabled)showHouse(Number(btn.dataset.pwHouse));return}
+ if(btn.hasAttribute('data-pw-house-challenge')){const game=btn.dataset.pwHouseChallenge;if(window.PaquilloLifePreview?.enabled&&Object.hasOwn(gameLabels,game)){closeModal();gameAction(game)}return}
  if(btn.hasAttribute('data-pw-close')){closeModal();return}
  if(btn.hasAttribute('data-pw-avatar-toggle')){state.previewCharacters=!state.previewCharacters;renderShell();return}
  if(btn.hasAttribute('data-pw-back')){goBack();return}
