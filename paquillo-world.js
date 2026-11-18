@@ -194,8 +194,9 @@ function markDuelsSeen(){
 async function duelRpc(action,values={}){
  const db=window.PaquilloWorldContext?.()?.client;
  if(!db)return;
- const {error}=await db.rpc('paqui_world_duel',{p_action:action,p_duel:values.id||null,p_opponent:values.opponent||null,p_game:values.game||null,p_score:values.score??null});
+ const {data,error}=await db.rpc('paqui_world_duel',{p_action:action,p_duel:values.id||null,p_opponent:values.opponent||null,p_game:values.game||null,p_score:values.score??null});
  if(error){modal('<h2>⚠️ Reto no guardado</h2><p>'+esc(error.message)+'</p>');return false;}
+ if(action==='create'&&data?.id){void db.functions.invoke('paquillo-duel-push',{body:{duel_id:data.id}}).then(({error:pushError})=>{if(pushError)console.info('Retos: push no disponible; la invitación seguirá visible en la app.',pushError.message)}).catch(()=>{});}
  await loadDuels();
  const screen=root.querySelector('[data-pw-screen="neighborhood"]');
  if(screen)screen.outerHTML=neighborhoodView();
@@ -298,7 +299,7 @@ function renderShell(){
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
  '<header class="pw-head"><button type="button" class="pw-return" data-pw-exit title="Volver a la web de Paquillo Events"><span>🏠</span><span>WEB</span></button><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div><span class="pw-head-xp">⭐ NV '+lvl+' · '+points(state.xp)+' XP</span></header>'+
- '<div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+(window.PaquilloLifePreview?.enabled?neighborhoodView():'')+'</div>'+
+ '<div class="pw-duel-badge" data-pw-duel-badge hidden></div><div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+(window.PaquilloLifePreview?.enabled?neighborhoodView():'')+'</div>'+
  nav()+
  '<div class="pw-modal" id="pwModal" hidden><div class="pw-modal-card" id="pwModalCard" role="dialog" aria-modal="true" aria-label="Ventana de Paquillo World"></div></div>'+
  '</div>';
