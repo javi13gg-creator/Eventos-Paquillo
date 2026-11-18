@@ -8,6 +8,7 @@
  // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
  let room=null,previousFocus=null,arcadeAction=null,memoryAction=null;
+ let model3d=null,modelRequest=0;
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
@@ -260,6 +261,8 @@
   },prefersLessMotion()?750:3000,serial);
  }
  function close(){
+  modelRequest++;
+  model3d?.destroy();model3d=null;
   cancelAction();
   careSession++;careReady=false;careBusy=false;
   if(!room)return;
@@ -287,7 +290,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v9</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v10</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -313,6 +316,7 @@
    '<footer class="pl-foot">'+
    '<div class="pl-mood-chip" data-pl-mood role="status" aria-live="polite">😊 Todo marcha bien</div>'+ 
    '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
+   '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Piloto 3D experimental; no es todavía el modelo definitivo de MiniJavi">🧍 Probar modelo 3D (beta)</button>'+ 
    '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
@@ -365,6 +369,32 @@
     return;
    }
    if(!allowed()){close();return;}
+   if(event.target.closest('[data-pl-model]')){
+    const button=event.target.closest('[data-pl-model]');
+    if(model3d){
+     modelRequest++;model3d.destroy();model3d=null;
+     room.classList.remove('pl-model-active');
+     button.setAttribute('aria-pressed','false');
+     button.textContent='🧍 Probar modelo 3D (beta)';
+     setStatus('Sprite original restaurado.');
+    }else{
+     const token=++modelRequest;
+     button.disabled=true;button.textContent='⏳ Cargando 3D…';
+     const host=room.querySelector('.pl-person-figure');
+     window.PaquilloLifeModel3D?.create(host).then(model=>{
+      if(token!==modelRequest||!room){model.destroy();return;}
+      model3d=model;room.classList.add('pl-model-active');
+      button.setAttribute('aria-pressed','true');button.textContent='↩ Volver al MiniJavi original';
+      setStatus('Modelo 3D articulado de prueba. El sprite original sigue disponible.');
+     }).catch(()=>{
+      if(token===modelRequest&&room){
+       setStatus('No se pudo iniciar WebGL. Se mantiene el MiniJavi original.');
+       button.textContent='🧍 Probar modelo 3D (beta)';
+      }
+     }).finally(()=>{if(token===modelRequest&&room)button.disabled=false;});
+    }
+    return;
+   }
    if(event.target.closest('[data-pl-depth]')){
     const button=event.target.closest('[data-pl-depth]');
     const enabled=room.classList.toggle('pl-depth-mode');
