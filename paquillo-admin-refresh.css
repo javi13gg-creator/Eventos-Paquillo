@@ -1,0 +1,140 @@
+/* Paquillo Events · Cabecera de marca y administración plegable · 2026-11-18 */
+
+/* Marca legible a cualquier tamaño: sustituye la fotografía panorámica. */
+#paquiHomeBanner.top{
+ padding:8px!important;
+ margin-bottom:12px!important;
+ background:var(--card)!important;
+}
+#paquiHomeBanner .paqui-brand-card{
+ position:relative;isolation:isolate;overflow:hidden;
+ display:flex;align-items:center;justify-content:center;
+ gap:12px;width:100%;max-width:none;
+ min-height:84px;padding:10px 15px;
+ border:1px solid #6c3ab9;border-radius:14px;
+ background:
+ radial-gradient(circle at 9% 15%,#fce86070 0 8%,transparent 28%),
+ radial-gradient(circle at 93% 82%,#ff70bd65 0 10%,transparent 30%),
+ linear-gradient(115deg,#35217e 0%,#6940b8 47%,#ad348f 100%);
+ box-shadow:inset 0 2px 0 #ffffff27;
+ color:#fff;text-align:center;
+}
+#paquiHomeBanner .paqui-brand-card::before,
+#paquiHomeBanner .paqui-brand-card::after{
+ content:"✦";position:absolute;color:#ffe47e;opacity:.85;font-size:24px;
+ text-shadow:0 0 15px #ffd24a80;pointer-events:none;
+}
+#paquiHomeBanner .paqui-brand-card::before{left:4%;top:6px;transform:rotate(-16deg)}
+#paquiHomeBanner .paqui-brand-card::after{right:5%;bottom:3px;transform:rotate(22deg)}
+#paquiHomeBanner .paqui-brand-mark{
+ flex:0 0 42px;width:42px;height:42px;display:grid;place-items:center;
+ border-radius:14px;background:linear-gradient(145deg,#ffe580,#ff9a58);
+ color:#34216e;box-shadow:0 3px 0 #30154c,0 5px 13px #23094070;
+ font:1000 1.55rem/1 "Bricolage Grotesque",system-ui,sans-serif;
+ transform:rotate(-8deg);
+}
+#paquiHomeBanner .paqui-brand-content{min-width:0}
+#paquiHomeBanner .paqui-brand-label{
+ display:block;color:#fff1b1;font:.75rem/1 "Bricolage Grotesque",system-ui,sans-serif;
+ font-weight:950;letter-spacing:.17em;margin-bottom:5px;
+}
+#paquiHomeBanner .paqui-brand-name{
+ display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:0 .35em;
+ color:#fff;font:1000 clamp(1.35rem,4.5vw,2.25rem)/1.05 "Bricolage Grotesque",system-ui,sans-serif;
+ letter-spacing:-.055em;text-shadow:0 2px 0 #1b0b50;
+}
+#paquiHomeBanner .paqui-brand-name span:last-child{color:#ffe065}
+#paquiHomeBanner .paqui-brand-subtitle{display:block;color:#f6eaff;font-weight:650;font-size:clamp(.63rem,2vw,.77rem);margin-top:3px}
+#paquiHomeBanner .pills{margin-top:8px!important}
+@media(max-width:700px){
+ #paquiHomeBanner .paqui-brand-card{min-height:69px;padding:7px 9px;gap:9px}
+ #paquiHomeBanner .paqui-brand-mark{width:34px;height:34px;flex-basis:34px;font-size:1.3rem;border-radius:11px}
+ #paquiHomeBanner .paqui-brand-label{font-size:.56rem;letter-spacing:.13em;margin-bottom:3px}
+ #paquiHomeBanner .paqui-brand-name{font-size:clamp(1.28rem,5.2vw,1.72rem)}
+ #paquiHomeBanner .paqui-brand-subtitle{font-size:.64rem;line-height:1.2}
+ #paquiHomeBanner .pills{margin-top:6px!important}
+}
+@media(max-width:345px){
+ #paquiHomeBanner .paqui-brand-name{font-size:1.17rem}
+ #paquiHomeBanner .paqui-brand-subtitle{font-size:.6rem}
+ #paquiHomeBanner .paqui-brand-card{padding:7px 5px}
+}
+
+/* Calendario como primera herramienta del Inicio. */
+#p-proximos .paqui-home-calendar{max-width:760px;margin:2px auto 15px}
+#p-proximos .paqui-home-calendar .c h2{margin:5px 0}
+#p-proximos .paqui-home-calendar .c .sub{margin:3px 0 10px}
+#p-proximos .paqui-home-calendar .cal{max-width:410px;width:100%;margin:0 auto}
+#p-proximos .paqui-home-calendar .cal .grid{gap:4px}
+@media(max-width:700px){
+ #p-proximos .paqui-home-calendar{margin:0 auto 13px}
+ #p-proximos .paqui-home-calendar .cal{max-width:365px}
+ #p-proximos .paqui-home-calendar .c h2{font-size:1.2rem}
+ #p-proximos .paqui-home-calendar .c .sub{font-size:.76rem}
+}
+
+/* Administración: siete categorías visibles, todas cerradas al entrar. */
+#adminPanel .admin-shell{max-width:1080px}
+#adminPanel .paqui-admin-intro{
+ margin:0 0 16px;padding:13px 15px;border-radius:15px;
+ border:1px solid var(--ln);background:color-mix(in srgb,var(--pk) 8%,var(--card));
+}
+#adminPanel .paqui-admin-intro strong{font-weight:950;font-size:.96rem}
+#adminPanel .paqui-admin-intro p{color:var(--mut);font-size:.8rem;line-height:1.45;margin:5px 0 0}
+#adminPanel .paqui-admin-groups{display:grid;gap:11px}
+#adminPanel .paqui-admin-group{
+ min-width:0;border:1.5px solid var(--ln);border-radius:16px;
+ background:var(--card);overflow:hidden;box-shadow:0 3px 12px #12103910;
+}
+#adminPanel .paqui-admin-group>summary{
+ display:flex;align-items:center;gap:12px;min-height:76px;
+ padding:14px 16px;cursor:pointer;list-style:none;
+ background:color-mix(in srgb,var(--bg) 60%,var(--card));
+ transition:background .15s;
+}
+#adminPanel .paqui-admin-group>summary::-webkit-details-marker{display:none}
+#adminPanel .paqui-admin-group>summary:hover{background:color-mix(in srgb,var(--yl) 11%,var(--card))}
+#adminPanel .paqui-admin-group>summary:focus-visible{outline:3px solid var(--pk);outline-offset:-3px}
+#adminPanel .paqui-admin-group[open]>summary{background:color-mix(in srgb,var(--pk) 8%,var(--card));border-bottom:1px solid var(--ln)}
+#adminPanel .paqui-admin-icon{
+ width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;
+ border-radius:13px;background:color-mix(in srgb,var(--pk) 12%,var(--card));font-size:1.4rem
+}
+#adminPanel .paqui-admin-group-label{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+#adminPanel .paqui-admin-group-label strong{font-size:.98rem;color:var(--ink);line-height:1.2}
+#adminPanel .paqui-admin-group-label small{font-size:.74rem;color:var(--mut);line-height:1.35}
+#adminPanel .paqui-admin-count{display:flex;align-items:center;justify-content:center;min-width:28px;min-height:26px;padding:4px 7px;border-radius:9px;font-size:.73rem;font-weight:950;color:var(--ink);background:color-mix(in srgb,var(--yl) 24%,var(--card))}
+#adminPanel .paqui-admin-chevron{color:var(--mut);font-size:1.45rem;transition:transform .15s;line-height:1}
+#adminPanel .paqui-admin-group[open] .paqui-admin-chevron{transform:rotate(180deg)}
+#adminPanel .paqui-admin-body{min-width:0;padding:17px}
+#adminPanel .paqui-admin-body h3{font-size:1rem}
+#adminPanel .paqui-admin-body .admin-top{min-width:0;gap:10px}
+#adminPanel .paqui-admin-body .admin-top span,#adminPanel .paqui-admin-body .admin-top>div{min-width:0;overflow-wrap:anywhere}
+#adminPanel .paqui-admin-body .admin-top .btn{flex:0 0 auto;max-width:100%}
+#adminPanel .paqui-admin-body .admin-table{min-width:370px}
+#adminPanel .paqui-admin-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#adminPanel .paqui-admin-shortcuts button{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ padding:12px 13px;border:1px solid var(--ln);border-radius:12px;
+ background:var(--bg);color:var(--ink);font:850 .82rem/1.3 "Bricolage Grotesque",system-ui,sans-serif;
+ text-align:left;cursor:pointer;
+}
+#adminPanel .paqui-admin-shortcuts button:hover{border-color:var(--pk)}
+#adminPanel .paqui-admin-shortcuts button:focus-visible{outline:3px solid var(--pk);outline-offset:2px}
+#adminPanel .paqui-admin-groups .admin-manual-push,
+#adminPanel .paqui-admin-groups .paqui-avatar-import{margin:0;max-width:100%}
+@media(max-width:650px){
+ #adminPanel{padding:8px!important}
+ #adminPanel .admin-shell{min-height:calc(100dvh - 16px);padding:13px!important;box-shadow:none!important}
+ #adminPanel .admin-heading{gap:12px!important}
+ #adminPanel .admin-heading h2{font-size:1.27rem}
+ #adminPanel .admin-heading>.admin-heading-actions{width:100%;justify-content:space-between}
+ #adminPanel .paqui-admin-group>summary{min-height:66px;padding:11px 10px;gap:8px}
+ #adminPanel .paqui-admin-icon{width:38px;height:38px;flex-basis:38px;font-size:1.2rem}
+ #adminPanel .paqui-admin-group-label strong{font-size:.86rem}
+ #adminPanel .paqui-admin-group-label small{font-size:.69rem}
+ #adminPanel .paqui-admin-body{padding:12px 10px}
+ #adminPanel .paqui-admin-body .admin-top{flex-wrap:wrap}
+ #adminPanel .paqui-admin-body .admin-top .btn{min-height:38px}
+ #adminPanel .paqui-admin-shortcuts{grid-template-columns:1fr}
+}
