@@ -8,6 +8,14 @@ La vista previa de Life es privada para la **cuenta de Javi**, no para todos los
 
 **Limitación importante:** esta compuerta JavaScript protege la interfaz frente a otros usuarios normales, pero no es un control de acceso a recursos públicos de GitHub Pages. Antes de guardar estado personal, imágenes privadas o XP, crear RLS y RPC en Supabase vinculadas al `auth.uid()` autorizado o a un permiso de testers validado en servidor. La fuente y los assets estáticos siguen siendo públicos, sin datos privados.
 
+## Corrección tras prueba de usuario · piloto articulado y Memoria directa
+- El usuario confirmó que mover la imagen aprobada completa no se percibe como caminar. El límite del recurso estático se resuelve para el piloto con **un nuevo muñeco SVG articulado de Javi**, con cabeza, ojos, boca, brazos y piernas separados. Los 24 retratos aprobados quedan intactos.
+- Las piezas tienen animaciones independientes: alternancia de pasos, balanceo de brazos, parpadeo, masticación con mano a la boca, sueño con ojos cerrados, ducha con brazos en movimiento y celebración con salto.
+- Recursos nuevos: `paquillo-life-puppet.js` (piloto vectorial) y `paquillo-life-puppet.css` (animaciones). Se activa solamente en la habitación privada de Javi. El resto de personajes mantiene el retrato aprobado hasta completar sus respectivas animaciones.
+- Se incorpora un botón **🃏 Jugar a Memoria Paquillera** visible en el pie de la habitación. Abre el minijuego existente **directamente**, sin catálogo intermedio, y conserva sus puntuaciones.
+- La partida de Memoria ofrece volver al hogar también durante el juego; completarla permite volver y celebrar. El retorno conserva la comprobación privada de `PaquilloLifePreview.enabled`.
+- No se han aplicado cambios a Supabase ni al XP; se han mantenido los accesos de los demás miembros. Siguiente trabajo: pulir el aspecto visual del personaje piloto con poses de ilustración aprobadas y medirlo en móvil real.
+
 ## Avance posterior · Animaciones del MiniPaquillo y enlace con Memoria
 - Se introduce una secuencia de estados: reposo → desplazamiento a mueble → acción específica → regreso al centro.
 - Cuatro destinos coordinados con el escenario: nevera, ducha, cama y recreativa. La recreativa pasa al Arcade **después** de una transición visual, no de golpe.
