@@ -262,3 +262,37 @@ body.paqui-life-room-open{overflow:hidden!important}
 @media(max-height:660px){
  #paquiLifePreview .pl-mood-chip{padding:3px 9px;font-size:10px}
 }
+
+/* Fase E: paseo continuo y objetos decorativos táctiles. */
+#paquiLifePreview .pl-person{
+ transition:left 2.15s linear,bottom 2.15s linear
+}
+#paquiLifePreview .pl-decor{
+ position:absolute;z-index:5;display:grid;place-items:center;
+ width:42px;height:42px;padding:0;border:2px solid #ffe8a5;
+ border-radius:50%;background:linear-gradient(135deg,#65349b,#34205f);
+ color:#fff;font-size:22px;box-shadow:0 4px 9px #2510468c;
+ touch-action:manipulation
+}
+#paquiLifePreview .pl-decor-lamp{top:12%;left:8%}
+#paquiLifePreview .pl-decor-plant{bottom:23%;left:7%}
+#paquiLifePreview .pl-decor-light{
+ position:absolute;z-index:2;left:17%;top:8%;font-size:26px;
+ color:#ffe879;letter-spacing:12px;opacity:.2;pointer-events:none;
+ transition:opacity .35s,filter .35s
+}
+#paquiLifePreview.pl-lamp-on .pl-decor-light{
+ opacity:1;filter:drop-shadow(0 0 10px #fff2a3)
+}
+#paquiLifePreview.pl-plant-happy .pl-decor-plant{
+ animation:pl-plant-cheer .35s ease-in-out 3 alternate
+}
+@keyframes pl-plant-cheer{
+ from{transform:rotate(-12deg) scale(.96)}
+ to{transform:rotate(12deg) scale(1.12)}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview .pl-person{transition:none}
+ #paquiLifePreview .pl-decor-light{transition:none}
+ #paquiLifePreview.pl-plant-happy .pl-decor-plant{animation:none}
+}
