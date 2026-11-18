@@ -9,6 +9,31 @@
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
  let room=null,previousFocus=null,arcadeAction=null,memoryAction=null;
  let actionSerial=0;
+ let careReady=false,careBusy=false,careSession=0;
+ async function care(action=null){
+  const client=window.PaquilloWorldContext?.()?.client;
+  if(!allowed()||!client)return false;
+  const session=careSession;
+  try{
+   const {data,error}=await client.rpc('paqui_life_care',{p_action:action});
+   if(error)throw error;
+   if(session!==careSession||!room||!allowed())return false;
+   const result=Array.isArray(data)?data[0]:data;
+   if(!result)throw Error('Respuesta vacía');
+   needs={energy:result.energy,mood:result.mood,wellbeing:result.wellbeing};
+   careReady=true;renderNeeds();
+   room.querySelector('.pl-needs')?.setAttribute('aria-label','Necesidades guardadas en Supabase');
+   const note=room.querySelector('[data-pl-persistence]');if(note)note.textContent='☁️ Cuidados guardados · sin XP';
+   return true;
+  }catch(error){
+   if(session===careSession&&room){
+    if(action)setStatus('No se ha guardado el cuidado. Espera o comprueba Supabase.');
+    const note=room.querySelector('[data-pl-persistence]');if(note)note.textContent='⚠️ Modo demostración · sin guardar';
+   }
+   return false;
+  }
+ }
+
  let needs={energy:75,mood:75,wellbeing:75};
  function renderNeeds(){
   if(!room)return;
@@ -107,7 +132,9 @@
   }
   later(()=>{
    room?.classList.remove('pl-action-'+action);
-   improveNeeds(action);
+   if(careReady){
+    if(!careBusy){careBusy=true;care(action).finally(()=>{careBusy=false;});}
+   }else improveNeeds(action);
    setStatus('¡Acción completada! ✨');
    speech('¡Así se vive en Paquillo World! ⭐');
    goHome(serial,prefersLessMotion()?250:450);
@@ -132,7 +159,7 @@
   moveTo('home');
   room.classList.add('pl-celebrating');
   speech('¡Memoria completada! ¡Grande! 🏆');
-  improveNeeds('play');
+  if(!careReady)improveNeeds('play');
   setStatus('¡Tu MiniPaquillo celebra la victoria!');
   later(()=>{
    room?.classList.remove('pl-celebrating');
@@ -143,6 +170,7 @@
  }
  function close(){
   cancelAction();
+  careSession++;careReady=false;careBusy=false;
   if(!room)return;
   room.remove();
   room=null;
@@ -153,6 +181,7 @@
  function open(options={}){
   if(!allowed())return false;
   if(room)close();
+  careSession++;careReady=false;careBusy=false;
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
@@ -191,7 +220,7 @@
    '<div class="pl-needs" aria-label="Indicadores de prueba, sin guardar"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
-   '<small>Animaciones alfa · sin guardar necesidades ni XP</small></footer>';
+   '<small data-pl-persistence>⏳ Comprobando guardado · sin XP</small></footer>';
   const slot=room.querySelector('#plPerson');
   const hero=document.createElement('div');
   hero.className='pl-person-figure';
@@ -224,6 +253,7 @@
   document.body.appendChild(room);
   renderNeeds();
   document.body.classList.add('paqui-life-room-open');
+  care();
   room.addEventListener('click',event=>{
    if(!allowed()){close();return;}
    if(event.target.closest('[data-pl-memory]')){
