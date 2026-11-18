@@ -10,7 +10,7 @@
  const getContext=()=>window.PaquilloWorldContext?.();
  const state={filter:'all',visible:6,items:[],loading:false,uid:null,lastFetch:0,loadId:0};
  const kindLabels={all:'Todo',event:'📅 Planes',poll:'🗳️ Encuestas',memory:'📸 Recuerdos'};
- root.innerHTML='<div class="ps-header"><div><span class="ps-kicker">✨ TU COMUNIDAD</span><h2 id="psHello">Tu rincón paquillero</h2><p>Lo que tienes pendiente y lo que se mueve en el grupo.</p></div><button class="ps-refresh" type="button" data-ps-action="refresh" aria-label="Actualizar novedades">↻ Actualizar</button></div><div class="ps-quick" id="psQuick" aria-live="polite"><p class="ps-empty">Preparando tu inicio…</p></div><div class="ps-feed-head"><div><h2>📢 Muro Paquillero</h2><p>Novedades del grupo, sin ruido ni publicaciones inventadas.</p></div></div><div class="ps-filters" id="psFilters" role="group" aria-label="Filtrar actividad"></div><div id="psFeed" class="ps-feed" aria-live="polite"><p class="ps-empty">Cargando actividad…</p></div><div class="ps-more" id="psMore"></div>';
+ root.innerHTML='<div class="ps-header"><div><span class="ps-kicker">✨ TU COMUNIDAD</span><h2 id="psHello">Tu rincón paquillero</h2><p>Lo que tienes pendiente y lo que se mueve en el grupo.</p></div><button class="ps-refresh" type="button" data-ps-action="refresh" aria-label="Actualizar novedades">↻ Actualizar</button></div><div class="ps-quick" id="psQuick" aria-live="polite"><p class="ps-empty">Preparando tu inicio…</p></div><div class="ps-pending-polls" id="psPendingPolls" hidden></div><div class="ps-feed-head"><div><h2>📢 Muro Paquillero</h2><p>Novedades del grupo, sin ruido ni publicaciones inventadas.</p></div></div><div class="ps-filters" id="psFilters" role="group" aria-label="Filtrar actividad"></div><div id="psFeed" class="ps-feed" aria-live="polite"><p class="ps-empty">Cargando actividad…</p></div><div class="ps-more" id="psMore"></div>';
  const filters=root.querySelector('#psFilters');
  const quick=root.querySelector('#psQuick');
  const feed=root.querySelector('#psFeed');
@@ -88,6 +88,22 @@
    const birthday=getBirthdays(members||[],today)[0];
    const validFuture=(futureEvents||[]).filter(x=>x.status!=='completed'&&x.status!=='cancelled'&&x.status!=='draft');
    const openPolls=(polls||[]).filter(x=>x.status==='open'&&(!x.closes_at||new Date(x.closes_at).getTime()>Date.now()));
+   // La participación propia se verifica con la RPC existente, sin consultar votos individuales.
+   // Para las encuestas secretas nunca se deduce «ya votado» de la ausencia de nombres.
+   let myPollStatus=null;
+   if(member&&polls){
+    const checks=await Promise.all(openPolls.map(async poll=>{
+     try{
+      const {data:rows,error}=await db.rpc('paqui_poll_participation',{p_poll_id:poll.id});
+      if(error||!Array.isArray(rows)||!rows.length)return {poll,state:'unknown'};
+      const pending=rows.some(x=>String(x.pending_name||'').trim()===String(member.display_name||'').trim());
+      if(pending)return {poll,state:'pending'};
+      if(poll.vote_visibility==='named')return {poll,state:'answered'};
+      return {poll,state:'unknown'};
+     }catch(_){return {poll,state:'unknown'};}
+    }));
+    myPollStatus={pending:checks.filter(x=>x.state==='pending'),unknown:checks.filter(x=>x.state==='unknown')};
+   }
    const ids=validFuture.map(x=>x.id).filter(Boolean);
    let attendance=null;
    if(member&&ids.length){
@@ -104,8 +120,16 @@
    const birthdayLabel=birthday?(birthday.days===0?'¡Hoy!':birthday.days===1?'Mañana':'En '+birthday.days+' días'):'Sin fechas';
    quick.innerHTML=quickCard('✅',attendance?yes.length:'—','Planes a los que vas',yes[0]?(yes[0].title+' · '+labelDate(yes[0].event_date+'T12:00:00')):'Consulta tu agenda','proximos',yes[0]?.id)+
     quickCard('🙋',toAnswer?toAnswer.length:'—','Por confirmar',toAnswer?.length?'Tienes planes sin responder':'Consulta tus planes','proximos',toAnswer?.[0]?.id)+
-    quickCard('🗳️',polls?openPolls.length:'—','Encuestas abiertas','Puedes votar en las encuestas activas','votaciones',openPolls[0]?.id)+
+    quickCard('🗳️',myPollStatus?(myPollStatus.pending.length+(myPollStatus.unknown.length?' + ?':'')):'—','Encuestas sin responder',myPollStatus?(myPollStatus.unknown.length?myPollStatus.pending.length+' pendientes confirmadas · '+myPollStatus.unknown.length+' por comprobar':myPollStatus.pending.length?'Tienes votaciones pendientes':'Todas las encuestas abiertas comprobadas'):'No se pudo comprobar tu participación','votaciones',myPollStatus?.pending[0]?.poll.id||myPollStatus?.unknown[0]?.poll.id)+
     quickCard('🎂',birthdayLabel,'Próximo cumpleaños',birthday?birthday.name:'Consulta los cumpleaños','cumples','');
+   const pendingEl=document.getElementById('psPendingPolls');
+   if(pendingEl){
+    const pending=myPollStatus?.pending||[];
+    const unverified=myPollStatus?.unknown||[];
+    pendingEl.hidden=!pending.length&&!unverified.length;
+    pendingEl.innerHTML=(pending.length?'<div class="ps-pending-title">🗳️ Te falta responder</div><div class="ps-pending-list">'+pending.slice(0,4).map(x=>'<button type="button" data-ps-action="navigate" data-tab="votaciones" data-entity="'+esc(x.poll.id)+'">'+esc(x.poll.title)+' <span>Responder ›</span></button>').join('')+'</div>':'')+
+      (unverified.length?'<p class="ps-pending-unknown">'+unverified.length+' '+(unverified.length===1?'encuesta no comprobada':'encuestas no comprobadas')+' (por privacidad o permisos). Revisa Votaciones para saber si te falta responder.</p>':'');
+   }
    const items=[];
    (recentEvents||[]).forEach(x=>{
     if(!x.created_at||x.status==='cancelled')return;
