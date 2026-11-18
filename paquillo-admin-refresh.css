@@ -138,3 +138,14 @@
  #adminPanel .paqui-admin-body .admin-top .btn{min-height:38px}
  #adminPanel .paqui-admin-shortcuts{grid-template-columns:1fr}
 }
+
+/* Identidad de marca también en el acceso: sin imagen ilegible. */
+#loginGate .paqui-login-brand{
+ display:block;width:100%;padding:16px 10px;margin:0 auto 15px;
+ background:linear-gradient(120deg,#312078,#723dbc 55%,#b22b8c);
+ color:#fff;border-radius:15px;text-align:center;
+ font:1000 clamp(1.2rem,5vw,2rem)/1.1 "Bricolage Grotesque",system-ui,sans-serif;
+ letter-spacing:-.035em;text-shadow:0 2px 0 #210a4f;
+ box-shadow:0 4px 0 #21124c26;
+}
+#loginGate .paqui-login-brand strong{color:#ffe177}
