@@ -497,7 +497,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </style>
 <link rel="stylesheet" href="paquillo-world-app.css?v=32">
 <link rel="stylesheet" href="paquillo-race.css?v=5">
-<link rel="stylesheet" href="paquillo-social.css?v=1">
+<link rel="stylesheet" href="paquillo-social.css?v=2">
+<link rel="stylesheet" href="paquillo-ayuda.css?v=1">
 </head>
 <body>
 <header class="top">
@@ -550,6 +551,10 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
         <button type="button" class="menu-link" role="tab" data-t="juegos">🍺 Juegos de beber <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="stickers">Stickers <span>›</span></button>
         <button type="button" class="menu-link" role="tab" data-t="horno">Ideas y recuerdos <span>›</span></button>
+      </section>
+      <section class="menu-group"><h3>❓ Información y novedades</h3>
+        <button type="button" class="menu-link" role="tab" data-t="ayuda">📖 Ayuda · Cómo usar la web <span>›</span></button>
+        <button type="button" class="menu-link" role="tab" data-t="versiones">🚀 Novedades y versiones <span>›</span></button>
       </section>
       <section class="menu-group menu-admin-group" id="menuAdminGroup" hidden><h3>⚙️ Gestión</h3>
         <button type="button" class="menu-link" id="menuAdminBtn" hidden>Administración <span>›</span></button>
@@ -712,6 +717,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <section class="panel" id="p-world" hidden>
   <div id="paquiWorldContent"><div class="empty">Cargando tu mundo…</div></div>
 </section>
+<section class="panel" id="p-ayuda" hidden><div id="paquiHelp" aria-label="Guía de uso de Paquillo Events"></div></section>
+<section class="panel" id="p-versiones" hidden><div id="paquiVersions" aria-label="Historial de cambios de Paquillo Events"></div></section>
 </main>
 <footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
 
@@ -822,7 +829,7 @@ $('svx').onclick=()=>{$('sv').hidden=true};
 $('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
 $('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
 addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
-function showTab(t){if(!$('p-'+t))t='proximos';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos de beber',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');const settings=$('settingsPanel'),gear=$('settingsToggle');if(settings)settings.hidden=true;if(gear)gear.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
+function showTab(t){if(!$('p-'+t))t='proximos';document.body.classList.toggle('paqui-world-open',t==='world');document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs [data-t]').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);if(b.hasAttribute('role'))b.setAttribute('aria-selected',on)});const labels={ayuda:'Ayuda',versiones:'Novedades',proximos:'Agenda',cumples:'Cumples',pasados:'Planes pasados',stickers:'Stickers',directorio:'Paquillos',ranking:'TOP organizadores',horno:'Ideas y recuerdos',votaciones:'Votaciones',viajes:'Viajes',juegos:'Juegos de beber',world:'Paquillo World',perfil:'Mi perfil',gastos:'Gastos y caja común'};$('navCurrent').textContent=labels[t]||'Agenda';document.querySelectorAll('.nav-group').forEach(d=>d.open=false);const mp=$('menuPanel'),mb=$('menuBackdrop'),mt=$('menuToggle');if(mp)mp.hidden=true;if(mb)mb.hidden=true;if(mt)mt.setAttribute('aria-expanded','false');const settings=$('settingsPanel'),gear=$('settingsToggle');if(settings)settings.hidden=true;if(gear)gear.setAttribute('aria-expanded','false');if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}
 $('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
 $('menuToggle').addEventListener('click',()=>{const open=$('menuPanel').hidden;$('menuPanel').hidden=!open;$('menuBackdrop').hidden=!open;$('menuToggle').setAttribute('aria-expanded',String(open));});$('menuClose').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));$('menuBackdrop').addEventListener('click',()=>showTab(location.hash.slice(1)||'proximos'));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('menuPanel').hidden)showTab(location.hash.slice(1)||'proximos')});
 addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
@@ -1161,7 +1168,7 @@ showTab(location.hash.slice(1));
      const btn=form.querySelector('button');btn.disabled=true;btn.textContent='Enviando…';
      const {error}=await client.rpc('paqui_cast_poll_vote',{p_poll_id:form.dataset.poll,p_option_ids:ids});
      if(error){alert('No se pudo registrar el voto: '+error.message);btn.disabled=false;btn.textContent='Enviar voto';return}
-     await renderPolls();alert('¡Voto registrado! Puedes cambiarlo mientras la encuesta siga abierta.');
+     await renderPolls();window.PaquilloSocial?.refresh();alert('¡Voto registrado! Puedes cambiarlo mientras la encuesta siga abierta.');
    });
  }
  async function openPollEditor(id){
@@ -2016,6 +2023,7 @@ K: Inventa una regla nueva que dure una ronda.`;
  if($('p-juegos'))init();
 })();
 </script>
-<script src="paquillo-social.js?v=1"></script>
+<script src="paquillo-social.js?v=2"></script>
+<script src="paquillo-ayuda.js?v=1"></script>
 </body>
 </html>
