@@ -1,7 +1,20 @@
 # Paquillo World · Evolución hacia Paquillo Life
 Documento de diseño de juego y plan técnico. 18/11/2026.
 
-**Estado: propuesta y planificación, NO funcional en producción.**
+**Estado: primer prototipo visual de habitación integrado en World bajo feature flag; no es aún el modo Life jugable completo.**
+
+## Avance 18/11/2026 · Fase A — primer hogar en modo prueba
+- Ilustración vectorial `paquillo-life-room.svg`: casa tropical con mar, cama, nevera, recreativa, zona de ducha y espacio libre para el protagonista.
+- Módulo aislado `paquillo-life-preview.js` + estilos `paquillo-life-preview.css`.
+- Acceso deliberadamente oculto para usuarios normales: **`?life-preview=1#world`**. Dentro del lobby aparece una entrada **Mi hogar · Vista previa**.
+- Hero = imagen de personaje aprobado en `PaquilloWorldCharacters.imageFor`, con animación básica de respiración en CSS.
+- Objetos tocables: nevera (comer), ducha y cama (reacciones visuales sin guardar). Recreativa = transición real al Arcade existente de World.
+- Escena fullscreen, botones táctiles, safe areas y preferencia de movimiento reducido. Botón de vuelta a World.
+- **No hay necesidades persistentes, XP nuevo, partidas duplicadas ni ninguna escritura a Supabase.** Todos los demás módulos de Events/World mantienen su comportamiento.
+- Esta es una **primera maqueta interactiva para probar composición y navegación**. Las animaciones todavía son básicas y el fondo SVG se debe reemplazar/refinar con arte final de calidad de juego tras aprobación visual.
+- **Pendiente de QA móvil real:** Android, iPhone/PWA, legibilidad, posicionamiento de objetos, rendimiento y estados sin avatar.
+- **Próximo paso recomendado:** convertir la habitación ilustrada aprobada en arte exportable para el motor; prototipo de animaciones de un personaje piloto con sprites consistentes (comer, descansar, ducha e idle), y conectar Memoria con una celebración, sin XP hasta existir validación en servidor.
+
 
 ## Visión de producto
 **World es el universo; Life es la vida de tu personaje dentro de ese universo.**
