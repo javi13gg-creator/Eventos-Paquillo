@@ -3,6 +3,13 @@ Documento de diseño de juego y plan técnico. 18/11/2026.
 
 **Estado: habitación alfa animada e integración con Memoria bajo acceso privado Javi/admin; no es aún el modo Life completo.**
 
+## Fase D · Vida autónoma en la habitación (18/11/2026)
+- Gestos espontáneos cada 11–20 segundos de inactividad: saludo con pose del sprite (fila 3, columna 2) o descanso (fila 3, columna 3).
+- Si el estado emocional es cansado, se prioriza descansar. Los gestos son puramente visuales y no escriben en Supabase ni conceden XP.
+- Temporizadores cancelados al iniciar cuidados, navegar fuera, cerrar Life o esconder la pestaña; al volver a la pestaña se reprograman.
+- Respeta `prefers-reduced-motion`: no ejecuta la rutina autónoma si está activado.
+- Reutiliza el sprite aprobado sin modificar proporciones. Código publicado; QA visual móvil pendiente.
+
 ## Fase C · Estado emocional y ambiente (18/11/2026)
 - Estado derivado de los tres valores reales: cansado (mínimo <=35), tranquilo (<=60), bien y excelente (mínimo >=85).
 - Indicador emocional y colores ambientales adaptativos, frases de reacción al volver a reposo; MiniJavi conserva el sprite aprobado sin deformaciones.
