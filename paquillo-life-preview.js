@@ -348,7 +348,8 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v16</span>'+
+   '<button type="button" class="pl-inventory-shortcut" data-pl-inventory-open aria-label="Abrir inventario de muebles">🧰 Muebles</button>'+ 
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v17</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -432,6 +433,11 @@
     return;
    }
    if(!allowed()){close();return;}
+   if(event.target.closest('[data-pl-inventory-open]')){
+    const inventory=room.querySelector('.pl-inventory');
+    if(inventory){inventory.open=true;inventory.scrollIntoView({block:'start',behavior:'smooth'});setStatus('Inventario abierto: toca un mueble para colocarlo o retirarlo.');}
+    return;
+   }
    if(event.target.closest('[data-pl-furniture]')){
     toggleFurniture(event.target.closest('[data-pl-furniture]').dataset.plFurniture);return;
    }
