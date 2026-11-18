@@ -3,7 +3,7 @@
 (()=>{'use strict';
  let uid='',seenSession=new Set(),busy=false;
  async function check(){
-  if(busy||document.hidden)return;
+  if(busy||document.hidden||location.hash==='#world')return;
   const ctx=window.PaquilloWorldContext?.();
   if(!ctx?.client||!ctx?.currentAuthUser)return;
   const id=ctx.currentAuthUser.id;
@@ -22,7 +22,7 @@
    banner.id='paquiDuelInboxAlert';banner.type='button';
    banner.textContent='⚔️ Tienes '+data.length+' reto'+(data.length===1?'':'s')+' pendiente'+(data.length===1?'':'s')+' en Paquillo World · Ver';
    banner.style.cssText='position:fixed;z-index:99998;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:12px;right:12px;max-width:540px;margin:auto;padding:15px;border:2px solid #ffe187;border-radius:16px;background:#54318d;color:white;font:800 14px system-ui;box-shadow:0 8px 32px #0008;cursor:pointer';
-   banner.addEventListener('click',()=>{banner.remove();location.hash='#world';window.PaquilloWorld?.open?.();});
+   banner.addEventListener('click',()=>{banner.remove();location.hash='#world';});
    document.body.appendChild(banner);
   }finally{busy=false;}
  }
