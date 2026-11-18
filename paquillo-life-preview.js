@@ -361,8 +361,6 @@
    '</main>'+
    '<footer class="pl-foot">'+
    '<div class="pl-quick-actions" role="group" aria-label="Acciones rápidas"><button type="button" data-pl-place="eat">🥥 Comer</button><button type="button" data-pl-place="shower">🚿 Ducha</button><button type="button" data-pl-place="sleep">💤 Dormir</button><button type="button" data-pl-place="play">🎮 Jugar</button></div>'+ 
-   '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
-   '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Modo híbrido: aspecto original de MiniJavi y profundidad 3D experimental">✨ Probar modo híbrido</button>'+ 
    '<div class="pl-theme-picker" role="group" aria-label="Decoración de mi hogar"><span>🎨 Mi hogar · Nv '+lifeLevel+'</span><button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button><button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
    '<details class="pl-achievements"><summary data-pl-achievements-summary>🏅 Logros · 0/4</summary><div class="pl-achievements-grid" data-pl-achievements></div><small>Prueba privada: logros locales, sin XP ni recompensas.</small></details>'+ 
    '<button type="button" class="pl-neighborhood-link" data-pl-neighborhood>🏘️ Visitar el barrio · casas y piques ›</button>'+ 
