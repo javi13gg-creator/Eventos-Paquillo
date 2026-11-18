@@ -3,6 +3,14 @@ Documento de diseño de juego y plan técnico. 18/11/2026.
 
 **Estado: habitación alfa animada e integración con Memoria bajo acceso privado Javi/admin; no es aún el modo Life completo.**
 
+## Fase H · Piloto 3D articulado optativo (18/11/2026)
+- Archivo `paquillo-life-model3d.js`: prototipo WebGL con Three.js cargado solo bajo petición, geometrías básicas y articulación independiente de piernas, brazos y cabeza.
+- Animaciones reactivas a caminar, dormir, ducharse y celebrar; orientación tridimensional durante el paseo.
+- Botón reversible en el hogar, sprite aprobado conservado y disponible de inmediato.
+- Limpieza de WebGL, geometrías y animación al cerrar/cambiar modo; fallo de WebGL vuelve al sprite original.
+- El aspecto del prototipo es una aproximación inicial (colores, pelo y ropa), **no** una reconstrucción facial fiel ni un avatar 3D definitivo. El próximo hito exige modelado 3D a partir de referencias y validación visual.
+- Carga externa de Three.js requiere conexión; QA visual móvil aún pendiente.
+
 ## Fase E · Movimiento continuo y decoración interactiva (18/11/2026)
 - Sustituida espera de 11–20 s por primer paseo a los ~450 ms y desplazamientos recurrentes entre puntos de la habitación, con fotogramas alternos de caminar y respiración durante pausas breves.
 - El cansancio introduce descansos breves; cuidados, juegos y cierre tienen prioridad y cancelan la rutina.
