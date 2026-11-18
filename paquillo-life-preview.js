@@ -7,7 +7,7 @@
  'use strict';
  // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
- let room=null,previousFocus=null,arcadeAction=null,memoryAction=null;
+ let room=null,previousFocus=null,arcadeAction=null,memoryAction=null,neighborhoodAction=null;
  let model3d=null,modelRequest=0;
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
@@ -313,7 +313,7 @@
   room=null;
   document.body.classList.remove('paqui-life-room-open');
   previousFocus?.focus?.({preventScroll:true});
-  previousFocus=null;arcadeAction=null;memoryAction=null;
+  previousFocus=null;arcadeAction=null;memoryAction=null;neighborhoodAction=null;
  }
  function open(options={}){
   if(!allowed())return false;
@@ -323,6 +323,7 @@
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
+  neighborhoodAction=typeof options.onNeighborhood==='function'?options.onNeighborhood:null;
   const name=String(options.name||'Paquillo').slice(0,50);
   const source=window.PaquilloWorldCharacters?.imageFor(name)||'';
   room=document.createElement('section');
@@ -334,7 +335,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v20</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v21</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -363,6 +364,7 @@
    '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Modo híbrido: aspecto original de MiniJavi y profundidad 3D experimental">✨ Probar modo híbrido</button>'+ 
    '<div class="pl-theme-picker" role="group" aria-label="Decoración de mi hogar"><span>🎨 Mi hogar · Nv '+lifeLevel+'</span><button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button><button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
    '<details class="pl-achievements"><summary data-pl-achievements-summary>🏅 Logros · 0/4</summary><div class="pl-achievements-grid" data-pl-achievements></div><small>Prueba privada: logros locales, sin XP ni recompensas.</small></details>'+ 
+   '<button type="button" class="pl-neighborhood-link" data-pl-neighborhood>🏘️ Visitar el barrio · casas y piques ›</button>'+ 
    '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
@@ -471,6 +473,7 @@
     setStatus(enabled?'Profundidad experimental activada · aspecto original conservado.':'Animación clásica restaurada.');
     return;
    }
+   if(event.target.closest('[data-pl-neighborhood]')){const cb=neighborhoodAction;if(cb){close();cb();}return;}
    if(event.target.closest('[data-pl-memory]')){
     const play=memoryAction;
     if(!play){setStatus('Memoria no está disponible. Abre Arcade para jugar.');return;}
