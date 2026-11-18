@@ -191,6 +191,8 @@
   }
  });
  window.PaquilloReacciones={mount,detail,refresh:()=>mount(mountedRoot)};
+ const initial=document.getElementById('events');
+ if(initial?.querySelector('[data-paqui-reaction-box]'))mount(initial);
  window.addEventListener('paqui-world-ready',()=>{if(mountedRoot)mount(mountedRoot)});
  window.addEventListener('focus',()=>{if(mountedRoot&&Date.now()-lastLoadedAt>90000)mount(mountedRoot)});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mountedRoot&&Date.now()-lastLoadedAt>90000)mount(mountedRoot)});
