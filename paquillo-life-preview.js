@@ -179,8 +179,12 @@
   const slot=room.querySelector('#plPerson');
   const hero=document.createElement('div');
   hero.className='pl-person-figure';
-  const puppet=window.PaquilloLifePuppet?.create(name)||null;
-  if(puppet){
+  const sprite=window.PaquilloLifeSprite?.create(name)||null;
+  const puppet=sprite?null:(window.PaquilloLifePuppet?.create(name)||null);
+  if(sprite){
+   hero.classList.add('pl-has-sprite');
+   hero.append(sprite);
+  }else if(puppet){
    hero.classList.add('pl-has-rig');
    hero.append(puppet);
   }else if(source){
