@@ -202,3 +202,23 @@
 @media(prefers-reduced-motion:reduce){
  #paquiLifePreview.pl-model-active .pl-sprite-character{animation:none!important}
 }
+
+/* LIFE v13 · Primer desbloqueable cosmético basado en el nivel real de World. */
+#paquiLifePreview .pl-theme-picker{
+ display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+ gap:5px;margin:3px auto 7px;max-width:100%;
+}
+#paquiLifePreview .pl-theme-picker span{color:#fff;font-size:11px;font-weight:850;text-shadow:0 1px 2px #24153a}
+#paquiLifePreview .pl-theme-picker button{
+ border:1px solid #e5d6ff;border-radius:999px;
+ padding:5px 9px;background:#392164;color:#fff;font-size:11px;font-weight:750
+}
+#paquiLifePreview .pl-theme-picker button[aria-pressed="true"]{background:#168c83;border-color:#b7ffe7}
+#paquiLifePreview .pl-theme-picker button:disabled{opacity:.5;cursor:not-allowed}
+#paquiLifePreview[data-pl-theme="sunset"] .pl-scene{
+ filter:sepia(.24) saturate(1.22) hue-rotate(-18deg);
+}
+#paquiLifePreview[data-pl-theme="night"] .pl-scene{
+ filter:brightness(.7) saturate(1.16) hue-rotate(18deg);
+}
+#paquiLifePreview[data-pl-theme="night"] .pl-decor-light{opacity:.85;filter:drop-shadow(0 0 9px #fff1a1)}
