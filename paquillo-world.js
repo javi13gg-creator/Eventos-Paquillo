@@ -12,6 +12,7 @@ const chapters=[['home','🌴','Inicio'],['games','🎮','Juegos'],['people','�
 let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v=k=>p.find(x=>x.type===k)?.value;return `${v('year')}-${v('month')}-${v('day')}`;};const scoreDay=v=>String(v||'').slice(0,10);let scoreError='';
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
+let enteredFromLife=false;
 const viewHistory=[];
 const pageState={people:0,ranking:0,profile:0};
 const viewportWidth=()=>window.innerWidth||390;
@@ -408,7 +409,9 @@ function finishMemory(){
  void submitGlobalScore('memory',moves);
  modal('<div class="pw-game-finish"><span class="pw-finish-icon">🎊</span><h2>¡MEMORIA COMPLETADA!</h2>'+
  '<p class="pw-final-score">'+moves+' intentos</p><p>⏱️ '+seconds+' segundos · Mejor partida local: '+best+' intentos.</p>'+
- '<p class="pw-local-note">Se envía al ranking global si está habilitado. Sin XP.</p><button class="pw-action-button" type="button" data-pw-memory-restart>Jugar otra vez ▶</button></div>');
+ '<p class="pw-local-note">Se envía al ranking global si está habilitado. Sin XP.</p>'+
+ (enteredFromLife&&window.PaquilloLifePreview?.enabled?'<button class="pw-action-button pw-life-return-button" type="button" data-pw-life-return>🏡 Volver a mi hogar · ¡celebrar! ✨</button>':'')+
+ '<button class="pw-action-button" type="button" data-pw-memory-restart>Jugar otra vez ▶</button></div>');
 }
 
 function gameAction(id){
@@ -473,7 +476,7 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-life-open')){
   window.PaquilloLifePreview?.open({
    name:state.mine?.display_name||'Paquillo',
-   onArcade:()=>setView('games')
+   onArcade:()=>{enteredFromLife=true;setView('games')}
   });
   return;
  }
@@ -501,6 +504,17 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-trivia-restart')){startTrivia();return}
  if(btn.hasAttribute('data-pw-memory-card')){flipMemory(Number(btn.dataset.pwMemoryCard));return}
  if(btn.hasAttribute('data-pw-memory-restart')){startMemory();return}
+ if(btn.hasAttribute('data-pw-life-return')){
+  if(!window.PaquilloLifePreview?.enabled)return;
+  closeModal();
+  const opened=window.PaquilloLifePreview?.open({
+   name:state.mine?.display_name||'Paquillo',
+   celebrate:'memory',
+   onArcade:()=>{enteredFromLife=true;setView('games')}
+  });
+  if(opened)enteredFromLife=false;
+  return;
+ }
  if(btn.dataset.pwView){if(root.querySelector('[data-pw-screen]'))setView(btn.dataset.pwView);else if(window.PaquilloWorldContext?.()?.currentAuthUser)refresh();return}
  if(btn.dataset.pwGame){gameAction(btn.dataset.pwGame);return}
  if(btn.dataset.pwMember){showMember(Number(btn.dataset.pwMember));return}
