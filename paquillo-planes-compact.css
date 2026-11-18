@@ -235,3 +235,59 @@
  #p-planes .paqui-rsvp-choice .paqui-rsvp-text{display:inline!important;font-size:.65rem}
  #p-planes .paqui-plan-rsvp .paqui-react-trigger{min-height:35px}
 }
+
+
+/* Carteles visibles: miniatura permanente en la cabecera; tocar abre la ficha completa. */
+#p-planes .paqui-plan-card>.paqui-plan-header-row{
+ display:flex;align-items:stretch;gap:0;min-width:0;
+ background:linear-gradient(125deg,color-mix(in srgb,var(--pk) 7%,var(--card)),var(--card));
+ border-radius:17px 17px 0 0;
+}
+#p-planes .paqui-plan-header-row>.paqui-plan-top{
+ display:flex;align-items:center;gap:10px;flex:1 1 auto;
+ min-width:0;width:auto;margin:0;padding:12px 13px 10px;
+ border:0;border-radius:17px 0 0 0;background:transparent;
+ color:var(--ink);font:inherit;text-align:left;cursor:pointer;
+}
+#p-planes .paqui-plan-header-row>.paqui-plan-top:only-child{
+ width:100%;border-radius:17px 17px 0 0;
+}
+#p-planes .paqui-plan-header-row>.paqui-plan-top:focus-visible,
+#p-planes .paqui-plan-header-row>.paqui-plan-poster-preview:focus-visible{
+ outline:2px solid var(--pk);outline-offset:-3px;
+}
+#p-planes .paqui-plan-header-row>.paqui-plan-poster-preview{
+ flex:0 0 80px;align-self:center;width:80px;height:80px;
+ display:grid;place-items:center;min-width:0;min-height:0;
+ margin:6px 9px 6px 0;padding:3px;border-radius:10px;
+ border:1px solid color-mix(in srgb,var(--pk) 25%,var(--ln));
+ background:var(--card);box-shadow:0 2px 8px #20134f20;
+ cursor:pointer;overflow:hidden;position:relative;
+}
+#p-planes .paqui-plan-header-row>.paqui-plan-poster-preview[hidden]{display:none!important}
+#p-planes .paqui-plan-poster-thumb{
+ display:block;width:100%;height:100%;max-width:100%;
+ border:0;border-radius:7px;margin:0;
+ object-fit:contain;object-position:center;
+ background:var(--card);
+}
+#p-planes .paqui-plan-header-row>.paqui-plan-poster-preview::after{
+ content:"↗";position:absolute;right:1px;bottom:1px;
+ width:19px;height:19px;display:grid;place-items:center;
+ color:#fff;background:#5a3699d9;border-radius:8px 0 7px 0;
+ font-size:.78rem;font-weight:900;pointer-events:none;
+}
+@media(max-width:600px){
+ #p-planes .paqui-plan-header-row>.paqui-plan-top{gap:8px;padding:9px 7px 9px 9px}
+ #p-planes .paqui-plan-header-row>.paqui-plan-poster-preview{
+  flex-basis:62px;width:62px;height:67px;
+  margin:5px 8px 5px 0;padding:2px;border-radius:9px;
+ }
+}
+@media(max-width:360px){
+ #p-planes .paqui-plan-header-row>.paqui-plan-top{gap:6px;padding:8px 4px 8px 7px}
+ #p-planes .paqui-plan-header-row>.paqui-plan-poster-preview{
+  flex-basis:53px;width:53px;height:59px;
+  margin:4px 6px 4px 0;
+ }
+}
