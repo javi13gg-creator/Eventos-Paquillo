@@ -478,6 +478,7 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-life-open')){
   window.PaquilloLifePreview?.open({
    name:state.mine?.display_name||'Paquillo',
+   xp:state.xp,
    onArcade:()=>{enteredFromLife=true;setView('games')},
    onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
   });
