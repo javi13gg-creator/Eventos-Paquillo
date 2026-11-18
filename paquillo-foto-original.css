@@ -32,3 +32,18 @@
  #myProfile .paqui-profile-restore-info{flex-basis:105px}
  #myProfile .paqui-profile-restore-btn{flex:1 1 100%;min-height:38px}
 }
+/* Panel de administración: restauración por miembro, sin romper el acordeón. */
+#adminPanel .paqui-admin-member-actions{
+ display:flex;flex:0 1 auto;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px
+}
+#adminPanel .paqui-admin-member-actions .btn{
+ font-size:.73rem;line-height:1.2;white-space:normal;
+ padding:7px 9px;min-height:34px
+}
+#adminPanel .member-restore-avatar-btn:disabled{
+ opacity:.45;cursor:default
+}
+@media(max-width:600px){
+ #adminPanel .paqui-admin-member-actions{width:100%;justify-content:flex-start}
+ #adminPanel .paqui-admin-member-actions .btn{flex:1 1 110px;font-size:.72rem}
+}
