@@ -500,6 +500,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <link rel="stylesheet" href="paquillo-social.css?v=3">
 <link rel="stylesheet" href="paquillo-ayuda.css?v=1">
 <link rel="stylesheet" href="paquillo-navigation.css?v=1">
+<link rel="stylesheet" href="paquillo-admin-refresh.css?v=1">
 </head>
 <body>
 <nav class="tabs" id="tabs" aria-label="Navegación principal">
@@ -574,14 +575,21 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <section class="panel" id="p-proximos">
 <header class="top" id="paquiHomeBanner">
 <h1 class="sr">Paquillo Events</h1>
-<img class="banner" src="banner-paquillo-events-2.jpg" alt="Paquillo Events. Donde los planes se proponen, votan, vuelven a votar, discuten y a veces incluso ocurren.">
+<div class="paqui-brand-card" aria-label="Paquillo Events">
+  <span class="paqui-brand-mark" aria-hidden="true">P</span>
+  <div class="paqui-brand-content">
+    <span class="paqui-brand-label">DONDE NACE EL PLAN</span>
+    <div class="paqui-brand-name" aria-hidden="true"><span>PAQUILLO</span><span>EVENTS</span></div>
+    <span class="paqui-brand-subtitle">Planes · Cumpleaños · Momentazos</span>
+  </div>
+ </div>
 <div class="pills">
 <button type="button" class="count" id="count">Contando los días…</button>
 <button type="button" class="count b" id="bcount"></button>
 </div>
 </header>
 
-<section id="paquiSocial" class="paqui-social" aria-label="Inicio social y novedades del grupo"></section>
+<section class="paqui-home-calendar" aria-label="Calendario de planes y cumpleaños">
 <div class="c"><h2>Calendario</h2>
 <p class="sub">Toca un día marcado y te llevo al plan.</p></div>
 <div class="cal">
@@ -590,6 +598,9 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span><span><i class="p"></i>Realizado</span><span><i class="bday-legend"></i>Cumpleaños</span></div>
 <div id="pick"></div>
 </div>
+</section>
+<section id="paquiSocial" class="paqui-social" aria-label="Inicio social y novedades del grupo"></section>
+
 
 <div id="paquiPlansAnchor" aria-hidden="true"></div>
 <div class="f6-row" style="justify-content:space-between"><h2>Próximos planes</h2><button class="btn secondary" type="button" id="exportAllCalendar">📆 Exportar calendario</button></div>
@@ -1773,8 +1784,97 @@ showTab(location.hash.slice(1));
    if(hours<24*7)return 'Hace '+Math.floor(hours/24)+' días';
    return date.toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'});
  }
+
+ function paquiOrganizeAdmin(target,previouslyOpen=''){
+   // Mover nodos en vez de volver a crear HTML conserva listeners y formularios.
+   const push=target.querySelector('#adminManualPushRoot');
+   const avatar=target.querySelector('#paquiWorldAvatarAdmin');
+   if(push)push.remove();
+   if(avatar)avatar.remove();
+   const groups={
+     approvals:[],plans:[],members:[],activity:[],push:[],avatars:[],tools:[]
+   };
+   let kind='activity';
+   for(const node of Array.from(target.children)){
+     if(node.tagName==='H3'){
+       const heading=node.textContent||'';
+       if(heading.includes('Propuestas pendientes'))kind='approvals';
+       else if(heading.includes('Estado de los planes'))kind='plans';
+       else if(heading.includes('Gestión de miembros'))kind='members';
+       node.remove();continue;
+     }
+     groups[kind].push(node);
+   }
+   if(push)groups.push.push(push);
+   else{
+     const msg=document.createElement('p');msg.className='admin-note';
+     msg.textContent='No está disponible el módulo de notificaciones manuales.';
+     groups.push.push(msg);
+   }
+   if(avatar)groups.avatars.push(avatar);
+   else{
+     const msg=document.createElement('p');msg.className='admin-note';
+     msg.textContent='No está disponible el módulo de avatares.';
+     groups.avatars.push(msg);
+   }
+   const titles=[
+     ['approvals','📨','Propuestas pendientes','Aprobar planes nuevos'],
+     ['plans','📅','Planes y eventos','Marcar como realizados o reabrir'],
+     ['members','👥','Usuarios y miembros','Activar o desactivar miembros'],
+     ['activity','📊','Actividad y estadísticas','Registros de acceso y últimas visitas'],
+     ['push','🔔','Notificaciones push','Enviar avisos y consultar destinatarios'],
+     ['avatars','🎭','Paquillo World · Avatares','Importar y asignar personajes'],
+     ['tools','⚙️','Otras herramientas','Encuestas, gastos, viajes y más']
+   ];
+   const intro=document.createElement('div');intro.className='paqui-admin-intro';
+   intro.innerHTML='<strong>🧭 Centro de control</strong><p>Selecciona una categoría para ver sus herramientas. Todas están cerradas al entrar; al abrir una, se cierra la anterior.</p>';
+   const wrapper=document.createElement('div');wrapper.className='paqui-admin-groups';
+   const detailsById=new Map();
+   for(const [id,icon,title,desc] of titles){
+     const details=document.createElement('details');
+     details.className='paqui-admin-group';
+     details.dataset.adminGroup=id;
+     const count=id==='approvals'?target.querySelectorAll('.approve-event-btn').length:id==='plans'?target.querySelectorAll('.event-status-btn').length:id==='members'?target.querySelectorAll('.member-active-btn').length:0;
+     details.innerHTML='<summary><span class="paqui-admin-icon" aria-hidden="true">'+icon+'</span><span class="paqui-admin-group-label"><strong>'+title+'</strong><small>'+desc+'</small></span>'+(count?'<span class="paqui-admin-count">'+count+'</span>':'')+'<span class="paqui-admin-chevron" aria-hidden="true">⌄</span></summary><div class="paqui-admin-body"></div>';
+     const body=details.querySelector('.paqui-admin-body');
+     for(const node of groups[id])body.append(node);
+     if(id==='tools'){
+       const intro=document.createElement('p');intro.className='admin-note';
+       intro.textContent='Accede a las funciones que se gestionan desde su sección principal. No se modifican los permisos existentes.';
+       body.append(intro);
+       const shortcuts=document.createElement('div');shortcuts.className='paqui-admin-shortcuts';
+       for(const [tab,label] of [
+         ['votaciones','🗳️ Encuestas'],['gastos','💸 Gastos y caja común'],
+         ['viajes','🧳 Viajes'],['directorio','👥 Fichas de Paquillos'],
+         ['ranking','🏆 TOP organizadores'],['horno','💡 Ideas y recuerdos'],
+         ['pasados','📚 Planes pasados']
+       ]){
+         const btn=document.createElement('button');btn.type='button';
+         btn.dataset.adminGoto=tab;btn.textContent=label+' ›';
+         btn.addEventListener('click',()=>{
+           $id('adminBack')?.click();
+           document.querySelector('.tabs [data-t="'+tab+'"]')?.click();
+         });
+         shortcuts.append(btn);
+       }
+       body.append(shortcuts);
+     }
+     wrapper.append(details);detailsById.set(id,details);
+   }
+   target.replaceChildren(intro,wrapper);
+   for(const details of detailsById.values()){
+     details.addEventListener('toggle',()=>{
+       if(!details.open)return;
+       for(const other of detailsById.values())if(other!==details)other.open=false;
+     });
+   }
+   if(previouslyOpen&&detailsById.has(previouslyOpen))detailsById.get(previouslyOpen).open=true;
+ }
+
  async function renderAdmin(){
-   const target=$id('adminContent');target.innerHTML='<p>Consultando estadísticas…</p>';
+   const target=$id('adminContent');
+   const previouslyOpen=target.querySelector('.paqui-admin-group[open]')?.dataset.adminGroup||'';
+   target.innerHTML='<p>Consultando estadísticas…</p>';
    const [{data,error},{data:profiles,error:profileError}]=await Promise.all([
      client.from('access_logs').select('user_id,created_at').order('created_at',{ascending:false}),
      client.from('user_profiles').select('user_id,username')
@@ -1798,6 +1898,7 @@ showTab(location.hash.slice(1));
    $id('refreshStats').onclick=renderAdmin;
    window.PaquilloAdminPush?.mount(target,events||[],client);
    window.PaquilloAdminAvatars?.mount(target,members||[],client);
+   paquiOrganizeAdmin(target,previouslyOpen);
  }
  document.querySelectorAll('.tabs [data-t]').forEach(btn=>btn.addEventListener('click',()=>{
    const t=btn.dataset.t;showTab(t);
@@ -1819,7 +1920,7 @@ showTab(location.hash.slice(1));
  $id('tripForm').addEventListener('submit',createTrip);
  const admin=document.createElement('section');admin.id='adminPanel';admin.hidden=true;admin.innerHTML='<div class="admin-shell"><div class="admin-heading"><div><h2>⚙️ Administración</h2><p class="sub">Panel privado de gestión de Paquillo Events.</p></div><div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><span class="status-tag">Solo administradores</span><button class="btn" type="button" id="adminBack">↩ Volver a la web</button></div></div><div id="adminContent"></div></div>';
  document.body.append(admin);
- $id('adminBack').onclick=()=>{admin.hidden=true;document.body.classList.remove('admin-mode');const t=$id('adminToggle');if(t)t.innerHTML='🛠️ <span>Administración</span>';history.replaceState(null,'',location.pathname+location.search);window.scrollTo({top:0,behavior:'instant'});};
+ $id('adminBack').onclick=()=>{admin.querySelectorAll('.paqui-admin-group[open]').forEach(d=>d.open=false);admin.hidden=true;document.body.classList.remove('admin-mode');const t=$id('adminToggle');if(t)t.innerHTML='🛠️ <span>Administración</span>';history.replaceState(null,'',location.pathname+location.search);window.scrollTo({top:0,behavior:'instant'});};
 
  // ================= FASE 6 + 6.1 · ASISTENCIA COMPLETA =================
  let activeMembersCache=[];
