@@ -11,11 +11,11 @@
  let actionSerial=0;
  const timers=new Set();
  const places={
-  home:{left:48,bottom:15,scale:1},
-  eat:{left:25,bottom:24,scale:.77},
-  sleep:{left:79,bottom:17,scale:.77},
-  shower:{left:80,bottom:43,scale:.62},
-  play:{left:62,bottom:30,scale:.77}
+  home:{left:48,bottom:15,scale:1,speechBottom:57,propBottom:39},
+  eat:{left:25,bottom:24,scale:.77,speechBottom:57,propBottom:42},
+  sleep:{left:79,bottom:17,scale:.77,speechBottom:54,propBottom:37},
+  shower:{left:80,bottom:43,scale:.62,speechBottom:73,propBottom:61},
+  play:{left:62,bottom:30,scale:.77,speechBottom:65,propBottom:51}
  };
  const steps={
   eat:{travel:910,action:1750,message:'¡Ñam! Esto sí que es vida. 🥥'},
@@ -52,6 +52,8 @@
    actor.style.setProperty('--pl-person-scale',String(data.scale));
   }
   room.style.setProperty('--pl-speech-left',Math.min(84,Math.max(16,data.left))+'%');
+  room.style.setProperty('--pl-speech-bottom',data.speechBottom+'%');
+  room.style.setProperty('--pl-prop-bottom',data.propBottom+'%');
  }
  function speech(message){
   const item=room?.querySelector('.pl-speech');
