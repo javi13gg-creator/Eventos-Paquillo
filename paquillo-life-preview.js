@@ -13,58 +13,6 @@
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
  let lifeLevel=1,roomTheme='island';
- const decorOptions={
-  bed:[['classic','Clásica'],['cloud','Nube'],['castle','Castillo']],
-  table:[['wood','Madera'],['round','Redonda'],['tech','Futurista']],
-  rug:[['woven','Tejida'],['star','Estrella'],['checker','Cuadros']]
- };
- const decorThemes={tropical:'🌴 Tropical',monsters:'⚡ Monstruos de bolsillo',alien:'💙 Alien tropical',yellow:'💛 Pequeños amarillos',magic:'✨ Academia mágica'};
- let decorState={bed:'classic',table:'wood',rug:'woven',theme:'tropical'};
- function loadFurniture(){
-  try{
-   const saved=JSON.parse(localStorage.getItem('paqui-life-decor-presets-javi')||'{}');
-   for(const [key,options] of Object.entries(decorOptions)){
-    if(options.some(option=>option[0]===saved[key]))decorState[key]=saved[key];
-   }
-   if(Object.hasOwn(decorThemes,saved.theme))decorState.theme=saved.theme;
-  }catch(_){}
- }
- function renderFurniture(){
-  if(!room)return;
-  const stage=room.querySelector('.pl-stage');
-  if(!stage)return;
-  stage.dataset.decorTheme=decorState.theme;
-  for(const key of Object.keys(decorOptions))stage.dataset['decor'+key[0].toUpperCase()+key.slice(1)]=decorState[key];
-  room.querySelectorAll('[data-pl-preset]').forEach(button=>{
-   const [category,option]=button.dataset.plPreset.split(':');
-   button.setAttribute('aria-pressed',String(decorState[category]===option));
-  });
-  room.querySelectorAll('[data-pl-decor-theme]').forEach(button=>{
-   button.setAttribute('aria-pressed',String(decorState.theme===button.dataset.plDecorTheme));
-  });
- }
- function chooseDecor(key,value){
-  if(!room)return;
-  if(key==='theme'){
-   if(!Object.hasOwn(decorThemes,value))return;
-  }else if(!decorOptions[key]?.some(option=>option[0]===value))return;
-  decorState[key]=value;
-  try{localStorage.setItem('paqui-life-decor-presets-javi',JSON.stringify(decorState))}catch(_){}
-  renderFurniture();
-  setStatus('Decoración actualizada y guardada en este dispositivo. 🏠');
- }
- function decorMarkup(){
-  const categories={bed:'🛏️ Cama',table:'🪑 Mesa',rug:'🧶 Alfombra'};
-  const rows=Object.entries(decorOptions).map(([key,options])=>
-   '<div class="pl-decor-row"><strong>'+categories[key]+'</strong><div class="pl-decor-options">'+
-   options.map(([id,name])=>'<button type="button" data-pl-preset="'+key+':'+id+'">'+name+'</button>').join('')+
-   '</div></div>').join('');
-  const themes=Object.entries(decorThemes).map(([key,name])=>'<button type="button" data-pl-decor-theme="'+key+'">'+name+'</button>').join('');
-  return '<details class="pl-inventory"><summary>🛋️ Decorar habitación · modelos predeterminados</summary>'+
-   '<div class="pl-decor-rows">'+rows+'</div><strong class="pl-theme-title">🎨 Temáticas originales</strong>'+
-   '<div class="pl-decor-theme-options">'+themes+'</div>'+
-   '<small>Prueba privada. Muebles y colores predeterminados, sin mover objetos ni usar imágenes oficiales.</small></details>';
- }
  const unlockAllThemesForPrivatePreview=true; // Solo la vista privada de Javi; no altera XP ni desbloqueos del servidor.
  const themeUnlocked=item=>unlockAllThemesForPrivatePreview||lifeLevel>=item.min;
  const themes={island:{label:'🏝️ Isla',min:1},sunset:{label:'🌅 Atardecer',min:3},night:{label:'🌙 Noche',min:7}};
@@ -360,8 +308,7 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<button type="button" class="pl-inventory-shortcut" data-pl-inventory-open aria-label="Abrir inventario de muebles">🧰 Muebles</button>'+ 
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v18</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v19</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -373,7 +320,6 @@
      '<div class="pl-decor-light" aria-hidden="true">✦ ✦ ✦</div>'+ 
      '<button class="pl-decor pl-decor-lamp" type="button" data-pl-decor="lamp" aria-label="Encender o apagar guirnalda" aria-pressed="false">💡</button>'+ 
      '<button class="pl-decor pl-decor-plant" type="button" data-pl-decor="plant" aria-label="Saludar a la palmera">🌴</button>'+
-     '<div class="pl-bed-preset" aria-hidden="true"><div class="pl-bed-headboard"></div><div class="pl-bed-blanket"></div></div>'+ 
      '<div class="pl-person" id="plPerson"></div>'+
      '<div class="pl-action-prop" aria-hidden="true"><span class="pl-prop-eat">🥥</span><span class="pl-prop-sleep">💤</span><span class="pl-prop-shower">🫧</span><span class="pl-prop-play">🎮</span></div>'+
      '<div class="pl-speech" role="status" aria-live="polite" hidden></div>'+
@@ -390,7 +336,6 @@
    '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
    '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Modo híbrido: aspecto original de MiniJavi y profundidad 3D experimental">✨ Probar modo híbrido</button>'+ 
    '<div class="pl-theme-picker" role="group" aria-label="Decoración de mi hogar"><span>🎨 Mi hogar · Nv '+lifeLevel+'</span><button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button><button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
-   decorMarkup()+
    '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
@@ -425,7 +370,6 @@
   needs={energy:75,mood:75,wellbeing:75};
   document.body.appendChild(room);
   renderNeeds();renderMood();
-  loadFurniture();renderFurniture();
   let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
   chooseTheme(themes[savedTheme]&&themeUnlocked(themes[savedTheme])?savedTheme:'island',false);
   document.body.classList.add('paqui-life-room-open');
@@ -446,17 +390,6 @@
     return;
    }
    if(!allowed()){close();return;}
-   if(event.target.closest('[data-pl-inventory-open]')){
-    const inventory=room.querySelector('.pl-inventory');
-    if(inventory){inventory.open=true;inventory.scrollIntoView({block:'start',behavior:'smooth'});setStatus('Inventario abierto: toca un mueble para colocarlo o retirarlo.');}
-    return;
-   }
-   if(event.target.closest('[data-pl-preset]')){
-    const [category,option]=event.target.closest('[data-pl-preset]').dataset.plPreset.split(':');chooseDecor(category,option);return;
-   }
-   if(event.target.closest('[data-pl-decor-theme]')){
-    chooseDecor('theme',event.target.closest('[data-pl-decor-theme]').dataset.plDecorTheme);return;
-   }
    if(event.target.closest('[data-pl-theme]')){
     chooseTheme(event.target.closest('[data-pl-theme]').dataset.plTheme);return;
    }
