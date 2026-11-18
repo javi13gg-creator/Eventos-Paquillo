@@ -1,0 +1,22 @@
+/* Planes Paquilleros: sección propia. Mantiene el diseño de las tarjetas y formularios existentes. */
+#p-planes{max-width:1040px;margin:0 auto}
+#p-planes .paqui-plans-intro{
+ position:relative;overflow:hidden;padding:clamp(15px,4vw,24px);margin:0 0 18px;
+ border:1px solid #8052c4;border-radius:19px;
+ background:linear-gradient(125deg,#302378,#6340aa 58%,#ab3b95);
+ color:#fff;box-shadow:0 6px 18px #25144520;
+}
+#p-planes .paqui-plans-intro::after{content:"✦";position:absolute;right:13px;top:4px;font-size:56px;color:#ffe37d40;pointer-events:none}
+#p-planes .paqui-plans-intro h2{color:#fff;margin:5px 0 7px;font-size:clamp(1.3rem,4.4vw,2rem);line-height:1.13}
+#p-planes .paqui-plans-intro p{color:#f3eaff;margin:0;font-size:.89rem;line-height:1.5}
+#p-planes .paqui-plans-kicker{font-size:.7rem;font-weight:950;letter-spacing:.12em;color:#ffe89d}
+#p-planes #paquiPlansAnchor{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 70px)}
+#p-planes .f6-row{gap:10px}
+#p-planes .f6-row h2{margin:0}
+@media(max-width:700px){
+ #p-planes .paqui-plans-intro{margin:0 0 13px;padding:16px}
+ #p-planes .paqui-plans-intro h2{font-size:1.34rem}
+ #p-planes .paqui-plans-intro p{font-size:.79rem}
+ #p-planes .f6-row{flex-wrap:wrap}
+ #p-planes #exportAllCalendar{max-width:100%}
+}
