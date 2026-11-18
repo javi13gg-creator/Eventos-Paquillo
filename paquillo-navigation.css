@@ -1,0 +1,128 @@
+/* Paquillo Events · Navegación app-first, 18/11/2026.
+   Sobrescrituras aisladas para preservar menús, búsqueda, push, ajustes y World. */
+
+/* El antiguo banner deja de ser una cabecera global; ahora es una tarjeta solo en Inicio. */
+#paquiHomeBanner.top{
+ width:min(100%,980px);margin:0 auto 15px;padding:9px;
+ border:1px solid var(--ln);border-radius:18px;
+ background:linear-gradient(120deg,color-mix(in srgb,var(--pk) 7%,var(--card)),var(--card) 48%,color-mix(in srgb,var(--yl) 12%,var(--card)));
+ text-align:center;box-shadow:0 3px 15px #130b3d14;
+}
+#paquiHomeBanner .banner{
+ width:100%;max-width:760px;height:clamp(96px,15vw,150px);
+ margin:0 auto 8px;object-fit:contain;object-position:center;
+ border:0;border-radius:13px;background:transparent;box-shadow:none;
+}
+#paquiHomeBanner .pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:stretch}
+#paquiHomeBanner .pills .count,
+#paquiHomeBanner .pills .count.b{
+ display:flex;align-items:center;justify-content:center;width:100%;
+ min-width:0;min-height:42px;max-width:none;margin:0;
+ padding:7px 10px;border-radius:12px;border:1px solid var(--ln);
+ box-shadow:none;line-height:1.24;font-size:clamp(.72rem,2.2vw,.92rem);
+ font-weight:850;white-space:normal;overflow-wrap:anywhere;
+}
+#paquiHomeBanner .pills .count{background:var(--yl)}
+#paquiHomeBanner .pills .count.b{background:color-mix(in srgb,var(--mint) 16%,var(--card));color:var(--ink)}
+#paquiHomeBanner .birthday-countdown-copy{line-height:1.3}
+#paquiHomeBanner .av{height:23px;width:23px;flex:0 0 23px;margin-right:3px}
+#paquiPlansAnchor{height:1px;scroll-margin-top:88px}
+#paquiSearchToggle,#paquiMobileNav{display:none}
+@media(max-width:700px){
+ html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 68px)}
+ body:not(.paqui-world-open):not(.admin-mode) main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+ /* One-row sticky top header. All five main destinations are in the bottom bar. */
+ #tabs{
+  position:sticky!important;top:env(safe-area-inset-top,0px)!important;
+  z-index:70!important;width:100%!important;min-height:56px!important;height:56px!important;
+  padding:5px 10px!important;display:flex!important;flex-wrap:nowrap!important;
+  gap:7px!important;align-items:center!important;justify-content:space-between!important;
+  border-bottom:1px solid var(--ln)!important;
+  background:color-mix(in srgb,var(--card) 94%,var(--bg))!important;
+  box-shadow:0 3px 15px #17123d1c!important;
+  -webkit-backdrop-filter:blur(14px)!important;backdrop-filter:blur(14px)!important;
+ }
+ #tabs .nav-brand{order:0!important;display:flex!important;flex:1 1 auto!important;min-width:0!important;gap:7px!important;white-space:nowrap;font-size:.83rem!important}
+ #tabs .nav-brand-mark{width:35px!important;height:35px!important;flex:0 0 35px!important;transform:none!important;box-shadow:none!important;border-radius:11px!important}
+ #tabs .nav-brand>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #tabs #homeButton,#tabs #worldLaunch,#tabs #menuToggle,#tabs #installAppButton,#tabs #navCurrent{display:none!important}
+ #tabs #paquiSearchToggle,#tabs #newsBell,#tabs #settingsToggle{width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;max-width:39px!important;max-height:39px!important;flex:0 0 39px!important;box-shadow:none!important;border:1px solid var(--ln)!important;border-radius:12px!important;padding:0!important;font-size:1.2rem!important;background:var(--bg)!important;color:var(--ink)!important;align-items:center!important;justify-content:center!important}
+ #tabs #paquiSearchToggle{order:1!important;display:flex!important;cursor:pointer}
+ #tabs #newsBell{order:2!important;display:inline-flex!important}
+ #tabs #newsBell[hidden]{display:none!important}
+ #tabs #settingsWrap{order:3!important;flex:0 0 39px!important}
+ #tabs #settingsToggle{display:grid!important}
+ #tabs #settingsPanel{top:calc(env(safe-area-inset-top,0px) + 58px)!important;right:8px!important;left:auto!important;width:min(325px,calc(100vw - 16px))!important;max-height:calc(100dvh - 95px)!important;overflow:auto!important;z-index:95!important}
+ #tabs .global-search{
+  display:none!important;position:absolute!important;top:calc(100% + 2px)!important;
+  left:8px!important;right:8px!important;width:calc(100% - 16px)!important;
+  max-width:none!important;min-width:0!important;flex:none!important;order:4!important;
+  padding:11px!important;background:var(--card)!important;
+  border:1px solid var(--ln)!important;border-radius:14px!important;
+  box-shadow:0 10px 26px #140d3a45!important;z-index:130!important;
+ }
+ #tabs.paqui-search-open .global-search{display:block!important}
+ #tabs .global-search input{width:100%!important;height:43px!important;padding:10px 13px!important;font-size:.95rem!important;border:1px solid var(--ln)!important;border-radius:9px!important}
+ #tabs .global-search-results{position:absolute!important;left:0!important;right:0!important;top:calc(100% + 4px)!important;width:100%!important;max-width:none!important;max-height:58dvh!important;overflow:auto!important;z-index:140!important}
+ #tabs .menu-backdrop{z-index:125!important;background:#130e38ad!important}
+ #tabs .menu-panel{
+  position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;
+  transform:none!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important;
+  margin:0!important;padding:calc(env(safe-area-inset-top,0px) + 14px) 15px calc(env(safe-area-inset-bottom,0px) + 25px)!important;
+  background:var(--card)!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;z-index:140!important;animation:none!important;
+ }
+ #tabs .menu-panel-head{position:sticky;top:calc(-14px - env(safe-area-inset-top,0px));z-index:2;background:var(--card);padding:8px 0 13px!important;margin:0 0 12px!important;gap:12px}
+ #tabs .menu-panel-head small{font-size:.75rem}
+ #tabs .menu-panel-head .menu-close{min-width:42px;min-height:42px}
+ #tabs .menu-grid{grid-template-columns:1fr!important;gap:9px!important}
+ #tabs .menu-group{padding:12px!important}
+ #tabs .menu-link{min-height:44px!important}
+ body.paqui-menu-open{overflow:hidden!important}
+ body.paqui-menu-open #tabs{z-index:210!important}
+ body.paqui-menu-open #paquiMobileNav{visibility:hidden!important;pointer-events:none!important}
+ .news-panel{top:calc(env(safe-area-inset-top,0px) + 62px)!important;right:8px!important;left:8px!important;width:calc(100vw - 16px)!important;max-width:none!important;max-height:calc(100dvh - 95px)!important;z-index:180!important;overscroll-behavior:contain!important}
+ /* Bottom app navigator, isolated from the original menu's tab handlers. */
+ #paquiMobileNav{
+  position:fixed!important;inset:auto 0 0!important;z-index:65!important;
+  min-height:calc(66px + env(safe-area-inset-bottom,0px))!important;
+  display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  align-items:stretch!important;gap:2px!important;
+  padding:5px max(7px,env(safe-area-inset-right,0px)) calc(5px + env(safe-area-inset-bottom,0px)) max(7px,env(safe-area-inset-left,0px))!important;
+  border-top:1px solid var(--ln)!important;
+  background:color-mix(in srgb,var(--card) 97%,var(--bg))!important;
+  box-shadow:0 -3px 18px #120b3b21!important;
+  -webkit-backdrop-filter:blur(14px)!important;backdrop-filter:blur(14px)!important;
+ }
+ #paquiMobileNav .paqui-mobile-destination{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  min-width:0;border:0;border-radius:12px;padding:3px 0!important;
+  background:transparent;color:var(--mut);font:850 .64rem/1.15 "Bricolage Grotesque",system-ui,sans-serif;
+  cursor:pointer;touch-action:manipulation;
+ }
+ #paquiMobileNav .paqui-mobile-destination .paqui-mobile-icon{font-size:1.34rem;line-height:1.35}
+ #paquiMobileNav .paqui-mobile-destination.active{color:var(--pk);background:color-mix(in srgb,var(--pk) 10%,var(--card))}
+ #paquiMobileNav .paqui-mobile-destination.active::before{content:"";position:absolute;top:0;left:29%;right:29%;height:3px;border-radius:0 0 8px 8px;background:var(--pk)}
+ #paquiMobileNav .paqui-mobile-destination:focus-visible{outline:2px solid var(--pk);outline-offset:-2px}
+ #paquiHomeBanner.top{margin:0 0 12px;padding:8px;border-radius:14px}
+ #paquiHomeBanner .banner{height:clamp(76px,22vw,108px);max-width:100%;margin-bottom:7px}
+ #paquiHomeBanner .pills .count,#paquiHomeBanner .pills .count.b{padding:6px 5px;min-height:40px;font-size:clamp(.65rem,2.8vw,.82rem);border-radius:10px}
+ #paquiHomeBanner .av{width:19px;height:19px}
+ #paquiPlansAnchor{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 68px)}
+ body.paqui-world-open #paquiMobileNav,
+ body.paqui-world-open #tabs,
+ body.admin-mode #paquiMobileNav{display:none!important}
+}
+@media(max-width:355px){
+ #tabs{gap:4px!important;padding:5px 7px!important}
+ #tabs .nav-brand{font-size:.73rem!important;gap:5px!important}
+ #tabs .nav-brand-mark{width:31px!important;height:31px!important;flex-basis:31px!important}
+ #tabs #paquiSearchToggle,#tabs #newsBell,#tabs #settingsToggle,#tabs #settingsWrap{width:35px!important;min-width:35px!important;max-width:35px!important;flex-basis:35px!important;height:35px!important;min-height:35px!important;max-height:35px!important}
+ #paquiMobileNav .paqui-mobile-destination{font-size:.61rem}
+}
+@media(min-width:701px){
+ #paquiHomeBanner .pills{max-width:800px;margin:auto}
+ #tabs #paquiSearchToggle{display:none!important}
+ body.paqui-world-open #paquiMobileNav{display:none!important}
+}
