@@ -1927,9 +1927,42 @@ showTab(location.hash.slice(1));
    $id('refreshStats').onclick=renderAdmin;
    const {data:events}=await client.from('group_events').select('id,title,event_date,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
    target.innerHTML+='<h3 style="margin-top:2rem">📨 Propuestas pendientes</h3>'+((events||[]).filter(ev=>ev.status==='draft').map(ev=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(ev.title)+'</b><br><small>'+esc(ev.event_date||'Fecha pendiente')+'</small></span><button class="btn approve-event-btn" type="button" data-event="'+ev.id+'">Aprobar propuesta</button></div>').join('')||'<p>No hay propuestas pendientes.</p>')+'<h3 style="margin-top:2rem">📅 Estado de los planes</h3><p class="admin-note">Marca como realizado solo cuando el evento haya ocurrido. Los confirmados y los realizados cuentan para el TOP.</p>'+((events||[]).map(ev=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(ev.title)+'</b><br><small>'+esc(ev.event_date||'Fecha pendiente')+' · '+esc(ev.status)+'</small></span><button class="btn event-status-btn" type="button" data-event="'+ev.id+'" data-status="'+(ev.status==='completed'?'planned':'completed')+'">'+(ev.status==='completed'?'Reabrir':'Marcar realizado')+'</button></div>').join('')||'<p>No hay planes.</p>');
-   const {data:members}=await client.from('group_members').select('id,display_name,is_active,auth_user_id').order('display_name');
+   const {data:members}=await client.from('group_members').select('id,display_name,is_active,auth_user_id,avatar_url').order('display_name');
    const {data:roles}=await client.from('user_profiles').select('user_id,username,role');
-   target.innerHTML+='<h3 style="margin-top:2rem">👥 Gestión de miembros</h3><p class="admin-note">Activa o desactiva miembros del directorio. Los permisos de administración se asignan desde Supabase para evitar elevar privilegios desde el navegador.</p>'+((members||[]).map(m=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(m.display_name)+'</b><br><small>'+(m.is_active?'Activo':'Inactivo')+'</small></span><button class="btn member-active-btn" type="button" data-member="'+m.id+'" data-active="'+(!m.is_active)+'">'+(m.is_active?'Desactivar':'Activar')+'</button></div>').join('')||'<p>No hay miembros.</p>');
+   const memberHasCustomPhoto=m=>{
+     const source=PAQUILLO_ORIGINAL_AVATARS[m.display_name]||'';
+     if(!source||!m.avatar_url)return false;
+     const original=source.startsWith('data:')?source:new URL(source,document.baseURI).href;
+     return m.avatar_url!==original&&m.avatar_url!==source;
+   };
+   target.innerHTML+='<h3 style="margin-top:2rem">👥 Gestión de miembros</h3><p class="admin-note">Activa o desactiva miembros del directorio o restaura su foto original del grupo. Los permisos de administración se gestionan desde Supabase.</p>'+((members||[]).map(m=>
+    '<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(m.display_name)+'</b><br><small>'+(m.is_active?'Activo':'Inactivo')+'</small></span>'+
+    '<div class="paqui-admin-member-actions"><button class="btn member-active-btn" type="button" data-member="'+esc(m.id)+'" data-active="'+(!m.is_active)+'">'+(m.is_active?'Desactivar':'Activar')+'</button>'+
+    (PAQUILLO_ORIGINAL_AVATARS[m.display_name]?'<button class="btn secondary member-restore-avatar-btn" type="button" data-member="'+esc(m.id)+'"'+(memberHasCustomPhoto(m)?'':' disabled')+' title="Volver a la fotografía original del grupo">↩️ '+(memberHasCustomPhoto(m)?'Restaurar foto':'Foto original')+'</button>':'')+
+    '</div></div>').join('')||'<p>No hay miembros.</p>');
+   target.querySelectorAll('.member-restore-avatar-btn').forEach(btn=>btn.onclick=async()=>{
+     if(currentProfile?.role!=='admin')return;
+     const member=(members||[]).find(m=>String(m.id)===String(btn.dataset.member));
+     const source=PAQUILLO_ORIGINAL_AVATARS[member?.display_name]||'';
+     if(!member||!source||!memberHasCustomPhoto(member))return;
+     if(!confirm('¿Restaurar la foto original de '+member.display_name+'? Sustituirá su foto de perfil personalizada.'))return;
+     const original=source.startsWith('data:')?null:new URL(source,document.baseURI).href;
+     const oldAvatar=member.avatar_url;
+     btn.disabled=true;btn.textContent='Restaurando…';
+     try{
+       const {error}=await client.from('group_members').update({avatar_url:original}).eq('id',member.id);
+       if(error)throw error;
+       if(oldAvatar&&oldAvatar!==original)await deleteOldProfileAvatar(oldAvatar).catch(e=>console.warn('No se pudo borrar la foto anterior:',e));
+       activeMembersCache=[];
+       const refreshed=await getActiveMembers();
+       window.syncPaquilloBirthdays?.(refreshed);
+       try{await renderDirectory();}catch(err){console.warn('No se pudo actualizar el directorio',err);}
+       await renderAdmin();
+     }catch(err){
+       alert('No se pudo restaurar la foto de '+member.display_name+': '+(err?.message||err));
+       btn.disabled=false;btn.textContent='↩️ Restaurar foto';
+     }
+   });
    target.querySelectorAll('.member-active-btn').forEach(btn=>btn.onclick=async()=>{const {error}=await client.from('group_members').update({is_active:btn.dataset.active==='true'}).eq('id',btn.dataset.member);if(error){alert('No se pudo actualizar el miembro: '+error.message);return;}activeMembersCache=[];await renderAdmin();});
    target.querySelectorAll('.approve-event-btn').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;const {error}=await client.from('group_events').update({status:'planned',updated_at:new Date().toISOString()}).eq('id',btn.dataset.event);if(error){alert('No se pudo aprobar: '+error.message);btn.disabled=false;return;}await loadEventsFromDatabase();await renderAdmin();});
    target.querySelectorAll('.event-status-btn').forEach(btn=>btn.onclick=async()=>{const eventId=btn.dataset.event,nextStatus=btn.dataset.status;btn.disabled=true;btn.textContent='Guardando…';try{const {data:updated,error}=await client.from('group_events').update({status:nextStatus,updated_at:new Date().toISOString()}).eq('id',eventId).select('id,status,title').single();if(error)throw error;if(!updated)throw new Error('Supabase no ha confirmado la actualización del plan.');await loadEventsFromDatabase();await renderPastEvents();await renderOrganizerRanking();await renderAdmin();if(nextStatus==='completed')alert('Plan marcado como realizado. Ya aparece en Eventos pasados.');}catch(error){alert('No se pudo cambiar el estado del plan: '+(error?.message||error));btn.disabled=false;btn.textContent=nextStatus==='completed'?'Marcar realizado':'Reabrir';}});
