@@ -335,7 +335,8 @@
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
    '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v21</span>'+
+   '<button type="button" class="pl-neighborhood-top" data-pl-neighborhood>🏘️ Barrio</button>'+ 
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v22</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -359,6 +360,7 @@
     '</div>'+
    '</main>'+
    '<footer class="pl-foot">'+
+   '<div class="pl-quick-actions" role="group" aria-label="Acciones rápidas"><button type="button" data-pl-place="eat">🥥 Comer</button><button type="button" data-pl-place="shower">🚿 Ducha</button><button type="button" data-pl-place="sleep">💤 Dormir</button><button type="button" data-pl-place="play">🎮 Jugar</button></div>'+ 
    '<div class="pl-mood-chip" data-pl-mood role="status" aria-live="polite">😊 Todo marcha bien</div>'+ 
    '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
    '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Modo híbrido: aspecto original de MiniJavi y profundidad 3D experimental">✨ Probar modo híbrido</button>'+ 
