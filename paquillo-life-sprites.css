@@ -302,3 +302,17 @@
  font-size:11px;font-weight:900;touch-action:manipulation;
 }
 #paquiLifePreview .pl-quick-actions button:active{background:#1a9183}
+
+/* LIFE v23 · navegación y ánimo simplificados */
+#paquiLifePreview .pl-home-mood{
+ display:inline-grid;place-items:center;vertical-align:middle;
+ width:32px;height:32px;margin-left:5px;border-radius:10px;
+ background:#ffffff25;border:1px solid #ffffff65;font-size:21px;
+}
+#paquiLifePreview .pl-header,#paquiLifePreview .pl-back,#paquiLifePreview .pl-neighborhood-top{
+ position:relative;z-index:30;pointer-events:auto;
+}
+#paquiLifePreview .pl-quick-actions,#paquiLifePreview .pl-quick-actions button,
+#paquiLifePreview .pl-object,#paquiLifePreview .pl-neighborhood-link{
+ pointer-events:auto;
+}
