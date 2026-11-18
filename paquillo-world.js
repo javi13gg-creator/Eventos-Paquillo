@@ -127,7 +127,7 @@ function dailyRanking(){const day=madridDay();return '<section class="pw-surface
 function allTimeRanking(){return '<section class="pw-surface"><h3>👑 RÉCORDS HISTÓRICOS · TOP 3</h3><p>La mejor marca de cada persona en toda la historia, con su autor y fecha.</p>'+Object.entries(gameLabels).map(([id,label])=>{const best=new Map();for(const x of historicalScores){if(x.game!==id)continue;const prev=best.get(x.user_id);if(!prev||(id==='reflex'||id==='memory'?x.score<prev.score:x.score>prev.score)||(x.score===prev.score&&x.day<prev.day))best.set(x.user_id,x)}const rows=[...best.values()].sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.day.localeCompare(b.day)).slice(0,3);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+['🥇','🥈','🥉'][i]+'</span><b>'+esc(m?.display_name||'Paquillo')+'<small style="display:block;opacity:.75">'+esc(x.day)+'</small></b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Todavía no hay récords compartidos.</p>')}).join('')+'</section>';}
 function gamesView(){
  return '<section class="pw-screen pw-panel pw-games-screen" data-pw-screen="games">'+screenTitle('🎮 ZONA DE JUEGOS','Elige un minijuego')+
- '<div class="pw-games-board">'+gameTiles(true)+'</div>'+(scoreError?'<p class="pw-demo-notice" role="alert">⚠️ '+esc(scoreError)+'</p>':'')+dailyRanking()+allTimeRanking()+
+ '<div class="pw-games-board">'+gameTiles(true)+'</div>'+duelRows()+'<button type="button" class="pw-action-button" data-pw-duel-refresh>🔄 Actualizar invitaciones</button>'+(scoreError?'<p class="pw-demo-notice" role="alert">⚠️ '+esc(scoreError)+'</p>':'')+dailyRanking()+allTimeRanking()+
  '<p class="pw-games-coming">🏁 ¡Carrera Paquillera disponible! · Ranking compartido · Sin XP por ahora</p></section>';
 }
 
@@ -175,6 +175,7 @@ async function duelRpc(action,values={}){
  await loadDuels();
  const screen=root.querySelector('[data-pw-screen="neighborhood"]');
  if(screen)screen.outerHTML=neighborhoodView();
+ const games=root.querySelector('[data-pw-screen="games"]');if(games)games.outerHTML=gamesView();
  return true;
 }
 function duelRows(){
@@ -233,7 +234,7 @@ function showHouse(idx){
  modal('<div class="pw-house-detail"><h2>🏡 Casa de '+esc(m.display_name)+'</h2>'+
  (memberPhoto(m)?memberImage(m,m.display_name,'pw-house-portrait'):'')+
  '<p>⭐ Nivel '+level(m.xp)+' · '+points(m.xp)+' XP</p>'+
- '<h3>🏆 Mejores marcas históricas</h3>'+records+
+ '<h3>🏆 Resultados de World</h3>'+records+
  '<h3>⚔️ Reto a una partida</h3><button class="pw-action-button" data-pw-duel-invite="'+idx+'">📩 Enviar invitación</button>'+'</div></div>');
 }
 function profileView(){
@@ -569,6 +570,7 @@ root.addEventListener('click',e=>{
   return;
  }
  if(btn.hasAttribute('data-pw-house')){if(window.PaquilloLifePreview?.enabled)showHouse(Number(btn.dataset.pwHouse));return}
+ if(btn.hasAttribute('data-pw-duel-refresh')){void loadDuels().then(()=>{const el=root.querySelector('[data-pw-screen="games"]');if(el)el.outerHTML=gamesView()});return}
  if(btn.hasAttribute('data-pw-duel-invite')){showDuelInvite(Number(btn.dataset.pwDuelInvite));return}
  if(btn.hasAttribute('data-pw-duel-create')){const game=btn.dataset.pwDuelCreate,opponent=btn.dataset.pwOpponent;if(!duelReady){modal('<h2>⚠️ Retos no activados</h2><p>Hay que ejecutar paquillo-world-duelos.sql en Supabase.</p>');return}void duelRpc('create',{game,opponent}).then(ok=>{if(ok)modal('<h2>📩 ¡Invitación enviada!</h2><p>Tu amigo podrá aceptarla desde el barrio.</p>')});return}
  if(btn.hasAttribute('data-pw-duel-accept')){void duelRpc('accept',{id:btn.dataset.pwDuelAccept});return}
