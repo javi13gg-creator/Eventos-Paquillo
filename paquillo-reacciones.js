@@ -36,6 +36,7 @@
    }
   }
   for(const box of sectionsFor(id)){
+   box.closest('.paqui-plan-card')?.classList.toggle('paqui-react-popover-open',loaded&&!loadError&&openPickers.has(id));
    if(loadError){
     box.innerHTML='<p class="paqui-react-error">'+(loadError==='missing'?'⚠️ Las reacciones aún no están activadas en Supabase. Administración debe ejecutar <code>paquillo-reacciones.sql</code>.':'⚠️ No se han podido cargar las reacciones. Revisa la conexión y los permisos.')+
       ' <button type="button" class="paqui-react-retry" data-paqui-reaction-retry>Reintentar</button></p>';
