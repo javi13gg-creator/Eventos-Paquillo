@@ -48,7 +48,7 @@
    let el=null;
    if(tab==='votaciones')el=document.getElementById('poll-'+entity);
    else if(tab==='horno')el=document.getElementById('memory-'+entity);
-   else if(tab==='proximos')el=Array.from(document.querySelectorAll('#events [data-event-db]')).find(x=>x.dataset.eventDb===entity);
+   else if(tab==='planes')el=Array.from(document.querySelectorAll('#events [data-event-db]')).find(x=>x.dataset.eventDb===entity);
    if(el){if(el.tagName==='DETAILS')el.open=true;el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800);}
    else if(++attempts<24)setTimeout(tryFocus,250);
   };
@@ -119,8 +119,8 @@
    const hello=document.getElementById('psHello');
    if(hello)hello.textContent=member?.display_name?'¡Hola, '+member.display_name+'! 👋':'Tu rincón paquillero 👋';
    const birthdayLabel=birthday?(birthday.days===0?'¡Hoy!':birthday.days===1?'Mañana':'En '+birthday.days+' días'):'Sin fechas';
-   quick.innerHTML=quickCard('✅',attendance?yes.length:'—','Planes a los que vas',yes[0]?(yes[0].title+' · '+labelDate(yes[0].event_date+'T12:00:00')):'Consulta tu agenda','proximos',yes[0]?.id)+
-    quickCard('🙋',toAnswer?toAnswer.length:'—','Por confirmar',toAnswer?.length?'Tienes planes sin responder':'Consulta tus planes','proximos',toAnswer?.[0]?.id)+
+   quick.innerHTML=quickCard('✅',attendance?yes.length:'—','Planes a los que vas',yes[0]?(yes[0].title+' · '+labelDate(yes[0].event_date+'T12:00:00')):'Consulta tu agenda','planes',yes[0]?.id)+
+    quickCard('🙋',toAnswer?toAnswer.length:'—','Por confirmar',toAnswer?.length?'Tienes planes sin responder':'Consulta tus planes','planes',toAnswer?.[0]?.id)+
     quickCard('🗳️',myPollStatus?(myPollStatus.pending.length+(myPollStatus.unknown.length?' + ?':'')):'—','Encuestas sin responder',myPollStatus?(myPollStatus.unknown.length?myPollStatus.pending.length+' pendientes confirmadas · '+myPollStatus.unknown.length+' por comprobar':myPollStatus.pending.length?'Tienes votaciones pendientes':'Todas las encuestas abiertas comprobadas'):'No se pudo comprobar tu participación','votaciones',myPollStatus?.pending[0]?.poll.id||myPollStatus?.unknown[0]?.poll.id)+
     quickCard('🎂',birthdayLabel,'Próximo cumpleaños',birthday?birthday.name:'Consulta los cumpleaños','cumples','');
    const pendingEl=document.getElementById('psPendingPolls');
@@ -134,7 +134,7 @@
    const items=[];
    (recentEvents||[]).forEach(x=>{
     if(!x.created_at||x.status==='cancelled')return;
-    items.push({kind:'event',icon:x.status==='completed'?'🏁':'📅',category:'Planes',title:x.title,description:(x.status==='completed'?'Plan realizado':'Nuevo plan en la agenda')+(x.event_date?' · '+labelDate(x.event_date+'T12:00:00'):' · Fecha pendiente'),at:x.created_at,tab:x.status==='completed'?'pasados':'proximos',entity:x.id,linkLabel:'plan'});
+    items.push({kind:'event',icon:x.status==='completed'?'🏁':'📅',category:'Planes',title:x.title,description:(x.status==='completed'?'Plan realizado':'Nuevo plan en la agenda')+(x.event_date?' · '+labelDate(x.event_date+'T12:00:00'):' · Fecha pendiente'),at:x.created_at,tab:x.status==='completed'?'pasados':'planes',entity:x.id,linkLabel:'plan'});
    });
    (polls||[]).forEach(x=>{
     if(!x.created_at||x.status==='draft')return;
@@ -153,7 +153,7 @@
      const k=String(a.event_id),g=grouped.get(k)||{count:0,last:0,event:ev};
      g.count++;g.last=Math.max(g.last,time);grouped.set(k,g);
     });
-    Array.from(grouped.values()).sort((a,b)=>b.last-a.last).slice(0,5).forEach(g=>items.push({kind:'event',icon:'🙌',category:'Confirmaciones',title:g.event.title,description:g.count+' '+(g.count===1?'persona ha confirmado':'personas han confirmado')+' asistencia recientemente',at:new Date(g.last).toISOString(),tab:'proximos',entity:g.event.id,linkLabel:'asistentes'}));
+    Array.from(grouped.values()).sort((a,b)=>b.last-a.last).slice(0,5).forEach(g=>items.push({kind:'event',icon:'🙌',category:'Confirmaciones',title:g.event.title,description:g.count+' '+(g.count===1?'persona ha confirmado':'personas han confirmado')+' asistencia recientemente',at:new Date(g.last).toISOString(),tab:'planes',entity:g.event.id,linkLabel:'asistentes'}));
    }
    state.items=items.filter(x=>safeDate(x.at)).sort((a,b)=>new Date(b.at)-new Date(a.at));
    state.lastFetch=Date.now();
