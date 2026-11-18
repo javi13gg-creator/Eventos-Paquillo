@@ -3,10 +3,15 @@ Documento de diseño de juego y plan técnico. 18/11/2026.
 
 **Estado: primer prototipo visual de habitación integrado en World bajo feature flag; no es aún el modo Life jugable completo.**
 
+## Política de visibilidad para próximas fases
+La vista previa de Life es privada para la **cuenta de Javi**, no para todos los administradores ni para cualquiera que conozca el enlace. En World se consulta `PaquilloLifePreview.enabled` (getter dinámico); `open()` valida la identidad de nuevo. El perfil procede de `user_profiles` mediante la sesión Auth actual. No volver a habilitar funciones nuevas con simples parámetros de URL.
+
+**Limitación importante:** esta compuerta JavaScript protege la interfaz frente a otros usuarios normales, pero no es un control de acceso a recursos públicos de GitHub Pages. Antes de guardar estado personal, imágenes privadas o XP, crear RLS y RPC en Supabase vinculadas al `auth.uid()` autorizado o a un permiso de testers validado en servidor. La fuente y los assets estáticos siguen siendo públicos, sin datos privados.
+
 ## Avance 18/11/2026 · Fase A — primer hogar en modo prueba
 - Ilustración vectorial `paquillo-life-room.svg`: casa tropical con mar, cama, nevera, recreativa, zona de ducha y espacio libre para el protagonista.
 - Módulo aislado `paquillo-life-preview.js` + estilos `paquillo-life-preview.css`.
-- Acceso deliberadamente oculto para usuarios normales: **`?life-preview=1#world`**. Dentro del lobby aparece una entrada **Mi hogar · Vista previa**.
+- **Acceso privado por identidad autenticada (18/11/2026):** solo la cuenta cuyo `user_profiles.username` sea `Javi` y cuyo `role` sea `admin` puede ver y abrir **Mi hogar · Vista previa**; se comprueba además sesión autenticada y fin de carga de auth. La URL `?life-preview=1` no habilita acceso a otros usuarios ni es necesaria para Javi.
 - Hero = imagen de personaje aprobado en `PaquilloWorldCharacters.imageFor`, con animación básica de respiración en CSS.
 - Objetos tocables: nevera (comer), ducha y cama (reacciones visuales sin guardar). Recreativa = transición real al Arcade existente de World.
 - Escena fullscreen, botones táctiles, safe areas y preferencia de movimiento reducido. Botón de vuelta a World.
