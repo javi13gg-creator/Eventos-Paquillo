@@ -48,17 +48,20 @@
     const active=mine===e;
     return '<button type="button" class="paqui-react-option'+(active?' is-active':'')+'" data-paqui-react="'+e+'" data-paqui-react-event="'+escapeHtml(id)+'" aria-pressed="'+active+'" aria-label="'+(active?'Quitar mi reacción':'Reaccionar con')+' '+e+', '+counts[e]+' reacciones"'+disabled+'><span aria-hidden="true">'+e+'</span><b>'+counts[e]+'</b></button>';
    }).join('');
-   const totals=EMOJIS.filter(e=>counts[e]>0).sort((a,b)=>counts[b]-counts[a]).map(e=>'<span class="paqui-react-chip" title="'+counts[e]+' reacciones '+e+'">'+e+' <b>'+counts[e]+'</b></span>').join('');
+   const totals=EMOJIS.filter(e=>counts[e]>0).sort((a,b)=>counts[b]-counts[a]).map(e=>
+    '<span class="paqui-react-chip" aria-label="'+counts[e]+' reacciones '+e+'" title="'+counts[e]+' reacciones '+e+'">'+e+(counts[e]>1?'<b>'+counts[e]+'</b>':'')+'</span>'
+   ).join('');
    const people=rows.map(row=>{
     const name=namesByUser.get(row.user_id)||'Paquillo';
     return '<span class="paqui-react-person">'+row.emoji+' '+escapeHtml(name)+'</span>';
    }).join('');
    box.innerHTML='<div class="paqui-react-toolbar">'+
-      '<button type="button" class="paqui-react-trigger'+(mine?' has-reacted':'')+'" data-paqui-react-toggle="'+escapeHtml(id)+'" aria-expanded="'+open+'" aria-label="'+(mine?'Cambiar o quitar mi reacción '+mine:'Reaccionar al plan')+'"'+disabled+'><span aria-hidden="true">'+(mine||'😊')+'</span><span>'+(mine?'Tu reacción':'Reaccionar')+'</span></button>'+
-      '<div class="paqui-react-totals" aria-live="polite">'+(totals||'<span class="paqui-react-empty">Sin reacciones</span>')+'</div>'+
-      (total?'<details class="paqui-react-people"><summary aria-label="Ver quién ha reaccionado">👥 '+total+'</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+
+      '<button type="button" class="paqui-react-trigger'+(mine?' has-reacted':'')+'" data-paqui-react-toggle="'+escapeHtml(id)+'" aria-expanded="'+open+'" aria-label="'+(mine?'Cambiar o quitar mi reacción '+mine:'Reaccionar al plan')+'" title="'+(mine?'Cambiar o quitar reacción':'Añadir reacción')+'"'+disabled+'><span class="paqui-react-icon-stack" aria-hidden="true"><span class="paqui-react-icon-face">'+(mine||'😊')+'</span><span class="paqui-react-icon-plus">+</span></span></button>'+
+      '<div class="paqui-react-totals" aria-live="polite">'+totals+'</div>'+
      '</div>'+
-     '<div class="paqui-react-picker"'+(open?'':' hidden')+'><div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div><small>Un emoji por persona · pulsa el mismo para quitarlo.</small></div>';
+     '<div class="paqui-react-picker"'+(open?'':' hidden')+'><div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div><small>Un emoji por persona · toca el mismo para quitarlo.</small>'+
+      (total?'<details class="paqui-react-people"><summary aria-label="Ver quién ha reaccionado">👥 Quién ha reaccionado ('+total+')</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+
+     '</div>';
   }
  }
  function renderAll(){
