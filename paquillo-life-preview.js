@@ -7,7 +7,7 @@
  'use strict';
  // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
- let room=null,previousFocus=null,arcadeAction=null;
+ let room=null,previousFocus=null,arcadeAction=null,memoryAction=null;
  let actionSerial=0;
  const timers=new Set();
  const places={
@@ -133,13 +133,14 @@
   room=null;
   document.body.classList.remove('paqui-life-room-open');
   previousFocus?.focus?.({preventScroll:true});
-  previousFocus=null;arcadeAction=null;
+  previousFocus=null;arcadeAction=null;memoryAction=null;
  }
  function open(options={}){
   if(!allowed())return false;
   if(room)close();
   previousFocus=document.activeElement;
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
+  memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
   const name=String(options.name||'Paquillo').slice(0,50);
   const source=window.PaquilloWorldCharacters?.imageFor(name)||'';
   room=document.createElement('section');
@@ -171,12 +172,18 @@
      '<div class="pl-floor-caption"><b id="plName"></b><small>Tu rincón en la isla</small></div>'+
     '</div>'+
    '</main>'+
-   '<footer class="pl-foot"><p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca los objetos y mira cómo se mueve tu MiniPaquillo.</p>'+
+   '<footer class="pl-foot">'+
+   '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
+   '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
    '<small>Animaciones alfa · sin guardar necesidades ni XP</small></footer>';
   const slot=room.querySelector('#plPerson');
   const hero=document.createElement('div');
   hero.className='pl-person-figure';
-  if(source){
+  const puppet=window.PaquilloLifePuppet?.create(name)||null;
+  if(puppet){
+   hero.classList.add('pl-has-rig');
+   hero.append(puppet);
+  }else if(source){
    const img=document.createElement('img');
    img.alt='MiniPaquillo de '+name;
    img.src=source;
@@ -196,6 +203,13 @@
   document.body.classList.add('paqui-life-room-open');
   room.addEventListener('click',event=>{
    if(!allowed()){close();return;}
+   if(event.target.closest('[data-pl-memory]')){
+    const play=memoryAction;
+    if(!play){setStatus('Memoria no está disponible. Abre Arcade para jugar.');return;}
+    close();
+    play();
+    return;
+   }
    const action=event.target.closest('[data-pl-place]')?.dataset.plPlace;
    if(action){interact(action);return;}
    if(event.target.closest('[data-pl-close]'))close();
