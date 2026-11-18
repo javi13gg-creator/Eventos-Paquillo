@@ -39,3 +39,15 @@
 #paquiSocial.ps-loading .ps-refresh{opacity:.6;pointer-events:none}
 @media(min-width:650px){#paquiSocial .ps-quick{grid-template-columns:repeat(4,minmax(0,1fr))}#paquiSocial .ps-quick-card{min-height:134px}}
 @media(max-width:360px){#paquiSocial .ps-header{padding:13px;align-items:flex-start;flex-wrap:wrap}#paquiSocial .ps-quick{padding:8px;gap:7px}#paquiSocial .ps-quick-card{padding:9px}#paquiSocial .ps-post{padding:11px;gap:9px}#paquiSocial .ps-post-icon{width:36px;height:36px;flex-basis:36px}}
+/* Encuestas pendientes y acceso directo al manual */
+#paquiSocial .ps-head-actions{display:flex;align-items:flex-start;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+#paquiSocial .ps-help-link{flex:0 0 auto;padding:8px 10px;border:1px solid #ffffff77;border-radius:12px;background:#ffffff20;color:#fff;font-size:.75rem;font-weight:850}
+#paquiSocial .ps-pending-polls{background:color-mix(in srgb,var(--yl) 13%,var(--card));border:1px solid color-mix(in srgb,var(--yl) 50%,var(--ln));border-radius:15px;padding:12px 14px;margin:12px 0}
+#paquiSocial .ps-pending-polls[hidden]{display:none!important}
+#paquiSocial .ps-pending-title{font-size:.92rem;font-weight:900;color:var(--ink);margin-bottom:8px}
+#paquiSocial .ps-pending-list{display:grid;gap:6px}
+#paquiSocial .ps-pending-list button{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--ln);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);font-size:.81rem;font-weight:850}
+#paquiSocial .ps-pending-list button span{color:var(--pk);white-space:nowrap;font-size:.74rem}
+#paquiSocial .ps-pending-unknown{font-size:.75rem;color:var(--mut);line-height:1.45;margin:9px 0 0}
+#paquiSocial .ps-pending-polls>.ps-pending-unknown:first-child{margin:0}
+@media(max-width:400px){#paquiSocial .ps-head-actions{justify-content:flex-start}#paquiSocial .ps-header{flex-direction:column}}
