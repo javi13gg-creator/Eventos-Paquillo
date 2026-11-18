@@ -134,3 +134,104 @@
  .paqui-reaction-box .paqui-react-choices{gap:4px}
  .paqui-reaction-box .paqui-react-option>span{font-size:1.1rem}
 }
+
+
+/* Fila única de participación: tres respuestas + reacción. Totales bajo su botón. */
+#p-planes .paqui-plan-interact{gap:0}
+#p-planes .paqui-plan-rsvp{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ align-items:start;
+ gap:clamp(4px,1.5vw,9px);
+ width:100%;
+}
+#p-planes .paqui-plan-rsvp.has-reactions{grid-template-columns:repeat(4,minmax(0,1fr))}
+#p-planes .paqui-plan-rsvp .paqui-plan-rsvp-label{display:none!important}
+#p-planes .paqui-rsvp-choice{
+ display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;
+ min-width:0;gap:3px
+}
+#p-planes .paqui-plan-rsvp .paqui-rsvp-choice>.attendance-choice{
+ display:inline-flex;align-items:center;justify-content:center;gap:4px;
+ width:100%;min-width:0;min-height:37px;max-height:40px;
+ padding:5px 4px;border-radius:11px;
+ white-space:nowrap;font-size:clamp(.68rem,2.2vw,.79rem);font-weight:850;
+}
+#p-planes .paqui-plan-rsvp .paqui-rsvp-choice>.attendance-choice.is-selected{border-width:2px}
+#p-planes .paqui-rsvp-choice .paqui-rsvp-total{
+ display:block;min-height:17px;line-height:17px;
+ text-align:center;font:850 .72rem/17px system-ui,sans-serif;
+ color:var(--mut);font-variant-numeric:tabular-nums;
+}
+#p-planes .paqui-rsvp-choice:has(.is-selected) .paqui-rsvp-total{color:var(--pk)}
+/* La reacción ocupa exactamente la cuarta columna, no una segunda línea independiente. */
+#p-planes .paqui-plan-rsvp .paqui-reaction-inline{
+ position:relative;grid-column:auto;align-self:stretch;min-width:0;
+ display:block;margin:0;padding:0;border:0;background:transparent;
+}
+#p-planes .paqui-reaction-inline .paqui-react-toolbar{
+ display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+ gap:3px;min-width:0;min-height:0;
+}
+#p-planes .paqui-reaction-inline .paqui-react-trigger{
+ display:flex;align-items:center;justify-content:center;
+ flex:0 0 auto;width:100%;min-width:0;min-height:37px;max-height:40px;
+ padding:4px;border-radius:11px;background:color-mix(in srgb,var(--pk) 9%,var(--card))
+}
+#p-planes .paqui-reaction-inline .paqui-react-trigger.has-reacted{
+ background:color-mix(in srgb,var(--pk) 16%,var(--card));
+ border:2px solid var(--pk)
+}
+.paqui-reaction-box .paqui-react-icon-stack{
+ position:relative;display:inline-flex;align-items:center;justify-content:center;
+ width:33px;height:27px;min-width:33px;font-size:inherit
+}
+.paqui-reaction-box .paqui-react-icon-face{
+ position:absolute;left:1px;top:2px;font-size:1.25rem;line-height:1.1
+}
+.paqui-reaction-box .paqui-react-icon-plus{
+ position:absolute;right:0;bottom:0;width:14px;height:14px;display:grid;place-items:center;
+ font:950 .68rem/1 system-ui,sans-serif;
+ background:var(--pk);border:1.5px solid var(--card);border-radius:50%;color:#fff;
+ box-shadow:0 1px 3px #0002
+}
+#p-planes .paqui-reaction-inline .paqui-react-totals{
+ display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+ gap:0 3px;min-width:0;max-width:100%;width:100%;
+ margin:0;padding:0;min-height:17px;line-height:17px;
+}
+#p-planes .paqui-reaction-inline .paqui-react-chip{
+ display:inline-flex;align-items:center;justify-content:center;gap:1px;
+ flex:0 0 auto;min-width:0;min-height:17px;margin:0;padding:0 1px;
+ font-size:.69rem;line-height:17px;
+ background:transparent;border:0;border-radius:0;white-space:nowrap;
+}
+#p-planes .paqui-reaction-inline .paqui-react-chip b{
+ font-size:.61rem;font-weight:900;line-height:17px;vertical-align:middle
+}
+/* El selector flota bajo el botón y no aumenta la altura de la tarjeta. */
+#p-planes .paqui-reaction-inline .paqui-react-picker:not([hidden]){
+ position:absolute;top:calc(100% + 6px);right:0;z-index:50;
+ width:min(305px,calc(100vw - 42px));max-width:calc(100vw - 42px);
+ margin:0;padding:10px;
+ border:1px solid color-mix(in srgb,var(--pk) 40%,var(--ln));
+ border-radius:13px;background:var(--card);
+ box-shadow:0 13px 26px #12103845
+}
+#p-planes .paqui-reaction-inline .paqui-react-picker[hidden]{display:none!important}
+#p-planes .paqui-reaction-inline .paqui-react-choices{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+#p-planes .paqui-reaction-inline .paqui-react-people{margin-top:10px}
+#p-planes .paqui-reaction-inline .paqui-react-people summary{min-height:28px}
+#p-planes .paqui-plan-card.paqui-react-popover-open{z-index:7}
+@media(max-width:400px){
+ #p-planes .paqui-plan-rsvp{gap:4px}
+ #p-planes .paqui-plan-rsvp .paqui-rsvp-choice>.attendance-choice{gap:2px;padding:4px 2px;font-size:.68rem}
+ #p-planes .paqui-rsvp-choice .paqui-rsvp-total{font-size:.68rem}
+ #p-planes .paqui-reaction-inline .paqui-react-chip{font-size:.64rem}
+ #p-planes .paqui-reaction-inline .paqui-react-chip b{font-size:.58rem}
+}
+@media(max-width:350px){
+ #p-planes .paqui-plan-rsvp .paqui-rsvp-choice>.attendance-choice{min-height:35px}
+ #p-planes .paqui-rsvp-choice .paqui-rsvp-text{display:inline!important;font-size:.65rem}
+ #p-planes .paqui-plan-rsvp .paqui-react-trigger{min-height:35px}
+}
