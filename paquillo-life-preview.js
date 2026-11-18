@@ -125,7 +125,7 @@
   const mood=lifeMood();
   room.dataset.plMood=mood.id;
   const el=room.querySelector('[data-pl-mood]');
-  if(el){el.textContent=mood.icon+' '+mood.label;el.title=mood.phrase;}
+  if(el){el.textContent=mood.icon;el.title=mood.label+' · '+mood.phrase;el.setAttribute('aria-label','Estado: '+mood.label);}
   if(announce&&moodMessage!==mood.id&&!room.classList.contains('pl-walking')&&!room.classList.contains('pl-performing')){
    speech(mood.phrase);
   }
@@ -334,9 +334,9 @@
   room.setAttribute('aria-label','Mi hogar de Paquillo Life, vista de prueba');
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
-   '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar</b></div>'+
+   '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar <span class="pl-home-mood" data-pl-mood role="status" aria-live="polite" title="Estado emocional">😊</span></b></div>'+
    '<button type="button" class="pl-neighborhood-top" data-pl-neighborhood>🏘️ Barrio</button>'+ 
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v22</span>'+
+   '<span class="pl-preview-tag" title="Animación de profundidad experimental">LIFE v23</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
@@ -361,7 +361,6 @@
    '</main>'+
    '<footer class="pl-foot">'+
    '<div class="pl-quick-actions" role="group" aria-label="Acciones rápidas"><button type="button" data-pl-place="eat">🥥 Comer</button><button type="button" data-pl-place="shower">🚿 Ducha</button><button type="button" data-pl-place="sleep">💤 Dormir</button><button type="button" data-pl-place="play">🎮 Jugar</button></div>'+ 
-   '<div class="pl-mood-chip" data-pl-mood role="status" aria-live="polite">😊 Todo marcha bien</div>'+ 
    '<button type="button" class="pl-depth-toggle" data-pl-depth aria-pressed="false" title="Activar profundidad 2.5D conservando el sprite original">🎭 Movimiento 2.5D: OFF</button>'+ 
    '<button type="button" class="pl-depth-toggle pl-model-toggle" data-pl-model aria-pressed="false" title="Modo híbrido: aspecto original de MiniJavi y profundidad 3D experimental">✨ Probar modo híbrido</button>'+ 
    '<div class="pl-theme-picker" role="group" aria-label="Decoración de mi hogar"><span>🎨 Mi hogar · Nv '+lifeLevel+'</span><button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button><button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
@@ -371,41 +370,25 @@
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
    '<small data-pl-persistence>⏳ Comprobando guardado · sin XP</small></footer>';
-  const slot=room.querySelector('#plPerson');
-  const hero=document.createElement('div');
-  hero.className='pl-person-figure';
-  const sprite=window.PaquilloLifeSprite?.create(name)||null;
-  const puppet=sprite?null:(window.PaquilloLifePuppet?.create(name)||null);
-  if(sprite){
-   hero.classList.add('pl-has-sprite');
-   hero.append(sprite);
-  }else if(puppet){
-   hero.classList.add('pl-has-rig');
-   hero.append(puppet);
-  }else if(source){
-   const img=document.createElement('img');
-   img.alt='MiniPaquillo de '+name;
-   img.src=source;
-   img.decoding='async';
-   img.addEventListener('error',()=>{
-    hero.textContent='🧑‍🎤';
-    hero.classList.add('pl-person-fallback');
-   });
-   hero.append(img);
-  }else{
-   hero.textContent='🧑‍🎤';
-   hero.classList.add('pl-person-fallback');
-  }
-  slot.append(hero);
-  room.querySelector('#plName').textContent=name;
-  needs={energy:75,mood:75,wellbeing:75};
-  document.body.appendChild(room);
-  renderNeeds();renderMood();
-  loadAchievements();renderAchievements();
-  let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
-  chooseTheme(themes[savedTheme]&&themeUnlocked(themes[savedTheme])?savedTheme:'island',false);
-  document.body.classList.add('paqui-life-room-open');
-  care();
+  // Controles principales registrados antes de cargar sprites, necesidades o decoraciones.
+  // Captura para que capas de escena o manejadores secundarios no bloqueen navegación.
+  room.addEventListener('click',event=>{
+   const button=event.target.closest('button');
+   if(!button||!room?.contains(button))return;
+   if(button.hasAttribute('data-pl-close')){event.stopImmediatePropagation();close();return;}
+   if(button.hasAttribute('data-pl-neighborhood')){
+    event.stopImmediatePropagation();
+    const cb=neighborhoodAction;close();cb?.();return;
+   }
+   if(button.hasAttribute('data-pl-place')){
+    event.stopImmediatePropagation();interact(button.dataset.plPlace);return;
+   }
+   if(button.hasAttribute('data-pl-memory')){
+    event.stopImmediatePropagation();
+    const cb=memoryAction;
+    if(cb){close();cb();}else setStatus('Memoria no disponible.');
+   }
+  },true);
   room.addEventListener('click',event=>{
    const decoration=event.target.closest('[data-pl-decor]');
    if(decoration){
@@ -487,6 +470,41 @@
    if(action){interact(action);return;}
    if(event.target.closest('[data-pl-close]'))close();
   });
+  const slot=room.querySelector('#plPerson');
+  const hero=document.createElement('div');
+  hero.className='pl-person-figure';
+  const sprite=window.PaquilloLifeSprite?.create(name)||null;
+  const puppet=sprite?null:(window.PaquilloLifePuppet?.create(name)||null);
+  if(sprite){
+   hero.classList.add('pl-has-sprite');
+   hero.append(sprite);
+  }else if(puppet){
+   hero.classList.add('pl-has-rig');
+   hero.append(puppet);
+  }else if(source){
+   const img=document.createElement('img');
+   img.alt='MiniPaquillo de '+name;
+   img.src=source;
+   img.decoding='async';
+   img.addEventListener('error',()=>{
+    hero.textContent='🧑‍🎤';
+    hero.classList.add('pl-person-fallback');
+   });
+   hero.append(img);
+  }else{
+   hero.textContent='🧑‍🎤';
+   hero.classList.add('pl-person-fallback');
+  }
+  slot.append(hero);
+  room.querySelector('#plName').textContent=name;
+  needs={energy:75,mood:75,wellbeing:75};
+  document.body.appendChild(room);
+  renderNeeds();renderMood();
+  loadAchievements();renderAchievements();
+  let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
+  chooseTheme(themes[savedTheme]&&themeUnlocked(themes[savedTheme])?savedTheme:'island',false);
+  document.body.classList.add('paqui-life-room-open');
+  care();
   room.addEventListener('keydown',event=>{
    if(event.key==='Escape'){event.preventDefault();close();}
    if(event.key==='Tab'){
