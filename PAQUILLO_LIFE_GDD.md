@@ -3,6 +3,14 @@ Documento de diseño de juego y plan técnico. 18/11/2026.
 
 **Estado: habitación alfa animada e integración con Memoria bajo acceso privado Javi/admin; no es aún el modo Life completo.**
 
+## Fase E · Movimiento continuo y decoración interactiva (18/11/2026)
+- Sustituida espera de 11–20 s por primer paseo a los ~450 ms y desplazamientos recurrentes entre puntos de la habitación, con fotogramas alternos de caminar y respiración durante pausas breves.
+- El cansancio introduce descansos breves; cuidados, juegos y cierre tienen prioridad y cancelan la rutina.
+- Nuevos objetos táctiles: guirnalda encendible y palmera que reacciona; son decoraciones locales sin persistencia ni XP.
+- CSS mantiene proporción del sprite aprobado y añade transiciones de posición. Se incrementan versiones de assets en index.html para evitar caché móvil.
+- Respeta preferencia de movimiento reducido: no inicia paseos autónomos.
+- Publicado en main; QA visual en móvil pendiente.
+
 ## Fase D · Vida autónoma en la habitación (18/11/2026)
 - Gestos espontáneos cada 11–20 segundos de inactividad: saludo con pose del sprite (fila 3, columna 2) o descanso (fila 3, columna 3).
 - Si el estado emocional es cansado, se prioriza descansar. Los gestos son puramente visuales y no escriben en Supabase ni conceden XP.
