@@ -3,7 +3,26 @@
 'use strict';
 let modulePromise=null;
 function getThree(){
- return modulePromise||(modulePromise=import('https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js').catch(e=>{modulePromise=null;throw e;}));
+ if(modulePromise)return modulePromise;
+ // Dos orígenes independientes; la carga no debe bloquear indefinidamente la interfaz.
+ const sources=[
+  'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js',
+  'https://unpkg.com/three@0.160.1/build/three.module.js'
+ ];
+ modulePromise=(async()=>{
+  let lastError;
+  for(const url of sources){
+   try{
+    const result=await Promise.race([
+     import(url),
+     new Promise((_,reject)=>setTimeout(()=>reject(new Error('Tiempo de carga agotado')),3500))
+    ]);
+    return result;
+   }catch(error){lastError=error;}
+  }
+  throw lastError||new Error('No se ha podido cargar Three.js');
+ })().catch(error=>{modulePromise=null;throw error;});
+ return modulePromise;
 }
 async function create(host){
  const THREE=await getThree();
