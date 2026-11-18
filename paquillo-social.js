@@ -31,7 +31,7 @@
   const action=' type="button" data-ps-action="navigate" data-tab="'+esc(item.tab)+'" data-entity="'+esc(item.entity||'')+'"';
   if(item.kind==='event'){
    const date=String(item.eventDate||'');
-   const attendees=Number.isInteger(item.yesCount)?'<span class="ps-event-attendees" aria-label="'+item.yesCount+' confirmados">👥 '+item.yesCount+' '+(item.status==='completed'?'apuntados':'van')+'</span>':'';
+   const attendees=Number.isInteger(item.yesCount)?'<span class="ps-event-attendees" title="'+item.yesCount+' personas han confirmado" aria-label="'+item.yesCount+' '+(item.yesCount===1?'persona ha confirmado':'personas han confirmado')+' asistencia">👥 '+item.yesCount+'</span>':'';
    const dateLabel=date?' · '+labelDate(date+'T12:00:00'):'';
    return '<button class="ps-feed-link ps-feed-event"'+action+' aria-label="Abrir plan '+esc(item.title+dateLabel)+'">'+
     '<span class="paqui-plan-summary-icon ps-feed-date" aria-hidden="true">'+dateBadge(date)+'</span>'+
@@ -77,7 +77,10 @@
     const history=Array.from(document.querySelectorAll('#pastEvents [data-history-detail]')).find(x=>x.dataset.historyDetail===entity);
     if(history){history.click();return;}
    }
-   else if(tab==='planes')el=Array.from(document.querySelectorAll('#events details.paqui-plan-fold[data-event-db]')).find(x=>x.dataset.eventDb===entity);
+   else if(tab==='planes'){
+    const matches=Array.from(document.querySelectorAll('#events [data-event-db]')).filter(x=>x.dataset.eventDb===entity);
+    el=matches.find(x=>x.tagName==='DETAILS')||matches[0]||null;
+   }
    if(el){
     if(el.tagName==='DETAILS')el.open=true;
     const focusEl=el.closest('.paqui-plan-card')||el;
