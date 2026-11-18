@@ -1078,3 +1078,12 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 @media(max-width:370px){
  .pw-neighborhood-houses .pw-house-avatar{width:82px;height:94px}
 }
+
+/* Retos asíncronos · una partida por participante */
+.pw-duels{margin:16px 4px;padding:12px;border-radius:17px;background:#241b50;border:1px solid #c1a6f4;color:#fff}
+.pw-duels h3{margin:0 0 10px;font-size:17px}
+.pw-duel-row{margin:9px 0;padding:12px;border-radius:13px;background:#ffffff13;border:1px solid #ffffff35}
+.pw-duel-row>b,.pw-duel-row>small{display:block;margin-bottom:5px}
+.pw-duel-row>small{opacity:.8}
+.pw-duel-row p{font-size:12px;margin:7px 0}
+.pw-duel-row button{margin:4px;padding:9px 12px;background:#8a61db;color:white;border:1px solid #e4ceff;border-radius:9px;font-weight:800}
