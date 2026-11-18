@@ -13,7 +13,7 @@ let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivi
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
 let enteredFromLife=false;
-let duels=[],duelReady=false,duelError='',duelPlaying=null;
+let duels=[],duelReady=false,duelError='',duelPlaying=null,duelSeenKey='';
 const viewHistory=[];
 const pageState={people:0,ranking:0,profile:0};
 const viewportWidth=()=>window.innerWidth||390;
@@ -158,7 +158,7 @@ function peopleView(){
 }
 
 const duelName=id=>state.members.find(m=>m.auth_user_id===id)?.display_name||'Paquillo';
-const duelScore=(game,n)=>n===null?'Pendiente':game==='reflex'?n+' ms':game==='memory'?n+' intentos':n+' aciertos';
+const duelScore=(game,n)=>n===null?'Pendiente':game==='reflex'?n+' ms':game==='memory'?n+' intentos':game==='races'?n+' m':n+' aciertos';
 const duelWinner=d=>d.status!=='completed'?'':d.challenger_score===d.opponent_score?'🤝 Empate':((d.game==='reflex'||d.game==='memory'?d.challenger_score<d.opponent_score:d.challenger_score>d.opponent_score)?duelName(d.challenger):duelName(d.opponent))+' gana 🏆';
 async function loadDuels(){
  const db=window.PaquilloWorldContext?.()?.client;
@@ -166,6 +166,30 @@ async function loadDuels(){
  const {data,error}=await db.from('paqui_world_duels').select('*').order('created_at',{ascending:false}).limit(200);
  duelReady=!error;duelError=error?'Activa paquillo-world-duelos.sql en Supabase para usar los retos.':'';
  duels=data||[];
+ updateDuelNotice();
+}
+function updateDuelNotice(){
+ if(!state.uid)return;
+ const pending=duels.filter(d=>d.opponent===state.uid&&d.status==='pending');
+ const badge=root.querySelector('[data-pw-duel-badge]');
+ if(badge){badge.textContent=pending.length?'📩 '+pending.length+' reto'+(pending.length===1?'':'s'):'';badge.hidden=!pending.length;}
+ const latest=pending.map(d=>d.id).sort().join(',');
+ const key='paqui-duel-seen-'+state.uid;
+ let seen='';try{seen=localStorage.getItem(key)||''}catch(_){}
+ if(latest&&latest!==seen&&duelSeenKey!==latest){
+  duelSeenKey=latest;
+  const bar=root.querySelector('.pw-shell');
+  if(bar){
+   const alert=document.createElement('button');alert.type='button';alert.className='pw-duel-alert';alert.dataset.pwDuelNotice='';
+   alert.textContent='📩 Tienes '+pending.length+' reto'+(pending.length===1?'':'s')+' pendiente'+(pending.length===1?'':'s')+' · Ver invitaciones';
+   bar.prepend(alert);
+  }
+ }
+}
+function markDuelsSeen(){
+ if(!state.uid)return;
+ try{localStorage.setItem('paqui-duel-seen-'+state.uid,duels.filter(d=>d.opponent===state.uid&&d.status==='pending').map(d=>d.id).sort().join(','))}catch(_){}
+ root.querySelector('.pw-duel-alert')?.remove();
 }
 async function duelRpc(action,values={}){
  const db=window.PaquilloWorldContext?.()?.client;
@@ -197,7 +221,7 @@ function duelRows(){
 function showDuelInvite(idx){
  const m=state.ranked[idx];if(!m?.auth_user_id||m.auth_user_id===state.uid){modal('<h2>⚔️ No disponible</h2><p>Solo puedes retar a otro Paquillo con cuenta vinculada.</p>');return;}
  modal('<h2>⚔️ Retar a '+esc(m.display_name)+'</h2><p>Una partida cada uno. Gana el mejor resultado de este reto, no el récord histórico.</p>'+
- '<div class="pw-house-challenges">'+[['trivia','🧠 Trivial'],['memory','🃏 Memoria'],['reflex','⚡ Reflejos']].map(([id,label])=>'<button data-pw-duel-create="'+id+'" data-pw-opponent="'+esc(m.auth_user_id)+'">'+label+'</button>').join('')+'</div>');
+ '<div class="pw-house-challenges">'+[['trivia','🧠 Trivial'],['memory','🃏 Memoria'],['reflex','⚡ Reflejos'],['races','🏁 Carreras']].map(([id,label])=>'<button data-pw-duel-create="'+id+'" data-pw-opponent="'+esc(m.auth_user_id)+'">'+label+'</button>').join('')+'</div>');
 }
 function startDuelGame(id){
  const d=duels.find(x=>x.id===id);
@@ -516,7 +540,7 @@ function gameAction(id){
   window.PaquilloRace.open({
    uid:state.uid,member:state.mine,photo:racePhoto,sticker:isFullBody,
    members:state.members,client:window.PaquilloWorldContext?.()?.client,
-   render:openRaceApp,onClose:closeRaceApp,onScore:(distance)=>submitGlobalScore('races',distance)
+   render:openRaceApp,onClose:closeRaceApp,onScore:(distance)=>{if(duelPlaying)completeDuelGame('races',Math.floor(distance));else void submitGlobalScore('races',distance)}
   });
   return;
  }
@@ -549,7 +573,7 @@ async function refresh(){
   state.xp=state.ready?Number(state.profiles.get(state.uid)?.total_xp)||0:0;
   state.ranked=state.members.map(m=>({...m,xp:state.ready?(Number(state.profiles.get(m.auth_user_id)?.total_xp)||0):0})).sort((a,b)=>b.xp-a.xp||a.display_name.localeCompare(b.display_name,'es'));
   await loadDuels();
-  state.loaded=true;renderShell();
+  state.loaded=true;renderShell();updateDuelNotice();
   if(!state.ready){const p=root.querySelector('.pw-screen');p?.insertAdjacentHTML('afterbegin','<div class="pw-demo-notice">⚙️ XP pendiente de activar: ejecuta <b>paquillo-world-fase1.sql</b> en Supabase. Se muestran valores sin experiencia hasta entonces.</div>')}
  }catch(e){
   root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-scroll"><div class="pw-screen"><div class="pw-demo-notice">Error cargando Paquillo World: '+esc(e.message||e)+'</div><button class="pw-action-button" data-pw-refresh>Reintentar</button></div></div>'+nav()+'</div>';
@@ -570,6 +594,7 @@ root.addEventListener('click',e=>{
   return;
  }
  if(btn.hasAttribute('data-pw-house')){if(window.PaquilloLifePreview?.enabled)showHouse(Number(btn.dataset.pwHouse));return}
+ if(btn.hasAttribute('data-pw-duel-notice')){markDuelsSeen();setView('games');return}
  if(btn.hasAttribute('data-pw-duel-refresh')){void loadDuels().then(()=>{const el=root.querySelector('[data-pw-screen="games"]');if(el)el.outerHTML=gamesView()});return}
  if(btn.hasAttribute('data-pw-duel-invite')){showDuelInvite(Number(btn.dataset.pwDuelInvite));return}
  if(btn.hasAttribute('data-pw-duel-create')){const game=btn.dataset.pwDuelCreate,opponent=btn.dataset.pwOpponent;if(!duelReady){modal('<h2>⚠️ Retos no activados</h2><p>Hay que ejecutar paquillo-world-duelos.sql en Supabase.</p>');return}void duelRpc('create',{game,opponent}).then(ok=>{if(ok)modal('<h2>📩 ¡Invitación enviada!</h2><p>Tu amigo podrá aceptarla desde el barrio.</p>')});return}
