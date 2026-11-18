@@ -377,7 +377,9 @@ function renderMemory(){
  const face=memory.matched.has(c.id)||memory.flipped.includes(i);
  const content=!face?'<span class="pw-memory-back">❔</span>':c.kind==='name'?'<span class="pw-memory-name">'+esc(c.m.display_name)+'</span>':memberPhoto(c.m)?memberImage(c.m,'Foto de '+c.m.display_name,'pw-memory-photo'):'<span class="pw-memory-initials">'+esc(nameInitial(c.m.display_name))+'</span>';
  return '<button type="button" class="pw-memory-card'+(face?' flipped':'')+(memory.matched.has(c.id)?' matched':'')+'" data-pw-memory-card="'+i+'" '+(face?'disabled':'')+' aria-label="'+(face?'Carta descubierta':'Carta oculta '+(i+1))+'">'+content+'</button>';
- }).join('')+'</div><p class="pw-local-note">Partida en este dispositivo · Sin XP</p><button class="pw-secondary-button" type="button" data-pw-memory-restart>Reiniciar ↻</button></div>');
+ }).join('')+'</div><p class="pw-local-note">Partida en este dispositivo · Sin XP</p>'+
+ (enteredFromLife&&window.PaquilloLifePreview?.enabled?'<button class="pw-action-button pw-life-return-button" type="button" data-pw-life-leave>🏡 Volver a mi hogar</button>':'')+
+ '<button class="pw-secondary-button" type="button" data-pw-memory-restart>Reiniciar ↻</button></div>');
 }
 function flipMemory(i){
  if(!memory||memory.locked||!Number.isInteger(i)||i<0||i>=memory.cards.length)return;
@@ -476,7 +478,8 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-life-open')){
   window.PaquilloLifePreview?.open({
    name:state.mine?.display_name||'Paquillo',
-   onArcade:()=>{enteredFromLife=true;setView('games')}
+   onArcade:()=>{enteredFromLife=true;setView('games')},
+   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
   });
   return;
  }
@@ -504,13 +507,25 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-trivia-restart')){startTrivia();return}
  if(btn.hasAttribute('data-pw-memory-card')){flipMemory(Number(btn.dataset.pwMemoryCard));return}
  if(btn.hasAttribute('data-pw-memory-restart')){startMemory();return}
+ if(btn.hasAttribute('data-pw-life-leave')){
+  if(!window.PaquilloLifePreview?.enabled)return;
+  closeModal();
+  const opened=window.PaquilloLifePreview?.open({
+   name:state.mine?.display_name||'Paquillo',
+   onArcade:()=>{enteredFromLife=true;setView('games')},
+   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
+  });
+  if(opened)enteredFromLife=false;
+  return;
+ }
  if(btn.hasAttribute('data-pw-life-return')){
   if(!window.PaquilloLifePreview?.enabled)return;
   closeModal();
   const opened=window.PaquilloLifePreview?.open({
    name:state.mine?.display_name||'Paquillo',
    celebrate:'memory',
-   onArcade:()=>{enteredFromLife=true;setView('games')}
+   onArcade:()=>{enteredFromLife=true;setView('games')},
+   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
   });
   if(opened)enteredFromLife=false;
   return;
