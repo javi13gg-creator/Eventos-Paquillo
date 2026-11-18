@@ -185,3 +185,97 @@
  #paquiSocial .ps-header h2{font-size:.94rem}
  #paquiSocial .ps-quick-card{min-height:58px}
 }
+
+
+/* Muro Paquillero · tarjetas enlazables y compactas en Inicio (noviembre 2026).
+   Los planes reutilizan el calendario día/mes de sus tarjetas completas. */
+#paquiSocialFeed .ps-feed{display:grid;gap:7px}
+#paquiSocialFeed .ps-feed-link{
+ display:flex;align-items:center;gap:10px;
+ width:100%;min-width:0;min-height:60px;
+ padding:8px 11px;cursor:pointer;
+ border:1px solid var(--ln);border-radius:13px;
+ background:var(--card);color:var(--ink);
+ text-align:left;font-family:inherit;
+ box-shadow:0 2px 8px #140d3a08;
+ transition:transform .13s,background .13s,border-color .13s;
+}
+#paquiSocialFeed .ps-feed-link:hover{
+ background:color-mix(in srgb,var(--pk) 5%,var(--card));
+ border-color:color-mix(in srgb,var(--pk) 28%,var(--ln))
+}
+#paquiSocialFeed .ps-feed-link:active{transform:scale(.991)}
+#paquiSocialFeed .ps-feed-link:focus-visible{
+ outline:2px solid var(--pk);outline-offset:2px
+}
+#paquiSocialFeed .ps-feed-date.paqui-plan-summary-icon{
+ flex:0 0 45px;width:45px;height:46px;
+ border-radius:11px;box-shadow:0 3px 9px #7352cc27;
+ display:flex;align-items:center;justify-content:center;
+ flex-direction:column;gap:0;
+ background:linear-gradient(140deg,#7464e3,#ad56e0);
+ color:#fff;overflow:hidden
+}
+#paquiSocialFeed .ps-feed-date .paqui-calendar-month{
+ display:block;font:850 .56rem/1.2 system-ui,sans-serif;
+ letter-spacing:.08em;color:#fff
+}
+#paquiSocialFeed .ps-feed-date .paqui-calendar-day{
+ display:block;font:950 1.34rem/1.06 "Bricolage Grotesque",system-ui,sans-serif;
+ color:#fff;font-variant-numeric:tabular-nums
+}
+#paquiSocialFeed .ps-feed-copy{
+ display:flex;flex:1 1 auto;flex-direction:column;justify-content:center;
+ align-items:flex-start;min-width:0;gap:3px;
+}
+#paquiSocialFeed .ps-feed-copy strong{
+ font-size:.84rem;line-height:1.27;
+ font-weight:900;min-width:0;max-width:100%;
+ overflow-wrap:anywhere;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
+}
+#paquiSocialFeed .ps-event-attendees{
+ color:var(--mut);font:800 .69rem/1.15 system-ui,sans-serif;
+ white-space:nowrap
+}
+#paquiSocialFeed .ps-feed-arrow{
+ display:grid;place-items:center;flex:0 0 22px;
+ width:22px;height:28px;border-radius:8px;
+ color:var(--pk);background:color-mix(in srgb,var(--pk) 7%,var(--card));
+ font-size:1.35rem;font-weight:800;
+}
+#paquiSocialFeed .ps-feed-mini-icon{
+ display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;
+ background:color-mix(in srgb,var(--pk) 9%,var(--card));
+ color:var(--pk);border-radius:11px;font-size:1.3rem
+}
+#paquiSocialFeed .ps-feed-other{min-height:52px;padding:7px 11px}
+#paquiSocialFeed .ps-feed-other .ps-feed-copy strong{font-size:.8rem}
+#paquiSocialFeed .ps-feed-other .ps-feed-copy small{
+ color:var(--mut);font-size:.66rem;line-height:1.2;font-weight:750
+}
+#paquiSocialFeed .ps-feed-head{margin:0 2px 8px}
+#paquiSocialFeed .ps-feed-head h2{font-size:1.1rem}
+#paquiSocialFeed .ps-feed-head p{font-size:.7rem;margin:2px 0 0}
+#paquiSocialFeed .ps-filters{padding-bottom:8px}
+#paquiSocialFeed .ps-filter{font-size:.7rem;padding:7px 11px}
+@media(max-width:600px){
+ #paquiSocialFeed .ps-feed{gap:6px}
+ #paquiSocialFeed .ps-feed-link{min-height:55px;padding:6px 8px;gap:9px;border-radius:12px}
+ #paquiSocialFeed .ps-feed-date.paqui-plan-summary-icon{
+  width:43px;flex-basis:43px;height:43px;border-radius:10px
+ }
+ #paquiSocialFeed .ps-feed-date .paqui-calendar-day{font-size:1.25rem}
+ #paquiSocialFeed .ps-feed-copy strong{font-size:.79rem}
+ #paquiSocialFeed .ps-event-attendees{font-size:.66rem}
+ #paquiSocialFeed .ps-feed-mini-icon{flex-basis:37px;width:37px;height:37px}
+ #paquiSocialFeed .ps-feed-arrow{flex-basis:19px;width:19px}
+}
+@media(max-width:360px){
+ #paquiSocialFeed .ps-feed-link{gap:6px;padding:5px 7px}
+ #paquiSocialFeed .ps-feed-copy strong{font-size:.76rem}
+ #paquiSocialFeed .ps-event-attendees{font-size:.62rem}
+ #paquiSocialFeed .ps-feed-date.paqui-plan-summary-icon{
+  flex-basis:40px;width:40px;height:41px
+ }
+}
