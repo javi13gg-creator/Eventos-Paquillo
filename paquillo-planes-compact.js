@@ -30,7 +30,27 @@
   top.setAttribute('aria-controls',details.id);
   top.setAttribute('aria-label','Abrir o cerrar detalles de '+title);
   top.setAttribute('aria-expanded',String(details.open));
-  card.insertBefore(top,details);
+  // Cartel accesible directamente desde la cabecera: miniatura + ficha con imagen completa.
+  // La imagen original sigue dentro de los detalles; nunca se elimina del DOM.
+  const heading=make('div','paqui-plan-header-row');
+  card.insertBefore(heading,details);
+  heading.append(top);
+  const originalPoster=article.querySelector(':scope > .poster img');
+  if(originalPoster&&details.dataset.eventDb){
+   const preview=make('button','paqui-plan-poster-preview');
+   preview.type='button';
+   preview.dataset.eventDetail=details.dataset.eventDb;
+   preview.title='Ver cartel completo';
+   preview.setAttribute('aria-label','Ver cartel completo de '+title);
+   const thumb=originalPoster.cloneNode(true);
+   thumb.className='paqui-plan-poster-thumb';
+   thumb.alt='';
+   thumb.loading='lazy';
+   thumb.setAttribute('aria-hidden','true');
+   thumb.addEventListener('error',()=>{preview.hidden=true;});
+   preview.append(thumb);
+   heading.append(preview);
+  }
   top.addEventListener('click',()=>{details.open=!details.open;});
   details.addEventListener('toggle',()=>{
    top.setAttribute('aria-expanded',String(details.open));
@@ -121,7 +141,7 @@
   const poster=article.querySelector(':scope > .poster');
   if(poster){
    const wrapper=make('details','paqui-plan-poster');
-   const open=make('summary');open.textContent='🖼️ Ver cartel del evento';
+   const open=make('summary');open.textContent='🖼️ Ver cartel completo aquí';
    poster.before(wrapper);
    wrapper.append(open,poster);
   }
