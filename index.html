@@ -497,7 +497,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </style>
 <link rel="stylesheet" href="paquillo-world-app.css?v=32">
 <link rel="stylesheet" href="paquillo-race.css?v=5">
-<link rel="stylesheet" href="paquillo-social.css?v=3">
+<link rel="stylesheet" href="paquillo-social.css?v=4">
 <link rel="stylesheet" href="paquillo-ayuda.css?v=1">
 <link rel="stylesheet" href="paquillo-navigation.css?v=1">
 <link rel="stylesheet" href="paquillo-admin-refresh.css?v=2">
@@ -593,6 +593,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </div>
 </header>
 
+<section id="paquiSocial" class="paqui-social" aria-label="Tu comunidad, resumen y pendientes"></section>
 <section class="paqui-home-calendar" aria-label="Calendario de planes y cumpleaños">
 <div class="c"><h2>Calendario</h2>
 <p class="sub">Toca un día marcado y te llevo al plan.</p></div>
@@ -603,7 +604,8 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <div id="pick"></div>
 </div>
 </section>
-<section id="paquiSocial" class="paqui-social" aria-label="Inicio social y novedades del grupo"></section>
+<section id="paquiSocialFeed" class="paqui-social-feed" aria-label="Muro Paquillero y novedades del grupo"></section>
+
 
 
 
@@ -2184,8 +2186,8 @@ K: Inventa una regla nueva que dure una ronda.`;
  if($('p-juegos'))init();
 })();
 </script>
-<script src="paquillo-social.js?v=4"></script>
-<script src="paquillo-ayuda.js?v=7"></script>
+<script src="paquillo-social.js?v=5"></script>
+<script src="paquillo-ayuda.js?v=8"></script>
 <script src="paquillo-navigation.js?v=2"></script>
 <script src="paquillo-planes-compact.js?v=4"></script>
 <script src="paquillo-reacciones.js?v=5"></script>
