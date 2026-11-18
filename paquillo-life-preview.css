@@ -237,3 +237,8 @@ body.paqui-life-room-open{overflow:hidden!important}
  #paquiLifePreview .pl-ambient,#paquiLifePreview .pl-action-stars{animation:none!important}
  #paquiLifePreview .pl-object{transition:none}
 }
+
+/* Life care prototype: compact, touch-friendly and non-persistent. */
+#paquiLifePreview .pl-needs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;padding:4px 10px 8px}
+#paquiLifePreview .pl-needs label{display:flex;flex-direction:column;gap:4px;font-size:clamp(10px,2.6vw,13px);font-weight:700;color:#fff;text-align:center;min-width:0}
+#paquiLifePreview .pl-needs progress{width:100%;height:9px;accent-color:#6ce9aa;border-radius:20px;overflow:hidden}
