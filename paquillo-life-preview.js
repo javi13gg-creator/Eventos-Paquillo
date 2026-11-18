@@ -9,6 +9,19 @@
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
  let room=null,previousFocus=null,arcadeAction=null,memoryAction=null;
  let actionSerial=0;
+ let needs={energy:75,mood:75,wellbeing:75};
+ function renderNeeds(){
+  if(!room)return;
+  for(const [key,value] of Object.entries(needs)){
+   const el=room.querySelector('[data-pl-need="'+key+'"]');
+   if(el){el.value=value;el.setAttribute('aria-valuenow',String(value));}
+  }
+ }
+ function improveNeeds(action){
+  const changes={eat:{energy:8,wellbeing:12},sleep:{energy:20,wellbeing:5},shower:{wellbeing:18,mood:5},play:{mood:12}}[action]||{};
+  for(const [key,delta] of Object.entries(changes))needs[key]=Math.min(100,needs[key]+delta);
+  renderNeeds();
+ }
  const timers=new Set();
  const places={
   home:{left:48,bottom:15,scale:1,speechBottom:57,propBottom:39},
@@ -94,6 +107,7 @@
   }
   later(()=>{
    room?.classList.remove('pl-action-'+action);
+   improveNeeds(action);
    setStatus('¡Acción completada! ✨');
    speech('¡Así se vive en Paquillo World! ⭐');
    goHome(serial,prefersLessMotion()?250:450);
@@ -118,6 +132,7 @@
   moveTo('home');
   room.classList.add('pl-celebrating');
   speech('¡Memoria completada! ¡Grande! 🏆');
+  improveNeeds('play');
   setStatus('¡Tu MiniPaquillo celebra la victoria!');
   later(()=>{
    room?.classList.remove('pl-celebrating');
@@ -173,6 +188,7 @@
     '</div>'+
    '</main>'+
    '<footer class="pl-foot">'+
+   '<div class="pl-needs" aria-label="Indicadores de prueba, sin guardar"><label>⚡ Energía <progress data-pl-need="energy" max="100" value="75"></progress></label><label>😊 Ánimo <progress data-pl-need="mood" max="100" value="75"></progress></label><label>💚 Bienestar <progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
    '<button class="pl-memory-shortcut" type="button" data-pl-memory aria-label="Jugar directamente a Memoria Paquillera y volver al hogar al terminar"><span aria-hidden="true">🃏</span> Jugar a Memoria Paquillera <span aria-hidden="true">▶</span></button>'+
    '<p id="plStatus" role="status" aria-live="polite"><span>👆</span> Toca un objeto para ver los movimientos.</p>'+
    '<small>Animaciones alfa · sin guardar necesidades ni XP</small></footer>';
@@ -203,7 +219,10 @@
   }
   slot.append(hero);
   room.querySelector('#plName').textContent=name;
+  needs={energy:75,mood:75,wellbeing:75};
+  renderNeeds();
   document.body.appendChild(room);
+  renderNeeds();
   document.body.classList.add('paqui-life-room-open');
   room.addEventListener('click',event=>{
    if(!allowed()){close();return;}
