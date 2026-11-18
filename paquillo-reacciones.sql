@@ -25,6 +25,10 @@ using (
     select 1 from public.group_members m
     where m.auth_user_id = auth.uid() and m.is_active = true
   )
+  and exists (
+    select 1 from public.group_events e
+    where e.id = event_id and e.status not in ('draft','cancelled')
+  )
 );
 
 drop policy if exists paqui_event_reactions_insert on public.paqui_event_reactions;
