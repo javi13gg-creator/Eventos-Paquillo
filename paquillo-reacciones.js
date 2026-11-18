@@ -8,6 +8,7 @@
  const reactionRows=new Map();
  const namesByUser=new Map();
  const busy=new Set();
+ const openPickers=new Set();
  let loaded=false,loadError='',sequence=0,userId='',mountedRoot=null,fetchingMembers=false,lastLoadedAt=0;
  const isMissingTable=err=>['42P01','PGRST205','PGRST116'].includes(String(err?.code||''))||/relation .*paqui_event_reactions.* does not exist|could not find the table.*paqui_event_reactions/i.test(String(err?.message||''));
  const validId=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));
@@ -42,18 +43,22 @@
    }
    if(!loaded){box.innerHTML='<p class="paqui-react-loading">Cargando reacciones…</p>';continue;}
    const disabled=busy.has(id)?' disabled':'';
+   const open=openPickers.has(id);
    const buttons=EMOJIS.map(e=>{
     const active=mine===e;
     return '<button type="button" class="paqui-react-option'+(active?' is-active':'')+'" data-paqui-react="'+e+'" data-paqui-react-event="'+escapeHtml(id)+'" aria-pressed="'+active+'" aria-label="'+(active?'Quitar mi reacción':'Reaccionar con')+' '+e+', '+counts[e]+' reacciones"'+disabled+'><span aria-hidden="true">'+e+'</span><b>'+counts[e]+'</b></button>';
    }).join('');
+   const totals=EMOJIS.filter(e=>counts[e]>0).sort((a,b)=>counts[b]-counts[a]).map(e=>'<span class="paqui-react-chip" title="'+counts[e]+' reacciones '+e+'">'+e+' <b>'+counts[e]+'</b></span>').join('');
    const people=rows.map(row=>{
     const name=namesByUser.get(row.user_id)||'Paquillo';
     return '<span class="paqui-react-person">'+row.emoji+' '+escapeHtml(name)+'</span>';
    }).join('');
-   box.innerHTML='<div class="paqui-react-head"><strong>💬 Reacciones al plan</strong><span>'+total+' '+(total===1?'reacción':'reacciones')+'</span></div>'+
-     '<div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div>'+
-     '<div class="paqui-react-foot">'+(mine?'<small>Has reaccionado con '+mine+'. Toca otra para cambiarla o la misma para quitarla.</small>':'<small>Elige un emoji. Solo puedes tener una reacción por plan.</small>')+
-     (total?'<details class="paqui-react-people"><summary>👥 Quién ha reaccionado ('+total+')</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+'</div>';
+   box.innerHTML='<div class="paqui-react-toolbar">'+
+      '<button type="button" class="paqui-react-trigger'+(mine?' has-reacted':'')+'" data-paqui-react-toggle="'+escapeHtml(id)+'" aria-expanded="'+open+'" aria-label="'+(mine?'Cambiar o quitar mi reacción '+mine:'Reaccionar al plan')+'"'+disabled+'><span aria-hidden="true">'+(mine||'😊')+'</span><span>'+(mine?'Tu reacción':'Reaccionar')+'</span></button>'+
+      '<div class="paqui-react-totals" aria-live="polite">'+(totals||'<span class="paqui-react-empty">Sin reacciones</span>')+'</div>'+
+      (total?'<details class="paqui-react-people"><summary aria-label="Ver quién ha reaccionado">👥 '+total+'</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+
+     '</div>'+
+     '<div class="paqui-react-picker"'+(open?'':' hidden')+'><div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div><small>Un emoji por persona · pulsa el mismo para quitarlo.</small></div>';
   }
  }
  function renderAll(){
@@ -148,20 +153,42 @@
    if(error)throw error;
    reactionRows.set(id,(data||[]).filter(x=>EMOJIS.includes(x.emoji)).map(x=>({user_id:x.user_id,emoji:x.emoji})));
    loaded=true;loadError='';renderEvent(id);
-   const focus=sectionsFor(id)[0]?.querySelectorAll('[data-paqui-react]');
-   const match=Array.from(focus||[]).find(x=>x.dataset.paquiReact===emoji);
-   match?.focus({preventScroll:true});
+   sectionsFor(id)[0]?.querySelector('[data-paqui-react-toggle]')?.focus({preventScroll:true});
   }catch(err){
    console.warn('Paquillo reacciones: error al guardar',err);
    alert('No se pudo guardar tu reacción: '+(err?.message||'Revisa tu conexión o la configuración de Supabase.'));
   }finally{busy.delete(id);renderEvent(id);}
  }
  document.addEventListener('click',event=>{
+  const toggle=event.target.closest('[data-paqui-react-toggle]');
+  if(toggle){
+   event.preventDefault();
+   const id=toggle.dataset.paquiReactToggle;
+   if(!validId(id)||busy.has(id))return;
+   if(openPickers.has(id))openPickers.delete(id);
+   else{openPickers.clear();openPickers.add(id);}
+   renderAll();
+   if(openPickers.has(id))sectionsFor(id)[0]?.querySelector('[data-paqui-react]')?.focus({preventScroll:true});
+   else sectionsFor(id)[0]?.querySelector('[data-paqui-react-toggle]')?.focus({preventScroll:true});
+   return;
+  }
   const b=event.target.closest('[data-paqui-react], [data-paqui-reaction-retry]');
-  if(!b)return;
-  event.preventDefault();
-  if(b.hasAttribute('data-paqui-reaction-retry')){mount(mountedRoot);return;}
-  clickReaction(b);
+  if(b){
+   event.preventDefault();
+   if(b.hasAttribute('data-paqui-reaction-retry')){mount(mountedRoot);return;}
+   openPickers.delete(b.dataset.paquiReactEvent);
+   clickReaction(b);
+   return;
+  }
+  if(openPickers.size&&!event.target.closest('.paqui-react-picker, .paqui-react-people')){
+   const ids=[...openPickers];openPickers.clear();ids.forEach(renderEvent);
+  }
+ });
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&openPickers.size){
+   const ids=[...openPickers];openPickers.clear();ids.forEach(renderEvent);
+   sectionsFor(ids[0])[0]?.querySelector('[data-paqui-react-toggle]')?.focus({preventScroll:true});
+  }
  });
  window.PaquilloReacciones={mount,detail,refresh:()=>mount(mountedRoot)};
  window.addEventListener('paqui-world-ready',()=>{if(mountedRoot)mount(mountedRoot)});
