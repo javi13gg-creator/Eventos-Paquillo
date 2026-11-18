@@ -113,10 +113,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .av{width:1.9rem;height:1.9rem;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.4rem;border:2px solid #06281d}
 /* Cuenta atrás: foto destacada a la izquierda y texto a la derecha, sin alterar el contenido */
 #bcount.count.b{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:center;gap:.65rem;text-align:left}
-#bcount .av{width:3.25rem;height:3.25rem;min-width:3.25rem;flex-shrink:0;margin-right:0;object-fit:cover}
+#bcount img.av{display:block;box-sizing:border-box;width:3.25rem!important;height:3.25rem!important;min-width:3.25rem;max-width:none;min-height:3.25rem;aspect-ratio:1 / 1;flex:0 0 3.25rem;align-self:center;margin-right:0;padding:0;border-radius:50%!important;object-fit:cover!important;object-position:50% 35%;overflow:hidden}
 #bcount .av+.av{margin-left:-1.15rem}
 #bcount .birthday-countdown-copy{display:block;min-width:0;flex:1;line-height:1.3}
-@media(max-width:420px){#bcount .av{width:2.9rem;height:2.9rem;min-width:2.9rem}#bcount.count.b{gap:.45rem;padding:.5rem .65rem}}
+@media(max-width:420px){#bcount img.av{width:2.9rem!important;height:2.9rem!important;min-width:2.9rem;min-height:2.9rem;flex-basis:2.9rem}#bcount.count.b{gap:.45rem;padding:.5rem .65rem}}
 
 .av+.av{margin-left:-.9rem}
 .day.bd{padding:0;border:2px solid var(--pk);border-radius:50%;overflow:hidden;position:relative;cursor:pointer;background:none}
