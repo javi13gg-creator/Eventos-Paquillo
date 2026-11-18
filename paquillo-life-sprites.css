@@ -215,10 +215,10 @@
 }
 #paquiLifePreview .pl-theme-picker button[aria-pressed="true"]{background:#168c83;border-color:#b7ffe7}
 #paquiLifePreview .pl-theme-picker button:disabled{opacity:.5;cursor:not-allowed}
-#paquiLifePreview[data-pl-theme="sunset"] .pl-scene{
+#paquiLifePreview[data-pl-theme="sunset"] .pl-stage{
  filter:sepia(.24) saturate(1.22) hue-rotate(-18deg);
 }
-#paquiLifePreview[data-pl-theme="night"] .pl-scene{
+#paquiLifePreview[data-pl-theme="night"] .pl-stage{
  filter:brightness(.7) saturate(1.16) hue-rotate(18deg);
 }
 #paquiLifePreview[data-pl-theme="night"] .pl-decor-light{opacity:.85;filter:drop-shadow(0 0 9px #fff1a1)}
