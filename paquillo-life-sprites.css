@@ -258,3 +258,24 @@
  #paquiLifePreview .pl-foot{max-height:48dvh}
  #paquiLifePreview .pl-theme-picker{padding:4px}
 }
+
+/* LIFE v20 · Logros privados, independientes del inventario. */
+#paquiLifePreview .pl-achievements{
+ order:-3;width:100%;border:1px solid #e6c66f;border-radius:12px;
+ background:#35205c;padding:7px 10px;text-align:left;
+}
+#paquiLifePreview .pl-achievements summary{
+ font-size:13px;font-weight:900;cursor:pointer;min-height:28px;
+}
+#paquiLifePreview .pl-achievements-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0;
+}
+#paquiLifePreview .pl-achievement{
+ display:grid;grid-template-columns:25px 1fr;gap:1px 5px;align-items:center;
+ border:1px solid #665488;border-radius:10px;padding:7px;background:#261b48;
+ opacity:.65;font-size:12px;
+}
+#paquiLifePreview .pl-achievement.is-earned{opacity:1;border-color:#f2d376;background:#3d3560}
+#paquiLifePreview .pl-achievement span{grid-row:span 2;font-size:21px}
+#paquiLifePreview .pl-achievement b{font-size:11px}
+#paquiLifePreview .pl-achievement small{font-size:10px;color:#f0dca2}
