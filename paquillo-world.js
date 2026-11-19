@@ -346,6 +346,7 @@ function renderShell(){
    navigate:action=>{
     if(action==='games'||action==='duels')setView('games');
     else if(action==='neighborhood')setView('neighborhood');
+    else if(action==='events')toWeb();
    },
    onClaim:data=>{if(Number(data?.xp_awarded)>0)void refresh();}
   })||null;
