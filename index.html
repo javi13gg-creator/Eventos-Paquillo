@@ -2190,7 +2190,7 @@ showTab(location.hash.slice(1));
  async function getActiveMembers(){if(activeMembersCache.length)return activeMembersCache;const {data,error}=await client.from('group_members').select('id,display_name,auth_user_id,birthday,avatar_url').eq('is_active',true).order('display_name');if(error)throw error;activeMembersCache=data||[];if(window.syncPaquilloBirthdays)window.syncPaquilloBirthdays(activeMembersCache);return activeMembersCache;}
  function downloadTextFile(name,text,mime='text/calendar;charset=utf-8'){const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  function icsEscape(v){return String(v||'').replace(/\\/g,'\\\\').replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n');}
- function icsDate(date,time){if(!date)return null;return date.replaceAll('-','')+(time?String(time).slice(0,5).replace(':','')+'00':'');}
+ function icsDate(date,time){if(!date)return null;return date.replaceAll('-','')+(time?'T'+String(time).slice(0,5).replace(':','')+'00':'');}
  function paquiCalendarDatePlusOne(date){
    const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);
    return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
