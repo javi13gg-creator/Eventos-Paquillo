@@ -217,3 +217,25 @@
  #paquiLifePreview .pl-furn{animation:none!important;transition:none!important}
  #p-world .pw-home-portal-enter{transition:none!important}
 }
+
+/* Los tres adornos son objetos pulsables: abren directamente su ranura. */
+#paquiLifePreview .pl-furniture-scene .pl-furn{
+ pointer-events:auto!important;cursor:pointer;
+ background:transparent!important;border:0!important;padding:0!important;
+ box-shadow:none!important;color:inherit!important;
+ -webkit-tap-highlight-color:transparent
+}
+#paquiLifePreview .pl-furniture-scene .pl-furn:focus-visible{
+ outline:3px dashed #fff0a2;outline-offset:3px;border-radius:16px
+}
+#paquiLifePreview .pl-furniture-scene .pl-furn[data-value="none"]{
+ opacity:.08
+}
+#paquiLifePreview .pl-furniture-scene .pl-furn[data-value="none"]:focus-visible{
+ opacity:.85
+}
+#paquiLifePreview .pl-room-extras[open] .pl-quick-actions{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important
+}
+#paquiLifePreview .pl-missions-panel[hidden],#paquiLifePreview .pl-decor-panel[hidden],#paquiLifePreview .pl-play-panel[hidden]{display:none!important}
+#paquiLifePreview .pl-missions-panel.is-active{display:block!important}
