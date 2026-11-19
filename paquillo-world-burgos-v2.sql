@@ -153,12 +153,70 @@ $$;
 revoke all on function public.paqui_world_claim_daily() from public,anon;
 grant execute on function public.paqui_world_claim_daily() to authenticated;
 
+
+-- Visitas sociales: una visita por vecino y día, con tope de diez vecinos.
+-- Sin XP automático: evita farmear visitas o crear puntuaciones no verificadas.
+create table if not exists public.paqui_world_house_visits (
+ visitor_id uuid not null references auth.users(id) on delete cascade,
+ home_owner uuid not null references auth.users(id) on delete cascade,
+ day date not null,
+ visited_at timestamptz not null default now(),
+ primary key(visitor_id,home_owner,day),
+ constraint paqui_world_visits_not_self check(visitor_id<>home_owner)
+);
+create index if not exists paqui_world_house_visits_incoming
+ on public.paqui_world_house_visits(home_owner,day desc);
+alter table public.paqui_world_house_visits enable row level security;
+drop policy if exists paqui_world_house_visits_participants on public.paqui_world_house_visits;
+create policy paqui_world_house_visits_participants
+ on public.paqui_world_house_visits for select to authenticated
+ using(auth.uid()=visitor_id or auth.uid()=home_owner);
+revoke all on public.paqui_world_house_visits from public,anon,authenticated;
+grant select on public.paqui_world_house_visits to authenticated;
+
+create or replace function public.paqui_world_visit_home(p_owner uuid)
+returns jsonb language plpgsql security definer set search_path=''
+as $
+declare
+ v_user uuid:=auth.uid();
+ v_day date:=(now() at time zone 'Europe/Madrid')::date;
+ v_inserted boolean:=false;
+ v_count integer:=0;
+begin
+ if v_user is null or p_owner is null or p_owner=v_user then
+  raise exception 'Selecciona la casa de otro Paquillo' using errcode='22023';
+ end if;
+ if not exists(select 1 from public.group_members g where g.auth_user_id=v_user and g.is_active=true)
+  or not exists(select 1 from public.group_members g where g.auth_user_id=p_owner and g.is_active=true)
+ then raise exception 'La visita solo puede ser entre miembros activos' using errcode='42501';
+ end if;
+ perform pg_advisory_xact_lock(hashtextextended(v_user::text,1002));
+ if exists(select 1 from public.paqui_world_house_visits
+   where visitor_id=v_user and home_owner=p_owner and day=v_day) then
+  return jsonb_build_object('new_visit',false,'message','Ya habías visitado esta casa hoy');
+ end if;
+ select count(*) into v_count from public.paqui_world_house_visits
+  where visitor_id=v_user and day=v_day;
+ if v_count>=10 then
+  raise exception 'Ya has realizado las 10 visitas de hoy. Vuelve mañana.' using errcode='P0001';
+ end if;
+ insert into public.paqui_world_house_visits(visitor_id,home_owner,day)
+  values(v_user,p_owner,v_day) on conflict do nothing;
+ v_inserted:=found;
+ return jsonb_build_object('new_visit',v_inserted,'day',v_day,
+   'visits_today',v_count+case when v_inserted then 1 else 0 end);
+end;
+$;
+revoke all on function public.paqui_world_visit_home(uuid) from public,anon;
+grant execute on function public.paqui_world_visit_home(uuid) to authenticated;
+
 -- Notas de seguridad:
 -- 1) No existen permisos directos INSERT/UPDATE/DELETE en las dos tablas.
 -- 2) Solo los RPC security definer aplican cambios, comprobando auth.uid() y miembro activo.
 -- 3) Las casas no representan domicilios de personas.
 -- 4) Los +5 XP se insertan en el ledger de manera idempotente, una vez/día.
--- 5) No se conceden XP por juegos con resultados aún sin validación antifraude.
+-- 5) No se conceden XP por juegos o visitas con resultados aún sin validación antifraude.
+-- 6) Visitas auditables: como máximo una por vecino y día y diez por visitante/día.
 --
 -- Comprobaciones tras ejecutar (SQL Editor):
 -- select count(*) from public.paqui_world_homes;
