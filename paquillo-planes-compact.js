@@ -101,6 +101,7 @@
   rsvp.querySelectorAll('[data-paqui-attendance-counter]').forEach(counter=>counter.addEventListener('click',async event=>{
    event.preventDefault();event.stopPropagation();
    const key=counter.dataset.paquiAttendanceCounter;
+   document.dispatchEvent(new CustomEvent('paqui:close-reaction-people',{detail:{id:card.dataset.paquiPlanCard}}));
    const attendance=card.querySelector('[data-attendance-info]');
    if(!attendance)return;
    if(!attendance.querySelector('[data-attendance-show]'))await window.PaquilloRenderAttendanceCounts?.();
@@ -114,6 +115,13 @@
    voters.innerHTML=names?.innerHTML||'<p>Sin respuestas todavía.</p>';
    voters.hidden=false;voters.dataset.open=key;counter.setAttribute('aria-expanded','true');
   }));
+  card.addEventListener('paqui:reaction-people',event=>{
+   const {html,open}=event.detail||{};
+   rsvp.querySelectorAll('[data-paqui-attendance-counter]').forEach(x=>x.setAttribute('aria-expanded','false'));
+   if(!open){voters.hidden=true;voters.dataset.open='';voters.innerHTML='';return;}
+   voters.innerHTML='<div class="paqui-react-people-list">'+(html||'')+'</div>';
+   voters.dataset.open='reactions';voters.hidden=false;
+  });
   card.insertBefore(interact,details);
   // Acciones más frecuentes, una fila de tres iconos.
   const primary=make('div','paqui-plan-primary-tools');
