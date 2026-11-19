@@ -232,6 +232,7 @@ function create(root,config){
    status('✅ Mapa compartido activo. Solo tú puedes mover tu casa; las parcelas quedan reservadas.');
   }
   initialHomes();
+  if(!placement)myHouse();
  }
  root.addEventListener('click',event=>{
   const b=event.target.closest('button');if(!b)return;
