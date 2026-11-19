@@ -103,6 +103,7 @@ function gameTiles(includePlanned=false){
 }
 function homeView(){
  const ranked=state.ready?state.ranked.slice(0,5):[];
+ const myName=state.mine?.display_name||'Paquillo';
  const rankingRows=ranked.map((m,i)=>'<button class="pw-league-row" data-pw-view="ranking" type="button"><span class="pw-medal">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.')+'</span>'+
  (memberPhoto(m)?memberImage(m,'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
@@ -110,7 +111,13 @@ function homeView(){
  playerHero()+
  '<div class="pw-daily-root" data-pw-daily-root></div>'+
  (window.PaquilloLifePreview?.enabled?
-  '<div class="pw-life-preview-strip"><button type="button" data-pw-life-open aria-label="Abrir nueva habitación en vista previa"><span aria-hidden="true">🏡</span> Mi hogar · Conoce tu habitación <small>VISTA PREVIA ›</small></button></div>':'')+
+  '<section class="pw-home-portal" aria-label="Tu casa en Paquillo World">'+
+   '<div class="pw-home-portal-art" aria-hidden="true"><span class="pw-home-portal-icon">🏡</span></div>'+
+   '<div class="pw-home-portal-info"><small>✨ TU RINCÓN EN WORLD</small>'+
+   '<h2>La casa de '+esc(myName)+'</h2><p>Tu personaje, tu decoración y nuevas aventuras. Entra a hacerla tuya.</p>'+
+   '<div class="pw-home-portal-chips"><span>⭐ Nivel '+level(state.xp)+'</span><span>🎨 Personalízala</span></div></div>'+
+   '<button type="button" class="pw-home-portal-enter" data-pw-life-open aria-label="Entrar en mi casa">ENTRAR <span aria-hidden="true">›</span></button>'+
+  '</section>':'')+
  '<button type="button" class="pw-neighborhood-entry" data-pw-view="neighborhood">🗺️ BARRIO BURGOS · Explora el mapa y visita a tus vecinos ›</button>'+
  '<div class="pw-lobby-layout">'+
  '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
@@ -331,7 +338,9 @@ function renderShell(){
  clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
- '<header class="pw-head"><button type="button" class="pw-return" data-pw-exit title="Volver a la web de Paquillo Events"><span>🏠</span><span>WEB</span></button><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div><span class="pw-head-xp">⭐ NV '+lvl+' · '+points(state.xp)+' XP</span></header>'+
+ '<header class="pw-head"><button type="button" class="pw-return" data-pw-exit title="Volver a la web de Paquillo Events"><span>🏠</span><span>WEB</span></button><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div>'+
+  (window.PaquilloLifePreview?.enabled?'<button type="button" class="pw-header-home-access" data-pw-life-open aria-label="Abrir mi casa" title="Entrar en mi casa">🏡 <span>Mi casa</span></button>':'')+
+  '<span class="pw-head-xp">⭐ NV '+lvl+' · '+points(state.xp)+' XP</span></header>'+
  '<div class="pw-duel-badge" data-pw-duel-badge hidden></div><div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+neighborhoodView()+'</div>'+
  nav()+
  '<div class="pw-modal" id="pwModal" hidden><div class="pw-modal-card" id="pwModalCard" role="dialog" aria-modal="true" aria-label="Ventana de Paquillo World"></div></div>'+
@@ -633,13 +642,15 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-exit')){toWeb();return}
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
  if(btn.hasAttribute('data-pw-life-open')){
-  window.PaquilloLifePreview?.open({
+  if(!window.PaquilloLifePreview?.enabled)return;
+  const opened=window.PaquilloLifePreview?.open({
    name:state.mine?.display_name||'Paquillo',
    xp:state.xp,daily:worldDailyStats(),
    onArcade:()=>{enteredFromLife=true;setView('games')},
    onMemory:()=>{enteredFromLife=true;setView('games');startMemory()},
    onNeighborhood:()=>{setView('neighborhood')}
   });
+  if(!opened)console.warn('Paquillo World: la habitación aún no está disponible en esta sesión.');
   return;
  }
  if(btn.hasAttribute('data-pw-neighbor-focus')){
