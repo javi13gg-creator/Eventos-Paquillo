@@ -126,6 +126,12 @@ function create(root,config){
  '</div>';
  root.innerHTML=html;
  const $=sel=>root.querySelector(sel),world=$('[data-pwb-world]'),vp=$('[data-pwb-viewport]'),results=$('[data-pwb-results]');
+ const art=$('[data-pwb-art-image]');
+ if(art){
+  art.addEventListener('load',()=>root.classList.add('pwb-art-ready'));
+  art.addEventListener('error',()=>root.classList.add('pwb-art-missing'));
+  if(art.complete&&art.naturalWidth)root.classList.add('pwb-art-ready');
+ }
  const status=(message)=>{const item=$('[data-pwb-position]');if(item)item.textContent=message};
  function viable(x,y){return VALID(x,y)&&!homes.some(h=>h.x===x&&h.y===y&&h.user_id!==config.uid)}
  function mine(){return homes.find(h=>h.user_id===config.uid)}
@@ -134,17 +140,19 @@ function create(root,config){
   homes=[];
   // Posiciones de la base de datos primero: únicas y persistentes.
   serverHomes.forEach(p=>{
-   if(!VALID(Number(p.tile_x),Number(p.tile_y)))return;
+   const x=Number(p.tile_x),y=Number(p.tile_y);
+   if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||x>=COLS||y<0||y>=ROWS)return;
    const m=members.find(m=>m.user_id===p.user_id);
    if(!m)return;
    const cell=p.tile_x+','+p.tile_y;
    if(taken.has(cell))return;
-   taken.add(cell);homes.push({...m,x:Number(p.tile_x),y:Number(p.tile_y),saved:true,moved_at:p.moved_at});
+   taken.add(cell);homes.push({...m,x:Number(p.tile_x),y:Number(p.tile_y),saved:true,needsMove:!VALID(x,y),moved_at:p.moved_at});
   });
   members.forEach(m=>{
    if(homes.some(h=>h.key===m.key))return;
    const seed=hash(m.key+'-'+m.name);
-   let x=2+seed%(COLS-4),y=2+(Math.floor(seed/31)%(ROWS-4));
+   // El reparto provisional prioriza G3 y Villímar. Cada jugador puede elegir cualquier zona.
+   let x=17+seed%11,y=2+(Math.floor(seed/31)%7);
    for(let j=0;j<COLS*ROWS;j++){
     const index=(y*COLS+x+j)%(COLS*ROWS),cx=index%COLS,cy=Math.floor(index/COLS),cell=cx+','+cy;
     if(VALID(cx,cy)&&!taken.has(cell)){taken.add(cell);homes.push({...m,x:cx,y:cy,saved:false});break}
@@ -169,12 +177,12 @@ function create(root,config){
   if(!target)return;
   target.innerHTML=homes.map(h=>
    '<button type="button" class="pwb-house pwb-house-'+(h.index%5)+(h.user_id===config.uid?' is-own':'')+
-   (!h.saved?' is-preview':'')+'" style="'+pos(h.x,h.y)+'" data-pwb-house="'+h.index+
+   (!h.saved?' is-preview':'')+(h.needsMove?' is-legacy-protected':'')+'" style="'+pos(h.x,h.y)+'" data-pwb-house="'+h.index+
    '" aria-label="'+esc(h.user_id===config.uid?'Mi casa':'Casa de '+h.name)+'" title="'+esc(h.name)+' · '+h.x+','+h.y+'">'+
    '<span class="pwb-house-roof">⌂</span><span class="pwb-house-photo">'+
    (h.avatar?'<img src="'+esc(h.avatar)+'" alt="" loading="lazy">':'<b>'+esc(h.name.slice(0,2).toUpperCase())+'</b>')+
    '</span><span class="pwb-house-name">'+esc(h.name)+'</span>'+
-   (h.user_id===config.uid?'<span class="pwb-own-label">TU CASA</span>':'')+
+   (h.user_id===config.uid?'<span class="pwb-own-label">'+(h.needsMove?'⚠️ REUBICAR':'TU CASA')+'</span>':'')+
    '</button>'
   ).join('');
   const count=$('[data-pwb-claimed]');if(count)count.textContent=backendReady?
@@ -203,7 +211,7 @@ function create(root,config){
   zoom=bounded(z,.5,2.1);
   panX=cx-wx*zoom;panY=cy-wy*zoom;render();
  }
- function myHouse(){const h=mine();if(h)focus(h.x,h.y);else focus(12,8)}
+ function myHouse(){const h=mine();if(h)focus(h.x,h.y);else focus(21,5)}
  function pointCell(clientX,clientY){
   const rect=vp.getBoundingClientRect();
   const x=Math.floor((clientX-rect.left-panX)/(CELL*zoom)),y=Math.floor((clientY-rect.top-panY)/(CELL*zoom));
@@ -255,12 +263,28 @@ function create(root,config){
   }finally{busy=false;if(button)button.disabled=false}
   if(!backendReady)busy=false;
  }
+ function showLandmark(index){
+  const place=landmarks[index],card=$('[data-pwb-landmark-card]');
+  if(!place||!card||placement)return;
+  const photo=$('[data-pwb-landmark-art]');
+  const name=$('[data-pwb-landmark-name]');
+  const info=$('[data-pwb-landmark-info]');
+  if(name)name.textContent=place.emoji+' '+place.name;
+  if(info)info.textContent=place.info;
+  if(photo){
+   // Recorte del propio mapa aprobado: el fondo de la ficha no usa fotografías externas.
+   photo.style.backgroundImage="url('"+ART+"')";
+   photo.style.backgroundPosition=Math.round(place.x/(COLS-1)*100)+'% '+Math.round(place.y/(ROWS-1)*100)+'%';
+  }
+  card.hidden=false;
+ }
  function togglePlace(){
   placement=!placement;highlight=null;
   const spot=$('[data-pwb-target]');if(spot)spot.hidden=true;
   const button=$('[data-pwb-confirm]');button?.remove();
   vp.classList.toggle('pwb-is-placing',placement);paint();
-  status(placement?'🏗️ Modo parcela: arrastra el mapa y toca una casilla libre. No representa direcciones reales.':
+  if(placement){const card=$('[data-pwb-landmark-card]');if(card)card.hidden=true;}
+  status(placement?'🏗️ Modo parcela: toca una casilla libre. G3 y Villímar tienen numerosas parcelas.':
    '👆 Arrastra el mapa y toca una casa para ver su ficha.');
  }
  async function read(){
@@ -273,12 +297,18 @@ function create(root,config){
   }else{
    backendReady=true;serverHomes=data||[];
    status('✅ Mapa compartido activo. Solo tú puedes mover tu casa; las parcelas quedan reservadas.');
+   if(mine()?.needsMove)status('⚠️ Tu parcela anterior coincide ahora con un lugar protegido. Puedes moverla a una casilla libre sin perder tus datos.');
   }
   initialHomes();
   if(!placement)myHouse();
  }
  root.addEventListener('click',event=>{
   const b=event.target.closest('button');if(!b)return;
+  if(b.hasAttribute('data-pwb-landmark-close')){$('[data-pwb-landmark-card]').hidden=true;return}
+  if(b.hasAttribute('data-pwb-landmark')){
+   if(!pointerMoved)showLandmark(Number(b.dataset.pwbLandmark));
+   return;
+  }
   if(b.hasAttribute('data-pwb-secret')){
    if(placement)return;
    if(secretFound){status('🏅 Ya encontraste la sorpresa de hoy. ¡Mañana habrá otra!');return}
@@ -302,6 +332,15 @@ function create(root,config){
    const idx=Number(b.dataset.pwbHouse);
    if(Number.isInteger(idx)&&idx>=0&&idx<members.length)config.onHouse?.(idx);
   }
+ });
+ const jump=$('[data-pwb-jump]');
+ if(jump)jump.addEventListener('change',()=>{
+  const idx=Number(jump.value);
+  if(jump.value!==''&&landmarks[idx]){
+   const place=landmarks[idx];focus(place.x,place.y);
+   showLandmark(idx);
+  }
+  jump.value='';
  });
  const search=$('[data-pwb-search]');
  search.addEventListener('input',()=>{
