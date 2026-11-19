@@ -1,0 +1,162 @@
+/* Paquillo World · Barrio v44, móvil primero; sin XP ni datos ficticios. */
+#p-world .pw-neighborhood-screen{
+ width:100%;max-width:1160px;margin:auto;padding:10px 12px 36px;
+ overflow:visible!important
+}
+#p-world .pw-neighborhood-screen .pw-panel-head{margin:3px 0 10px}
+#p-world .pw-neighborhood-screen .pw-panel-head h2{font-size:clamp(1.35rem,4.6vw,2.15rem)}
+#p-world .pw-neighborhood-screen .pw-panel-head p{font-size:.82rem}
+#p-world .pw-neighborhood-toolbar{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:9px 0 12px;
+}
+#p-world .pw-neighborhood-stat{
+ min-width:0;display:grid;gap:2px;padding:10px 8px;text-align:center;
+ border:1px solid #bc9ee8;border-radius:13px;
+ background:linear-gradient(145deg,#432478ed,#25205fdc);
+ box-shadow:0 3px 11px #1c0d4873
+}
+#p-world .pw-neighborhood-stat b{color:#ffdc79;font-weight:1000;font-size:clamp(1rem,3.8vw,1.45rem);line-height:1}
+#p-world .pw-neighborhood-stat span{font-size:clamp(.62rem,1.8vw,.8rem);color:#eee1ff;font-weight:750;line-height:1.25}
+#p-world .pw-neighborhood-actions{display:flex;align-items:center;gap:7px;margin:0 0 9px}
+#p-world .pw-neighborhood-actions>button{
+ min-height:41px;flex:1;border-radius:11px;border:1px solid #bbdff3;
+ background:linear-gradient(130deg,#25577c,#3b368a);color:#fff;
+ font-size:clamp(.68rem,2.5vw,.85rem);font-weight:900;padding:8px 7px
+}
+#p-world .pw-neigh-duel-drawer{
+ margin:0 0 12px;border:1px solid #9b86ce;border-radius:16px;
+ background:#261956;overflow:hidden
+}
+#p-world .pw-neigh-duel-drawer>summary{
+ list-style:none;cursor:pointer;padding:12px 14px;
+ display:flex;justify-content:space-between;gap:8px;align-items:center;
+ background:linear-gradient(115deg,#54348c,#354689);font-weight:900;font-size:.85rem
+}
+#p-world .pw-neigh-duel-drawer>summary::-webkit-details-marker{display:none}
+#p-world .pw-neigh-duel-drawer>summary strong{
+ color:#ffeba8;font-size:.67rem;padding:5px 7px;border-radius:99px;
+ background:#ffffff19;white-space:nowrap
+}
+#p-world .pw-neigh-duel-drawer>.pw-duels{
+ margin:0;padding:10px 12px;border:none;border-radius:0;background:transparent
+}
+#p-world .pw-neighborhood-filter{
+ display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+ background:#24174b;padding:9px;border:1px solid #7c65aa;border-radius:13px;margin:0 0 12px
+}
+#p-world .pw-neighborhood-search{
+ min-width:0;flex:1 1 170px;position:relative
+}
+#p-world .pw-neighborhood-search input{
+ width:100%;height:42px;border:1px solid #ad92d7;border-radius:11px;
+ background:#f6f0ff;color:#26144d;padding:9px 12px;font:750 .9rem "Bricolage Grotesque",system-ui,sans-serif
+}
+#p-world .pw-neighborhood-available{
+ display:flex;align-items:center;gap:6px;min-height:42px;flex:0 0 auto;
+ color:#f4e8ff;font-size:.76rem;font-weight:850;cursor:pointer
+}
+#p-world .pw-neighborhood-available input{width:18px;height:18px;accent-color:#65dfc8}
+#p-world .pw-neighborhood-map{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:420px;padding:35px 13px 20px!important;
+ border:2px solid #afeade;border-radius:22px;
+ background:
+  radial-gradient(circle at 83% 9%,#ffe3a7 0 34px,transparent 35px),
+  radial-gradient(circle at 16% 17%,#ffffffb0 0 19px,transparent 20px),
+  linear-gradient(180deg,#5fc9e7 0%,#b2ecf0 31%,#74bf7b 32%,#63a76d 100%)!important;
+ box-shadow:inset 0 -22px 25px #23575162,0 7px 20px #110c3866
+}
+#p-world .pw-neighborhood-map:before{
+ content:"";position:absolute;inset:30% -10% auto;height:12%;
+ background:repeating-linear-gradient(105deg,#497d6d 0 32px,#47846e 32px 55px,#7db88a 55px 96px);
+ border-radius:50%;opacity:.53;z-index:-1
+}
+#p-world .pw-neighborhood-map:after{
+ content:"";position:absolute;inset:auto -5% 8%;height:12%;
+ background:linear-gradient(#a4b3bd,#e1d7b9 22%,#d2c4a5 100%);
+ transform:rotate(-1.5deg);border-block:3px solid #fff2ce8a;
+ box-shadow:0 0 24px #304d3575;z-index:-1
+}
+#p-world .pw-neighborhood-road{
+ position:relative;z-index:2;max-width:340px;margin:0 auto 19px;
+ padding:8px 15px;border:3px solid #fff0ba;border-radius:16px;
+ background:linear-gradient(160deg,#b57942,#7d4b31)!important;
+ box-shadow:0 6px 0 #643e35,0 10px 20px #1d45385b;
+ color:#fff4cc!important;text-shadow:0 2px #402a2e;font-size:.8rem!important;letter-spacing:.07em
+}
+#p-world .pw-neighborhood-houses{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:24px 12px!important;position:relative;z-index:3;padding:0 1px 15px
+}
+#p-world .pw-house{
+ position:relative;overflow:visible!important;isolation:isolate;
+ display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+ gap:4px;min-width:0;min-height:202px;padding:53px 7px 13px!important;
+ border:3px solid #f6e3cb!important;border-radius:17px 17px 12px 12px!important;
+ background:linear-gradient(110deg,#fae9d9,#e2b4c3 68%,#ba829e)!important;
+ color:#3a2750!important;box-shadow:inset -9px 0 0 #ad7c9a27,0 5px 0 #875979,0 10px 20px #324c4973!important;
+ cursor:pointer;transition:transform .16s,box-shadow .16s
+}
+#p-world .pw-house:nth-child(4n+2){background:linear-gradient(110deg,#e1eef7,#b0dcf1 68%,#79b5d2)!important}
+#p-world .pw-house:nth-child(4n+3){background:linear-gradient(110deg,#fff0c7,#f1db9f 68%,#ccac76)!important}
+#p-world .pw-house:nth-child(4n+4){background:linear-gradient(110deg,#e4f2de,#b4d9b1 68%,#8eac9b)!important}
+#p-world .pw-house:before{
+ content:"";position:absolute;z-index:-1;top:-18px;left:-7%;right:-7%;height:65px;
+ background:linear-gradient(155deg,#c7647b,#8e3e6f)!important;
+ clip-path:polygon(50% 0,100% 68%,100% 100%,0 100%,0 68%);
+ border-radius:19px 19px 1px 1px;
+ filter:drop-shadow(0 4px 1px #713a6380)
+}
+#p-world .pw-house:nth-child(4n+2):before{background:linear-gradient(155deg,#739acb,#4169a2)!important}
+#p-world .pw-house:nth-child(4n+3):before{background:linear-gradient(155deg,#e39c64,#ac6b4e)!important}
+#p-world .pw-house:nth-child(4n+4):before{background:linear-gradient(155deg,#77b88f,#457c73)!important}
+#p-world .pw-house:after{
+ content:"";position:absolute;z-index:-1;width:32px;height:49px;right:8px;bottom:0;
+ background:linear-gradient(90deg,#684675,#9879ad);border:3px solid #fff1dc;border-bottom:0;
+ border-radius:7px 7px 0 0
+}
+#p-world .pw-house-roof{display:none!important}
+#p-world .pw-house .pw-house-avatar{
+ position:relative;z-index:3;
+ display:flex;align-items:center;justify-content:center;
+ width:min(100%,83px);height:95px;margin:0 0 1px;
+ border-radius:17px;border:3px solid #fff8e0;
+ box-shadow:0 3px 8px #48375752;background:#faf4ea;overflow:hidden
+}
+#p-world .pw-house .pw-house-avatar img{
+ width:100%;height:100%;object-fit:contain!important;object-position:center center!important;transform:none!important
+}
+#p-world .pw-house b{position:relative;z-index:4;max-width:100%;font-size:.87rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#p-world .pw-house small{position:relative;z-index:4;font-size:.7rem;color:#543365;font-weight:850}
+#p-world .pw-house .pw-house-tag{
+ position:absolute;z-index:5;top:36px;right:5px;
+ border-radius:99px;padding:3px 6px;background:#fff5c7;color:#53406f;
+ font-size:.57rem;font-weight:900;line-height:1.2
+}
+#p-world .pw-house.is-my-house{border-color:#ffdd6a!important;box-shadow:0 5px 0 #88683e,0 10px 20px #304d4973!important}
+#p-world .pw-house:active{transform:translateY(2px) scale(.985)}
+#p-world .pw-house:focus-visible{outline:3px solid #ffde64;outline-offset:4px}
+#p-world .pw-house[hidden]{display:none!important}
+#p-world .pw-neighborhood-empty{margin:12px;padding:15px;background:#3b2868;border:1px solid #ba9cd9;border-radius:12px;text-align:center}
+#p-world .pw-neighborhood-notice{margin:9px 2px 0;font-size:.7rem;color:#f4e6c9}
+#p-world .pw-duel-row{background:#44377a80}
+#p-world .pw-house-detail .pw-house-portrait{max-height:170px;max-width:160px;object-fit:contain}
+@media(min-width:600px){
+ #p-world .pw-neighborhood-houses{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:28px 18px!important;padding:0 12px 26px}
+ #p-world .pw-house{min-height:215px;padding-top:58px!important}
+ #p-world .pw-house .pw-house-avatar{width:96px;height:103px}
+}
+@media(min-width:900px){
+ #p-world .pw-neighborhood-houses{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:32px 28px!important;padding:0 22px 30px}
+ #p-world .pw-house{min-height:225px}
+ #p-world .pw-house .pw-house-avatar{width:102px;height:111px}
+}
+@media(max-width:370px){
+ #p-world .pw-neighborhood-screen{padding-inline:9px}
+ #p-world .pw-neighborhood-map{padding-inline:8px!important}
+ #p-world .pw-neighborhood-houses{gap:23px 9px!important}
+ #p-world .pw-house{min-height:185px;padding:46px 4px 9px!important}
+ #p-world .pw-house .pw-house-avatar{height:78px;width:72px}
+ #p-world .pw-house b{font-size:.76rem}
+}
+@media(prefers-reduced-motion:reduce){#p-world .pw-house{transition:none!important}}
