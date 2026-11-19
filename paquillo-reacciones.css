@@ -62,3 +62,9 @@
  .paqui-react-option>span{font-size:1.05rem}
  .paqui-reaction-teaser{display:none!important}
 }
+
+/* Recuentos táctiles con desglose de personas */
+.paqui-react-chip-button{cursor:pointer;font:inherit;color:inherit;border:1px solid var(--ln);border-radius:999px;background:var(--card);padding:5px 9px;min-height:34px}
+.paqui-react-chip-button[aria-expanded="true"]{outline:2px solid var(--pk)}
+.paqui-react-visible-people{margin-top:9px;padding:10px;border:1px solid var(--ln);border-radius:12px;background:var(--card);font-size:.82rem}
+.paqui-react-visible-people>b{display:block;margin-bottom:5px}
