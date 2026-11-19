@@ -6,32 +6,39 @@
 (()=>{
 'use strict';
 const COLS=28,ROWS=20,CELL=84,WIDTH=COLS*CELL,HEIGHT=ROWS*CELL;
-const RESERVED=new Set(['7,4','12,8','12,10','5,9','19,8','18,4','21,2','16,11','24,15']);
+const ART='burgos-world-map-v1.avif';
+const RESERVED=new Set([
+ // Mantener las casillas reservadas por el SQL ya ejecutado.
+ '7,4','12,8','12,10','5,9','19,8','18,4','21,2','16,11','24,15',
+ // Nuevos monumentos visibles de la ilustración (migración Burgos v2.1).
+ '7,7','6,7','8,7',           // Castillo
+ '9,9','10,9','10,8','11,9',  // Catedral
+ '12,9','13,9','14,9',        // Plaza Mayor
+ '8,12','9,12',               // Arco Santa María
+ '12,12','13,12','14,12',     // Espolón
+ '2,10','3,10',               // Universidad
+ '17,10','18,10','19,10','18,11', // El Plantío
+ '21,10','22,10','23,10',     // Coliseum
+ '24,12','25,12'              // Fuentes Blancas
+]);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normalize=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const bounded=(x,lo,hi)=>Math.max(lo,Math.min(hi,x));
 const VALID=(x,y)=>Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&x<COLS&&y>=0&&y<ROWS&&
  y!==13&&!(y===14&&x>=8&&x<=24)&&!RESERVED.has(x+','+y);
+// Posiciones de los lugares sobre el mapa ilustrado APROBADO, no direcciones personales.
 const landmarks=[
- {x:7,y:4,symbol:'🏰',name:'Castillo'},
- {x:12,y:8,symbol:'⛪',name:'Catedral'},
- {x:12,y:10,symbol:'🌳',name:'Espolón'},
- {x:5,y:9,symbol:'🎓',name:'Universidad'},
- {x:19,y:8,symbol:'🏙️',name:'Gamonal'},
- {x:18,y:4,symbol:'🌿',name:'G3'},
- {x:21,y:2,symbol:'🏘️',name:'Villimar'},
- {x:16,y:11,symbol:'⚽',name:'El Plantío'},
- {x:24,y:15,symbol:'🌲',name:'Fuentes Blancas'}
-];
-const zones=[
- {x:4,y:4,label:'SAN PEDRO'},
- {x:9,y:2,label:'CASTILLO'},
- {x:12,y:5,label:'CENTRO'},
- {x:4,y:12,label:'UNIVERSIDAD'},
- {x:17,y:2,label:'G3 · VILLIMAR'},
- {x:21,y:6,label:'GAMONAL'},
- {x:22,y:16,label:'FUENTES BLANCAS'},
- {x:8,y:17,label:'ZONA SUR'}
+ {x:7,y:7,emoji:'🏰',name:'Castillo de Burgos',info:'Fortaleza y mirador al noroeste del casco histórico.',kind:'castillo'},
+ {x:10,y:9,emoji:'⛪',name:'Catedral de Burgos',info:'El corazón monumental del centro histórico.',kind:'catedral'},
+ {x:13,y:9,emoji:'🏛️',name:'Plaza Mayor',info:'La plaza principal, situada al este de la Catedral.',kind:'plaza'},
+ {x:8,y:12,emoji:'🏛️',name:'Arco de Santa María',info:'Acceso histórico junto al Arlanzón.',kind:'arco'},
+ {x:13,y:12,emoji:'🌳',name:'Paseo del Espolón',info:'Paseo arbolado entre el centro y el río.',kind:'espolon'},
+ {x:2,y:10,emoji:'🎓',name:'Universidad de Burgos',info:'La zona universitaria queda al oeste del centro.',kind:'universidad'},
+ {x:18,y:10,emoji:'⚽',name:'Estadio El Plantío',info:'El estadio del Burgos CF, al este del centro.',kind:'plantio'},
+ {x:22,y:10,emoji:'🏟️',name:'Coliseum Burgos',info:'Recinto deportivo y de eventos, al este de El Plantío.',kind:'coliseum'},
+ {x:24,y:12,emoji:'🌲',name:'Fuentes Blancas',info:'Zona verde y recreativa al este de la ciudad.',kind:'fuentes'},
+ {x:18,y:5,emoji:'🏘️',name:'G3 · Vista Alegre',info:'Zona noreste con parcelas disponibles para la cuadrilla.',kind:'g3',isNeighborhood:true},
+ {x:25,y:5,emoji:'🏡',name:'Villímar',info:'Al este de G3, con espacio para colocar las casas del grupo.',kind:'villimar',isNeighborhood:true}
 ];
 function hash(s){
  let h=2166136261;
@@ -43,7 +50,7 @@ const dayMadrid=()=>{
  const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),n=k=>p.find(x=>x.type===k)?.value;
  return n('year')+'-'+n('month')+'-'+n('day');
 };
-function backdrop(){
+function classicBackdrop(){
  const trees=Array.from({length:155},(_,i)=>{
   const h=hash('arbol-paqui-'+i),x=(h%COLS),y=(Math.floor(h/31)%ROWS);
   if(!VALID(x,y)||Math.abs(x-12)<2&&Math.abs(y-8)<3||i%5===0)return '';
@@ -71,7 +78,14 @@ function backdrop(){
  '<div class="pwb-map-grid" aria-hidden="true"></div>'+
  trees+
  zones.map(z=>'<span class="pwb-zone" style="'+pos(z.x,z.y)+'">'+esc(z.label)+'</span>').join('')+
- landmarks.map(z=>'<div class="pwb-landmark" style="'+pos(z.x,z.y)+'" title="'+esc(z.name)+'"><span>'+z.symbol+'</span><strong>'+esc(z.name)+'</strong></div>').join('');
+ landmarks.map(z=>'<div class="pwb-landmark" style="'+pos(z.x,z.y)+'" title="'+esc(z.name)+'"><span>'+z.emoji+'</span><strong>'+esc(z.name)+'</strong></div>').join('');
+}
+function backdrop(){
+ return '<div class="pwb-map-fallback" aria-hidden="true">'+classicBackdrop()+'</div>'+
+  '<div class="pwb-art-layer"><img src="'+ART+'" class="pwb-map-illustration" data-pwb-art-image alt="Mapa ilustrado de Burgos, con Catedral, Castillo, G3 y Villímar" draggable="false"></div>'+
+  '<div class="pwb-map-grid pwb-map-grid-final" aria-hidden="true"></div>'+
+  landmarks.map((z,i)=>'<button type="button" class="pwb-landmark-pin '+(z.isNeighborhood?'is-neighborhood':'')+
+   '" style="'+pos(z.x,z.y)+'" data-pwb-landmark="'+i+'" title="'+esc(z.name)+'" aria-label="Explorar '+esc(z.name)+'"><span aria-hidden="true">'+z.emoji+'</span></button>').join('');
 }
 function create(root,config){
  if(!root||!config?.members)return null;
@@ -88,7 +102,9 @@ function create(root,config){
  '<div class="pwb-stats"><span data-pwb-total>🏡 Casas: '+members.length+'</span><span data-pwb-claimed>📍 Parcelas: comprobando…</span>'+
  '<span data-pwb-secret-status>🎁 Sorpresa oculta de hoy</span></div>'+
  '<div class="pwb-command"><button type="button" data-pwb-place>🏠 Elegir mi parcela</button><button type="button" data-pwb-me>📍 Mi casa</button>'+
- '<label><span class="sr-only">Buscar vecino</span><input data-pwb-search type="search" placeholder="🔎 Buscar vecino" autocomplete="off" aria-label="Buscar vecino en Burgos"></label></div>'+
+ '<label><span class="sr-only">Buscar vecino</span><input data-pwb-search type="search" placeholder="🔎 Buscar vecino" autocomplete="off" aria-label="Buscar vecino en Burgos"></label>'+
+ '<label class="pwb-jump"><span class="sr-only">Ir a un lugar del mapa</span><select data-pwb-jump aria-label="Ir a un lugar de Burgos"><option value="">📍 Lugares de Burgos</option>'+
+ landmarks.map((z,i)=>'<option value="'+i+'">'+esc(z.name)+'</option>').join('')+'</select></label></div>'+
  '<div class="pwb-search-results" data-pwb-results hidden></div>'+
  '<div class="pwb-viewport" data-pwb-viewport tabindex="0" aria-label="Mapa ficticio de Burgos. Arrastra, usa el zoom y toca las casas.">'+
  '<div class="pwb-world" data-pwb-world style="width:'+WIDTH+'px;height:'+HEIGHT+'px">'+backdrop()+
@@ -100,9 +116,13 @@ function create(root,config){
  '<button type="button" data-pwb-centre aria-label="Centrar mi casa">⌖</button>'+
  '<button type="button" data-pwb-reload aria-label="Actualizar casas de vecinos">↻</button></div>'+
  '<div class="pwb-map-help" data-pwb-map-help>👆 Arrastra para explorar · Pellizca para ampliar</div>'+
+ '<section class="pwb-landmark-card" data-pwb-landmark-card hidden aria-label="Información del lugar">'+
+ '<button type="button" class="pwb-landmark-close" data-pwb-landmark-close aria-label="Cerrar ficha">✕</button>'+
+ '<div class="pwb-landmark-art" data-pwb-landmark-art></div>'+
+ '<div class="pwb-landmark-detail"><strong data-pwb-landmark-name></strong><p data-pwb-landmark-info></p></div></section>'+
  '</div>'+
  '<div class="pwb-position" role="status" aria-live="polite" data-pwb-position>El mapa usa parcelas ficticias, no direcciones de Burgos.</div>'+
- '<div class="pwb-bottom"><span>🏰 Castillo · ⛪ Catedral · 🌊 Arlanzón · 🌳 Espolón · 🏙️ Gamonal</span><small>Mapa ilustrado, inspirado en Burgos. No representa domicilios reales.</small></div>'+
+ '<div class="pwb-bottom"><span>🏰 Castillo · ⛪ Catedral · ⚽ El Plantío · 🏟️ Coliseum · 🏘️ G3 · 🏡 Villímar</span><small>Ilustración de Burgos, no cartografía exacta ni domicilios reales. Las parcelas se guardan por casilla.</small></div>'+
  '</div>';
  root.innerHTML=html;
  const $=sel=>root.querySelector(sel),world=$('[data-pwb-world]'),vp=$('[data-pwb-viewport]'),results=$('[data-pwb-results]');
