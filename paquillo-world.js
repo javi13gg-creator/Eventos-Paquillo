@@ -109,7 +109,6 @@ function homeView(){
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
  playerHero()+
- '<div class="pw-daily-root" data-pw-daily-root></div>'+
  (window.PaquilloLifePreview?.enabled?
   '<section class="pw-home-portal" aria-label="Tu casa en Paquillo World">'+
    '<div class="pw-home-portal-art" aria-hidden="true"><span class="pw-home-portal-icon">🏡</span></div>'+
@@ -118,6 +117,7 @@ function homeView(){
    '<div class="pw-home-portal-chips"><span>⭐ Nivel '+level(state.xp)+'</span><span>🎨 Personalízala</span></div></div>'+
    '<button type="button" class="pw-home-portal-enter" data-pw-life-open aria-label="Entrar en mi casa">ENTRAR <span aria-hidden="true">›</span></button>'+
   '</section>':'')+
+ '<div class="pw-daily-root" data-pw-daily-root></div>'+
  '<button type="button" class="pw-neighborhood-entry" data-pw-view="neighborhood">🗺️ BARRIO BURGOS · Explora el mapa y visita a tus vecinos ›</button>'+
  '<div class="pw-lobby-layout">'+
  '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
