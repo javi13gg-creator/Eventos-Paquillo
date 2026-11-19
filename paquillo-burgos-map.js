@@ -105,7 +105,7 @@ function backdrop(){
 }
 function create(root,config){
  if(!root||!config?.members)return null;
- let mounted=true,zoom=.78,panX=0,panY=0,placement=false,busy=false,backendReady=false;
+ let mounted=true,zoom=1,panX=0,panY=0,placement=false,busy=false,backendReady=false;
  let pointerList=new Map(),startGesture=null,pointerMoved=false;
  let homes=[],serverHomes=[],highlight=null;
  const secretDay=dayMadrid(),secretKey='paqui-burgos-secret-'+secretDay;
@@ -113,10 +113,8 @@ function create(root,config){
  try{secretFound=localStorage.getItem(secretKey)==='found'}catch(_){};
  const members=config.members.map((m,i)=>({...m,index:i,key:m.user_id||'guest-'+i}));
  const html='<div class="pwb-app">'+
- '<header class="pwb-title"><div><small>🗺️ PAQUILLO WORLD · BURGOS</small><h2>El barrio de la cuadrilla</h2><p>Explora Burgos, encuentra a tus amigos y elige tu parcela.</p></div>'+
- '<strong class="pwb-beta">BETA</strong></header>'+
- '<div class="pwb-stats"><span data-pwb-total>🏡 Casas: '+members.length+'</span><span data-pwb-claimed>📍 Parcelas: comprobando…</span>'+
- '<span data-pwb-secret-status>🎁 Sorpresa oculta de hoy</span></div>'+
+ '<header class="pwb-title pwb-title-compact"><h2>🏘️ Barrio de los Paquillos</h2><span class="pwb-beta">Mapa interactivo</span></header>'+
+ '<div class="pwb-stats" hidden><span data-pwb-total>'+members.length+'</span><span data-pwb-claimed></span><span data-pwb-secret-status></span></div>'+
  '<div class="pwb-command"><button type="button" data-pwb-place>🏠 Elegir mi parcela</button><button type="button" data-pwb-me>📍 Mi casa</button>'+
  '<label><span class="sr-only">Buscar vecino</span><input data-pwb-search type="search" placeholder="🔎 Buscar vecino" autocomplete="off" aria-label="Buscar vecino en Burgos"></label>'+
  '<label class="pwb-jump"><span class="sr-only">Ir a un lugar del mapa</span><select data-pwb-jump aria-label="Ir a un lugar de Burgos"><option value="">📍 Lugares de Burgos</option>'+
@@ -138,7 +136,7 @@ function create(root,config){
  '<div class="pwb-landmark-detail"><strong data-pwb-landmark-name></strong><p data-pwb-landmark-info></p></div></section>'+
  '</div>'+
  '<div class="pwb-position" role="status" aria-live="polite" data-pwb-position>El mapa usa parcelas ficticias, no direcciones de Burgos.</div>'+
- '<div class="pwb-bottom"><span>🏰 Castillo · ⛪ Catedral · ⚽ El Plantío · 🏟️ Coliseum · 🏘️ G3 · 🏡 Villímar</span><small>Ilustración de Burgos, no cartografía exacta ni domicilios reales. Las parcelas se guardan por casilla.</small></div>'+
+
  '</div>';
  root.innerHTML=html;
  const $=sel=>root.querySelector(sel),world=$('[data-pwb-world]'),vp=$('[data-pwb-viewport]'),results=$('[data-pwb-results]');
@@ -210,8 +208,21 @@ function create(root,config){
   const mineButton=$('[data-pwb-place]');if(mineButton)mineButton.textContent=placement?'✕ Cancelar elección':
    (mine()?.saved?'🏠 Mover mi casa':'🏠 Elegir mi parcela');
  }
+ // Zoom mínimo responsivo: el mapa siempre cubre toda la pantalla sin mostrar el fondo verde.
+ function minimumZoom(){
+  const w=vp.clientWidth||400,h=vp.clientHeight||520;
+  return Math.max(w/WIDTH,h/HEIGHT);
+ }
+ function overview(){
+  zoom=minimumZoom();
+  world.style.transition='none';
+  panX=((vp.clientWidth||400)-WIDTH*zoom)/2;
+  panY=((vp.clientHeight||520)-HEIGHT*zoom)/2;
+  render();
+ }
  function clampPan(){
   const w=vp.clientWidth||400,h=vp.clientHeight||520;
+  zoom=Math.max(zoom,minimumZoom());
   panX=WIDTH*zoom<=w?(w-WIDTH*zoom)/2:bounded(panX,w-WIDTH*zoom,0);
   panY=HEIGHT*zoom<=h?(h-HEIGHT*zoom)/2:bounded(panY,h-HEIGHT*zoom,0);
  }
@@ -228,7 +239,7 @@ function create(root,config){
  function zoomAt(z,clientX,clientY){
   const rect=vp.getBoundingClientRect(),cx=clientX-rect.left,cy=clientY-rect.top;
   const wx=(cx-panX)/zoom,wy=(cy-panY)/zoom;
-  zoom=bounded(z,.5,2.1);
+  zoom=bounded(z,minimumZoom(),Math.max(2.1,minimumZoom()));
   panX=cx-wx*zoom;panY=cy-wy*zoom;render();
  }
  function myHouse(){const h=mine();if(h)focus(h.x,h.y);else focus(21,5)}
@@ -320,7 +331,7 @@ function create(root,config){
    if(mine()?.needsMove)status('⚠️ Tu parcela anterior coincide ahora con un lugar protegido. Puedes moverla a una casilla libre sin perder tus datos.');
   }
   initialHomes();
-  if(!placement)myHouse();
+  // No recolocar la cámara al cargar: se mantiene la vista general a zoom mínimo.
  }
  root.addEventListener('click',event=>{
   const b=event.target.closest('button');if(!b)return;
@@ -422,14 +433,17 @@ function create(root,config){
   event.preventDefault();render();
  });
  initialHomes();
- requestAnimationFrame(()=>{if(mounted){myHouse();read().catch(err=>status('No se pudo cargar el barrio: '+err.message))}});
- return {destroy(){mounted=false;pointerList.clear();},focusMyHome:myHouse,reload:read};
+ requestAnimationFrame(()=>{if(mounted){overview();read().catch(err=>status('No se pudo cargar el barrio: '+err.message))}});
+ const onResize=()=>{if(!mounted)return;overview()};
+ window.addEventListener('resize',onResize);
+ return {destroy(){mounted=false;pointerList.clear();window.removeEventListener('resize',onResize);},focusMyHome:myHouse,showOverview:overview,reload:read};
 }
 let running=null;
 window.PaquilloBurgosMap={
  get available(){return true},
  mount(root,config){running?.destroy();running=create(root,config);return running},
  destroy(){running?.destroy();running=null},
- focusMyHome(){running?.focusMyHome()}
+ focusMyHome(){running?.focusMyHome()},
+ showOverview(){running?.showOverview()}
 };
 })();
