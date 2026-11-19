@@ -250,7 +250,17 @@
  }
  function moveTo(place,override=null){
   if(!room)return;
-  const data=override?{...places.home,...override}:places[place]||places.home;
+  // Posiciones adaptadas al plano panorámico: objetos y personaje alineados.
+  const panoramic=(room.querySelector('.pl-stage')?.clientWidth||0)>=720;
+  const widePlaces={
+   home:{left:49,bottom:15,scale:1,speechBottom:60,propBottom:40},
+   eat:{left:15,bottom:17,scale:.78,speechBottom:63,propBottom:47},
+   sleep:{left:83,bottom:11,scale:.78,speechBottom:56,propBottom:37},
+   shower:{left:88,bottom:35,scale:.72,speechBottom:75,propBottom:59},
+   play:{left:70,bottom:17,scale:.78,speechBottom:68,propBottom:48}
+  };
+  const positions=panoramic?widePlaces:places;
+  const data=override?{...positions.home,...override}:positions[place]||positions.home;
   if(!override&&place==='home')roamPosition={left:data.left,bottom:data.bottom};
   const actor=room.querySelector('#plPerson');
   if(actor){
