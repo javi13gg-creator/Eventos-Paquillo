@@ -284,3 +284,8 @@
  #paquiLifePreview .pl-world-nav-btn span{font-size:clamp(.47rem,1.85vw,.58rem);letter-spacing:-.15px}
  #paquiLifePreview .pl-world-nav-btn i{font-size:1.19rem}
 }
+
+/* Menú persistente dentro de Mi casa: icono oficial de Events. */
+#paquiLifePreview .pl-world-nav-btn .pw-events-icon{display:block;width:26px;height:26px;max-width:100%;object-fit:contain;border-radius:6px}
+#paquiLifePreview .pl-world-nav-btn i{display:flex;align-items:center;justify-content:center}
+@media(max-width:420px){#paquiLifePreview .pl-world-nav-btn .pw-events-icon{width:23px;height:23px}}
