@@ -106,3 +106,18 @@
 #p-world .pwb-duels-drawer>summary{padding:12px 15px;font-size:.85rem;font-weight:950;color:#fff0a8;cursor:pointer;list-style:none}
 #p-world .pwb-duels-drawer>summary::-webkit-details-marker{display:none}
 #p-world .pwb-duels-drawer .pw-duels{margin:0;border:0;border-top:1px solid #9872ce;border-radius:0}
+
+/* Destacar el acceso al barrio desde el lobby, sin bloquear la navegación. */
+#p-world .pw-neighborhood-entry{
+ display:block;width:calc(100% - 24px);max-width:1080px;min-height:66px;
+ margin:12px auto 15px;padding:12px 18px;
+ background:
+  radial-gradient(circle at 91% 23%,#ffe8a280 0 29px,transparent 30px),
+  linear-gradient(120deg,#225b8c 0%,#257e8a 55%,#486ab2 100%)!important;
+ border:2px solid #c8f7e0!important;border-radius:18px!important;
+ box-shadow:0 5px 0 #1d3977,0 12px 24px #1a104b72;
+ font-size:clamp(.79rem,3vw,1.08rem)!important;font-weight:1000;text-align:center;
+ color:#fffaf0!important;text-shadow:0 2px #1f3d5d;cursor:pointer
+}
+#p-world .pw-neighborhood-entry:active{transform:translateY(3px);box-shadow:0 2px 0 #1d3977}
+@media(max-width:450px){#p-world .pw-neighborhood-entry{padding:11px 10px;min-height:60px;font-size:.85rem!important}}
