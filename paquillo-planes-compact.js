@@ -78,7 +78,8 @@
    button.setAttribute('aria-label',choiceLabels[kind]);
    const cell=make('div','paqui-rsvp-choice');
    cell.append(button);
-   const total=make('small','paqui-rsvp-total');
+   const total=make('button','paqui-rsvp-total');
+   total.type='button';
    total.dataset.paquiAttendanceCounter=kind;
    total.setAttribute('aria-live','polite');
    total.setAttribute('aria-label','Cargando respuestas: '+choiceLabels[kind]);
@@ -93,6 +94,26 @@
    rsvp.append(reaction);
   }
   interact.append(rsvp);
+  const voters=make('div','paqui-inline-voters');
+  voters.hidden=true;
+  voters.setAttribute('aria-live','polite');
+  interact.append(voters);
+  rsvp.querySelectorAll('[data-paqui-attendance-counter]').forEach(counter=>counter.addEventListener('click',async event=>{
+   event.preventDefault();event.stopPropagation();
+   const key=counter.dataset.paquiAttendanceCounter;
+   const attendance=card.querySelector('[data-attendance-info]');
+   if(!attendance)return;
+   if(!attendance.querySelector('[data-attendance-show]'))await window.PaquilloRenderAttendanceCounts?.();
+   const trigger=attendance.querySelector('[data-attendance-show="'+key+'"]');
+   if(!trigger){voters.hidden=false;voters.textContent='No se han podido cargar las respuestas.';return;}
+   const closing=!voters.hidden&&voters.dataset.open===key;
+   rsvp.querySelectorAll('[data-paqui-attendance-counter]').forEach(x=>x.setAttribute('aria-expanded','false'));
+   if(closing){voters.hidden=true;voters.dataset.open='';return;}
+   trigger.click();
+   const names=attendance.querySelector('.attendance-selected-list');
+   voters.innerHTML=names?.innerHTML||'<p>Sin respuestas todavía.</p>';
+   voters.hidden=false;voters.dataset.open=key;counter.setAttribute('aria-expanded','true');
+  }));
   card.insertBefore(interact,details);
   // Acciones más frecuentes, una fila de tres iconos.
   const primary=make('div','paqui-plan-primary-tools');
