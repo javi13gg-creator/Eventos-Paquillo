@@ -18,3 +18,14 @@
 #stickerViewerCaption{color:#fff;text-align:center;font-weight:850;max-width:100%;word-break:break-word}
 #stickerDelete{font-size:.85rem;padding:.35rem .65rem}
 @media(max-width:500px){.paqui-sticker-uploader .feature-form{padding:.7rem}.stk{grid-template-columns:repeat(auto-fill,minmax(95px,1fr))}}
+/* Herramientas del administrador para stickers clásicos retirados. */
+.paqui-sticker-admin{margin:1.15rem 0;padding:.75rem 1rem;background:var(--card);
+ border:1px solid var(--ln);border-radius:15px}
+.paqui-sticker-admin>summary{cursor:pointer;font-weight:850;list-style-position:inside}
+.paqui-sticker-admin>.form-msg{margin:.55rem 0}
+.paqui-hidden-sticker{display:flex;align-items:center;gap:.75rem;
+ padding:.65rem 0;border-top:1px solid var(--ln)}
+.paqui-hidden-sticker img{width:55px;height:55px;object-fit:contain;border-radius:9px;background:var(--bg)}
+.paqui-hidden-sticker span{flex:1;min-width:0;font-size:.83rem;overflow-wrap:anywhere;color:var(--mut)}
+.paqui-hidden-sticker button{font-size:.8rem;padding:.3rem .6rem}
+@media(max-width:390px){.paqui-hidden-sticker{gap:.4rem}.paqui-hidden-sticker img{width:46px;height:46px}}
