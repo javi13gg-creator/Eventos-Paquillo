@@ -212,8 +212,8 @@ function create(root,config){
  }
  function clampPan(){
   const w=vp.clientWidth||400,h=vp.clientHeight||520;
-  panX=WIDTH*zoom<w?(w-WIDTH*zoom)/2:bounded(panX,w-WIDTH*zoom-36,36);
-  panY=HEIGHT*zoom<h?(h-HEIGHT*zoom)/2:bounded(panY,h-HEIGHT*zoom-36,36);
+  panX=WIDTH*zoom<=w?(w-WIDTH*zoom)/2:bounded(panX,w-WIDTH*zoom,0);
+  panY=HEIGHT*zoom<=h?(h-HEIGHT*zoom)/2:bounded(panY,h-HEIGHT*zoom,0);
  }
  function render(){
   clampPan();world.style.transform='translate('+panX+'px,'+panY+'px) scale('+zoom+')';
