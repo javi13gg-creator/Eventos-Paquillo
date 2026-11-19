@@ -176,7 +176,7 @@ grant select on public.paqui_world_house_visits to authenticated;
 
 create or replace function public.paqui_world_visit_home(p_owner uuid)
 returns jsonb language plpgsql security definer set search_path=''
-as $
+as $paqui_visit$
 declare
  v_user uuid:=auth.uid();
  v_day date:=(now() at time zone 'Europe/Madrid')::date;
@@ -206,7 +206,7 @@ begin
  return jsonb_build_object('new_visit',v_inserted,'day',v_day,
    'visits_today',v_count+case when v_inserted then 1 else 0 end);
 end;
-$;
+$paqui_visit$;
 revoke all on function public.paqui_world_visit_home(uuid) from public,anon;
 grant execute on function public.paqui_world_visit_home(uuid) to authenticated;
 
