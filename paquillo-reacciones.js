@@ -62,7 +62,7 @@
       '<button type="button" class="paqui-react-trigger'+(mine?' has-reacted':'')+'" data-paqui-react-toggle="'+escapeHtml(id)+'" aria-expanded="'+open+'" aria-label="'+(mine?'Cambiar o quitar mi reacción '+mine:'Reaccionar al plan')+'" title="'+(mine?'Cambiar o quitar reacción':'Añadir reacción')+'"'+disabled+'><span class="paqui-react-icon-stack" aria-hidden="true"><span class="paqui-react-icon-face">'+(mine||'😊')+'</span><span class="paqui-react-icon-plus">+</span></span></button>'+
       '<div class="paqui-react-totals" aria-live="polite">'+totals+'</div>'+
      '</div>'+
-     (showPeople?'<div class="paqui-react-visible-people"><b>👥 Todas las reacciones ('+total+')</b><div class="paqui-react-people-list">'+people+'</div></div>':'')+
+     (showPeople?'<div class="paqui-react-visible-people"><b>Resultados ('+total+')</b><div class="paqui-react-people-list">'+people+'</div></div>':'')+
      '<div class="paqui-react-picker"'+(open?'':' hidden')+'><div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div><small>Un emoji por persona · toca el mismo para quitarlo.</small>'+
       (total?'<details class="paqui-react-people"><summary aria-label="Ver quién ha reaccionado">👥 Quién ha reaccionado ('+total+')</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+
      '</div>';
