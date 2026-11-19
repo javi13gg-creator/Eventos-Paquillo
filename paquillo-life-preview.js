@@ -472,7 +472,7 @@
   room.setAttribute('aria-label','Mi casa en Paquillo World, experiencia privada en desarrollo');
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
-   '<div class="pl-header-title"><small>🏡 MI CASA EN WORLD</small><b>Mi habitación <span class="pl-home-mood" data-pl-mood role="status" aria-live="polite" title="Estado emocional">😊</span></b></div>'+
+   '<div class="pl-header-title"><small>🏡 MI CASA EN WORLD</small><b>Mi habitación</b></div>'+
    '<button type="button" class="pl-neighborhood-top" data-pl-neighborhood>🏘️ Barrio</button>'+ 
    '<span class="pl-preview-tag" title="Vista privada de desarrollo">PRIVADA</span>'+
    '</header>'+
@@ -501,7 +501,7 @@
 
 
      '<div class="pl-action-stars" aria-hidden="true"><span>✦</span><span>✦</span><span>✦</span></div>'+
-     '<div class="pl-floor-caption"><b id="plName"></b><small>Tu rincón en la isla</small></div>'+
+     '<div class="pl-floor-caption"><b id="plName"></b><small>Tu rincón paquillero</small></div>'+
     '</div>'+
    '</main>'+
    '<footer class="pl-foot pl-base-foot">'+
