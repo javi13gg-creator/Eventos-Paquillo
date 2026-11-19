@@ -40,6 +40,16 @@ const landmarks=[
  {x:18,y:5,emoji:'🏘️',name:'G3 · Vista Alegre',info:'Zona noreste con parcelas disponibles para la cuadrilla.',kind:'g3',isNeighborhood:true},
  {x:25,y:5,emoji:'🏡',name:'Villímar',info:'Al este de G3, con espacio para colocar las casas del grupo.',kind:'villimar',isNeighborhood:true}
 ];
+// Rótulos del fondo alternativo (solo si el navegador no admite AVIF).
+const zones=[
+ {x:4,y:4,label:'CASTILLO'},
+ {x:9,y:8,label:'CENTRO'},
+ {x:3,y:11,label:'UNIVERSIDAD'},
+ {x:18,y:4,label:'G3'},
+ {x:25,y:4,label:'VILLÍMAR'},
+ {x:21,y:13,label:'ARLANZÓN'},
+ {x:23,y:16,label:'FUENTES BLANCAS'}
+];
 function hash(s){
  let h=2166136261;
  for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}
