@@ -65,9 +65,9 @@ const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m
 function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
 function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+
- '<button class="pw-nav-btn pw-nav-web" data-pw-exit type="button" aria-label="Volver a Paquillo Events"><i aria-hidden="true">🏠</i><span>WEB</span></button>'+
- (window.PaquilloLifePreview?.enabled?'<button class="pw-nav-btn pw-nav-house" data-pw-life-open type="button" aria-label="Entrar en mi casa"><i aria-hidden="true">🏡</i><span>Mi casa</span></button>':'')+
- chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+((state.view===key)?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
+ '<button class="pw-nav-btn pw-nav-web" data-pw-exit type="button" aria-label="Volver a Paquillo Events"><i aria-hidden="true"><img class="pw-events-icon" src="icon-192.png?v=3" alt=""></i><span>WEB</span></button>'+
+ chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+(state.view===key?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>'+
+ (key==='home'&&window.PaquilloLifePreview?.enabled?'<button class="pw-nav-btn pw-nav-house" data-pw-life-open type="button" aria-label="Entrar en mi casa"><i aria-hidden="true">🏡</i><span>Mi casa</span></button>':'')).join('')+'</nav>';}
 function playerCard(){
  const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
  const pic=memberPhoto(m);
