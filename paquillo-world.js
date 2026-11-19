@@ -66,6 +66,7 @@ function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
 function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+
  '<button class="pw-nav-btn pw-nav-web" data-pw-exit type="button" aria-label="Volver a Paquillo Events"><i aria-hidden="true">🏠</i><span>WEB</span></button>'+
+ (window.PaquilloLifePreview?.enabled?'<button class="pw-nav-btn pw-nav-house" data-pw-life-open type="button" aria-label="Entrar en mi casa"><i aria-hidden="true">🏡</i><span>Mi casa</span></button>':'')+
  chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+((state.view===key)?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
 function playerCard(){
  const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
@@ -340,7 +341,6 @@ function renderShell(){
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
  '<header class="pw-head"><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div>'+
-  (window.PaquilloLifePreview?.enabled?'<button type="button" class="pw-header-home-access" data-pw-life-open aria-label="Abrir mi casa" title="Entrar en mi casa">🏡 <span>Mi casa</span></button>':'')+
   '<button type="button" class="pw-head-xp" data-pw-view="profile" aria-label="Abrir mi perfil y progreso">⭐ NV '+lvl+' · '+points(state.xp)+' XP</button></header>'+
  '<div class="pw-duel-badge" data-pw-duel-badge hidden></div><div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+neighborhoodView()+'</div>'+
  nav()+
@@ -651,7 +651,9 @@ function openMyRoom(celebrate=''){
   onArcade:()=>{enteredFromLife=true;setView('games');},
   onMemory:()=>{enteredFromLife=true;setView('games');startMemory();},
   onNeighborhood:()=>setView('neighborhood'),
-  onProfile:()=>setView('profile')
+  onProfile:()=>setView('profile'),
+  onNavigate:view=>setView(view),
+  onExit:toWeb
  });
 }
 root.addEventListener('click',e=>{
