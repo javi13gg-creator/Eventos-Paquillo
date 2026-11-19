@@ -7,7 +7,7 @@
  'use strict';
  // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
- let room=null,previousFocus=null,arcadeAction=null,memoryAction=null,neighborhoodAction=null;
+ let room=null,previousFocus=null,arcadeAction=null,memoryAction=null,neighborhoodAction=null,profileAction=null;
  let model3d=null,modelRequest=0,lifeDaily=null;
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
@@ -448,7 +448,7 @@
   room=null;
   document.body.classList.remove('paqui-life-room-open');
   previousFocus?.focus?.({preventScroll:true});
-  previousFocus=null;arcadeAction=null;memoryAction=null;neighborhoodAction=null;
+  previousFocus=null;arcadeAction=null;memoryAction=null;neighborhoodAction=null;profileAction=null;
  }
  function open(options={}){
   if(!allowed())return false;
@@ -459,24 +459,34 @@
   arcadeAction=typeof options.onArcade==='function'?options.onArcade:null;
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
   neighborhoodAction=typeof options.onNeighborhood==='function'?options.onNeighborhood:null;
+  profileAction=typeof options.onProfile==='function'?options.onProfile:null;
   const name=String(options.name||'Paquillo').slice(0,50);
+  const authUserId=options.userId||window.PaquilloWorldContext?.()?.currentAuthUser?.id||'preview';
+  loadFurniture(authUserId);
   const source=window.PaquilloWorldCharacters?.imageFor(name)||'';
   room=document.createElement('section');
   room.id='paquiLifePreview';
   room.className='pl-screen';
   room.setAttribute('role','dialog');
   room.setAttribute('aria-modal','true');
-  room.setAttribute('aria-label','Mi hogar de Paquillo Life, vista de prueba');
+  room.setAttribute('aria-label','Mi casa en Paquillo World, experiencia privada en desarrollo');
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
-   '<div class="pl-header-title"><small>🎮 PAQUILLO WORLD</small><b>Mi base <span class="pl-home-mood" data-pl-mood role="status" aria-live="polite" title="Estado emocional">😊</span></b></div>'+
+   '<div class="pl-header-title"><small>🏡 MI CASA EN WORLD</small><b>Mi habitación <span class="pl-home-mood" data-pl-mood role="status" aria-live="polite" title="Estado emocional">😊</span></b></div>'+
    '<button type="button" class="pl-neighborhood-top" data-pl-neighborhood>🏘️ Barrio</button>'+ 
-   '<span class="pl-preview-tag" title="Animación de profundidad experimental">ALFA</span>'+
+   '<span class="pl-preview-tag" title="Vista privada de desarrollo">PRIVADA</span>'+
    '</header>'+
    '<main class="pl-world">'+
     '<div class="pl-stage" aria-label="Habitación tropical interactiva">'+
      '<picture class="pl-background-picture"><source media="(min-width:720px)" srcset="paquillo-life-room-wide.svg?v=1"><img class="pl-background" src="paquillo-life-room.svg?v=1" alt="Habitación tropical con nevera, ducha, cama y recreativa"></picture>'+
      '<div class="pl-sunbeam" aria-hidden="true"></div>'+
+     '<div class="pl-scene-hud"><button type="button" data-pl-scene-tab="missions">🎯 Misiones</button>'+
+      '<button type="button" data-pl-neighborhood>🏘️ Salir al barrio</button></div>'+
+     '<div class="pl-furniture-scene" aria-label="Decoraciones de tu habitación">'+
+      '<button type="button" class="pl-furn" data-pl-furniture-slot="wall" data-pl-scene-slot="wall" aria-label="Editar la pared"><span aria-hidden="true">🖼️</span></button>'+
+      '<button type="button" class="pl-furn" data-pl-furniture-slot="floor" data-pl-scene-slot="floor" aria-label="Editar el suelo"><span aria-hidden="true">🐕</span></button>'+
+      '<button type="button" class="pl-furn" data-pl-furniture-slot="shelf" data-pl-scene-slot="shelf" aria-label="Editar el rincón"><span aria-hidden="true">🏆</span></button></div>'+
+     '<div class="pl-room-sticker"><strong>La casa de '+safeHTML(name)+'</strong><small>⭐ Nivel '+lifeLevel+' · decoración personal</small></div>'+
      '<div class="pl-ambient pl-ambient-a" aria-hidden="true">✦</div>'+
      '<div class="pl-ambient pl-ambient-b" aria-hidden="true">✧</div>'+
      '<div class="pl-character-spot" aria-hidden="true"></div>'+ 
@@ -495,31 +505,46 @@
     '</div>'+
    '</main>'+
    '<footer class="pl-foot pl-base-foot">'+
-   '<div class="pl-base-intro"><div><small>✨ TU BASE PERSONAL</small><strong>Tu punto de encuentro diario</strong></div><span>⭐ Nv '+lifeLevel+'</span></div>'+
-   '<div class="pl-daily-hub" data-pl-daily-hub></div>'+
-   '<nav class="pl-base-actions" aria-label="Acciones principales">'+
-    '<button type="button" data-pl-place="play"><span>🎮</span><b>Arcade</b><small>Juegos y récords</small></button>'+
-    '<button type="button" data-pl-memory><span>🃏</span><b>Memoria</b><small>Partida rápida</small></button>'+
-    '<button type="button" data-pl-open-decor><span>🎨</span><b>Decorar</b><small>Tu estilo</small></button></nav>'+
-   '<details class="pl-options" id="plDecorPanel"><summary>🖼️ Mi decoración y mis logros</summary><div class="pl-options-content">'+
-    '<div class="pl-theme-picker" role="group" aria-label="Ambiente de mi hogar"><span>🎨 Ambiente · Nivel '+lifeLevel+'</span>'+
-    '<button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button>'+
-    '<button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
-    '<div class="pl-decor-controls"><button type="button" class="pl-decor" data-pl-decor="lamp" aria-pressed="false">💡 Luces</button>'+
-    '<button type="button" class="pl-decor" data-pl-decor="plant">🌴 Saludar palmera</button></div>'+
-    '<details class="pl-achievements"><summary data-pl-achievements-summary>🏅 Logros · 0/4</summary>'+
-    '<div class="pl-achievements-grid" data-pl-achievements></div><small>Logros locales, sin XP.</small></details></div></details>'+
-   '<details class="pl-extras"><summary>🛁 Interacciones opcionales</summary>'+
-    '<p>Comer, ducharse y descansar son animaciones secundarias: no hacen falta para jugar.</p>'+
-    '<nav class="pl-quick-actions" aria-label="Interacciones">'+
-     '<button type="button" data-pl-place="eat">🥥 Comer</button><button type="button" data-pl-place="shower">🚿 Ducha</button>'+
-     '<button type="button" data-pl-place="sleep">💤 Descansar</button></nav>'+
-    '<div class="pl-needs" aria-label="Estado opcional">'+
-     '<label>⚡ Energía <output data-pl-value="energy">75%</output><progress data-pl-need="energy" max="100" value="75"></progress></label>'+
-     '<label>😊 Ánimo <output data-pl-value="mood">75%</output><progress data-pl-need="mood" max="100" value="75"></progress></label>'+
-     '<label>💚 Bienestar <output data-pl-value="wellbeing">75%</output><progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div></details>'+
-   '<p id="plStatus" role="status" aria-live="polite">🎯 Juegos, amigos y nuevas actividades te esperan.</p>'+
-   '<small data-pl-persistence>⏳ Comprobando guardado de interacciones · sin XP</small></footer>';
+    '<div class="pl-base-intro"><div><small>✨ MI CASA</small><strong>Tu espacio en Paquillo World</strong></div><span>⭐ Nv '+lifeLevel+'</span></div>'+
+    '<div class="pl-panel-headline"><span>👋 ¿Qué hacemos hoy?</span>'+
+     '<button type="button" class="pl-immersive-toggle" data-pl-immersive aria-label="Ampliar la vista de la habitación">⤢ Ver habitación</button></div>'+
+    '<nav class="pl-base-tabs" aria-label="Apartados de Mi casa" role="tablist">'+
+     '<button type="button" role="tab" data-pl-tab="play" aria-selected="true">🎮 Jugar</button>'+
+     '<button type="button" role="tab" data-pl-tab="decor" aria-selected="false">🎨 Decorar</button>'+
+     '<button type="button" role="tab" data-pl-tab="missions" aria-selected="false">🎯 Misiones</button></nav>'+
+    '<section class="pl-panel pl-play-panel is-active" role="tabpanel" data-pl-panel="play" aria-label="Juegos y mundo">'+
+     '<button type="button" data-pl-place="play"><span>🕹️</span><div><b>Arcade</b><small>Juegos, récords y piques</small></div></button>'+
+     '<button type="button" data-pl-memory><span>🃏</span><div><b>Memoria</b><small>Una partida rápida</small></div></button>'+
+     '<button type="button" data-pl-neighborhood><span>🏘️</span><div><b>Barrio Burgos</b><small>Visita a tus vecinos</small></div></button>'+
+     '<button type="button" data-pl-profile><span>🏆</span><div><b>Mi progreso</b><small>Nivel, XP y clasificación</small></div></button>'+
+    '</section>'+
+    '<section class="pl-panel pl-decor-panel" role="tabpanel" data-pl-panel="decor" aria-label="Personalización de la habitación" hidden>'+
+     '<p class="pl-furn-note">🏡 Coloca adornos visibles en la habitación. Toca un objeto en el escenario para cambiarlo.</p>'+
+     '<div class="pl-furn-slot-picker" role="group" aria-label="Lugar para decorar">'+
+      '<button type="button" data-pl-furn-slot="wall" aria-pressed="true">🖼️ Pared</button>'+
+      '<button type="button" data-pl-furn-slot="floor" aria-pressed="false">🐾 Suelo</button>'+
+      '<button type="button" data-pl-furn-slot="shelf" aria-pressed="false">🏅 Rincón</button></div>'+
+     '<p class="pl-furn-note" data-pl-furn-current>Editando: Pared</p>'+
+     '<div class="pl-furn-options" data-pl-furn-options></div>'+
+     '<div class="pl-custom-theme" role="group" aria-label="Ambiente de la habitación"><b>🌈 Ambiente</b>'+
+      '<button type="button" data-pl-theme="island">🏝️ Isla</button>'+
+      '<button type="button" data-pl-theme="sunset">🌅 Atardecer</button>'+
+      '<button type="button" data-pl-theme="night">🌙 Noche</button>'+
+      '<button type="button" data-pl-decor="lamp" aria-pressed="false">💡 Luces</button></div>'+
+     '<p class="pl-furn-note">La decoración se guarda en este dispositivo. No cuesta XP ni se comparte todavía.</p></section>'+
+    '<section class="pl-panel pl-missions-panel" role="tabpanel" data-pl-panel="missions" aria-label="Actividad diaria" hidden>'+
+     '<div class="pl-daily-hub" data-pl-daily-hub></div>'+
+     '<p class="pl-furn-note">🎯 Las recompensas de XP se validan en Supabase; los objetos decorativos no conceden XP.</p></section>'+
+    '<details class="pl-room-extras"><summary>✨ Extras y recuerdos de la habitación</summary>'+
+     '<nav class="pl-quick-actions" aria-label="Animaciones opcionales">'+
+      '<button type="button" data-pl-place="eat">🥥 Comer</button>'+
+      '<button type="button" data-pl-place="shower">🚿 Ducha</button>'+
+      '<button type="button" data-pl-place="sleep">💤 Descansar</button></nav>'+
+     '<details class="pl-achievements"><summary data-pl-achievements-summary>🏅 Recuerdos locales · 0/4</summary>'+
+      '<div class="pl-achievements-grid" data-pl-achievements></div>'+
+      '<small>Recuerdos de esta vista privada. No otorgan XP.</small></details></details>'+
+    '<p id="plStatus" role="status" aria-live="polite">🎮 ¡Tu casa está lista! Elige qué quieres hacer.</p>'+
+    '<small data-pl-persistence>ℹ️ Las interacciones opcionales no dan XP.</small></footer>';
   // Controles principales registrados antes de cargar sprites, necesidades o decoraciones.
   // Captura para que capas de escena o manejadores secundarios no bloqueen navegación.
   room.addEventListener('click',event=>{
