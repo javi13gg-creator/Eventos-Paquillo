@@ -121,3 +121,20 @@
 }
 #p-world .pw-neighborhood-entry:active{transform:translateY(3px);box-shadow:0 2px 0 #1d3977}
 @media(max-width:450px){#p-world .pw-neighborhood-entry{padding:11px 10px;min-height:60px;font-size:.85rem!important}}
+
+/* Hallazgo escondido del día: exploración sin recompensa XP. */
+#p-world .pwb-secret{
+ position:absolute;z-index:12;display:grid;place-items:center;
+ width:52px;height:52px;transform:translate(-50%,-50%);
+ border:2px solid #fff6ce;border-radius:50%;
+ background:radial-gradient(circle,#ffe49e,#ee9e54 62%,#894c83);
+ box-shadow:0 0 23px #ffed79a1,0 5px 8px #2c49625c;
+ color:#773c84;font-weight:1000;font-size:32px;cursor:pointer;
+ animation:pwb-secret-breathe 2.8s ease-in-out infinite
+}
+#p-world .pwb-secret.is-found{
+ background:#307e83;color:#ffe9aa;border-color:#aaf7d8;
+ box-shadow:0 0 14px #69e6c455;animation:none
+}
+@keyframes pwb-secret-breathe{0%,100%{filter:brightness(.91);scale:.92}50%{filter:brightness(1.2);scale:1.08}}
+@media(prefers-reduced-motion:reduce){#p-world .pwb-secret{animation:none}}
