@@ -1,0 +1,44 @@
+/* Paquillo World 2.0 · Hub diario y misiones reales, sin monedas. */
+#p-world .pw-daily-root,#paquiLifePreview .pl-daily-hub{width:100%;max-width:1130px;margin:12px auto}
+#p-world .pwd-card,#paquiLifePreview .pwd-card{
+ display:grid;gap:11px;overflow:hidden;padding:13px;border:1px solid #d0aef8;
+ border-radius:20px;background:linear-gradient(147deg,#472a85,#251754 74%,#1d1146);
+ color:#fff;box-shadow:0 8px 24px #170b3b6b;
+ font-family:"Bricolage Grotesque",system-ui,sans-serif;text-align:left
+}
+#p-world .pwd-heading,#paquiLifePreview .pwd-heading{display:flex;align-items:center;justify-content:space-between;gap:9px}
+#p-world .pwd-heading small,#paquiLifePreview .pwd-heading small{font-size:.65rem;font-weight:950;color:#ffe387;letter-spacing:.06em}
+#p-world .pwd-heading h3,#paquiLifePreview .pwd-heading h3{margin:0;font-size:clamp(1.22rem,4vw,1.7rem);color:#fff;line-height:1.13}
+#p-world .pwd-heading>span,#paquiLifePreview .pwd-heading>span{border-radius:99px;border:1px solid #ffd97f;background:#473070;padding:6px 9px;color:#ffedb4;font-size:.68rem;font-weight:950;white-space:nowrap}
+#p-world .pwd-kpis,#paquiLifePreview .pwd-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#p-world .pwd-kpis div,#paquiLifePreview .pwd-kpis div{display:grid;gap:4px;min-width:0;text-align:center;padding:10px 4px;border:1px solid #7c63af;border-radius:11px;background:#ffffff12}
+#p-world .pwd-kpis b,#paquiLifePreview .pwd-kpis b{font-size:clamp(1.1rem,3.6vw,1.55rem);color:#fff0b1;line-height:1.05}
+#p-world .pwd-kpis small,#paquiLifePreview .pwd-kpis small{font-size:clamp(.62rem,2.2vw,.75rem);color:#eee5fc;line-height:1.12}
+#p-world .pwd-reward,#paquiLifePreview .pwd-reward{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:11px;border-radius:13px;border:1px solid #f8d790;background:linear-gradient(120deg,#724c96,#5c3675)}
+#p-world .pwd-reward div,#paquiLifePreview .pwd-reward div{display:grid;gap:3px;min-width:0}
+#p-world .pwd-reward b,#paquiLifePreview .pwd-reward b{font-size:.91rem;color:#ffedab}
+#p-world .pwd-reward small,#paquiLifePreview .pwd-reward small{font-size:.69rem;color:#f6e6ff;line-height:1.25}
+#p-world .pwd-reward button,#paquiLifePreview .pwd-reward button{
+ flex:0 0 auto;min-height:41px;max-width:42%;padding:8px 11px;border:2px solid #fff0aa;border-radius:11px;
+ background:linear-gradient(160deg,#21a28e,#166783);color:#fff;font-size:.74rem;font-weight:1000;cursor:pointer
+}
+#p-world .pwd-reward button:disabled,#paquiLifePreview .pwd-reward button:disabled{opacity:.65;filter:grayscale(.2);cursor:default}
+#p-world .pwd-tasks,#paquiLifePreview .pwd-tasks{display:grid;gap:6px}
+#p-world .pwd-tasks h4,#paquiLifePreview .pwd-tasks h4{font-size:.89rem;margin:1px 0 2px;color:#ffe48f}
+#p-world .pwd-task,#paquiLifePreview .pwd-task{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:7px;min-width:0;border:1px solid #8669b6;border-radius:11px;padding:7px 8px;background:#140e3452}
+#p-world .pwd-task>span,#paquiLifePreview .pwd-task>span{font-size:22px;line-height:1}
+#p-world .pwd-task>div,#paquiLifePreview .pwd-task>div{display:grid;gap:2px;min-width:0}
+#p-world .pwd-task b,#paquiLifePreview .pwd-task b{font-size:.77rem;line-height:1.2;color:#fff}
+#p-world .pwd-task small,#paquiLifePreview .pwd-task small{font-size:.66rem;line-height:1.2;color:#cfc2e9}
+#p-world .pwd-task button,#paquiLifePreview .pwd-task button{min-height:35px;padding:5px 9px;max-width:98px;white-space:nowrap;background:#6042a0;border:1px solid #cbacfc;border-radius:9px;color:white;font-size:.68rem;font-weight:900}
+#p-world .pwd-notice,#paquiLifePreview .pwd-notice{margin:0;color:#ffedaa;font-size:.72rem;line-height:1.25}
+#p-world .pwd-disclaimer,#paquiLifePreview .pwd-disclaimer{margin:0;color:#c3b5da;font-size:.63rem;line-height:1.25}
+#p-world .pwd-notice:empty,#paquiLifePreview .pwd-notice:empty{display:none}
+@media(max-width:430px){
+ #p-world .pw-daily-root{padding-inline:10px}
+ #p-world .pwd-card,#paquiLifePreview .pwd-card{padding:10px;gap:8px}
+ #p-world .pwd-reward,#paquiLifePreview .pwd-reward{padding:9px}
+ #p-world .pwd-task,#paquiLifePreview .pwd-task{grid-template-columns:27px 1fr auto;gap:5px}
+ #p-world .pwd-task>span,#paquiLifePreview .pwd-task>span{font-size:20px}
+ #p-world .pwd-task button,#paquiLifePreview .pwd-task button{font-size:.64rem;padding:5px}
+}
