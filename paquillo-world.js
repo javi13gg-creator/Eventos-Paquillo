@@ -204,7 +204,11 @@ async function duelRpc(action,values={}){
  return true;
 }
 function duelRows(){
- const mine=duels.filter(d=>d.challenger===state.uid||d.opponent===state.uid);
+ const mine=duels.filter(d=>d.challenger===state.uid||d.opponent===state.uid).sort((a,b)=>{
+    const priority=d=>d.opponent===state.uid&&d.status==='pending'?0:
+      d.status==='active'?1:d.status==='pending'?2:d.status==='completed'?3:4;
+    return priority(a)-priority(b)||new Date(b.created_at)-new Date(a.created_at);
+  });
  return '<div class="pw-duels"><h3>⚔️ Mis retos · '+mine.length+'</h3>'+
  (duelError?'<p class="pw-demo-notice">'+esc(duelError)+'</p>':'')+
  (mine.length?mine.map(d=>{
