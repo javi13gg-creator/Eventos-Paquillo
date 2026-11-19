@@ -98,3 +98,11 @@
  #p-world .pwb-title h2{font-size:1.36rem}
 }
 @media(prefers-reduced-motion:reduce){#p-world .pwb-world,#p-world .pwb-house{transition:none!important}}
+
+#p-world .pwb-duels-drawer{
+ max-width:1260px;margin:12px auto 18px;border:1px solid #9872ce;border-radius:15px;
+ overflow:hidden;background:#241350
+}
+#p-world .pwb-duels-drawer>summary{padding:12px 15px;font-size:.85rem;font-weight:950;color:#fff0a8;cursor:pointer;list-style:none}
+#p-world .pwb-duels-drawer>summary::-webkit-details-marker{display:none}
+#p-world .pwb-duels-drawer .pw-duels{margin:0;border:0;border-top:1px solid #9872ce;border-radius:0}
