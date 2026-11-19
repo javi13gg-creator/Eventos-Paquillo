@@ -596,6 +596,7 @@
    navigate:activity=>{
     if(activity==='games'||activity==='duels'){const cb=arcadeAction;close();cb?.();}
     else if(activity==='neighborhood'){const cb=neighborhoodAction;close();cb?.();}
+    else if(activity==='events'){close();location.hash='proximos';}
    },
    onClaim:result=>{if(Number(result?.xp_awarded)>0)setStatus('⭐ ¡+5 XP guardados!');}
   })||null;
