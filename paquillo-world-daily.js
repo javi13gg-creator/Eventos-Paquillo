@@ -50,7 +50,9 @@ function mount(host,context){
     '</small></div>'+
     '<button type="button" data-pwd-go="neighborhood">Explorar ›</button></div>'+
     '<div class="pwd-task"><span>⚔️</span><div><b>'+(pending?'¡'+pending+' reto'+(pending===1?'':'s')+' por responder!':active?'¡Tienes '+active+' partida'+(active===1?'':'s')+' en marcha!':'Lanza un pique')+'</b><small>Invita a tus amigos a competir</small></div>'+
-    '<button type="button" data-pwd-go="duels">Ver retos ›</button></div></div>'+
+    '<button type="button" data-pwd-go="duels">Ver retos ›</button></div>'+
+    '<div class="pwd-task"><span>📅</span><div><b>¿Hay un plan en marcha?</b><small>Organizar y confirmar asistencia también da XP real</small></div>'+
+    '<button type="button" data-pwd-go="events">Ver planes ›</button></div></div>'+
    '<p class="pwd-disclaimer">* Los resultados de minijuegos son provisionales y no dan XP. Solo la visita diaria se valida con el servidor.</p>'+
    '<p class="pwd-notice" data-pwd-notice role="status" aria-live="polite"></p></section>';
   const n=host.querySelector('[data-pwd-notice]');
