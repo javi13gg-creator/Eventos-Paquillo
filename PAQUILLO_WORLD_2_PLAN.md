@@ -44,7 +44,7 @@ No se dan XP por resultados no validados de juegos ni por «visitar» indefinida
 ## Implementación inicial publicada · 19/11/2026
 
 **Fase técnica A1/B1:** disponible en GitHub (pendiente de QA visual y migración en Supabase):
-- `paquillo-burgos-map.js/css`: mapa 28×20 con Burgos ilustrado, parrilla, zoom rueda/botones y pinza, desplazamiento táctil, buscador, casas con avatares y selección de parcela libre; lectura y colocación por Supabase RPC. Sin SQL, casas provisionales identificadas como demostración y movimientos no guardados.
+- `paquillo-burgos-map.js/css`: mapa 28×20 con Burgos ilustrado, parrilla, zoom rueda/botones y pinza, desplazamiento táctil, buscador, casas con avatares y selección de parcela libre; lectura y colocación por Supabase RPC. Botón para actualizar vecinos y **hallazgo escondido del día** (solo cosmético local, sin XP). Sin SQL, casas provisionales identificadas como demostración y movimientos no guardados.
 - `paquillo-world-burgos-v2.sql`: tablas de posiciones, visitas y rachas; un RPC para asignar parcela con exclusión y tiempo mínimo entre mudanzas; uno para registrar visitas sociales con límite de spam; uno para reclamar **+5 XP una sola vez al día** mediante ledger seguro.
 - `paquillo-world-daily.js/css`: racha real, objetivos breves, retos pendientes, partidas provisionales, visitas diarias y enlace a planes de Events. Ningún XP por minijuego ni por visitas.
 - `paquillo-life-preview.js` y `paquillo-life-base-v25.css`: «Mi base», nueva zona de juego con Arcade, Memoria, decoraciones y tarjetas diarias. Comer/ducha/descanso/barras quedan en un desplegable opcional.
