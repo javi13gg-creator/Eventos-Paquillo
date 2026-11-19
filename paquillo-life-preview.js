@@ -7,7 +7,7 @@
  'use strict';
  // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
- let room=null,previousFocus=null,arcadeAction=null,memoryAction=null,neighborhoodAction=null,profileAction=null;
+ let room=null,previousFocus=null,arcadeAction=null,memoryAction=null,neighborhoodAction=null,profileAction=null,navigateAction=null,exitAction=null;
  let model3d=null,modelRequest=0,lifeDaily=null;
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
@@ -448,7 +448,7 @@
   room=null;
   document.body.classList.remove('paqui-life-room-open');
   previousFocus?.focus?.({preventScroll:true});
-  previousFocus=null;arcadeAction=null;memoryAction=null;neighborhoodAction=null;profileAction=null;
+  previousFocus=null;arcadeAction=null;memoryAction=null;neighborhoodAction=null;profileAction=null;navigateAction=null;exitAction=null;
  }
  function open(options={}){
   if(!allowed())return false;
@@ -460,6 +460,8 @@
   memoryAction=typeof options.onMemory==='function'?options.onMemory:null;
   neighborhoodAction=typeof options.onNeighborhood==='function'?options.onNeighborhood:null;
   profileAction=typeof options.onProfile==='function'?options.onProfile:null;
+  navigateAction=typeof options.onNavigate==='function'?options.onNavigate:null;
+  exitAction=typeof options.onExit==='function'?options.onExit:null;
   const name=String(options.name||'Paquillo').slice(0,50);
   const authUserId=options.userId||window.PaquilloWorldContext?.()?.currentAuthUser?.id||'preview';
   loadFurniture(authUserId);
@@ -544,12 +546,22 @@
       '<div class="pl-achievements-grid" data-pl-achievements></div>'+
       '<small>Recuerdos de esta vista privada. No otorgan XP.</small></details></details>'+
     '<p id="plStatus" role="status" aria-live="polite">🎮 ¡Tu casa está lista! Elige qué quieres hacer.</p>'+
-    '<small data-pl-persistence>ℹ️ Las interacciones opcionales no dan XP.</small></footer>';
+    '<small data-pl-persistence>ℹ️ Las interacciones opcionales no dan XP.</small></footer>'+ 
+    '<nav class="pl-world-bottom-nav" aria-label="Secciones de Paquillo World">'+
+     [['web','🏠','WEB'],['home','🌴','Inicio'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['challenges','⚔️','Retos'],['ranking','🏆','Ranking'],['house','🏡','Mi casa']].map(([id,ico,label])=>
+      '<button type="button" class="pl-world-nav-btn'+(id==='house'?' on':'')+'" data-pl-world-nav="'+id+'" aria-label="'+label+'"'+(id==='house'?' aria-current="page"':'')+'><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';
   // Controles principales registrados antes de cargar sprites, necesidades o decoraciones.
   // Captura para que capas de escena o manejadores secundarios no bloqueen navegación.
   room.addEventListener('click',event=>{
    const button=event.target.closest('button');
    if(!button||!room?.contains(button))return;
+   if(button.hasAttribute('data-pl-world-nav')){
+    event.stopImmediatePropagation();const destination=button.dataset.plWorldNav;
+    if(destination==='house')return;
+    const cb=destination==='web'?exitAction:navigateAction;
+    close();if(destination==='web')cb?.();else cb?.(destination);
+    return;
+   }
    if(button.hasAttribute('data-pl-close')){event.stopImmediatePropagation();close();return;}
    if(button.hasAttribute('data-pl-neighborhood')){
     event.stopImmediatePropagation();
