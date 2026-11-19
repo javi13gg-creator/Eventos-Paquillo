@@ -135,18 +135,6 @@
 }
 #tabs .nav-brand{align-items:center;min-width:0}
 #tabs .nav-brand>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#paquiHomeBanner .paqui-brand-card{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  max-width:100%;min-width:0;margin:0 auto 6px;padding:0;gap:0;
-}
-#paquiHomeBanner .paqui-home-brand-logo{
-  display:block;width:min(100%,260px);height:auto;max-height:198px;
-  margin:0 auto;object-fit:contain;filter:drop-shadow(0 5px 10px rgba(42,18,89,.12));
-}
-#paquiHomeBanner .paqui-brand-subtitle{
-  display:block;font-size:.81rem;font-weight:850;line-height:1.3;
-  text-align:center;color:var(--mut);margin:-4px auto 8px;letter-spacing:.01em;
-}
 #loginForm .paqui-login-brand{display:flex;justify-content:center;align-items:center;margin:-.5rem auto .65rem}
 #loginForm .paqui-login-logo{
   display:block;width:min(100%,235px);height:auto;max-height:165px;
@@ -154,8 +142,6 @@
 }
 @media(max-width:700px){
   #tabs .paqui-nav-logo{width:37px!important;height:37px!important;min-width:37px!important;flex:0 0 37px!important}
-  #paquiHomeBanner .paqui-home-brand-logo{width:min(100%,206px);max-height:154px}
-  #paquiHomeBanner .paqui-brand-subtitle{font-size:.74rem}
   #loginForm .paqui-login-logo{width:min(100%,220px)}
 }
 @media(max-width:355px){
