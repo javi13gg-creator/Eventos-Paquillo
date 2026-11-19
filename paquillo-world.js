@@ -289,7 +289,9 @@ function showHouse(idx){
   '<p>⭐ Nivel '+level(m.xp)+' · '+points(m.xp)+' XP</p>'+
   '<h3>🏆 Récords del personaje</h3>'+records+
   (isMine?
-   '<p class="pw-muted">Este es tu hogar dentro del barrio.</p><button class="pw-action-button" data-pw-view="profile">⭐ Ver mi progreso</button>':
+   '<p class="pw-muted">Este es tu hogar dentro del barrio.</p>'+
+    (window.PaquilloLifePreview?.enabled?'<button type="button" class="pw-action-button" data-pw-life-open>🏡 Entrar en mi habitación</button>':'')+
+    '<button class="pw-action-button" data-pw-view="profile">⭐ Ver mi progreso</button>':
    (m.auth_user_id?'<div class="pw-visit-section"><h3>👋 Visita diaria</h3>'+
       '<p>Deja una visita en su casa ficticia. Una por vecino y día, sin XP.</p>'+
       '<button class="pw-action-button" data-pw-house-visit="'+esc(m.auth_user_id)+'">👋 Pasar por esta casa</button>'+
@@ -637,20 +639,28 @@ async function refresh(){
   root.innerHTML='<div class="pw-shell"><header class="pw-head"><button class="pw-return" data-pw-exit>🏠 WEB</button><b>PAQUILLO WORLD</b></header><div class="pw-scroll"><div class="pw-screen"><div class="pw-demo-notice">Error cargando Paquillo World: '+esc(e.message||e)+'</div><button class="pw-action-button" data-pw-refresh>Reintentar</button></div></div>'+nav()+'</div>';
  }finally{state.loading=false;}
 }
+function openMyRoom(celebrate=''){
+ if(!window.PaquilloLifePreview?.enabled)return false;
+ const dialog=document.getElementById('pwModal');
+ if(dialog&&!dialog.hidden)closeModal();
+ return window.PaquilloLifePreview.open({
+  name:state.mine?.display_name||'Paquillo',
+  userId:state.uid,
+  xp:state.xp,
+  daily:worldDailyStats(),
+  celebrate,
+  onArcade:()=>{enteredFromLife=true;setView('games');},
+  onMemory:()=>{enteredFromLife=true;setView('games');startMemory();},
+  onNeighborhood:()=>setView('neighborhood'),
+  onProfile:()=>setView('profile')
+ });
+}
 root.addEventListener('click',e=>{
  const btn=e.target.closest('button,[data-pw-close],#pwReflexPad');if(!btn)return;
  if(btn.hasAttribute('data-pw-exit')){toWeb();return}
  if(btn.hasAttribute('data-pw-refresh')){refresh();return}
  if(btn.hasAttribute('data-pw-life-open')){
-  if(!window.PaquilloLifePreview?.enabled)return;
-  const opened=window.PaquilloLifePreview?.open({
-   name:state.mine?.display_name||'Paquillo',
-   xp:state.xp,daily:worldDailyStats(),
-   onArcade:()=>{enteredFromLife=true;setView('games')},
-   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()},
-   onNeighborhood:()=>{setView('neighborhood')}
-  });
-  if(!opened)console.warn('Paquillo World: la habitación aún no está disponible en esta sesión.');
+  if(!openMyRoom())console.warn('Paquillo World: Mi casa sigue en desarrollo privado.');
   return;
  }
  if(btn.hasAttribute('data-pw-neighbor-focus')){
@@ -709,26 +719,11 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-memory-card')){flipMemory(Number(btn.dataset.pwMemoryCard));return}
  if(btn.hasAttribute('data-pw-memory-restart')){startMemory();return}
  if(btn.hasAttribute('data-pw-life-leave')){
-  if(!window.PaquilloLifePreview?.enabled)return;
-  closeModal();
-  const opened=window.PaquilloLifePreview?.open({
-   name:state.mine?.display_name||'Paquillo',
-   onArcade:()=>{enteredFromLife=true;setView('games')},
-   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
-  });
-  if(opened)enteredFromLife=false;
+  if(openMyRoom())enteredFromLife=false;
   return;
  }
  if(btn.hasAttribute('data-pw-life-return')){
-  if(!window.PaquilloLifePreview?.enabled)return;
-  closeModal();
-  const opened=window.PaquilloLifePreview?.open({
-   name:state.mine?.display_name||'Paquillo',
-   celebrate:'memory',
-   onArcade:()=>{enteredFromLife=true;setView('games')},
-   onMemory:()=>{enteredFromLife=true;setView('games');startMemory()}
-  });
-  if(opened)enteredFromLife=false;
+  if(openMyRoom('memory'))enteredFromLife=false;
   return;
  }
  if(btn.dataset.pwView){if(root.querySelector('[data-pw-screen]'))setView(btn.dataset.pwView);else if(window.PaquilloWorldContext?.()?.currentAuthUser)refresh();return}
