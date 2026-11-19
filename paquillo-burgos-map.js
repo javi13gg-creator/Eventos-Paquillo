@@ -96,7 +96,7 @@ function create(root,config){
  root.innerHTML=html;
  const $=sel=>root.querySelector(sel),world=$('[data-pwb-world]'),vp=$('[data-pwb-viewport]'),results=$('[data-pwb-results]');
  const status=(message)=>{const item=$('[data-pwb-position]');if(item)item.textContent=message};
- function viable(x,y){return VALID(x,y)&&!homes.some(h=>h.x===x&&h.y===y)}
+ function viable(x,y){return VALID(x,y)&&!homes.some(h=>h.x===x&&h.y===y&&h.user_id!==config.uid)}
  function mine(){return homes.find(h=>h.user_id===config.uid)}
  function initialHomes(){
   const taken=new Set();
