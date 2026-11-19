@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-label="Habitación tropical panorámica Paquillo Life">
+<defs>
+ <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6a339e"/><stop offset=".5" stop-color="#9f64c1"/><stop offset="1" stop-color="#b778c6"/></linearGradient>
+ <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f9ca91"/><stop offset="1" stop-color="#bd7957"/></linearGradient>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#45bded"/><stop offset=".55" stop-color="#a6f1ef"/><stop offset="1" stop-color="#dce7af"/></linearGradient>
+ <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#31bfda"/><stop offset="1" stop-color="#2375b8"/></linearGradient>
+ <linearGradient id="fridge" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#b4ffef"/><stop offset=".55" stop-color="#55cfcb"/><stop offset="1" stop-color="#1f9aa9"/></linearGradient>
+ <linearGradient id="bed" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ad83fa"/><stop offset="1" stop-color="#6542b6"/></linearGradient>
+ <linearGradient id="arcade" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c278f9"/><stop offset=".6" stop-color="#682d9b"/><stop offset="1" stop-color="#38206c"/></linearGradient>
+ <radialGradient id="sunlight" cx=".5" cy=".4" r=".8"><stop stop-color="#fffad6" stop-opacity=".62"/><stop offset="1" stop-color="#fffad6" stop-opacity="0"/></radialGradient>
+ <radialGradient id="carpet"><stop stop-color="#ffddb6"/><stop offset=".75" stop-color="#e6a0a2"/><stop offset="1" stop-color="#a95c97"/></radialGradient>
+ <filter id="shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#371443" flood-opacity=".35"/></filter>
+ <pattern id="grain" width="90" height="40" patternUnits="userSpaceOnUse"><path d="M0 9Q26 2 60 10T110 9M-10 28Q30 22 80 32" fill="none" stroke="#8a4962" stroke-opacity=".18" stroke-width="2"/></pattern>
+ <clipPath id="windowClip"><path d="M366 171Q366 93 440 93H687Q761 93 761 171V354H366Z"/></clipPath>
+</defs>
+<!-- ceiling, walls and warm flooring -->
+<rect width="1200" height="700" fill="#6b3498"/>
+<rect width="1200" height="470" fill="url(#wall)"/>
+<path d="M0 0H1200V58Q604 85 0 56Z" fill="#432064"/>
+<path d="M0 0L600 73L1200 0" fill="none" stroke="#cd88b5" stroke-opacity=".43" stroke-width="5"/>
+<path d="M0 442Q600 424 1200 442V700H0Z" fill="url(#floor)"/>
+<path d="M0 442Q600 424 1200 442" fill="none" stroke="#ffe0ae" stroke-width="22"/>
+<path d="M0 465H1200V700H0Z" fill="url(#grain)"/>
+<g stroke="#9c5e56" opacity=".35" fill="none"><path d="M0 530H1200M0 590H1200M0 650H1200"/><path d="M135 445L85 700M370 445L345 700M620 442V700M860 442L900 700M1090 445L1165 700"/></g>
+<ellipse cx="622" cy="598" rx="326" ry="95" fill="url(#carpet)" opacity=".83"/>
+<ellipse cx="622" cy="595" rx="285" ry="73" fill="none" stroke="#ffeac6" stroke-width="7" stroke-dasharray="18 14" opacity=".68"/>
+<!-- tropical window / light -->
+<g filter="url(#shadow)"><path d="M351 170Q351 76 439 76H690Q777 76 777 170V372H351Z" fill="#f4bf8d" stroke="#6a3e78" stroke-width="12"/><path d="M364 171Q364 93 439 93H688Q762 93 762 171V354H364Z" fill="#a7e5f9"/></g>
+<g clip-path="url(#windowClip)">
+ <rect x="365" y="95" width="400" height="265" fill="url(#sky)"/><circle cx="652" cy="147" r="41" fill="#fff3a7" opacity=".95"/>
+ <path d="M364 226Q464 210 550 227T770 219V355H364Z" fill="url(#sea)"/>
+ <path d="M363 258Q462 252 550 261T762 249M364 287Q465 280 564 288T762 284" fill="none" stroke="#d3fffb" stroke-width="5" opacity=".5"/>
+ <path d="M383 221Q432 172 478 212L500 240H379Z" fill="#317d9c" opacity=".72"/>
+ <path d="M693 228Q729 196 761 219V254H694Z" fill="#3889a5" opacity=".7"/>
+ <g fill="#f9ffff" opacity=".9"><ellipse cx="456" cy="143" rx="32" ry="10"/><circle cx="444" cy="140" r="14"/><circle cx="460" cy="132" r="15"/><ellipse cx="573" cy="169" rx="24" ry="7"/><circle cx="566" cy="160" r="10"/></g>
+</g>
+<path d="M558 89V364M361 305H770" stroke="#ebaa7f" stroke-width="14"/>
+<path d="M350 355H784" stroke="#f7cd9a" stroke-width="19" stroke-linecap="round"/>
+<path d="M380 368L250 580H920L752 368Z" fill="url(#sunlight)" opacity=".42"/>
+<!-- wall picture -->
+<g filter="url(#shadow)"><rect x="79" y="118" width="183" height="119" rx="17" fill="#ffe0a7" stroke="#75416d" stroke-width="9"/><rect x="91" y="131" width="159" height="94" rx="8" fill="#c3eddf"/><path d="M91 201L145 159L185 199L220 164L251 200V223H91Z" fill="#59bca8"/><circle cx="221" cy="157" r="14" fill="#ffe28a"/></g>
+<!-- fairy lights -->
+<path d="M25 74Q375 153 722 63T1172 100" stroke="#4b2770" stroke-width="5" fill="none"/>
+<g fill="#ffe18b" stroke="#fff6c3" stroke-width="3"><circle cx="115" cy="98" r="9"/><circle cx="254" cy="117" r="9"/><circle cx="400" cy="117" r="9"/><circle cx="545" cy="98" r="9"/><circle cx="680" cy="76" r="9"/><circle cx="825" cy="67" r="9"/><circle cx="968" cy="79" r="9"/><circle cx="1100" cy="93" r="9"/></g>
+<!-- fridge at left -->
+<g filter="url(#shadow)">
+ <rect x="33" y="281" width="215" height="264" rx="30" fill="#215f88" opacity=".32"/>
+ <rect x="45" y="263" width="199" height="271" rx="25" fill="url(#fridge)" stroke="#277991" stroke-width="9"/>
+ <path d="M54 379H235" stroke="#257e95" stroke-width="8"/>
+ <path d="M72 292V360M72 410V483" stroke="#e5fff3" stroke-width="13" stroke-linecap="round"/>
+ <rect x="115" y="289" width="106" height="47" rx="13" fill="#dbfff7" opacity=".55"/>
+ <path d="M155 307L163 318L176 298" stroke="#1a8795" fill="none" stroke-width="8" stroke-linecap="round"/>
+ <rect x="56" y="522" width="175" height="18" rx="6" fill="#2f5f78"/>
+</g>
+<!-- potted palm -->
+<g filter="url(#shadow)"><path d="M267 456L292 521H351L377 456Z" fill="#d57966" stroke="#8d456e" stroke-width="7"/><path d="M294 475H354" stroke="#ffb58a" stroke-width="8"/><path d="M322 457Q308 380 333 290" stroke="#53945a" stroke-width="14" fill="none" stroke-linecap="round"/>
+<g fill="#47c58e" stroke="#1c946f" stroke-width="4"><path d="M323 336Q240 254 238 326Q276 372 323 350Z"/><path d="M323 333Q383 238 400 308Q379 356 323 350Z"/><path d="M327 308Q264 201 286 218Q337 231 336 319Z"/><path d="M333 314Q373 192 391 225Q392 267 333 324Z"/><path d="M322 343Q256 329 265 397Q285 407 326 359Z"/></g></g>
+<!-- arcade machine mid right -->
+<g filter="url(#shadow)">
+ <path d="M782 272H911L924 542H758Z" fill="url(#arcade)" stroke="#472777" stroke-width="10" stroke-linejoin="round"/>
+ <path d="M787 273L797 227H901L911 272Z" fill="#f658b6" stroke="#6f317c" stroke-width="8"/>
+ <text x="850" y="258" text-anchor="middle" fill="#ffe986" font-size="21" font-weight="900" font-family="sans-serif">PAQUI ARCADE</text>
+ <rect x="789" y="291" width="112" height="123" rx="9" fill="#2a175b" stroke="#ffb9f5" stroke-width="6"/>
+ <rect x="797" y="298" width="96" height="108" rx="6" fill="#2475ae"/>
+ <path d="M805 376L833 329L848 359L871 316L891 378Z" fill="#fce891" opacity=".85"/>
+ <circle cx="831" cy="351" r="14" fill="#fe69b4"/>
+ <path d="M787 442H901" stroke="#eaa5f1" stroke-width="9"/>
+ <circle cx="824" cy="460" r="10" fill="#ffe479"/><circle cx="862" cy="461" r="10" fill="#f86aa3"/>
+ <rect x="813" y="486" width="84" height="42" rx="7" fill="#4d297d"/>
+</g>
+<!-- shower cabin right -->
+<g filter="url(#shadow)">
+ <rect x="978" y="190" width="175" height="264" rx="26" fill="#9feefa" fill-opacity=".55" stroke="#73b9d7" stroke-width="10"/>
+ <path d="M1065 196V449" stroke="#d9fcff" stroke-width="8" opacity=".8"/>
+ <path d="M1013 238V202H1116" stroke="#efdbfb" stroke-width="9" fill="none"/>
+ <circle cx="1113" cy="240" r="15" fill="#f2d0ff" stroke="#af76d1" stroke-width="6"/>
+ <path d="M1111 259L1111 275" stroke="#cae9fa" stroke-width="8"/>
+ <g fill="#d0ffff" opacity=".7"><circle cx="1005" cy="290" r="7"/><circle cx="1022" cy="316" r="6"/><circle cx="1079" cy="293" r="7"/><circle cx="1100" cy="344" r="8"/><circle cx="1049" cy="389" r="9"/></g>
+ <rect x="971" y="447" width="189" height="19" rx="8" fill="#ecd3f3" stroke="#9d78bd" stroke-width="5"/>
+</g>
+<!-- bed foreground -->
+<g filter="url(#shadow)">
+ <rect x="912" y="519" width="266" height="98" rx="26" fill="#513785" stroke="#4b2e75" stroke-width="10"/>
+ <rect x="899" y="505" width="284" height="81" rx="28" fill="url(#bed)" stroke="#4e348c" stroke-width="8"/>
+ <rect x="931" y="489" width="94" height="47" rx="24" fill="#fff0de" stroke="#f8cfda" stroke-width="5"/>
+ <rect x="1036" y="489" width="97" height="47" rx="24" fill="#fff0de" stroke="#f8cfda" stroke-width="5"/>
+ <path d="M904 564Q1040 543 1181 564V607H904Z" fill="#ed9cc0"/>
+ <path d="M934 569Q1040 550 1155 570" fill="none" stroke="#ffe5bf" stroke-width="8"/>
+ <rect x="925" y="603" width="26" height="23" rx="5" fill="#654378"/>
+ <rect x="1133" y="603" width="27" height="23" rx="5" fill="#654378"/>
+</g>
+<!-- ambient foreground details -->
+<g opacity=".72" fill="#fff9bd"><path d="M305 153l8 23 22 7-22 8-8 23-8-23-22-8 22-7z"/><path d="M947 161l5 14 13 5-13 5-5 15-5-15-12-5 12-5z"/></g>
+<path d="M0 680H1200" stroke="#6a3871" stroke-opacity=".23" stroke-width="7"/>
+</svg>
