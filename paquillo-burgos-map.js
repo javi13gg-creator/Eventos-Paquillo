@@ -179,7 +179,7 @@ function create(root,config){
    }
   }
   const myPosition=homes.find(h=>h.user_id&&h.user_id===config.uid);
-  const laura=members.find(m=>/^laura(?:\\s|$)/.test(normalize(m.name)));
+  const laura=members.find(m=>/^laura(?:\s|$)/.test(normalize(m.name)));
   if(unsaved(laura)&&myPosition){
    // Casilla contigua siempre que sea posible; sin pisar parcelas ni monumentos.
    const next=allCells.filter(c=>free(c.x,c.y)).sort((a,b)=>{
