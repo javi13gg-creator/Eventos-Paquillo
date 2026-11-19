@@ -62,7 +62,7 @@
       '<button type="button" class="paqui-react-trigger'+(mine?' has-reacted':'')+'" data-paqui-react-toggle="'+escapeHtml(id)+'" aria-expanded="'+open+'" aria-label="'+(mine?'Cambiar o quitar mi reacción '+mine:'Reaccionar al plan')+'" title="'+(mine?'Cambiar o quitar reacción':'Añadir reacción')+'"'+disabled+'><span class="paqui-react-icon-stack" aria-hidden="true"><span class="paqui-react-icon-face">'+(mine||'😊')+'</span><span class="paqui-react-icon-plus">+</span></span></button>'+
       '<div class="paqui-react-totals" aria-live="polite">'+totals+'</div>'+
      '</div>'+
-     (showPeople?'<div class="paqui-react-visible-people"><b>Resultados ('+total+')</b><div class="paqui-react-people-list">'+people+'</div></div>':'')+
+     (showPeople&&!box.closest('.paqui-plan-card')?.querySelector('.paqui-inline-voters')?'<div class="paqui-react-visible-people"><div class="paqui-react-people-list">'+people+'</div></div>':'')+
      '<div class="paqui-react-picker"'+(open?'':' hidden')+'><div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div><small>Un emoji por persona · toca el mismo para quitarlo.</small>'+
       (total?'<details class="paqui-react-people"><summary aria-label="Ver quién ha reaccionado">👥 Quién ha reaccionado ('+total+')</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+
      '</div>';
@@ -166,9 +166,10 @@
    alert('No se pudo guardar tu reacción: '+(err?.message||'Revisa tu conexión o la configuración de Supabase.'));
   }finally{busy.delete(id);renderEvent(id);}
  }
+ document.addEventListener('paqui:close-reaction-people',event=>{const id=event.detail?.id;if(id&&visiblePeople.has(id)){visiblePeople.delete(id);renderEvent(id);}});
  document.addEventListener('click',event=>{
   const peopleButton=event.target.closest('[data-paqui-react-people]');
-  if(peopleButton){event.preventDefault();const id=peopleButton.dataset.paquiReactPeople,emoji=peopleButton.dataset.paquiReactEmoji;visiblePeople.has(id)?visiblePeople.delete(id):visiblePeople.set(id,true);renderEvent(id);return;}
+  if(peopleButton){event.preventDefault();const id=peopleButton.dataset.paquiReactPeople;const open=!visiblePeople.has(id);if(open)visiblePeople.set(id,true);else visiblePeople.delete(id);renderEvent(id);const box=sectionsFor(id)[0];const card=box?.closest('.paqui-plan-card');if(card?.querySelector('.paqui-inline-voters')){const html=(reactionRows.get(id)||[]).map(row=>'<span class="paqui-react-person">'+row.emoji+' '+escapeHtml(namesByUser.get(row.user_id)||'Paquillo')+'</span>').join('');card.dispatchEvent(new CustomEvent('paqui:reaction-people',{detail:{open,html}}));}return;}
   const toggle=event.target.closest('[data-paqui-react-toggle]');
   if(toggle){
    event.preventDefault();
