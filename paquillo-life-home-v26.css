@@ -1,0 +1,219 @@
+/* Paquillo World · Habitación 2.6 y acceso a Mi Casa.
+ * Interfaz móvil inmersiva: portal protagonista, scene HUD, decoración local tangible,
+ * panel con tabs (jugar / decorar / misiones), modo pantalla completa.
+ * Último CSS: no afecta a la web Events ni al Barrio Burgos.
+ */
+#p-world .pw-home-portal{
+ position:relative;isolation:isolate;overflow:hidden;
+ display:grid;grid-template-columns:clamp(112px,24%,215px) minmax(0,1fr) auto;
+ align-items:center;gap:clamp(10px,2.5vw,22px);
+ width:calc(100% - 24px);max-width:1110px;margin:14px auto;padding:12px 17px 12px 12px;
+ border:2px solid #ffdf91;border-radius:21px;
+ background:linear-gradient(110deg,#42237fe8,#5a328fbf 48%,#238a91d9);
+ box-shadow:0 6px 0 #2a1951,0 12px 22px #180e3f89;
+ color:#fff;text-align:left
+}
+#p-world .pw-home-portal:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 81% 22%,#ffe89a40,transparent 42%)}
+#p-world .pw-home-portal-art{
+ position:relative;min-width:0;height:130px;overflow:hidden;
+ border-radius:14px;border:2px solid #fff4cb;
+ background:#a777ba url('paquillo-life-room-wide.svg?v=1') center/cover no-repeat;
+ box-shadow:inset 0 0 25px #381c5580,0 5px 12px #1a10377a
+}
+#p-world .pw-home-portal-icon{
+ position:absolute;bottom:3px;right:5px;font-size:clamp(28px,4vw,43px);
+ filter:drop-shadow(0 3px 3px #37205599)
+}
+#p-world .pw-home-portal-info{min-width:0}
+#p-world .pw-home-portal-info>small{display:block;color:#ffdf89;font-size:.67rem;font-weight:1000;letter-spacing:.1em}
+#p-world .pw-home-portal-info h2{margin:4px 0;font-size:clamp(1.04rem,2.5vw,1.48rem);line-height:1.15;color:#fff}
+#p-world .pw-home-portal-info p{max-width:420px;font-size:.77rem;line-height:1.33;margin:0 0 8px;color:#f3e8fc}
+#p-world .pw-home-portal-chips{display:flex;flex-wrap:wrap;gap:6px}
+#p-world .pw-home-portal-chips span{padding:4px 8px;background:#ffffff21;border:1px solid #f2dbff73;border-radius:99px;color:#ffebb8;font-size:.66rem;font-weight:900}
+#p-world .pw-home-portal-enter{
+ min-height:65px;padding:12px 18px;border:2px solid #fff3b1;border-radius:14px;
+ background:linear-gradient(135deg,#ffe58b,#f6ad58);color:#4e2964;
+ box-shadow:0 4px 0 #926450;
+ font:1000 .93rem/1.2 "Bricolage Grotesque",system-ui,sans-serif;
+ white-space:nowrap;cursor:pointer
+}
+#p-world .pw-home-portal-enter span{font-size:1.35rem;margin-left:4px}
+#p-world .pw-home-portal-enter:active{transform:translateY(3px);box-shadow:0 1px 0 #926450}
+#p-world .pw-header-home-access{
+ display:flex;align-items:center;gap:6px;flex:0 0 auto;
+ min-height:35px;padding:6px 10px;
+ border:1px solid #ffdb81;border-radius:11px;
+ background:linear-gradient(135deg,#e3a85e,#b95c83);
+ color:#fff;font-size:.75rem;font-weight:1000;white-space:nowrap;cursor:pointer
+}
+#p-world .pw-header-home-access:focus-visible,#p-world .pw-home-portal-enter:focus-visible{outline:3px solid #fff7b0;outline-offset:3px}
+@media(max-width:699px){
+ #p-world .pw-home-portal{
+  grid-template-columns:92px minmax(0,1fr);gap:10px;
+  align-items:center;margin:10px auto;padding:8px 9px;
+  border-radius:15px
+ }
+ #p-world .pw-home-portal-art{height:102px;grid-row:1 / span 2}
+ #p-world .pw-home-portal-info h2{font-size:1.06rem;margin:3px 0}
+ #p-world .pw-home-portal-info>small{font-size:.56rem}
+ #p-world .pw-home-portal-info p{font-size:.67rem;line-height:1.2;margin-bottom:4px}
+ #p-world .pw-home-portal-chips span{font-size:.58rem;padding:2px 6px}
+ #p-world .pw-home-portal-enter{
+  grid-column:2;justify-self:stretch;min-height:35px;padding:6px;
+  border-radius:10px;font-size:.76rem;text-align:center
+ }
+ #p-world .pw-header-home-access{font-size:.68rem;min-height:33px;padding:5px 8px}
+ #p-world .pw-header-home-access span{display:none}
+}
+@media(max-width:355px){
+ #p-world .pw-home-portal{grid-template-columns:79px 1fr}
+ #p-world .pw-home-portal-art{height:95px}
+ #p-world .pw-home-portal-info p{display:none}
+ #p-world .pw-header-home-access{padding:5px}
+}
+/* Room: immersive world layered over existing panoramas. */
+#paquiLifePreview{--pl-room-panel:#1b1146;--pl-room-gold:#ffe9a2}
+#paquiLifePreview .pl-header{background:linear-gradient(132deg,#1b0c3a,#4d2c7d 72%,#2d347c)!important}
+#paquiLifePreview .pl-preview-tag{display:none!important}
+#paquiLifePreview .pl-stage:after{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(180deg,#1e113733 0%,transparent 24%,transparent 76%,#29103b29 100%)
+}
+#paquiLifePreview .pl-scene-hud{
+ position:absolute;z-index:7;top:9px;left:10px;right:10px;
+ display:flex;justify-content:space-between;gap:7px;pointer-events:none
+}
+#paquiLifePreview .pl-scene-hud>button{
+ pointer-events:auto;min-height:38px;
+ display:flex;align-items:center;gap:5px;padding:6px 10px;
+ border:1px solid #ffe8ae;border-radius:12px;background:#28124fe8;
+ box-shadow:0 3px 9px #1e114075;backdrop-filter:blur(5px);
+ font-weight:900;font-size:clamp(.64rem,1.8vw,.8rem);color:#fff
+}
+#paquiLifePreview .pl-scene-hud>button:last-child{background:#226b80e8;border-color:#b2f2e7}
+#paquiLifePreview .pl-furniture-scene{position:absolute;inset:0;z-index:3;pointer-events:none}
+#paquiLifePreview .pl-furniture-scene .pl-furn{
+ position:absolute;display:grid;place-items:center;pointer-events:none;
+ width:clamp(56px,9vw,105px);height:clamp(56px,9vw,105px);
+ transform:translate(-50%,-50%);
+ font-size:clamp(2.1rem,5.5vw,4rem);
+ line-height:1;filter:drop-shadow(0 9px 5px #2a143e99);
+ transition:transform .25s ease,opacity .2s
+}
+#paquiLifePreview .pl-furniture-scene .pl-furn span{display:block;max-width:100%;filter:drop-shadow(0 2px 2px #190f4466)}
+#paquiLifePreview .pl-furn[data-slot="wall"]{left:17%;top:32%}
+#paquiLifePreview .pl-furn[data-slot="floor"]{left:23%;top:77%}
+#paquiLifePreview .pl-furn[data-slot="shelf"]{left:77%;top:68%}
+#paquiLifePreview .pl-furn[data-value="none"]{opacity:0}
+#paquiLifePreview .pl-furn[data-value="pet"]{animation:pl-furn-pet 2s ease-in-out infinite}
+#paquiLifePreview .pl-furn[data-value="disco"]{animation:pl-furn-disco 8s linear infinite}
+#paquiLifePreview .pl-furn[data-value="trophy"]{filter:drop-shadow(0 0 11px #ffdc87)}
+#paquiLifePreview .pl-furn[data-value="rug"]{font-size:clamp(2.6rem,8vw,5.5rem)}
+#paquiLifePreview .pl-furn[data-value="flowers"]{font-size:clamp(2.4rem,7vw,5rem)}
+@keyframes pl-furn-pet{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-58%) rotate(-4deg)}}
+@keyframes pl-furn-disco{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+#paquiLifePreview .pl-room-sticker{
+ position:absolute;z-index:6;top:17%;left:50%;transform:translateX(-50%);
+ display:grid;gap:2px;place-items:center;pointer-events:none;
+ padding:7px 11px;max-width:55%;background:#26134cba;border:1px solid #fff1ba7a;border-radius:13px
+}
+#paquiLifePreview .pl-room-sticker strong{font-size:clamp(.78rem,2.3vw,1.03rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#paquiLifePreview .pl-room-sticker small{font-size:.61rem;color:#f8e7b8}
+#paquiLifePreview .pl-floor-caption{bottom:9px!important;max-width:70%}
+#paquiLifePreview .pl-immersive-toggle{min-width:35px;min-height:35px;padding:7px 10px;border:1px solid #ffe4ae;background:#583286;color:#fff;border-radius:11px;font-size:.73rem;font-weight:900}
+#paquiLifePreview .pl-base-foot{max-height:min(48dvh,510px)!important;gap:6px!important}
+#paquiLifePreview .pl-base-foot .pl-base-intro{order:0}
+#paquiLifePreview .pl-panel-headline{order:1;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:34px}
+#paquiLifePreview .pl-panel-headline>span{font-weight:950;font-size:.8rem;color:#e9d8ff}
+#paquiLifePreview .pl-base-tabs{
+ order:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px
+}
+#paquiLifePreview .pl-base-tabs button{
+ min-width:0;min-height:44px;padding:7px 4px;border:1px solid #b5a0e0;border-radius:10px;
+ color:#ecdbfa;background:#32205e;font-size:.75rem;font-weight:950
+}
+#paquiLifePreview .pl-base-tabs button[aria-selected="true"]{
+ border-color:#ffdf87;color:#42234e;
+ background:linear-gradient(130deg,#ffe8a5,#f8be73);box-shadow:0 2px 0 #ae7646
+}
+#paquiLifePreview .pl-panel{display:none!important;order:3}
+#paquiLifePreview .pl-panel.is-active{display:grid!important;gap:9px}
+#paquiLifePreview .pl-play-panel{grid-template-columns:repeat(2,minmax(0,1fr))}
+#paquiLifePreview .pl-play-panel button{
+ display:flex;align-items:center;gap:8px;text-align:left;min-width:0;
+ min-height:61px;padding:10px;border:1px solid #bfb1ee;border-radius:13px;
+ background:linear-gradient(145deg,#6b489f,#442b82);color:#fff;font-weight:900
+}
+#paquiLifePreview .pl-play-panel button:nth-child(2){background:linear-gradient(145deg,#247e96,#28529b)}
+#paquiLifePreview .pl-play-panel button:nth-child(3){background:linear-gradient(145deg,#267c77,#3c5189)}
+#paquiLifePreview .pl-play-panel button:nth-child(4){background:linear-gradient(145deg,#b07939,#9c427a)}
+#paquiLifePreview .pl-play-panel button span{font-size:1.6rem;line-height:1}
+#paquiLifePreview .pl-play-panel button>div{display:grid;gap:3px;min-width:0}
+#paquiLifePreview .pl-play-panel button b{font-size:.78rem;line-height:1.1}
+#paquiLifePreview .pl-play-panel button small{font-size:.6rem;line-height:1.15;color:#f4e3ff}
+#paquiLifePreview .pl-decor-panel{grid-template-columns:1fr;gap:7px!important}
+#paquiLifePreview .pl-furn-note{margin:0;color:#ead8fa;font-size:.68rem;line-height:1.3}
+#paquiLifePreview .pl-furn-slot-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#paquiLifePreview .pl-furn-slot-picker button{
+ min-width:0;min-height:41px;border:1px solid #a98ed4;border-radius:11px;
+ background:#362368;color:#fff;font-size:.7rem;font-weight:900
+}
+#paquiLifePreview .pl-furn-slot-picker button[aria-pressed=true]{background:#226c82;border-color:#80ebd8;box-shadow:inset 0 0 0 1px #baf8ed}
+#paquiLifePreview .pl-furn-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+#paquiLifePreview .pl-furn-options button{
+ display:grid;justify-items:center;gap:3px;min-width:0;min-height:66px;padding:7px 2px;
+ background:#3b276e;border:1px solid #b493dc;border-radius:11px;color:#fff;
+ font-weight:850;font-size:.62rem;line-height:1.12
+}
+#paquiLifePreview .pl-furn-options button .pl-furn-icon{font-size:1.55rem;line-height:1}
+#paquiLifePreview .pl-furn-options button[aria-pressed=true]{border-color:#ffe5a3;background:#6d4c8e}
+#paquiLifePreview .pl-custom-theme{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding-top:4px;border-top:1px solid #665090}
+#paquiLifePreview .pl-custom-theme b{font-size:.69rem;color:#ffdfaa;margin-right:4px}
+#paquiLifePreview .pl-custom-theme button{border:1px solid #d8bbff;border-radius:9px;background:#574081;color:#fff;padding:7px 8px;font-size:.7rem;font-weight:900}
+#paquiLifePreview .pl-custom-theme button[aria-pressed=true]{border-color:#ffe19a;background:#226d7a}
+#paquiLifePreview .pl-missions-panel .pl-daily-hub{margin:0!important;width:100%;max-width:none}
+#paquiLifePreview .pl-missions-panel .pwd-card{padding:10px}
+#paquiLifePreview .pl-missions-panel .pwd-tasks{display:grid!important}
+#paquiLifePreview .pl-missions-panel .pwd-disclaimer{display:block!important}
+#paquiLifePreview .pl-room-extras{order:4;width:100%;max-width:1180px;margin-inline:auto;border:1px solid #5f458e;border-radius:11px;background:#21163d}
+#paquiLifePreview .pl-room-extras summary{font-size:.7rem;padding:10px;cursor:pointer;color:#bdaede}
+#paquiLifePreview .pl-room-extras .pl-quick-actions{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:6px!important;padding:6px 10px 10px}
+#paquiLifePreview .pl-room-extras .pl-needs{display:none!important}
+#paquiLifePreview .pl-room-extras .pl-achievements{margin:0 10px 12px}
+#paquiLifePreview .pl-base-foot #plStatus{order:5;font-size:.7rem}
+#paquiLifePreview .pl-base-foot [data-pl-persistence]{order:6;font-size:.62rem}
+#paquiLifePreview.pl-ui-minimized .pl-base-foot{max-height:105px!important;min-height:0!important;overflow:hidden!important;padding-block:7px!important}
+#paquiLifePreview.pl-ui-minimized .pl-base-foot>*:not(.pl-panel-headline):not(.pl-base-tabs){display:none!important}
+#paquiLifePreview.pl-ui-minimized .pl-base-tabs{min-height:35px}
+#paquiLifePreview.pl-ui-minimized .pl-base-tabs button{min-height:34px!important}
+#paquiLifePreview.pl-ui-minimized .pl-panel-headline{min-height:24px}
+@media(max-width:719px){
+ #paquiLifePreview .pl-room-sticker{top:19%;max-width:58%}
+ #paquiLifePreview .pl-scene-hud>button{min-height:33px;padding:5px 7px;font-size:.65rem}
+ #paquiLifePreview .pl-furn[data-slot="wall"]{left:19%;top:41%}
+ #paquiLifePreview .pl-furn[data-slot="floor"]{left:15%;top:73%}
+ #paquiLifePreview .pl-furn[data-slot="shelf"]{left:82%;top:74%}
+ #paquiLifePreview .pl-furn{font-size:2.5rem!important;width:55px!important;height:55px!important}
+ #paquiLifePreview .pl-base-foot{max-height:min(44dvh,390px)!important}
+ #paquiLifePreview .pl-base-foot .pl-base-intro{display:none}
+ #paquiLifePreview .pl-play-panel button{min-height:59px;padding:7px}
+ #paquiLifePreview .pl-play-panel button b{font-size:.73rem}
+ #paquiLifePreview .pl-play-panel button small{font-size:.55rem}
+ #paquiLifePreview .pl-room-extras summary{font-size:.62rem}
+}
+@media(max-height:680px){
+ #paquiLifePreview .pl-base-foot{max-height:46dvh!important}
+ #paquiLifePreview .pl-panel-headline{min-height:27px}
+ #paquiLifePreview .pl-base-tabs button{min-height:36px}
+ #paquiLifePreview .pl-play-panel button{min-height:51px}
+}
+@media(min-width:720px){
+ #paquiLifePreview .pl-base-foot{max-height:min(41dvh,415px)!important}
+ #paquiLifePreview .pl-panel.is-active{max-width:1160px}
+ #paquiLifePreview .pl-play-panel{grid-template-columns:repeat(4,minmax(0,1fr))}
+ #paquiLifePreview .pl-furn-options{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview .pl-furn{animation:none!important;transition:none!important}
+ #p-world .pw-home-portal-enter{transition:none!important}
+}
