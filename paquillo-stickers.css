@@ -1,0 +1,20 @@
+/* Paquillo Events · uploader de stickers adaptable a móvil. */
+.paqui-sticker-uploader{margin:.8rem 0 1rem;background:var(--card);border:1.5px solid var(--ln);border-radius:17px;overflow:hidden;box-shadow:0 4px 14px #1b145522}
+.paqui-sticker-uploader>summary{display:flex;align-items:center;justify-content:space-between;gap:.5rem;list-style:none;cursor:pointer;font-weight:850;padding:.85rem 1rem;min-height:52px}
+.paqui-sticker-uploader>summary::-webkit-details-marker{display:none}
+.paqui-sticker-uploader>summary:after{content:'⌄';font-size:1.2rem;color:var(--mut);transition:transform .2s}
+.paqui-sticker-uploader[open]>summary:after{transform:rotate(180deg)}
+.paqui-sticker-uploader>summary:hover{background:color-mix(in srgb,var(--pk) 7%,var(--card))}
+.paqui-sticker-uploader .feature-form{padding:.9rem 1rem 1rem;border-top:1px solid var(--ln);margin:0;gap:.8rem}
+.paqui-sticker-uploader .feature-form small{font-size:.82rem}
+.paqui-sticker-preview-wrap{display:grid;place-items:center;min-height:90px;width:min(100%,240px);margin:.2rem auto;padding:.8rem;border:1px dashed var(--ln);border-radius:14px;background-color:var(--bg);background-image:linear-gradient(45deg,#8080801c 25%,transparent 25%),linear-gradient(-45deg,#8080801c 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#8080801c 75%),linear-gradient(-45deg,transparent 75%,#8080801c 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
+.paqui-sticker-preview-wrap:has(img[hidden]){display:none}
+#stickerUploadPreview{width:min(100%,200px);height:200px;object-fit:contain}
+#stickerCount{color:var(--mut);font-size:.85rem;margin:.35rem 0 1rem}
+.paqui-sticker-error{color:#c33243!important;font-weight:700}
+.stk .st{position:relative;overflow:hidden;min-width:0}
+.stk .st.paqui-sticker-member{border-color:var(--ln)}
+.stk .st .paqui-sticker-caption{position:absolute;left:4px;right:4px;bottom:4px;font-size:.72rem;font-weight:800;line-height:1.2;padding:4px;border-radius:7px;background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#stickerViewerCaption{color:#fff;text-align:center;font-weight:850;max-width:100%;word-break:break-word}
+#stickerDelete{font-size:.85rem;padding:.35rem .65rem}
+@media(max-width:500px){.paqui-sticker-uploader .feature-form{padding:.7rem}.stk{grid-template-columns:repeat(auto-fill,minmax(95px,1fr))}}
