@@ -289,3 +289,8 @@
 #paquiLifePreview .pl-world-nav-btn .pw-events-icon{display:block;width:26px;height:26px;max-width:100%;object-fit:contain;border-radius:6px}
 #paquiLifePreview .pl-world-nav-btn i{display:flex;align-items:center;justify-content:center}
 @media(max-width:420px){#paquiLifePreview .pl-world-nav-btn .pw-events-icon{width:23px;height:23px}}
+
+
+/* Insignia W en el botón Inicio del menú persistente de Mi casa. */
+#paquiLifePreview .pl-world-nav-btn i .pw-world-mark{display:block;width:28px;height:28px;max-width:100%;object-fit:contain;border-radius:50%;filter:drop-shadow(0 1px 2px #16083e80)}
+@media(max-width:420px){#paquiLifePreview .pl-world-nav-btn i .pw-world-mark{width:24px;height:24px}}
