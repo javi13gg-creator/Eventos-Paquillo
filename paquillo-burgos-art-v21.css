@@ -9,7 +9,7 @@
 }
 #p-world .pwb-map-illustration{
  position:absolute;inset:0;width:100%;height:100%;display:block;
- object-fit:contain;object-position:50% 50%;
+ object-fit:fill;object-position:50% 50%; /* Evita franjas verdes sin recortar los extremos del mapa. */
  pointer-events:none;user-select:none;-webkit-user-drag:none
 }
 #p-world .pwb-art-ready .pwb-map-fallback{display:none}
