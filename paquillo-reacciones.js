@@ -9,6 +9,7 @@
  const namesByUser=new Map();
  const busy=new Set();
  const openPickers=new Set();
+ const visiblePeople=new Map();
  let loaded=false,loadError='',sequence=0,userId='',mountedRoot=null,fetchingMembers=false,lastLoadedAt=0;
  const isMissingTable=err=>['42P01','PGRST205','PGRST116'].includes(String(err?.code||''))||/relation .*paqui_event_reactions.* does not exist|could not find the table.*paqui_event_reactions/i.test(String(err?.message||''));
  const validId=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));
@@ -45,12 +46,13 @@
    if(!loaded){box.innerHTML='<p class="paqui-react-loading">Cargando reacciones…</p>';continue;}
    const disabled=busy.has(id)?' disabled':'';
    const open=openPickers.has(id);
+   const visibleEmoji=visiblePeople.get(id);
    const buttons=EMOJIS.map(e=>{
     const active=mine===e;
     return '<button type="button" class="paqui-react-option'+(active?' is-active':'')+'" data-paqui-react="'+e+'" data-paqui-react-event="'+escapeHtml(id)+'" aria-pressed="'+active+'" aria-label="'+(active?'Quitar mi reacción':'Reaccionar con')+' '+e+', '+counts[e]+' reacciones"'+disabled+'><span aria-hidden="true">'+e+'</span><b>'+counts[e]+'</b></button>';
    }).join('');
    const totals=EMOJIS.filter(e=>counts[e]>0).sort((a,b)=>counts[b]-counts[a]).map(e=>
-    '<span class="paqui-react-chip" aria-label="'+counts[e]+' reacciones '+e+'" title="'+counts[e]+' reacciones '+e+'">'+e+(counts[e]>1?'<b>'+counts[e]+'</b>':'')+'</span>'
+    '<button type="button" class="paqui-react-chip paqui-react-chip-button" data-paqui-react-people="'+escapeHtml(id)+'" data-paqui-react-emoji="'+e+'" aria-expanded="'+(visibleEmoji===e)+'" aria-label="Ver quién reaccionó con '+e+': '+counts[e]+'">'+e+' <b>'+counts[e]+'</b></button>'
    ).join('');
    const people=rows.map(row=>{
     const name=namesByUser.get(row.user_id)||'Paquillo';
@@ -164,6 +166,8 @@
   }finally{busy.delete(id);renderEvent(id);}
  }
  document.addEventListener('click',event=>{
+  const peopleButton=event.target.closest('[data-paqui-react-people]');
+  if(peopleButton){event.preventDefault();const id=peopleButton.dataset.paquiReactPeople,emoji=peopleButton.dataset.paquiReactEmoji;visiblePeople.get(id)===emoji?visiblePeople.delete(id):visiblePeople.set(id,emoji);renderEvent(id);return;}
   const toggle=event.target.closest('[data-paqui-react-toggle]');
   if(toggle){
    event.preventDefault();
