@@ -291,3 +291,24 @@
   margin:4px 6px 4px 0;
  }
 }
+
+/* Recuento RSVP integrado: número como texto interactivo, sin apariencia de botón */
+#p-planes .paqui-rsvp-choice > button.paqui-rsvp-total{
+ appearance:none;-webkit-appearance:none;
+ display:inline-flex;align-items:center;justify-content:center;align-self:center;
+ width:auto;min-width:32px;min-height:23px;
+ margin:0;padding:1px 9px;
+ border:0!important;border-radius:999px;
+ background:transparent!important;box-shadow:none!important;
+ color:var(--mut);font:800 .76rem/1.4 system-ui,sans-serif;
+ font-variant-numeric:tabular-nums;cursor:pointer;
+ transition:color .15s,background-color .15s;
+}
+#p-planes .paqui-rsvp-choice > button.paqui-rsvp-total:hover,
+#p-planes .paqui-rsvp-choice > button.paqui-rsvp-total[aria-expanded="true"]{
+ color:var(--pk);background:color-mix(in srgb,var(--pk) 9%,transparent)!important;
+}
+#p-planes .paqui-rsvp-choice > button.paqui-rsvp-total:focus-visible{
+ outline:2px solid var(--pk);outline-offset:1px;
+}
+#p-planes .paqui-rsvp-choice:has(.is-selected) > button.paqui-rsvp-total{color:var(--pk)}
