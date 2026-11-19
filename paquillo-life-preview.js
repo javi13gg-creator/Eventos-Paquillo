@@ -548,7 +548,7 @@
     '<p id="plStatus" role="status" aria-live="polite">🎮 ¡Tu casa está lista! Elige qué quieres hacer.</p>'+
     '<small data-pl-persistence>ℹ️ Las interacciones opcionales no dan XP.</small></footer>'+ 
     '<nav class="pl-world-bottom-nav" aria-label="Secciones de Paquillo World">'+
-     [['web','','WEB'],['home','🌴','Inicio'],['house','🏡','Mi casa'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['challenges','⚔️','Retos'],['ranking','🏆','Ranking']].map(([id,ico,label])=>
+     [['web','','WEB'],['home','<img class="pw-world-mark" src="paquillo-world-w.png?v=1" alt="" loading="eager" decoding="async">','Inicio'],['house','🏡','Mi casa'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['challenges','⚔️','Retos'],['ranking','🏆','Ranking']].map(([id,ico,label])=>
       '<button type="button" class="pl-world-nav-btn'+(id==='house'?' on':'')+'" data-pl-world-nav="'+id+'" aria-label="'+label+'"'+(id==='house'?' aria-current="page"':'')+'><i aria-hidden="true">'+(id==='web'?'<img class="pw-events-icon" src="icon-192.png?v=3" alt="">':ico)+'</i><span>'+label+'</span></button>').join('')+'</nav>';
   // Controles principales registrados antes de cargar sprites, necesidades o decoraciones.
   // Captura para que capas de escena o manejadores secundarios no bloqueen navegación.
