@@ -550,7 +550,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <link rel="stylesheet" href="paquillo-foto-original.css?v=3">
 <link rel="stylesheet" href="paquillo-ayuda.css?v=1">
 <link rel="stylesheet" href="paquillo-navigation.css?v=3">
-<link rel="stylesheet" href="paquillo-stickers.css?v=1">
+<link rel="stylesheet" href="paquillo-stickers.css?v=2">
 <link rel="stylesheet" href="paquillo-admin-refresh.css?v=2">
 <link rel="stylesheet" href="paquillo-planes.css?v=1">
 <link rel="stylesheet" href="paquillo-reacciones.css?v=2">
@@ -713,6 +713,11 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <p><a class="btn" id="dall" href="stickers.zip" download hidden>Descargar todos (zip)</a></p>
 <p id="stickerCount" aria-live="polite"></p>
 <div class="stk" id="stk"></div>
+<details id="stickerHiddenPanel" class="paqui-sticker-admin" hidden>
+  <summary>🛠️ Administración · Stickers antiguos retirados</summary>
+  <p class="form-msg">Los originales siguen guardados en GitHub, pero dejan de aparecer en la galería del grupo. Puedes restaurarlos aquí cuando quieras.</p>
+  <div id="stickerHiddenList"></div>
+</details>
 <div class="how"><b>Cómo llevarlos a WhatsApp</b><p>Descarga los que quieras y añádelos a un pack con una app de stickers, como Sticker Maker. Casi todos son WebP de 512 × 512 px, el formato que pide WhatsApp.</p></div>
 </section>
 <section class="panel" id="p-directorio" hidden>
@@ -859,7 +864,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="paquillo-stickers.js?v=1"></script>
+<script src="paquillo-stickers.js?v=2"></script>
 <script>
 let EV=[
 {id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richy y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'cartel-cumple-sandra-2026.jpg'},
