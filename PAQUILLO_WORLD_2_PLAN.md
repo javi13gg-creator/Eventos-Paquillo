@@ -65,6 +65,16 @@ No se dan XP por resultados no validados de juegos ni por «visitar» indefinida
 - **Migración adicional obligatoria para restricciones del servidor:** ejecutar `paquillo-burgos-landmarks-v21.sql` **después** de `paquillo-world-burgos-v2.sql`. Cambia únicamente el validador de parcelas, no recoloca ni borra casas. La validación del navegador ya está sincronizada.
 - **QA:** archivo AVIF verificado en GitHub por SHA `c1d31bf030233fe70303406b5e926c8a11339f46`; JS comprobado, pruebas de estructura y simulaciones de clic en casa, landmark, carga del fondo y modo colocación. Pendientes prueba visual real en iOS/Android y SQL ejecutado en Supabase.
 
+## Mi casa 2.6 · Entrada desde World y habitación decorable (19/11/2026)
+
+- **Entradas a Mi casa (piloto privado):** tarjeta con miniatura de la habitación en Inicio de World, botón 🏡 permanente en cabecera y acceso desde la ficha de tu parcela en Barrio. Se reutiliza una sola función `openMyRoom` para conservar nivel, XP, misiones y navegación al volver desde Memoria/Arcade. Se mantiene la autorización privada existente `lifePreviewAllowed`; no se abre a otros miembros todavía.
+- **Experiencia móvil:** interfaz de habitación full screen con escena, panel inferior en pestañas `Jugar`, `Decorar`, `Misiones`; control para ocultar el panel y contemplar la habitación. Juego, Barrio, Perfil y Memoria son rutas reales.
+- **Decoración visible:** tres espacios sobre la escena (Pared, Suelo y Rincón) con varios objetos; al pulsar un adorno se abre su editor. Los objetos elegidos se ven realmente encima del escenario y persisten en `localStorage` separado por `auth.uid()`. No usan monedas ni XP ni Supabase todavía; no se comparten entre dispositivos.
+- **No es tamagotchi:** eliminadas todas las barras de energía/ánimo/bienestar de la interfaz; comer, ducharse y dormir permanecen como animaciones ocultas en Extras. El avatar existente y el cuidado Supabase se mantienen sin variar las RPC.
+- **Misiones y recompensas:** la pestaña Misiones reaprovecha `PaquilloWorldDaily`, cuyo check-in de +5 XP ya está respaldado por la RPC. No concede XP por decorar ni por jugar sin validación de resultados.
+- **Archivos:** `paquillo-life-home-v26.css` (nuevo), `paquillo-life-preview.js`, `paquillo-world.js`, `index.html`. No requiere SQL nuevo.
+- **QA:** JS sintáctico; DOM de la habitación balanceado; validada la selección de muebles, guardado/restauración por usuario y estados de pestañas mediante simulación; prueba visual/táctil en dispositivos físicos y comprobación end-to-end con sesión real pendientes.
+
 ## Lanzamiento gradual
 - **Fase 1:** mapa navegable, casas, modo simulación sin SQL, control de parcelas + hub. Código en GitHub.
 - **Fase 2:** aplicar la migración de A1/B1, probar en Supabase con Javi y otro usuario; confirmar permisos y colisiones; corregir bugs de móvil.
