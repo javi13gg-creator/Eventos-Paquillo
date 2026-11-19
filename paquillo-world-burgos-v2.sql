@@ -51,8 +51,18 @@ as $$
      (19,8), -- Gamonal
      (18,4), -- G3
      (21,2), -- Villimar
-     (16,11),-- El Plantío
-     (24,15) -- Fuentes Blancas
+     (16,11),-- El Plantío (bloqueo original)
+     (24,15),-- Fuentes Blancas (bloqueo original)
+     -- Mapa ilustrado Burgos v2.1: mantener sincronizado con la interfaz.
+     (7,7),(6,7),(8,7),            -- Castillo
+     (9,9),(10,9),(10,8),(11,9),   -- Catedral
+     (12,9),(13,9),(14,9),        -- Plaza Mayor
+     (8,12),(9,12),               -- Arco de Santa María
+     (12,12),(13,12),(14,12),     -- Paseo del Espolón
+     (2,10),(3,10),               -- Universidad
+     (17,10),(18,10),(19,10),(18,11), -- El Plantío
+     (21,10),(22,10),(23,10),     -- Coliseum Burgos
+     (24,12),(25,12)              -- Fuentes Blancas
    )
 $$;
 revoke all on function public.paqui_world_home_tile_available(integer,integer)
