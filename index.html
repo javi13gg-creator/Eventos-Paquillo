@@ -494,6 +494,31 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
  .paqui-avatar-member-grid{grid-template-columns:minmax(0,1fr)}
 }
 
+
+/* Encuestas compactas: lectura rapida en movil y archivo plegado. */
+.paqui-poll-fold{margin:11px 0;border:1px solid rgba(125,141,190,.28);border-radius:18px;background:linear-gradient(135deg,rgba(92,104,182,.11),rgba(255,255,255,.045));box-shadow:0 7px 22px rgba(20,25,60,.08);overflow:hidden}
+.paqui-poll-summary{display:flex;align-items:center;gap:11px;padding:13px 15px;min-height:72px;cursor:pointer;list-style:none;touch-action:manipulation}
+.paqui-poll-summary::-webkit-details-marker,.paqui-poll-archive>summary::-webkit-details-marker{display:none}
+.paqui-poll-summary:hover,.paqui-poll-summary:focus-visible{background:rgba(124,136,209,.11)}
+.paqui-poll-icon{flex:0 0 42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(128,136,218,.16);font-size:1.45rem}
+.paqui-poll-summary-copy{display:grid;gap:4px;flex:1;min-width:0}
+.paqui-poll-summary-copy strong{font-size:1.01rem;line-height:1.3;overflow-wrap:anywhere}
+.paqui-poll-summary-copy small{color:var(--mut);font-size:.79rem;line-height:1.35;overflow-wrap:anywhere}
+.paqui-poll-status{flex-shrink:0;white-space:nowrap;border:1px solid var(--ln);border-radius:99px;padding:5px 8px;font-size:.73rem;font-weight:850;background:var(--card)}
+.paqui-poll-chevron{flex:0 0 auto;font-size:1.25rem;color:var(--mut);transition:transform .18s}
+.paqui-poll-fold[open]>.paqui-poll-summary .paqui-poll-chevron{transform:rotate(180deg)}
+.paqui-poll-fold>.poll-card{margin:0;border:0;border-top:1px solid var(--ln);border-radius:0;box-shadow:none;background:var(--card);padding:14px 15px}
+.paqui-poll-fold>.poll-card h3{margin:.2rem 0 .5rem}
+.paqui-poll-archive{border:1px solid var(--ln);border-radius:18px;padding:0;overflow:hidden;margin:1.3rem 0;background:var(--card)}
+.paqui-poll-archive>summary{padding:17px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;font-weight:850;min-height:60px}
+.paqui-poll-archive>summary:hover{background:rgba(124,136,209,.11)}
+.paqui-poll-archive-count{border-radius:99px;padding:4px 10px;background:var(--bg);font-size:.8rem;border:1px solid var(--ln)}
+.paqui-poll-archive-content{padding:0 10px 11px;border-top:1px solid var(--ln)}
+.paqui-poll-archive .paqui-poll-fold{background:var(--card)}
+.paqui-poll-archive .paqui-poll-icon{background:rgba(130,130,130,.12)}
+.paqui-poll-archive .paqui-poll-summary{min-height:66px}
+@media(max-width:440px){.paqui-poll-summary{gap:8px;padding:12px 11px}.paqui-poll-icon{flex-basis:36px;height:36px;font-size:1.2rem}.paqui-poll-status{font-size:.67rem;padding:4px 6px}.paqui-poll-summary-copy small{font-size:.74rem}.paqui-poll-chevron{font-size:1rem}.paqui-poll-fold>.poll-card{padding:12px}}
+
 /* Planes compactos desplegables */
 .paqui-plan-fold{margin:12px 0;border:1px solid rgba(125,141,190,.28);border-radius:18px;background:linear-gradient(135deg,rgba(92,104,182,.11),rgba(255,255,255,.045));box-shadow:0 7px 22px rgba(20,25,60,.08);overflow:hidden}
 .paqui-plan-summary{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;list-style:none;min-height:72px;transition:background .2s}
@@ -697,7 +722,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <label>Opciones <small>(una por línea, mínimo 2)</small><textarea name="options" rows="4" required placeholder="Viernes&#10;Sábado&#10;Domingo"></textarea></label>
 <button class="btn" type="submit">Crear y publicar encuesta</button><p class="form-msg" id="pollMsg" aria-live="polite"></p>
 </form></div>
-<h2>Encuestas del grupo</h2><div id="pollList"><div class="empty">Cargando encuestas…</div></div>
+<h2>🗳️ Encuestas abiertas</h2><p class="sub">Toca una encuesta para ver sus opciones, votar y consultar los resultados. Las finalizadas se guardan más abajo.</p><div id="pollList"><div class="empty">Cargando encuestas…</div></div>
 </section>
 <section class="panel" id="p-viajes" hidden>
 <h2>🧳 Viajes Paquillo</h2><p class="sub">Ideas, escapadas y viajes del grupo. Cada miembro puede crear y gestionar sus propios viajes.</p>
@@ -1257,61 +1282,127 @@ showTab(location.hash.slice(1));
  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./paquillo-sw.js').catch(e=>console.warn('No se pudo registrar el Service Worker',e)));}
 
  function canManagePoll(poll){return !!currentAuthUser&&(currentProfile?.role==='admin'||poll?.created_by===currentAuthUser.id);}
- async function renderPolls(){
-   const target=$id('pollList');target.innerHTML='<div class="empty">Cargando encuestas…</div>';
+ async function renderPolls(focusId=null,{preserveState=true}={}){
+   const target=$id('pollList');
+   if(!target)return;
+   const rememberedId=preserveState?target.querySelector('.paqui-poll-fold[open]')?.dataset.pollId:null;
+   const archiveWasOpen=preserveState&&!!target.querySelector('#pollArchiveGroup[open]');
+   target.innerHTML='<div class="empty">Cargando encuestas…</div>';
    const {data:polls,error}=await client.from('polls').select('id,title,description,poll_type,vote_visibility,status,closes_at,created_by,created_at,related_event_id,related_trip_id,poll_options(id,option_text,sort_order)').order('created_at',{ascending:false});
    if(error){target.innerHTML='<div class="empty">No se pudieron cargar las encuestas: '+esc(error.message)+'</div>';return}
    if(!polls?.length){target.innerHTML='<div class="empty">Todavía no hay encuestas. ¡Estrena la sección!</div>';return}
    const pollStats=await Promise.all(polls.map(async poll=>{
-     const [results,participation]=await Promise.all([client.rpc('paqui_poll_results',{p_poll_id:poll.id}),client.rpc('paqui_poll_participation',{p_poll_id:poll.id})]);
+     const [results,participation]=await Promise.all([
+       client.rpc('paqui_poll_results',{p_poll_id:poll.id}),
+       client.rpc('paqui_poll_participation',{p_poll_id:poll.id})
+     ]);
      return {poll,results:results.data||[],resultError:results.error,participation:participation.data||[],participationError:participation.error};
    }));
-   let html='';
+   const active=[],archived=[];
    for(const stat of pollStats){
      const {poll,results,resultError,participation,participationError}=stat;
-     const status=poll.status==='open'?'Abierta':poll.status==='closed'?'Cerrada':'Borrador';
-     const manager=canManagePoll(poll);
-     const manage=manager?'<div class="poll-manage"><button class="btn secondary" type="button" data-edit-poll="'+poll.id+'">✏️ Editar encuesta</button><button class="btn danger" type="button" data-delete-poll="'+poll.id+'">🗑️ Eliminar encuesta</button></div>':'';
+     const isClosed=poll.status==='closed';
+     const status=poll.status==='open'?'Abierta':isClosed?'Finalizada':'Borrador';
+     const manager=canManagePoll(poll),pid=esc(poll.id);
+     const manage=manager?'<div class="poll-manage">'+
+       (!isClosed?'<button class="btn secondary" type="button" data-edit-poll="'+pid+'">✏️ Editar encuesta</button>':'')+
+       (poll.status==='open'?'<button class="btn secondary" type="button" data-close-poll="'+pid+'">✅ Finalizar y archivar</button>':'')+
+       (isClosed?'<button class="btn secondary" type="button" data-reopen-poll="'+pid+'">↩️ Reabrir encuesta</button>':'')+
+       '<button class="btn danger" type="button" data-delete-poll="'+pid+'">🗑️ Eliminar encuesta</button></div>':'';
      let participationHtml='<p class="form-msg">No se pudo cargar el indicador de participación.</p>';
+     let voteSummary='Participación pendiente';
      if(!participationError&&participation?.length){
        const info=participation[0],total=Number(info.total_members)||0,voted=Number(info.voted_count)||0,pct=total?Math.round(voted/total*100):0;
        const pending=(participation||[]).map(x=>x.pending_name).filter(Boolean);
-       participationHtml='<div class="poll-participation"><div class="poll-participation-head"><span>📊 Participación</span><span>'+voted+' de '+total+' · '+pct+'%</span></div><div class="poll-progress" role="progressbar" aria-label="Participación en la encuesta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><span style="width:'+pct+'%"></span></div>'+(poll.vote_visibility==='named'?(pending.length?'<details><summary>Faltan '+pending.length+' por responder</summary><ul class="poll-pending">'+pending.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul></details>':'<small>¡Todo el mundo ha respondido!</small>'):'<small>🔒 Votación secreta: se muestra únicamente el total, sin identificar quién ha respondido.</small>')+'</div>';
+       voteSummary=voted+' de '+total+' han votado';
+       participationHtml='<div class="poll-participation"><div class="poll-participation-head"><span>📊 Participación</span><span>'+voted+' de '+total+' · '+pct+'%</span></div><div class="poll-progress" role="progressbar" aria-label="Participación en la encuesta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><span style="width:'+pct+'%"></span></div>'+
+         (poll.vote_visibility==='named'?(pending.length?'<details><summary>Faltan '+pending.length+' por responder</summary><ul class="poll-pending">'+pending.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul></details>':'<small>¡Todo el mundo ha respondido!</small>'):'<small>🔒 Votación secreta: se muestra únicamente el total, sin identificar quién ha respondido.</small>')+'</div>';
      }
-     const voters=poll.vote_visibility==='named'?'<div class="poll-tools"><button class="btn secondary" type="button" data-view-voters="'+poll.id+'">👥 Ver quién ha votado</button></div><div class="poll-voters" data-voters-panel="'+poll.id+'" hidden></div>':'<p class="form-msg">🔒 Encuesta secreta: nunca se mostrarán nombres ni respuestas individuales.</p>';
-     html+='<article class="poll-card" id="poll-'+poll.id+'"><span class="status-tag">'+status+' · '+(poll.vote_visibility==='secret'?'Voto secreto':'Voto identificado')+'</span><h3>'+esc(poll.title)+'</h3>'+(poll.description?'<p>'+esc(poll.description)+'</p>':'')+(poll.related_event_id?'<button class="btn" type="button" data-go-event="'+poll.related_event_id+'">📅 Ir al plan</button>':'')+(poll.related_trip_id?'<button class="btn" type="button" data-go-trip="'+poll.related_trip_id+'">🧳 Ir al viaje</button>':'')+'<button class="btn secondary" type="button" data-share-poll="'+poll.id+'">📲 Compartir encuesta por WhatsApp</button>'+manage+participationHtml+voters+'<form class="poll-vote-form" data-poll="'+poll.id+'">';
-     (poll.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).forEach(o=>{html+='<label class="poll-option"><input type="'+(poll.poll_type==='multiple'?'checkbox':'radio')+'" name="option" value="'+o.id+'"> '+esc(o.option_text)+'</label>'});
-     if(poll.status==='open')html+='<button class="btn" type="submit">Enviar voto</button>';
-     html+='</form><div class="poll-results">'+(resultError?'No se pudo obtener el recuento.':(results||[]).map(r=>esc(r.option_text)+': <b>'+r.vote_count+'</b>').join(' · '))+'</div></article>';
+     const voters=poll.vote_visibility==='named'?'<div class="poll-tools"><button class="btn secondary" type="button" data-view-voters="'+pid+'">👥 Ver quién ha votado</button></div><div class="poll-voters" data-voters-panel="'+pid+'" hidden></div>':'<p class="form-msg">🔒 Encuesta secreta: nunca se mostrarán nombres ni respuestas individuales.</p>';
+     const meta=(poll.poll_type==='multiple'?'Varias respuestas':'Una respuesta')+' · '+(poll.vote_visibility==='secret'?'Secreta':'Identificada');
+     const preview='<summary class="paqui-poll-summary"><span class="paqui-poll-icon" aria-hidden="true">'+(isClosed?'📦':'🗳️')+'</span>'+
+       '<span class="paqui-poll-summary-copy"><strong>'+esc(poll.title)+'</strong><small>'+esc(voteSummary)+' · '+esc(meta)+'</small></span>'+
+       '<span class="paqui-poll-status">'+(isClosed?'🔒 Finalizada':poll.status==='open'?'Abierta':'Borrador')+'</span><span class="paqui-poll-chevron" aria-hidden="true">⌄</span></summary>';
+     let html='<details class="paqui-poll-fold" id="poll-'+pid+'" data-poll-id="'+pid+'">'+preview+
+       '<article class="poll-card"><span class="status-tag">'+status+' · '+(poll.vote_visibility==='secret'?'Voto secreto':'Voto identificado')+'</span>'+
+       '<h3>'+esc(poll.title)+'</h3>'+(poll.description?'<p>'+esc(poll.description)+'</p>':'')+
+       (poll.related_event_id?'<button class="btn" type="button" data-go-event="'+esc(poll.related_event_id)+'">📅 Ir al plan</button>':'')+
+       (poll.related_trip_id?'<button class="btn" type="button" data-go-trip="'+esc(poll.related_trip_id)+'">🧳 Ir al viaje</button>':'')+
+       '<button class="btn secondary" type="button" data-share-poll="'+pid+'">📲 Compartir por WhatsApp</button>'+
+       manage+participationHtml+voters;
+     if(poll.status==='open'){
+       html+='<form class="poll-vote-form" data-poll="'+pid+'">';
+       (poll.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).forEach(o=>{
+         html+='<label class="poll-option"><input type="'+(poll.poll_type==='multiple'?'checkbox':'radio')+'" name="option" value="'+esc(o.id)+'"> '+esc(o.option_text)+'</label>';
+       });
+       html+='<button class="btn" type="submit">Enviar voto</button></form>';
+     }else if(isClosed){
+       html+='<p class="form-msg">🔒 Encuesta finalizada: las votaciones están cerradas. Se conservan los resultados.</p>';
+     }else{
+       html+='<p class="form-msg">Esta encuesta todavía no está abierta para votar.</p>';
+     }
+     html+='<div class="poll-results">'+(resultError?'No se pudo obtener el recuento.':(results||[]).map(r=>esc(r.option_text)+': <b>'+Number(r.vote_count||0)+'</b>').join(' · '))+'</div></article></details>';
+     (isClosed?archived:active).push(html);
    }
-   target.innerHTML=html;
-   target.querySelectorAll('[data-share-poll]').forEach(b=>b.onclick=()=>{const p=polls.find(x=>String(x.id)===b.dataset.sharePoll);if(!p)return;const opts=(p.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).map((o,i)=>(i+1)+'. '+o.option_text);shareWhatsAppText(['🗳️ ENCUESTA PAQUILLO',p.title,p.description||'','Tipo: '+(p.poll_type==='multiple'?'Varias respuestas':'Una respuesta'),'Estado: '+(p.status==='open'?'ABIERTA':'CERRADA'),'',...opts,'','En Paquillo Events → Votaciones busca: «'+p.title+'»',paquiShareUrl('votaciones')].filter(Boolean).join('\n'));});
+   target.innerHTML=(active.length?active.join(''):'<p class="empty">No hay encuestas abiertas en este momento.</p>')+
+     (archived.length?'<details class="paqui-poll-archive" id="pollArchiveGroup"><summary>📦 Encuestas pasadas <span class="paqui-poll-archive-count">'+archived.length+'</span><span aria-hidden="true">⌄</span></summary><div class="paqui-poll-archive-content">'+archived.join('')+'</div></details>':'');
+   const expandId=focusId||rememberedId;
+   const selected=expandId?polls.find(p=>String(p.id)===String(expandId)):null;
+   const archive=$id('pollArchiveGroup');
+   if(archive&&(archiveWasOpen||(selected&&selected.status==='closed')))archive.open=true;
+   if(expandId){const fold=$id('poll-'+expandId);if(fold)fold.open=true;}
+   target.querySelectorAll('[data-share-poll]').forEach(b=>b.onclick=()=>{
+     const p=polls.find(x=>String(x.id)===b.dataset.sharePoll);if(!p)return;
+     const opts=(p.poll_options||[]).sort((a,b)=>a.sort_order-b.sort_order).map((o,i)=>(i+1)+'. '+o.option_text);
+     shareWhatsAppText(['🗳️ ENCUESTA PAQUILLO',p.title,p.description||'','Tipo: '+(p.poll_type==='multiple'?'Varias respuestas':'Una respuesta'),
+       'Estado: '+(p.status==='open'?'ABIERTA':'CERRADA'),'',...opts,'','En Paquillo Events → Votaciones busca: «'+p.title+'»',paquiShareUrl('votaciones')].filter(Boolean).join('\n'));
+   });
    target.querySelectorAll('[data-go-event]').forEach(b=>b.onclick=()=>{showTab('planes');setTimeout(()=>{const ev=document.querySelector('[data-event-db="'+b.dataset.goEvent+'"]');if(ev){ev.scrollIntoView({behavior:'smooth'});ev.classList.add('flash')}},120)});
    target.querySelectorAll('[data-go-trip]').forEach(b=>b.onclick=()=>{showTab('viajes');setTimeout(()=>{const tr=document.querySelector('[data-trip-db="'+b.dataset.goTrip+'"]');if(tr){tr.scrollIntoView({behavior:'smooth'});tr.classList.add('flash')}},120)});
    target.querySelectorAll('[data-view-voters]').forEach(btn=>btn.onclick=async()=>{
      const id=btn.dataset.viewVoters,panel=target.querySelector('[data-voters-panel="'+id+'"]');
-     if(!panel)return;if(!panel.hidden){panel.hidden=true;btn.textContent='👥 Ver quién ha votado';return;}
+     if(!panel)return;if(!panel.hidden){panel.hidden=true;btn.textContent='👥 Ver quién ha votado';return}
      panel.hidden=false;panel.innerHTML='<span class="form-msg">Cargando respuestas…</span>';btn.textContent='🙈 Ocultar votantes';
      const {data,error}=await client.rpc('paqui_poll_voter_details',{p_poll_id:id});
-     if(error){panel.innerHTML='<span class="form-msg">No se pudieron cargar los votantes: '+esc(error.message)+'</span>';return;}
+     if(error){panel.innerHTML='<span class="form-msg">No se pudieron cargar los votantes: '+esc(error.message)+'</span>';return}
      const grouped=new Map();(data||[]).forEach(r=>{if(!grouped.has(r.display_name))grouped.set(r.display_name,[]);grouped.get(r.display_name).push(r.option_text)});
      panel.innerHTML=grouped.size?[...grouped.entries()].map(([name,answers])=>'<div class="poll-voter"><b>'+esc(name)+'</b><small>'+answers.map(esc).join(' · ')+'</small></div>').join(''):'<span class="form-msg">Todavía no hay votos registrados.</span>';
    });
    target.querySelectorAll('[data-edit-poll]').forEach(btn=>btn.onclick=()=>openPollEditor(btn.dataset.editPoll));
+   target.querySelectorAll('[data-close-poll]').forEach(btn=>btn.onclick=async()=>{
+     const poll=polls.find(p=>String(p.id)===btn.dataset.closePoll);
+     if(!poll||poll.status!=='open'||!canManagePoll(poll))return;
+     if(!confirm('¿Finalizar y archivar «'+poll.title+'»? Ya no se podrá votar, pero se conservarán los resultados. Podrás reabrirla después.'))return;
+     btn.disabled=true;btn.textContent='Archivando…';
+     const {data,error}=await client.from('polls').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',poll.id).eq('status','open').select('id,status').single();
+     if(error||data?.status!=='closed'){alert('No se pudo finalizar la encuesta: '+(error?.message||'Supabase no ha confirmado el cierre.'));btn.disabled=false;btn.textContent='✅ Finalizar y archivar';return}
+     await renderPolls(null,{preserveState:false});
+   });
+   target.querySelectorAll('[data-reopen-poll]').forEach(btn=>btn.onclick=async()=>{
+     const poll=polls.find(p=>String(p.id)===btn.dataset.reopenPoll);
+     if(!poll||poll.status!=='closed'||!canManagePoll(poll))return;
+     if(!confirm('¿Reabrir «'+poll.title+'» y permitir que el grupo vuelva a votar?'))return;
+     btn.disabled=true;btn.textContent='Reabriendo…';
+     const {data,error}=await client.from('polls').update({status:'open',closes_at:null,updated_at:new Date().toISOString()}).eq('id',poll.id).eq('status','closed').select('id,status').single();
+     if(error||data?.status!=='open'){alert('No se pudo reabrir la encuesta: '+(error?.message||'Supabase no ha confirmado el cambio.'));btn.disabled=false;btn.textContent='↩️ Reabrir encuesta';return}
+     await renderPolls(String(poll.id),{preserveState:false});
+   });
    target.querySelectorAll('[data-delete-poll]').forEach(btn=>btn.onclick=async()=>{
-     const id=btn.dataset.deletePoll,poll=polls.find(p=>p.id===id);if(!poll||!canManagePoll(poll))return;
+     const id=btn.dataset.deletePoll,poll=polls.find(p=>String(p.id)===id);if(!poll||!canManagePoll(poll))return;
      if(!confirm('¿Seguro que quieres eliminar «'+poll.title+'»? Se borrarán también sus opciones y votos. Esta acción no se puede deshacer.'))return;
      btn.disabled=true;btn.textContent='Eliminando…';
      const {error}=await client.from('polls').delete().eq('id',id);
-     if(error){alert('No se pudo eliminar la encuesta: '+error.message);btn.disabled=false;btn.textContent='🗑️ Eliminar encuesta';return;}
-     await renderPolls();
+     if(error){alert('No se pudo eliminar la encuesta: '+error.message);btn.disabled=false;btn.textContent='🗑️ Eliminar encuesta';return}
+     await renderPolls(null,{preserveState:false});
    });
    target.querySelectorAll('.poll-vote-form').forEach(form=>form.onsubmit=async ev=>{
-     ev.preventDefault();const ids=[...form.querySelectorAll('input:checked')].map(x=>x.value);if(!ids.length){alert('Selecciona al menos una opción.');return}
+     ev.preventDefault();const ids=[...form.querySelectorAll('input:checked')].map(x=>x.value);
+     if(!ids.length){alert('Selecciona al menos una opción.');return}
      const btn=form.querySelector('button');btn.disabled=true;btn.textContent='Enviando…';
      const {error}=await client.rpc('paqui_cast_poll_vote',{p_poll_id:form.dataset.poll,p_option_ids:ids});
      if(error){alert('No se pudo registrar el voto: '+error.message);btn.disabled=false;btn.textContent='Enviar voto';return}
-     await renderPolls();window.PaquilloSocial?.refresh();alert('¡Voto registrado! Puedes cambiarlo mientras la encuesta siga abierta.');
+     await renderPolls(form.dataset.poll);window.PaquilloSocial?.refresh();
+     alert('¡Voto registrado! Puedes cambiarlo mientras la encuesta siga abierta.');
    });
  }
  async function openPollEditor(id){
@@ -1330,7 +1421,7 @@ showTab(location.hash.slice(1));
        for(const o of existing){const {error:e}=await client.from('poll_options').update({sort_order:10000+o.sort_order}).eq('id',o.id);if(e)throw e;}
        for(let i=0;i<opts.length;i++){const match=existing.find(o=>!used.has(o.id)&&o.option_text===opts[i]);if(match){used.add(match.id);const {error:e}=await client.from('poll_options').update({sort_order:i}).eq('id',match.id);if(e)throw e;}else{const {error:e}=await client.from('poll_options').insert({poll_id:id,option_text:opts[i],sort_order:i});if(e)throw e;}}
        const removed=existing.filter(o=>!used.has(o.id));if(removed.length){const {error:e}=await client.from('poll_options').delete().in('id',removed.map(o=>o.id));if(e)throw e;}
-       close();await renderPolls();alert('Encuesta actualizada correctamente.');
+       close();await renderPolls(String(id));alert('Encuesta actualizada correctamente.');
      }catch(err){msg.textContent='No se pudieron guardar los cambios: '+err.message;btn.disabled=false;}
    };
  }
@@ -1574,7 +1665,7 @@ showTab(location.hash.slice(1));
    if(title)f.elements.description.value='Encuesta relacionada con: '+title;
    $id('togglePollForm').textContent='✖ Cerrar formulario';showTab('votaciones');setTimeout(()=>f.scrollIntoView({behavior:'smooth',block:'center'}),100);
  }
- function openPollById(id){showTab('votaciones');setTimeout(()=>{const card=$id('poll-'+id);if(card){card.scrollIntoView({behavior:'smooth'});card.classList.add('flash')}},120)}
+ async function openPollById(id){showTab('votaciones');await renderPolls(String(id));const card=$id('poll-'+id);if(card){card.open=true;card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('flash')}}
  function lock(message){paquiAuthBootstrapping=false;
   document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
 
@@ -1894,7 +1985,7 @@ showTab(location.hash.slice(1));
    try{await markPaquiNewsRead([item.key]);item.read=true;await loadPaquiNews(false);}catch(e){console.warn('No se pudo marcar como leída:',e);}
    $id('newsPanel').hidden=true;$id('newsBell').setAttribute('aria-expanded','false');
    if(item.type==='event'||item.type==='reaction'){await openEventDetail(item.target);return;}
-   if(item.type==='poll'){showTab('votaciones');await renderPolls();setTimeout(()=>{const el=$id('poll-'+item.target);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');}},100);return;}
+   if(item.type==='poll'){await openPollById(item.target);return;}
    if(item.type==='trip'){showTab('viajes');await renderTrips();setTimeout(()=>{const el=document.querySelector('[data-trip-db="'+item.target+'"]');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');}},100);return;}
    if(item.type==='idea'||item.type==='memory'){showTab('horno');await initCommunityFeatures();setTimeout(()=>{const el=$id((item.type==='idea'?'idea-':'memory-')+item.target);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');}},100);return;}
    if(item.type==='expense'){showTab('gastos');await renderFinance(item.target);return;}
