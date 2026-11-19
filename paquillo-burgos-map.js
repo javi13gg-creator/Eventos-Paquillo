@@ -152,26 +152,64 @@ function create(root,config){
  function initialHomes(){
   const taken=new Set();
   homes=[];
-  // Posiciones de la base de datos primero: únicas y persistentes.
+  const cell=(x,y)=>x+','+y;
+  const free=(x,y)=>VALID(x,y)&&!taken.has(cell(x,y));
+  const add=(m,x,y,saved=false,extra={})=>{
+   taken.add(cell(x,y));homes.push({...m,x,y,saved,...extra});
+  };
+  // Todas las ubicaciones guardadas tienen prioridad y no se modifican.
   serverHomes.forEach(p=>{
    const x=Number(p.tile_x),y=Number(p.tile_y);
    if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||x>=COLS||y<0||y>=ROWS)return;
    const m=members.find(m=>m.user_id===p.user_id);
-   if(!m)return;
-   const cell=p.tile_x+','+p.tile_y;
-   if(taken.has(cell))return;
-   taken.add(cell);homes.push({...m,x:Number(p.tile_x),y:Number(p.tile_y),saved:true,needsMove:!VALID(x,y),moved_at:p.moved_at});
+   if(!m||taken.has(cell(x,y)))return;
+   add(m,x,y,true,{needsMove:!VALID(x,y),moved_at:p.moved_at});
   });
-  members.forEach(m=>{
-   if(homes.some(h=>h.key===m.key))return;
-   const seed=hash(m.key+'-'+m.name);
-   // El reparto provisional prioriza G3 y Villímar. Cada jugador puede elegir cualquier zona.
-   let x=17+seed%11,y=2+(Math.floor(seed/31)%7);
+  const unsaved=m=>m&&!homes.some(h=>h.key===m.key);
+  const allCells=[];
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(VALID(x,y))allCells.push({x,y});
+  const myMember=members.find(m=>m.user_id&&m.user_id===config.uid);
+  if(unsaved(myMember)){
+   // Mantener la ubicación anterior de Javi incluso si aún era provisional.
+   const seed=hash(myMember.key+'-'+myMember.name);
+   const x=17+seed%11,y=2+(Math.floor(seed/31)%7);
    for(let j=0;j<COLS*ROWS;j++){
-    const index=(y*COLS+x+j)%(COLS*ROWS),cx=index%COLS,cy=Math.floor(index/COLS),cell=cx+','+cy;
-    if(VALID(cx,cy)&&!taken.has(cell)){taken.add(cell);homes.push({...m,x:cx,y:cy,saved:false});break}
+    const index=(y*COLS+x+j)%(COLS*ROWS),cx=index%COLS,cy=Math.floor(index/COLS);
+    if(free(cx,cy)){add(myMember,cx,cy);break}
    }
-  });
+  }
+  const myPosition=homes.find(h=>h.user_id&&h.user_id===config.uid);
+  const laura=members.find(m=>/^laura(?:\\s|$)/.test(normalize(m.name)));
+  if(unsaved(laura)&&myPosition){
+   // Casilla contigua siempre que sea posible; sin pisar parcelas ni monumentos.
+   const next=allCells.filter(c=>free(c.x,c.y)).sort((a,b)=>{
+    const da=Math.max(Math.abs(a.x-myPosition.x),Math.abs(a.y-myPosition.y));
+    const db=Math.max(Math.abs(b.x-myPosition.x),Math.abs(b.y-myPosition.y));
+    return da-db||((a.x-myPosition.x)**2+(a.y-myPosition.y)**2)-((b.x-myPosition.x)**2+(b.y-myPosition.y)**2)||
+     hash('laura-'+cell(a.x,a.y))-hash('laura-'+cell(b.x,b.y));
+   })[0];
+   if(next)add(laura,next.x,next.y);
+  }
+  // Distribución por máxima separación: los vecinos aparecen por todo el mapa.
+  const pending=members.filter(unsaved).sort((a,b)=>
+   hash('burgos-distribucion-v3-'+a.key)-hash('burgos-distribucion-v3-'+b.key));
+  for(const m of pending){
+   let best=null,bestDist=-1,bestBias=-1;
+   const seed=hash('burgos-casa-v3-'+m.key);
+   for(const c of allCells){
+    if(!free(c.x,c.y))continue;
+    let distance=Infinity;
+    for(const h of homes){
+     const d=(h.x-c.x)**2+(h.y-c.y)**2;
+     if(d<distance)distance=d;
+    }
+    const bias=hash(seed+'-'+cell(c.x,c.y));
+    if(distance>bestDist||(distance===bestDist&&bias>bestBias)){
+     best=c;bestDist=distance;bestBias=bias;
+    }
+   }
+   if(best)add(m,best.x,best.y);
+  }
   paint();
   locateSecret();
  }
