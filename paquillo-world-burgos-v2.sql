@@ -11,7 +11,7 @@ begin
   or to_regclass('public.group_members') is null then
   raise exception 'Antes ejecuta paquillo-world-fase1.sql (y la BD base de Paquillo Events).';
  end if;
-end
+end;
 $requirements$;
 
 create table if not exists public.paqui_world_homes (
@@ -211,7 +211,7 @@ revoke all on function public.paqui_world_visit_home(uuid) from public,anon;
 grant execute on function public.paqui_world_visit_home(uuid) to authenticated;
 
 -- Notas de seguridad:
--- 1) No existen permisos directos INSERT/UPDATE/DELETE en las dos tablas.
+-- 1) No existen permisos directos INSERT/UPDATE/DELETE en las tres tablas.
 -- 2) Solo los RPC security definer aplican cambios, comprobando auth.uid() y miembro activo.
 -- 3) Las casas no representan domicilios de personas.
 -- 4) Los +5 XP se insertan en el ledger de manera idempotente, una vez/día.
