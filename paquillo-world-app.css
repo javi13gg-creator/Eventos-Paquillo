@@ -1108,3 +1108,97 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-bottom-nav:has(.pw-nav-house) .pw-nav-btn span{font-size:clamp(.47rem,1.85vw,.58rem)!important;letter-spacing:-.15px}
  #p-world .pw-bottom-nav:has(.pw-nav-house) .pw-nav-btn i{font-size:1.19rem!important}
 }
+
+
+/* World 2026 · Inicio más limpio, composición real sin estirar ni tapar la ilustración. */
+#p-world .pw-home-refreshed .pw-lobby-land{background:linear-gradient(180deg,#1c79c6 0%,#70c0d5 46%,#f5c98e 100%);overflow:visible}
+#p-world .pw-home-refreshed .pw-scene-refresh{
+ position:relative;isolation:isolate;overflow:hidden;
+ height:clamp(340px,55vw,620px);border:0;border-radius:0;box-shadow:none;
+ background:radial-gradient(circle at 83% 12%,#ffe9a8 0%,transparent 27%),linear-gradient(180deg,#247fc9,#69b9df 48%,#98d7bd 76%,#e8c488 100%)
+}
+#p-world .pw-home-refreshed .pw-scene-refresh:before{content:none!important}
+#p-world .pw-home-refreshed .pw-scene-refresh:after{content:none!important}
+#p-world .pw-scene-refresh .pw-scene-sky{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#p-world .pw-scene-refresh .pw-sky-sun{position:absolute;right:8%;top:17%;height:78px;width:78px;border-radius:50%;background:#fff4c0;box-shadow:0 0 52px #fff1b299}
+#p-world .pw-scene-refresh .pw-sky-cloud{position:absolute;width:160px;height:38px;border-radius:80px;background:#fff9e2a1;box-shadow:34px -12px 0 8px #fff9e2a1,70px 5px 0 #fff9e2a1}
+#p-world .pw-scene-refresh .cloud-one{top:25%;left:9%}
+#p-world .pw-scene-refresh .cloud-two{top:41%;right:3%;transform:scale(.75)}
+#p-world .pw-home-refreshed .pw-scene-refresh .pw-scene-heading{
+ position:absolute;top:clamp(15px,3vw,34px);left:50%;z-index:5;transform:translateX(-50%);
+ width:min(94%,700px);display:flex;flex-direction:column;align-items:center;
+ gap:3px;text-align:center;pointer-events:none;
+ filter:drop-shadow(0 3px 9px #112c6480)
+}
+#p-world .pw-scene-refresh .pw-scene-heading>span{font:900 clamp(9px,1.25vw,13px)/1.1 system-ui;letter-spacing:.15em;color:#fff7b2;text-shadow:0 2px #1a3765}
+#p-world .pw-scene-refresh .pw-scene-heading strong{
+ display:block;white-space:nowrap;
+ font:1000 clamp(1.7rem,5.2vw,4rem)/1 "Bricolage Grotesque",system-ui,sans-serif;
+ letter-spacing:-.055em;color:#fff3bd;-webkit-text-stroke:1px #173a6e;
+ text-shadow:0 3px #155d9b,0 6px 16px #123f6fbb
+}
+#p-world .pw-scene-refresh .pw-scene-heading em{font-style:normal;color:#fff5ab}
+#p-world .pw-scene-refresh .pw-scene-heading small{color:#fff;font-size:clamp(.65rem,1.35vw,.9rem);font-weight:850;text-shadow:0 2px 5px #17315f}
+#p-world .pw-home-refreshed .pw-scene-refresh .pw-scene-cast{
+ display:block;position:absolute;z-index:3;
+ left:50%!important;bottom:7%!important;top:auto!important;
+ width:min(94%,950px)!important;height:72%!important;max-width:94%!important;
+ transform:translateX(-50%)!important;
+ object-fit:contain!important;object-position:center bottom!important;
+ filter:drop-shadow(0 10px 12px #1b446b75)!important;
+ -webkit-mask-image:none!important;mask-image:none!important;
+ animation:pw-cast-breathe 8s ease-in-out infinite;
+}
+#p-world .pw-home-refreshed .pw-scene-refresh .pw-scene-ground{
+ position:absolute;z-index:2;bottom:-19%;left:-9%;width:118%;height:35%;
+ border-radius:50% 50% 0 0;background:linear-gradient(180deg,#b3d698,#81b77e 45%,#4b8c76)
+}
+#p-world .pw-home-refreshed .pw-scene-refresh .pw-scene-footer{
+ position:absolute;z-index:5;bottom:12px;left:clamp(11px,2vw,24px);right:clamp(11px,2vw,24px);
+ display:flex;justify-content:space-between;gap:8px;align-items:center;pointer-events:none;
+ color:#fff8d7;font-size:clamp(.65rem,1.4vw,.85rem);font-weight:950;text-shadow:0 2px 5px #123e5f;
+}
+#p-world .pw-home-refreshed .pw-lobby-land::after{content:none!important}
+#p-world .pw-home-refreshed .pw-home-dashboard{
+ position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,.9fr);
+ gap:14px;max-width:1140px;margin:18px auto;padding:0 16px;
+}
+#p-world .pw-home-refreshed .pw-home-welcome,#p-world .pw-home-refreshed .pw-home-league{
+ min-width:0;padding:20px;border:1.5px solid #e6c9ff;border-radius:18px;
+ background:linear-gradient(145deg,#392176,#21134f);color:white;
+ box-shadow:0 5px 0 #47246c,0 10px 24px #1c103b70;
+}
+#p-world .pw-home-refreshed .pw-home-welcome>small{font-size:.7rem;letter-spacing:.1em;font-weight:950;color:#ffe3a1}
+#p-world .pw-home-refreshed .pw-home-welcome h2{font-size:clamp(1.25rem,3.4vw,2rem);margin:8px 0;background:none;color:white}
+#p-world .pw-home-refreshed .pw-home-welcome p{font-size:.85rem;line-height:1.5;max-width:540px;color:#ebdbff}
+#p-world .pw-home-refreshed .pw-home-activity{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+#p-world .pw-home-refreshed .pw-home-activity span{border:1px solid #b5a3df;border-radius:99px;padding:6px 10px;background:#ffffff20;font-size:.75rem;font-weight:850}
+#p-world .pw-home-refreshed .pw-home-league header h2{color:#ffe6a6}
+#p-world .pw-home-refreshed .pw-home-league .pw-league-row{min-height:40px}
+#p-world .pw-home-refreshed .pw-lobby-foot{max-width:1140px;margin:15px auto;padding:0 16px}
+#p-world .pw-challenges-refreshed .pw-challenge-group{max-width:1000px;width:100%;margin:0 auto 18px;padding:15px;border-radius:18px;border:2px solid #9779df;background:#26144c;box-shadow:0 5px 0 #180c37}
+#p-world .pw-challenges-refreshed .pw-challenge-group>header{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+#p-world .pw-challenges-refreshed .pw-group-symbol{display:grid;place-items:center;flex:0 0 53px;width:53px;height:53px;border-radius:14px;background:#ffffff1c;font-size:1.8rem}
+#p-world .pw-challenges-refreshed .pw-challenge-group header small{font-size:.65rem;letter-spacing:.12em;font-weight:950;color:#ffdd8a}
+#p-world .pw-challenges-refreshed .pw-challenge-group header h3{font-size:1.3rem;color:white;margin:3px 0}
+#p-world .pw-challenges-refreshed .pw-challenge-group header p{color:#ded0f8;font-size:.78rem;margin:0;line-height:1.4}
+#p-world .pw-challenges-refreshed .pw-duel-group{border-color:#e7ac78;background:linear-gradient(145deg,#51306e,#281648)}
+#p-world .pw-challenges-refreshed .pw-personal-group{border-color:#80d1da;background:linear-gradient(145deg,#1d5676,#241848)}
+#p-world .pw-challenges-refreshed .pw-duels{margin:8px 0 14px;border-color:#ffffff45}
+#p-world .pw-challenges-refreshed .pw-personal-group .pw-surface{padding:10px 13px;background:#211849b8}
+#p-world .pw-challenges-refreshed .pw-challenge-group .pw-action-button{margin:5px 6px 8px 0;display:inline-flex}
+#p-world .pw-challenges-refreshed .pw-personal-group .pw-rank-row strong{white-space:nowrap}
+@keyframes pw-cast-breathe{50%{transform:translateX(-50%) translateY(-6px)}}
+@media(max-width:700px){
+ #p-world .pw-home-refreshed .pw-scene-refresh{height:clamp(340px,105vw,530px)}
+ #p-world .pw-home-refreshed .pw-scene-refresh .pw-scene-heading{top:16px;width:96%}
+ #p-world .pw-scene-refresh .pw-scene-heading strong{font-size:clamp(1.65rem,8vw,3rem)}
+ #p-world .pw-scene-refresh .pw-scene-heading small{font-size:.67rem}
+ #p-world .pw-home-refreshed .pw-scene-refresh .pw-scene-cast{width:100%!important;max-width:100%!important;height:73%!important;bottom:6%!important}
+ #p-world .pw-home-refreshed .pw-home-dashboard{display:grid;grid-template-columns:1fr;gap:10px;margin:11px auto;padding:0 10px}
+ #p-world .pw-home-refreshed .pw-home-welcome,#p-world .pw-home-refreshed .pw-home-league{padding:15px}
+ #p-world .pw-challenges-refreshed .pw-challenge-group{padding:11px}
+ #p-world .pw-challenges-refreshed .pw-challenge-group header h3{font-size:1.08rem}
+ #p-world .pw-challenges-refreshed .pw-group-symbol{width:44px;height:44px;flex-basis:44px}
+}
+@media(prefers-reduced-motion:reduce){#p-world .pw-home-refreshed .pw-scene-cast{animation:none!important}}
