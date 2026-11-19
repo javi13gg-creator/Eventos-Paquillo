@@ -1103,8 +1103,9 @@ showTab(location.hash.slice(1));
    document.querySelectorAll('[data-event-expenses]').forEach(b=>b.onclick=()=>{showTab('gastos');renderFinance(b.dataset.eventExpenses)});
    document.querySelectorAll('[data-attendance-choice]').forEach(b=>b.onclick=()=>setAttendance(b.dataset.event,b.dataset.attendanceChoice));
    renderAttendanceCounts();
-   const upcoming=EV.filter(e=>e.d.length&&e.status!=='cancelled').map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
-   if(upcoming){const n=Math.round((upcoming.t-today)/864e5);$('count').textContent=n===0?'¡Hoy es '+upcoming.e.t+'!':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para '+upcoming.e.t;$('count').onclick=()=>go(upcoming.e.id);}
+   const todayIso=today.getFullYear()+'-'+p2(today.getMonth()+1)+'-'+p2(today.getDate());
+   const upcoming=EV.filter(e=>e.d.length&&e.status!=='cancelled'&&e.status!=='completed'&&(e.endDate||e.d[0])>=todayIso).map(e=>({e,t:new Date(e.d[0]+'T00:00')})).sort((a,b)=>a.t-b.t)[0];
+   if(upcoming){const n=Math.max(0,Math.round((upcoming.t-today)/864e5));$('count').textContent=upcoming.e.d[0]<todayIso?'¡En marcha: '+upcoming.e.t+'!':n===0?'¡Hoy es '+upcoming.e.t+'!':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para '+upcoming.e.t;$('count').onclick=()=>go(upcoming.e.id);}
    else $('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';
    cal();
  }
@@ -2190,8 +2191,42 @@ showTab(location.hash.slice(1));
  function downloadTextFile(name,text,mime='text/calendar;charset=utf-8'){const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  function icsEscape(v){return String(v||'').replace(/\\/g,'\\\\').replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n');}
  function icsDate(date,time){if(!date)return null;return date.replaceAll('-','')+(time?String(time).slice(0,5).replace(':','')+'00':'');}
- function eventICS(e){const start=icsDate(e.d?.[0],e.time);if(!start)return null;let startLine='DTSTART:'+start,endLine='';if(e.time){const endDate=new Date(e.d[0]+'T'+String(e.time).slice(0,5)+':00');endDate.setHours(endDate.getHours()+2);const end=endDate.getFullYear()+String(endDate.getMonth()+1).padStart(2,'0')+String(endDate.getDate()).padStart(2,'0')+'T'+String(endDate.getHours()).padStart(2,'0')+String(endDate.getMinutes()).padStart(2,'0')+'00';endLine='DTEND:'+end;}else{startLine='DTSTART;VALUE=DATE:'+e.d[0].replaceAll('-','');const next=new Date(e.d[0]+'T12:00:00');next.setDate(next.getDate()+1);endLine='DTEND;VALUE=DATE:'+next.getFullYear()+String(next.getMonth()+1).padStart(2,'0')+String(next.getDate()).padStart(2,'0');}return ['BEGIN:VEVENT','UID:'+e.dbId+'@paquillo-events','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'') ,startLine,endLine,'SUMMARY:'+icsEscape(e.t),'DESCRIPTION:'+icsEscape(e.desc),'LOCATION:'+icsEscape(e.where),'URL:'+icsEscape(e.map||e.photos||''),'END:VEVENT'].join('\r\n');}
- function openGoogleCalendar(e){if(!e.d?.length){alert('Este plan todavía no tiene fecha.');return;}const start=icsDate(e.d[0],e.time);let end='';if(e.time){const d=new Date(e.d[0]+'T'+String(e.time).slice(0,5)+':00');d.setHours(d.getHours()+2);end=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';}else{const d=new Date(e.d[0]+'T12:00:00');d.setDate(d.getDate()+1);end=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}const dates=e.time?start+'/'+end:start+'/'+end;const url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.t)+'&dates='+dates+'&details='+encodeURIComponent(e.desc||'')+'&location='+encodeURIComponent(e.where||'');window.open(url,'_blank','noopener');}
+ function paquiCalendarDatePlusOne(date){
+   const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);
+   return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+ }
+ function paquiCalendarWindow(e){
+   const startDate=e.d?.[0];if(!startDate)return null;
+   const lastDate=e.endDate&&e.endDate>=startDate?e.endDate:startDate;
+   if(!e.time)return {start:icsDate(startDate),end:paquiCalendarDatePlusOne(lastDate),allDay:true};
+   const start=icsDate(startDate,e.time);
+   let end;
+   if(e.endTime)end=icsDate(lastDate,e.endTime);
+   else if(lastDate>startDate)end=paquiCalendarDatePlusOne(lastDate)+'T000000';
+   else{
+     // Compatibilidad con planes antiguos sin fin: duración estándar 2 horas.
+     const d=new Date(startDate+'T'+String(e.time).slice(0,5)+':00');d.setHours(d.getHours()+2);
+     end=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';
+   }
+   return {start,end,allDay:false};
+ }
+ function eventICS(e){
+   const range=paquiCalendarWindow(e);if(!range)return null;
+   const startLine=range.allDay?'DTSTART;VALUE=DATE:'+range.start:'DTSTART:'+range.start;
+   const endLine=range.allDay?'DTEND;VALUE=DATE:'+range.end:'DTEND:'+range.end;
+   return ['BEGIN:VEVENT','UID:'+e.dbId+'@paquillo-events',
+     'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),
+     startLine,endLine,'SUMMARY:'+icsEscape(e.t),'DESCRIPTION:'+icsEscape(e.desc),
+     'LOCATION:'+icsEscape(e.where),'URL:'+icsEscape(e.map||e.photos||''),'END:VEVENT'].join('\r\n');
+ }
+ function openGoogleCalendar(e){
+   const range=paquiCalendarWindow(e);
+   if(!range){alert('Este plan todavía no tiene fecha.');return}
+   const dates=range.start+'/'+range.end;
+   const url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.t)
+     +'&dates='+dates+'&details='+encodeURIComponent(e.desc||'')+'&location='+encodeURIComponent(e.where||'');
+   window.open(url,'_blank','noopener');
+ }
  function downloadEventICS(e){const item=eventICS(e);if(!item){alert('Este plan todavía no tiene fecha.');return;}downloadTextFile('paquillo-'+(e.t||'plan').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.ics','BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Paquillo Events//ES\r\nCALSCALE:GREGORIAN\r\n'+item+'\r\nEND:VCALENDAR\r\n');}
  $id('exportAllCalendar').onclick=()=>{const items=EV.filter(e=>e.d?.length&&e.status!=='cancelled').map(eventICS).filter(Boolean);if(!items.length){alert('No hay planes con fecha para exportar.');return;}downloadTextFile('paquillo-events.ics','BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Paquillo Events//ES\r\nCALSCALE:GREGORIAN\r\n'+items.join('\r\n')+'\r\nEND:VCALENDAR\r\n');};
  async function setAttendance(eventId,status){
