@@ -984,11 +984,11 @@ showTab(location.hash.slice(1));
  function eventShareText(e,reminder=false,includePosterLink=false){
    if(!e)return '';
    // Texto deliberadamente sin emojis: algunos clientes de WhatsApp/Windows los sustituyen por �.
-   const lines=[(reminder?'◆ RECORDATORIO · ':'◆ PLAN · ')+e.t,'◆ FECHA · '+(e.when||'Fecha por decidir'),'[LUGAR] '+(e.where||'Lugar por decidir')];
+   const lines=[(reminder?'◆ RECORDATORIO · ':e.category==='trip'?'◆ VIAJE · ':'◆ PLAN · ')+e.t,'◆ FECHA · '+(e.when||'Fecha por decidir'),'[LUGAR] '+(e.where||'Lugar por decidir')];
    if(e.by)lines.push('◆ ORGANIZA · '+e.by);
    if(e.desc)lines.push('',e.desc);
    if(includePosterLink&&e.poster){let poster='';try{const u=new URL(String(e.poster),window.location.href);if(['http:','https:'].includes(u.protocol))poster=u.href;}catch(_){}if(poster)lines.push('','◆ CARTEL · '+poster);}
-   lines.push('','◆ INFO Y CONFIRMACION · '+paquiShareUrl('planes'));
+   lines.push('','◆ INFO Y CONFIRMACION · '+paquiShareUrl(e.category==='trip'?'viajes':'planes'));
    return lines.filter(Boolean).join('\n');
  }
  async function shareEventWhatsApp(e,reminder=false){
@@ -1443,7 +1443,7 @@ showTab(location.hash.slice(1));
    const target=$id('tripList');target.innerHTML='<div class="empty">Cargando viajes…</div>';
    const {data:trips,error}=await client.from('trips').select('id,title,description,destinations,start_date,end_date,status,budget_per_person,created_by,created_at').order('start_date',{ascending:true,nullsFirst:false});
    if(error){target.innerHTML='<div class="empty">No se pudieron cargar los viajes: '+esc(error.message)+'</div>';return}
-   if(!trips?.length){target.innerHTML='<div class="empty">No hay viajes todavía. ¡Proponed el primero!</div>';return}
+   if(!trips?.length&&!EV.some(e=>e.category==='trip')){target.innerHTML='<div class="empty">No hay viajes todavía. ¡Proponed el primero!</div>';return}
    const statusNames={idea:'Idea',planning:'Organizando',confirmed:'Confirmado',completed:'Realizado',cancelled:'Cancelado'};
    target.innerHTML=trips.map(t=>'<article class="trip-card" data-trip-db="'+t.id+'"><span class="status-tag">'+(statusNames[t.status]||t.status)+'</span><h3>'+esc(t.title)+'</h3>'+(t.description?'<p>'+esc(t.description)+'</p>':'')+(t.destinations?.length?'<p>📍 '+esc(t.destinations.join(' · '))+'</p>':'')+'<p class="meta">📅 '+esc(t.start_date||'Fecha por decidir')+(t.end_date?' — '+esc(t.end_date):'')+(t.budget_per_person!==null?' · 💶 '+esc(t.budget_per_person)+' €/persona':'')+'</p><div class="trip-poll-actions"><button class="btn secondary" type="button" data-share-trip="'+t.id+'">📲 Compartir viaje</button><button class="btn" type="button" data-create-trip-poll="'+t.id+'">➕ Crear encuesta</button><span data-trip-poll-link="'+t.id+'"></span></div>'+(t.created_by===currentAuthUser.id?'<label class="trip-status-edit">Estado: <select data-trip-status="'+t.id+'">'+Object.entries(statusNames).map(([k,v])=>'<option value="'+k+'" '+(t.status===k?'selected':'')+'>'+v+'</option>').join('')+'</select></label>':'')+'</article>').join('');
    const {data:tripPolls}=await client.from('polls').select('id,title,related_trip_id').not('related_trip_id','is',null);
@@ -1452,6 +1452,54 @@ showTab(location.hash.slice(1));
    target.querySelectorAll('[data-create-trip-poll]').forEach(b=>b.onclick=()=>openPollCreator({tripId:b.dataset.createTripPoll,title:b.closest('.trip-card').querySelector('h3').textContent}));
    target.querySelectorAll('[data-open-poll]').forEach(b=>b.onclick=()=>openPollById(b.dataset.openPoll));
    target.querySelectorAll('[data-trip-status]').forEach(sel=>sel.onchange=async()=>{const {error}=await client.from('trips').update({status:sel.value,updated_at:new Date().toISOString()}).eq('id',sel.dataset.tripStatus);if(error){alert('No se pudo actualizar el viaje: '+error.message);await renderTrips()}});
+   await renderConvertedTrips(target);
+ }
+ async function renderConvertedTrips(target){
+   const converted=EV.filter(e=>e.category==='trip').sort((a,b)=>(a.d?.[0]||'').localeCompare(b.d?.[0]||''));
+   if(!converted.length)return;
+   let attendance=[],myMemberId=null;
+   try{
+     const [att,members]=await Promise.all([
+       client.from('event_attendance').select('event_id,member_id,status').in('event_id',converted.map(e=>e.dbId)),
+       getActiveMembers()
+     ]);
+     if(att.error)throw att.error;
+     attendance=att.data||[];
+     myMemberId=members.find(m=>m.auth_user_id===currentAuthUser?.id)?.id||null;
+   }catch(err){console.warn('No se han podido cargar las respuestas del viaje:',err);}
+   const cards=converted.map(e=>{
+     const responses=attendance.filter(r=>String(r.event_id)===String(e.dbId));
+     const mine=responses.find(r=>r.member_id===myMemberId)?.status||'';
+     const totals={yes:0,maybe:0,no:0};
+     responses.forEach(r=>{if(r.status in totals)totals[r.status]++});
+     const status=e.status==='completed'?'Realizado':e.status==='cancelled'?'Cancelado':e.status==='draft'?'Propuesta pendiente':'Confirmado';
+     const canManage=currentProfile?.role==='admin'||e.createdBy===currentAuthUser?.id;
+     const date=e.d?.[0]||'Fecha por decidir';
+     const endDate=e.tripEndDate&&e.tripEndDate!==date?' — '+esc(e.tripEndDate):'';
+     return '<article class="trip-card paqui-converted-trip" data-converted-trip="'+esc(e.dbId)+'"><span class="status-tag">🧳 Viaje · '+status+'</span><h3>'+esc(e.t)+'</h3>'+
+       (e.desc?'<p>'+esc(e.desc)+'</p>':'')+
+       '<p class="meta">📅 '+esc(date)+endDate+' · 📍 '+esc(e.where)+'<br>👥 Organizan: '+esc(e.by)+'</p>'+
+       (e.poster?'<img src="'+esc(e.poster)+'" alt="Cartel de '+esc(e.t)+'" loading="lazy" style="display:block;max-width:100%;max-height:240px;object-fit:contain;border-radius:12px;margin:.6rem auto">':'')+
+       '<div class="trip-poll-actions"><button class="btn secondary" type="button" data-converted-trip-detail="'+esc(e.dbId)+'">📋 Ficha y participantes</button>'+
+       '<button class="btn secondary" type="button" data-converted-trip-share="'+esc(e.dbId)+'">📲 Compartir</button>'+
+       '<button class="btn secondary" type="button" data-converted-trip-expenses="'+esc(e.dbId)+'">💸 Gastos</button>'+
+       '<button class="btn" type="button" data-converted-trip-poll="'+esc(e.dbId)+'">🗳️ Crear encuesta</button><span data-trip-event-poll-link="'+esc(e.dbId)+'"></span>'+
+       (canManage?'<button class="btn secondary" type="button" data-trip-edit-event="'+esc(e.dbId)+'">✏️ Editar viaje</button><button class="btn secondary" type="button" data-trip-change-category="'+esc(e.dbId)+'">↩️ Pasar a plan</button>':'')+
+       '</div><div class="trip-rsvp" aria-label="Asistencia al viaje"><b>🙋 ¿Te apuntas?</b> '+
+       [['yes','✅ Voy'],['maybe','🤔 Quizá'],['no','❌ No voy']].map(([k,label])=>'<button class="btn '+(mine===k?'':'secondary')+'" type="button" data-trip-attendance-choice="'+k+'" data-event="'+esc(e.dbId)+'" aria-pressed="'+(mine===k)+'">'+label+' ('+totals[k]+')</button>').join(' ')+
+       '</div></article>';
+   }).join('');
+   target.insertAdjacentHTML('afterbegin',cards);
+   const {data:eventPolls}=await client.from('polls').select('id,title,related_event_id').in('related_event_id',converted.map(e=>e.dbId));
+   (eventPolls||[]).forEach(p=>{const slot=target.querySelector('[data-trip-event-poll-link="'+p.related_event_id+'"]');if(slot)slot.innerHTML='<button class="btn secondary" type="button" data-open-converted-poll="'+p.id+'">🗳️ Ver encuesta: '+esc(p.title)+'</button>';});
+   target.querySelectorAll('[data-open-converted-poll]').forEach(b=>b.onclick=()=>openPollById(b.dataset.openConvertedPoll));
+   target.querySelectorAll('[data-converted-trip-detail]').forEach(b=>b.onclick=()=>openEventDetail(b.dataset.convertedTripDetail));
+   target.querySelectorAll('[data-converted-trip-share]').forEach(b=>b.onclick=()=>{const e=EV.find(x=>String(x.dbId)===b.dataset.convertedTripShare);if(e)shareEventWhatsApp(e)});
+   target.querySelectorAll('[data-converted-trip-expenses]').forEach(b=>b.onclick=()=>{showTab('gastos');renderFinance(b.dataset.convertedTripExpenses)});
+   target.querySelectorAll('[data-converted-trip-poll]').forEach(b=>b.onclick=()=>openPollCreator({eventId:b.dataset.convertedTripPoll,title:b.closest('.trip-card').querySelector('h3').textContent}));
+   target.querySelectorAll('[data-trip-edit-event]').forEach(b=>b.onclick=()=>openEventEditor(b.dataset.tripEditEvent));
+   target.querySelectorAll('[data-trip-change-category]').forEach(b=>b.onclick=()=>changeEventCategory(b.dataset.tripChangeCategory,'plan'));
+   target.querySelectorAll('[data-trip-attendance-choice]').forEach(b=>b.onclick=async()=>{await setAttendance(b.dataset.event,b.dataset.tripAttendanceChoice);await renderTrips()});
  }
  async function createTrip(ev){
    ev.preventDefault();const f=ev.currentTarget,fd=new FormData(f),msg=$id('tripMsg');
