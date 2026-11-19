@@ -1,0 +1,89 @@
+/* Paquillo World · Burgos ilustrado 2.1 (mapa aprobado).
+ * Capas: respaldo anterior -> arte Burgos sin distorsión -> cuadrícula -> puntos -> casas.
+ * El tablero de 28x20 y las coordenadas Supabase no cambian.
+ */
+#p-world .pwb-map-fallback{position:absolute;inset:0;z-index:0;pointer-events:none}
+#p-world .pwb-art-layer{
+ position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;
+ background:radial-gradient(ellipse at 50% 28%,#a6d28a,#5ba777 68%,#387a6f)
+}
+#p-world .pwb-map-illustration{
+ position:absolute;inset:0;width:100%;height:100%;display:block;
+ object-fit:contain;object-position:50% 50%;
+ pointer-events:none;user-select:none;-webkit-user-drag:none
+}
+#p-world .pwb-app.pwb-art-ready .pwb-map-fallback{display:none}
+#p-world .pwb-app.pwb-art-missing .pwb-art-layer{display:none}
+#p-world .pwb-map-grid-final{
+ position:absolute;inset:0;z-index:3;pointer-events:none;
+ opacity:.38;
+ background-image:linear-gradient(to right,#ffffff9e 1px,transparent 1px),
+ linear-gradient(to bottom,#ffffff9e 1px,transparent 1px);
+ background-size:84px 84px;
+}
+#p-world .pwb-is-placing .pwb-map-grid-final{opacity:.83}
+#p-world .pwb-map-fallback .pwb-map-grid{opacity:.32}
+#p-world .pwb-landmark-pin{
+ position:absolute;z-index:7;transform:translate(-50%,-50%);
+ display:grid;place-items:center;
+ width:40px;height:40px;min-width:40px;padding:0;
+ border:2px solid #fff8d4;border-radius:50%;
+ background:linear-gradient(140deg,#4d267ac9,#24123ad9);
+ color:white;box-shadow:0 3px 10px #261334a8,0 0 0 4px #e2c87647;
+ cursor:pointer;touch-action:manipulation;backdrop-filter:blur(3px);
+ transition:filter .16s,transform .16s
+}
+#p-world .pwb-landmark-pin span{font-size:22px;line-height:1}
+#p-world .pwb-landmark-pin:hover,
+#p-world .pwb-landmark-pin:focus-visible{transform:translate(-50%,-50%) scale(1.14);filter:brightness(1.2);outline:2px solid #fff18e;outline-offset:3px}
+#p-world .pwb-landmark-pin.is-neighborhood{background:#1d7d7ad9;border-color:#beffed}
+#p-world .pwb-is-placing .pwb-landmark-pin{pointer-events:none;opacity:.6}
+#p-world .pwb-command{grid-template-columns:minmax(126px,1fr) 88px minmax(120px,1fr) minmax(146px,1fr)}
+#p-world .pwb-jump{display:block;min-width:0}
+#p-world .pwb-jump select{
+ height:44px;width:100%;min-width:0;padding:7px 24px 7px 9px;
+ background:#f7f1ff;color:#352253;border:2px solid #c2a0ee;border-radius:11px;
+ font:850 .73rem system-ui,sans-serif;cursor:pointer
+}
+#p-world .pwb-landmark-card{
+ position:absolute;bottom:58px;left:12px;right:70px;z-index:45;
+ display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;
+ padding:8px;min-height:115px;max-width:450px;
+ background:linear-gradient(145deg,#432369fa,#241645f8);
+ border:2px solid #ffe0a1;border-radius:16px;color:#fff;
+ box-shadow:0 8px 30px #171132c2;
+}
+#p-world .pwb-landmark-card[hidden]{display:none!important}
+#p-world .pwb-landmark-art{
+ min-height:104px;border-radius:11px;border:2px solid #ffe5be;
+ background-color:#78b29c;background-size:400% auto;background-repeat:no-repeat;
+ background-position:50% 50%
+}
+#p-world .pwb-landmark-detail{display:grid;align-content:center;gap:5px;min-width:0;padding:3px 5px 3px 0}
+#p-world .pwb-landmark-detail strong{font-size:.98rem;line-height:1.1;color:#ffe6a6}
+#p-world .pwb-landmark-detail p{margin:0;font-size:.74rem;color:#f4e9ff;line-height:1.35}
+#p-world .pwb-landmark-close{
+ position:absolute;top:-12px;right:-12px;
+ display:grid;place-items:center;width:34px;height:34px;padding:0;
+ border-radius:50%;border:2px solid #fff4c4;background:#693f8c;color:#fff;
+ font-weight:1000;cursor:pointer
+}
+#p-world .pwb-house.is-legacy-protected{outline:3px dashed #ffb36b;outline-offset:5px}
+#p-world .pwb-house.is-legacy-protected .pwb-own-label{background:#ffbd7b;color:#422142}
+#p-world .pwb-map-help{background:#261440de}
+#p-world .pwb-bottom{border-top:1px solid #c3a4e24d}
+@media(max-width:850px){
+ #p-world .pwb-command{grid-template-columns:1fr 86px;gap:7px}
+ #p-world .pwb-command label{grid-column:auto}
+}
+@media(max-width:450px){
+ #p-world .pwb-command{grid-template-columns:minmax(0,1fr) 77px;gap:7px}
+ #p-world .pwb-command label{grid-column:span 1}
+ #p-world .pwb-command input,#p-world .pwb-jump select{min-height:42px}
+ #p-world .pwb-jump select{font-size:.7rem}
+ #p-world .pwb-landmark-card{left:9px;right:58px;bottom:60px;grid-template-columns:78px 1fr;gap:7px;padding:6px;min-height:94px}
+ #p-world .pwb-landmark-art{min-height:82px}
+ #p-world .pwb-landmark-detail strong{font-size:.83rem}
+ #p-world .pwb-landmark-detail p{font-size:.67rem}
+}
+@media(prefers-reduced-motion:reduce){#p-world .pwb-landmark-pin{transition:none}}
