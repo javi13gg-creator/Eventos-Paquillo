@@ -1280,3 +1280,14 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-banner-v2 .pw-banner-art img{max-width:100%!important}
 }
 @media(max-width:380px){#p-world .pw-banner-v2 h1{font-size:2.05rem}}
+
+
+/* Paquillo World · insignia W en cabecera y navegación inferior */
+#p-world .pw-head-brand .pw-head-mark{display:flex;align-items:center;justify-content:center;flex:0 0 auto;line-height:1}
+#p-world .pw-head-brand .pw-head-mark .pw-world-mark{display:block;width:35px;height:35px;max-width:none;object-fit:contain;border-radius:50%;filter:drop-shadow(0 2px 3px #170b4690)}
+#p-world .pw-bottom-nav .pw-nav-btn i .pw-world-mark{display:block;width:28px;height:28px;max-width:100%;object-fit:contain;border-radius:50%;filter:drop-shadow(0 1px 2px #16083e80)}
+#p-world .pw-bottom-nav .pw-nav-btn i{display:flex;align-items:center;justify-content:center}
+@media(max-width:420px){
+ #p-world .pw-head-brand .pw-head-mark .pw-world-mark{width:30px;height:30px}
+ #p-world .pw-bottom-nav .pw-nav-btn i .pw-world-mark{width:24px;height:24px}
+}
