@@ -269,15 +269,14 @@ function create(root,config){
  vp.addEventListener('pointerdown',event=>{
   if(event.target.closest('.pwb-map-controls'))return;
   world.style.transition='none';
-  pointerList.set(event.pointerId,{x:event.clientX,y:event.clientY});
-  vp.setPointerCapture?.(event.pointerId);
+  pointerList.set(event.pointerId,{x:event.clientX,y:event.clientY,startX:event.clientX,startY:event.clientY});
   pointerMoved=false;
   startGesture=pointerList.size===2?{dist:distance(pointerList),zoom}:null;
  });
  vp.addEventListener('pointermove',event=>{
   const previous=pointerList.get(event.pointerId);if(!previous)return;
   const dx=event.clientX-previous.x,dy=event.clientY-previous.y;
-  pointerList.set(event.pointerId,{x:event.clientX,y:event.clientY});
+  pointerList.set(event.pointerId,{...previous,x:event.clientX,y:event.clientY});
   if(pointerList.size>=2){
    if(!startGesture)startGesture={dist:distance(pointerList),zoom};
    const pts=[...pointerList.values()],r=vp.getBoundingClientRect();
@@ -286,7 +285,10 @@ function create(root,config){
    pointerMoved=true;return;
   }
   if(Math.abs(dx)+Math.abs(dy)>0){panX+=dx;panY+=dy;render()}
-  if(Math.abs(dx)+Math.abs(dy)>3)pointerMoved=true;
+  if(Math.hypot(event.clientX-previous.startX,event.clientY-previous.startY)>7){
+   if(!pointerMoved)vp.setPointerCapture?.(event.pointerId);
+   pointerMoved=true;
+  }
  });
  vp.addEventListener('pointerup',event=>{
   const wasTap=!pointerMoved&&pointerList.size===1;
@@ -294,7 +296,7 @@ function create(root,config){
   if(placement&&wasTap&&!event.target.closest('.pwb-map-controls')){
    const cell=pointCell(event.clientX,event.clientY);choose(cell.x,cell.y);
   }
-  if(pointerMoved)setTimeout(()=>{pointerMoved=false},80);
+  if(pointerMoved)setTimeout(()=>{pointerMoved=false},120);
  });
  vp.addEventListener('pointercancel',event=>{pointerList.delete(event.pointerId);startGesture=null});
  vp.addEventListener('keydown',event=>{
