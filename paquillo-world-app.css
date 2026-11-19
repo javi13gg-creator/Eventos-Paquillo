@@ -1098,3 +1098,13 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 #p-world .pw-nav-web{color:#ffe7a1;background:#4d2b78bd}
 #p-world .pw-nav-web:focus-visible{outline:2px solid #ffe68f;outline-offset:1px}
 #p-world .pw-bottom-nav{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+
+
+/* World: séptimo acceso a Mi casa solo en las cuentas con la vista habilitada. */
+#p-world .pw-bottom-nav:has(.pw-nav-house){grid-template-columns:repeat(7,minmax(0,1fr))!important}
+#p-world .pw-nav-house{color:#ffe7a1}
+#p-world .pw-nav-house:focus-visible{outline:2px solid #ffe58a;outline-offset:1px}
+@media(max-width:420px){
+ #p-world .pw-bottom-nav:has(.pw-nav-house) .pw-nav-btn span{font-size:clamp(.47rem,1.85vw,.58rem)!important;letter-spacing:-.15px}
+ #p-world .pw-bottom-nav:has(.pw-nav-house) .pw-nav-btn i{font-size:1.19rem!important}
+}
