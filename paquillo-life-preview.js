@@ -13,6 +13,48 @@
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
  let lifeLevel=1,roomTheme='island';
+ // Actividad diaria en este dispositivo. No otorga XP ni simula logros de servidor.
+ const dailyGoals=[['eat','🥥','Comer'],['shower','🚿','Ducha'],['sleep','💤','Descanso'],['memory','🃏','Memoria']];
+ const todayMadrid=()=>new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());
+ let dailyState={day:'',done:[]};
+ function readDaily(){
+  const day=todayMadrid();
+  try{const old=JSON.parse(localStorage.getItem('paqui-life-daily-javi')||'{}');
+   dailyState={day,done:old.day===day&&Array.isArray(old.done)?old.done.filter(v=>dailyGoals.some(g=>g[0]===v)):[]};
+  }catch(_){dailyState={day,done:[]}}
+ }
+ function renderDaily(){
+  if(!room)return;
+  if(dailyState.day!==todayMadrid())readDaily();
+  const done=dailyGoals.filter(g=>dailyState.done.includes(g[0])).length;
+  const count=room.querySelector('[data-pl-daily-count]'),bar=room.querySelector('[data-pl-daily-progress]'),chips=room.querySelector('[data-pl-daily-checks]');
+  if(count)count.textContent=done+' / 4';
+  if(bar)bar.style.width=done*25+'%';
+  if(chips)chips.innerHTML=dailyGoals.map(g=>'<span class="'+(dailyState.done.includes(g[0])?'is-done':'')+'">'+(dailyState.done.includes(g[0])?'✓ ':g[1]+' ')+g[2]+'</span>').join('');
+  const priorities=[
+   [needs.energy,'sleep','Recuperar energía','MiniPaquillo necesita un descanso'],
+   [needs.wellbeing,'shower','Cuidar bienestar','Una ducha le vendrá fenomenal'],
+   [needs.mood,'memory','Subir el ánimo','Una partida de Memoria para cambiar de aires']
+  ].sort((a,b)=>a[0]-b[0]);
+  const next=dailyGoals.find(g=>!dailyState.done.includes(g[0]));
+  const pick=priorities[0][0]<60?priorities[0]:
+   next?[75,next[0],'Tu siguiente actividad','Completa '+next[2].toLowerCase()+' en tu rutina de hoy']:
+   [100,'memory','¡Rutina completada!','Puedes disfrutar de otra partida de Memoria'];
+  const title=room.querySelector('[data-pl-recommend-title]'),hint=room.querySelector('[data-pl-recommend-copy]'),btn=room.querySelector('[data-pl-suggest]');
+  if(title)title.textContent=pick[2];
+  if(hint)hint.textContent=pick[3];
+  if(btn){btn.dataset.plSuggest=pick[1];btn.textContent=(pick[1]==='memory'?'🃏':'▶')+' Hacerlo'}
+ }
+ function markDaily(action){
+  if(!dailyGoals.some(g=>g[0]===action)||!allowed())return;
+  if(dailyState.day!==todayMadrid())readDaily();
+  if(!dailyState.done.includes(action)){
+   dailyState.done.push(action);
+   try{localStorage.setItem('paqui-life-daily-javi',JSON.stringify(dailyState))}catch(_){}
+  }
+  renderDaily();
+ }
+
 
  const lifeAchievements={
   eat:['🥥','Primer tentempié'],shower:['🚿','Como nuevo'],sleep:['💤','Descanso merecido'],memory:['🃏','Memoria completada']
@@ -162,7 +204,10 @@
   for(const [key,value] of Object.entries(needs)){
    const el=room.querySelector('[data-pl-need="'+key+'"]');
    if(el){el.value=value;el.setAttribute('aria-valuenow',String(value));}
+   const out=room.querySelector('[data-pl-value="'+key+'"]');
+   if(out)out.textContent=Math.round(value)+'%';
   }
+  renderDaily();
  }
  function improveNeeds(action){
   const changes={eat:{energy:8,wellbeing:12},sleep:{energy:20,wellbeing:5},shower:{wellbeing:18,mood:5},play:{mood:12}}[action]||{};
@@ -268,6 +313,7 @@
     improveNeeds(action);
     setStatus('Acción de demostración · sin guardar');
    }
+   markDaily(action);
    speech('¡Así se vive en Paquillo World! ⭐');
    goHome(serial,prefersLessMotion()?250:450);
   },prefersLessMotion()?350:step.action,serial);
@@ -294,6 +340,7 @@
   speech('¡Memoria completada! ¡Grande! 🏆');
   if(!careReady)improveNeeds('play');
   earnAchievement('memory');
+  markDaily('memory');
   setStatus('¡Tu MiniPaquillo celebra la victoria!');
   later(()=>{
    room?.classList.remove('pl-celebrating');
@@ -496,6 +543,7 @@
   slot.append(hero);
   room.querySelector('#plName').textContent=name;
   needs={energy:75,mood:75,wellbeing:75};
+   readDaily();
   document.body.appendChild(room);
   renderNeeds();renderMood();
   loadAchievements();renderAchievements();
