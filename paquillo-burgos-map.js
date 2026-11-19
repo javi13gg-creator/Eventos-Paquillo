@@ -39,6 +39,10 @@ function hash(s){
  return h>>>0;
 }
 const pos=(x,y)=>'left:'+(x*CELL+CELL/2)+'px;top:'+(y*CELL+CELL/2)+'px';
+const dayMadrid=()=>{
+ const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),n=k=>p.find(x=>x.type===k)?.value;
+ return n('year')+'-'+n('month')+'-'+n('day');
+};
 function backdrop(){
  const trees=Array.from({length:155},(_,i)=>{
   const h=hash('arbol-paqui-'+i),x=(h%COLS),y=(Math.floor(h/31)%ROWS);
@@ -74,20 +78,27 @@ function create(root,config){
  let mounted=true,zoom=.78,panX=0,panY=0,placement=false,busy=false,backendReady=false;
  let pointerList=new Map(),startGesture=null,pointerMoved=false;
  let homes=[],serverHomes=[],highlight=null;
+ const secretDay=dayMadrid(),secretKey='paqui-burgos-secret-'+secretDay;
+ let secretFound=false,secret={x:11,y:7};
+ try{secretFound=localStorage.getItem(secretKey)==='found'}catch(_){};
  const members=config.members.map((m,i)=>({...m,index:i,key:m.user_id||'guest-'+i}));
  const html='<div class="pwb-app">'+
  '<header class="pwb-title"><div><small>🗺️ PAQUILLO WORLD · BURGOS</small><h2>El barrio de la cuadrilla</h2><p>Explora Burgos, encuentra a tus amigos y elige tu parcela.</p></div>'+
  '<strong class="pwb-beta">BETA</strong></header>'+
- '<div class="pwb-stats"><span data-pwb-total>🏡 Casas: '+members.length+'</span><span data-pwb-claimed>📍 Parcelas: comprobando…</span></div>'+
+ '<div class="pwb-stats"><span data-pwb-total>🏡 Casas: '+members.length+'</span><span data-pwb-claimed>📍 Parcelas: comprobando…</span>'+
+ '<span data-pwb-secret-status>🎁 Sorpresa oculta de hoy</span></div>'+
  '<div class="pwb-command"><button type="button" data-pwb-place>🏠 Elegir mi parcela</button><button type="button" data-pwb-me>📍 Mi casa</button>'+
  '<label><span class="sr-only">Buscar vecino</span><input data-pwb-search type="search" placeholder="🔎 Buscar vecino" autocomplete="off" aria-label="Buscar vecino en Burgos"></label></div>'+
  '<div class="pwb-search-results" data-pwb-results hidden></div>'+
  '<div class="pwb-viewport" data-pwb-viewport tabindex="0" aria-label="Mapa ficticio de Burgos. Arrastra, usa el zoom y toca las casas.">'+
  '<div class="pwb-world" data-pwb-world style="width:'+WIDTH+'px;height:'+HEIGHT+'px">'+backdrop()+
- '<div class="pwb-homes" data-pwb-homes></div><div class="pwb-target" data-pwb-target hidden></div></div>'+
+ '<div class="pwb-homes" data-pwb-homes></div>'+
+ '<button class="pwb-secret" type="button" data-pwb-secret aria-label="Sorpresa diaria del barrio" title="Hallazgo del día">✦</button>'+
+ '<div class="pwb-target" data-pwb-target hidden></div></div>'+
  '<div class="pwb-map-controls"><button type="button" data-pwb-zoom-in aria-label="Acercar mapa">+</button>'+
  '<button type="button" data-pwb-zoom-out aria-label="Alejar mapa">−</button>'+
- '<button type="button" data-pwb-centre aria-label="Centrar mi casa">⌖</button></div>'+
+ '<button type="button" data-pwb-centre aria-label="Centrar mi casa">⌖</button>'+
+ '<button type="button" data-pwb-reload aria-label="Actualizar casas de vecinos">↻</button></div>'+
  '<div class="pwb-map-help" data-pwb-map-help>👆 Arrastra para explorar · Pellizca para ampliar</div>'+
  '</div>'+
  '<div class="pwb-position" role="status" aria-live="polite" data-pwb-position>El mapa usa parcelas ficticias, no direcciones de Burgos.</div>'+
@@ -120,6 +131,18 @@ function create(root,config){
    }
   });
   paint();
+  locateSecret();
+ }
+ function locateSecret(){
+  const seed=hash('hallazgo-paqui-'+secretDay);
+  for(let tries=0;tries<COLS*ROWS;tries++){
+   const i=(seed+tries*17)%(COLS*ROWS),x=i%COLS,y=Math.floor(i/COLS);
+   if(VALID(x,y)&&!homes.some(h=>h.x===x&&h.y===y)){secret={x,y};break}
+  }
+  const prize=$('[data-pwb-secret]'),status=$('[data-pwb-secret-status]');
+  if(prize){prize.style.left=(secret.x+.5)*CELL+'px';prize.style.top=(secret.y+.5)*CELL+'px';
+    prize.classList.toggle('is-found',secretFound);prize.textContent=secretFound?'✓':'✦'}
+  if(status)status.textContent=secretFound?'🏅 Hallazgo del día conseguido':'🎁 Sorpresa oculta de hoy';
  }
  function paint(){
   const target=$('[data-pwb-homes]');
@@ -236,6 +259,15 @@ function create(root,config){
  }
  root.addEventListener('click',event=>{
   const b=event.target.closest('button');if(!b)return;
+  if(b.hasAttribute('data-pwb-secret')){
+   if(placement)return;
+   if(secretFound){status('🏅 Ya encontraste la sorpresa de hoy. ¡Mañana habrá otra!');return}
+   secretFound=true;try{localStorage.setItem(secretKey,'found')}catch(_){}
+   locateSecret();
+   status('✨ ¡Has encontrado el Paquillo escondido del día! Logro local, sin XP ni monedas.');
+   return;
+  }
+  if(b.hasAttribute('data-pwb-reload')){status('🔄 Actualizando casas…');void read().catch(e=>status('No se pudo actualizar: '+e.message));return}
   if(b.hasAttribute('data-pwb-place')){togglePlace();return}
   if(b.hasAttribute('data-pwb-confirm')){void save();return}
   if(b.hasAttribute('data-pwb-me')||b.hasAttribute('data-pwb-centre')){myHouse();return}
