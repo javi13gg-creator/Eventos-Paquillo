@@ -283,9 +283,14 @@ function showHouse(idx){
   '<h3>🏆 Récords del personaje</h3>'+records+
   (isMine?
    '<p class="pw-muted">Este es tu hogar dentro del barrio.</p><button class="pw-action-button" data-pw-view="profile">⭐ Ver mi progreso</button>':
-   '<h3>⚔️ Desafiar a '+esc(m.display_name)+'</h3>'+
-    (open?'<p class="pw-muted">Tenéis '+open+' reto'+(open===1?'':'s')+' abierto'+(open===1?'':'s')+'.</p>':'')+
-    '<button class="pw-action-button" data-pw-duel-invite="'+idx+'">📩 Enviar reto a una partida</button>')+
+   (m.auth_user_id?'<div class="pw-visit-section"><h3>👋 Visita diaria</h3>'+
+      '<p>Deja una visita en su casa ficticia. Una por vecino y día, sin XP.</p>'+
+      '<button class="pw-action-button" data-pw-house-visit="'+esc(m.auth_user_id)+'">👋 Pasar por esta casa</button>'+
+      '<p data-pw-visit-message role="status" aria-live="polite"></p></div>':
+      '<p class="pw-muted">Este miembro aún no tiene cuenta vinculada para recibir visitas o retos.</p>')+
+    (m.auth_user_id?'<h3>⚔️ Desafiar a '+esc(m.display_name)+'</h3>'+
+     (open?'<p class="pw-muted">Tenéis '+open+' reto'+(open===1?'':'s')+' abierto'+(open===1?'':'s')+'.</p>':'')+
+     '<button class="pw-action-button" data-pw-duel-invite="'+idx+'">📩 Enviar reto a una partida</button>':'') )+
   '</div>');
 }
 function profileView(){
@@ -644,6 +649,24 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-house')){showHouse(Number(btn.dataset.pwHouse));return}
  if(btn.hasAttribute('data-pw-duel-notice')){markDuelsSeen();setView('games');return}
  if(btn.hasAttribute('data-pw-duel-refresh')){void loadDuels().then(()=>{const el=root.querySelector('[data-pw-screen="games"]');if(el)el.outerHTML=gamesView()});return}
+ if(btn.hasAttribute('data-pw-house-visit')){
+  const userId=btn.dataset.pwHouseVisit;
+  const client=window.PaquilloWorldContext?.()?.client;
+  const message=root.querySelector('[data-pw-visit-message]');
+  if(!client||!userId||btn.disabled)return;
+  btn.disabled=true;btn.textContent='⏳ Registrando visita…';
+  void client.rpc('paqui_world_visit_home',{p_owner:userId}).then(({data,error})=>{
+    if(error)throw error;
+    if(message)message.textContent=data?.new_visit?'✅ ¡Visita registrada! Ya pueden ver que has pasado hoy.':
+      '👋 Ya habías visitado a este Paquillo hoy.';
+    btn.textContent='✅ Visita de hoy';
+    void worldDailyWidget?.refresh();
+  }).catch(error=>{
+    if(message)message.textContent='⚠️ '+(error.message||'No se ha guardado')+' · Comprueba la migración de Burgos.';
+    btn.disabled=false;btn.textContent='👋 Reintentar visita';
+  });
+  return;
+ }
  if(btn.hasAttribute('data-pw-duel-invite')){showDuelInvite(Number(btn.dataset.pwDuelInvite));return}
  if(btn.hasAttribute('data-pw-duel-create')){const game=btn.dataset.pwDuelCreate,opponent=btn.dataset.pwOpponent;if(!duelReady){modal('<h2>⚠️ Retos no activados</h2><p>Hay que ejecutar paquillo-world-duelos.sql en Supabase.</p>');return}void duelRpc('create',{game,opponent}).then(ok=>{if(ok)modal('<h2>📩 ¡Invitación enviada!</h2><p>Tu amigo podrá aceptarla desde el barrio.</p>')});return}
  if(btn.hasAttribute('data-pw-duel-accept')){void duelRpc('accept',{id:btn.dataset.pwDuelAccept});return}
