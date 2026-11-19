@@ -1091,3 +1091,10 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
 /* Retos pendientes al abrir Paquillo World */
 .pw-duel-alert{position:relative;z-index:15;width:calc(100% - 22px);margin:8px 11px;padding:12px;border:2px solid #ffdd79;border-radius:14px;background:#5d368c;color:white;font-weight:900;text-align:center;box-shadow:0 4px 12px #0005}
 .pw-duel-badge:not([hidden]){position:absolute;z-index:12;right:8px;top:59px;background:#f6c44e;color:#261344;border-radius:18px;padding:4px 9px;font-size:11px;font-weight:900}
+
+/* Barra de World: WEB, Inicio, Barrio, Juegos, Retos y Ranking; perfil en XP. */
+#p-world .pw-head-xp{cursor:pointer;touch-action:manipulation}
+#p-world .pw-head-xp:focus-visible{outline:3px solid #ffe37d;outline-offset:2px}
+#p-world .pw-nav-web{color:#ffe7a1;background:#4d2b78bd}
+#p-world .pw-nav-web:focus-visible{outline:2px solid #ffe68f;outline-offset:1px}
+#p-world .pw-bottom-nav{grid-template-columns:repeat(6,minmax(0,1fr))!important}
