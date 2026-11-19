@@ -555,6 +555,41 @@
     event.stopImmediatePropagation();
     const cb=neighborhoodAction;close();cb?.();return;
    }
+   if(button.hasAttribute('data-pl-tab')){
+    event.stopImmediatePropagation();
+    setRoomTab(button.dataset.plTab);return;
+   }
+   if(button.hasAttribute('data-pl-scene-tab')){
+    event.stopImmediatePropagation();
+    setRoomTab(button.dataset.plSceneTab);return;
+   }
+   if(button.hasAttribute('data-pl-immersive')){
+    event.stopImmediatePropagation();
+    const minimized=room.classList.toggle('pl-ui-minimized');
+    button.textContent=minimized?'⤡ Abrir panel':'⤢ Ver habitación';
+    button.setAttribute('aria-expanded',String(!minimized));
+    return;
+   }
+   if(button.hasAttribute('data-pl-scene-slot')){
+    event.stopImmediatePropagation();
+    furnitureSlot=button.dataset.plSceneSlot;
+    setRoomTab('decor');renderFurniture();return;
+   }
+   if(button.hasAttribute('data-pl-furn-slot')){
+    event.stopImmediatePropagation();
+    furnitureSlot=button.dataset.plFurnSlot;
+    renderFurniture();return;
+   }
+   if(button.hasAttribute('data-pl-furn-option')){
+    event.stopImmediatePropagation();
+    chooseFurniture(furnitureSlot,button.dataset.plFurnOption);return;
+   }
+   if(button.hasAttribute('data-pl-profile')){
+    event.stopImmediatePropagation();
+    const cb=profileAction;
+    if(cb){close();cb();}else setStatus('Tu perfil se encuentra en World.');
+    return;
+   }
    if(button.hasAttribute('data-pl-suggest')){
     event.stopImmediatePropagation();
     if(button.dataset.plSuggest==='memory'){
@@ -564,10 +599,7 @@
     return;
    }
    if(button.hasAttribute('data-pl-open-decor')){
-    event.stopImmediatePropagation();
-    const panel=room.querySelector('#plDecorPanel');
-    if(panel){panel.open=!panel.open;if(panel.open)panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
-    return;
+    event.stopImmediatePropagation();setRoomTab('decor');return;
    }
    if(button.hasAttribute('data-pl-place')){
     event.stopImmediatePropagation();interact(button.dataset.plPlace);return;
@@ -689,6 +721,8 @@
   needs={energy:75,mood:75,wellbeing:75};
    readDaily();
   document.body.appendChild(room);
+  setRoomTab('play');
+  renderFurniture();
   const context=window.PaquilloWorldContext?.();
   const daily=options.daily||{};
   lifeDaily=window.PaquilloWorldDaily?.mount(room.querySelector('[data-pl-daily-hub]'),{
@@ -710,8 +744,18 @@
   care();
   room.addEventListener('keydown',event=>{
    if(event.key==='Escape'){event.preventDefault();close();}
+   if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
+    const tab=event.target.closest('[data-pl-tab]');
+    if(tab){
+     const keys=['play','decor','missions'];
+     const index=keys.indexOf(tab.dataset.plTab);
+     const next=keys[(index+(event.key==='ArrowRight'?1:2))%3];
+     event.preventDefault();setRoomTab(next);
+     room.querySelector('[data-pl-tab="'+next+'"]')?.focus();
+    }
+   }
    if(event.key==='Tab'){
-    const focusable=[...room.querySelectorAll('button:not(:disabled)')];
+    const focusable=[...room.querySelectorAll('button:not(:disabled)')].filter(el=>!el.closest('[hidden]')&&el.getClientRects().length>0);
     if(!focusable.length)return;
     const first=focusable[0],last=focusable[focusable.length-1];
     if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
