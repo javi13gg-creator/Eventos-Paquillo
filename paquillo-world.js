@@ -13,6 +13,12 @@ let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivi
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
 let enteredFromLife=false;
+let worldDailyWidget=null;
+const worldDailyStats=()=>({
+ pendingDuels:duels.filter(d=>d.opponent===state.uid&&d.status==='pending').length,
+ activeDuels:duels.filter(d=>(d.opponent===state.uid||d.challenger===state.uid)&&d.status==='active').length,
+ playedToday:dailyScores.some(x=>x.user_id===state.uid&&scoreDay(x.day)===madridDay())
+});
 let duels=[],duelReady=false,duelError='',duelPlaying=null,duelSeenKey='';
 const viewHistory=[];
 const pageState={people:0,ranking:0,profile:0};
@@ -102,6 +108,7 @@ function homeView(){
  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
  return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
  playerHero()+
+ '<div class="pw-daily-root" data-pw-daily-root></div>'+
  (window.PaquilloLifePreview?.enabled?
   '<div class="pw-life-preview-strip"><button type="button" data-pw-life-open aria-label="Abrir nueva habitación en vista previa"><span aria-hidden="true">🏡</span> Mi hogar · Conoce tu habitación <small>VISTA PREVIA ›</small></button></div>':'')+
  '<button type="button" class="pw-neighborhood-entry" data-pw-view="neighborhood">🗺️ BARRIO BURGOS · Explora el mapa y visita a tus vecinos ›</button>'+
@@ -313,6 +320,8 @@ function challengesView(){
 }
 
 function renderShell(){
+ worldDailyWidget?.destroy();worldDailyWidget=null;
+ window.PaquilloBurgosMap?.destroy();
  window.PaquilloRace?.destroy();
  clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
@@ -324,6 +333,18 @@ function renderShell(){
  '</div>';
  setView(state.view,false,false);
  mountBurgos();
+ const host=root.querySelector('[data-pw-daily-root]');
+ if(host){
+  const ctx=window.PaquilloWorldContext?.();
+  worldDailyWidget=window.PaquilloWorldDaily?.mount(host,{
+   client:ctx?.client,uid:state.uid,level:level(state.xp),...worldDailyStats(),
+   navigate:action=>{
+    if(action==='games'||action==='duels')setView('games');
+    else if(action==='neighborhood')setView('neighborhood');
+   },
+   onClaim:data=>{if(Number(data?.xp_awarded)>0)void refresh();}
+  })||null;
+ }
 }
 function setView(view,scroll=true,remember=true){
  if(!['home','games','people','ranking','profile','challenges','neighborhood'].includes(view))view='home';
@@ -608,7 +629,7 @@ root.addEventListener('click',e=>{
  if(btn.hasAttribute('data-pw-life-open')){
   window.PaquilloLifePreview?.open({
    name:state.mine?.display_name||'Paquillo',
-   xp:state.xp,
+   xp:state.xp,daily:worldDailyStats(),
    onArcade:()=>{enteredFromLife=true;setView('games')},
    onMemory:()=>{enteredFromLife=true;setView('games');startMemory()},
    onNeighborhood:()=>{setView('neighborhood')}
@@ -718,7 +739,7 @@ window.addEventListener('resize',()=>{
  if(rank)rank.outerHTML=rankingView();
  setView(selected,false,false);
 });
-window.addEventListener('hashchange',()=>{if(location.hash==='#world')refresh();else{closeModal();clearReaction()}});
+window.addEventListener('hashchange',()=>{if(location.hash==='#world')refresh();else{worldDailyWidget?.destroy();worldDailyWidget=null;window.PaquilloBurgosMap?.destroy();closeModal();clearReaction()}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-t="world"]'))setTimeout(refresh,0)});
 if(location.hash==='#world')refresh();
 })();
