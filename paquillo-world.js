@@ -8,7 +8,7 @@ const level=xp=>Math.floor(Math.max(0,Number(xp)||0)/250)+1;
 const nameInitial=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
 const points=n=>Number(n||0).toLocaleString('es-ES');
 const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta',event_approved:'Plan validado por administración',daily_game:'Podio diario',weekly_challenge:'Reto semanal',daily_checkin:'Visita diaria'};
-const chapters=[['home','🌴','Inicio'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['ranking','🏆','Ranking'],['profile','⭐','Perfil']];
+const chapters=[['home','🌴','Inicio'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['challenges','⚔️','Retos'],['ranking','🏆','Ranking']];
 let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v=k=>p.find(x=>x.type===k)?.value;return `${v('year')}-${v('month')}-${v('day')}`;};const scoreDay=v=>String(v||'').slice(0,10);let scoreError='';
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
@@ -65,8 +65,8 @@ const memberImage=(m,alt,cls)=>image(memberPhoto(m),alt,cls,memberDefaultPhoto(m
 function toWeb(){closeModal();location.hash='proximos';}
 function screenTitle(title,sub){return '<div class="pw-panel-head"><h2>'+title+'</h2><p>'+sub+'</p></div>';}
 function nav(){return '<nav class="pw-bottom-nav" aria-label="Secciones de Paquillo World">'+
- '<button class="pw-nav-btn pw-nav-back" data-pw-back type="button" aria-label="Volver atrás"><i aria-hidden="true">↩️</i><span>Atrás</span></button>'+
- chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+((state.view===key||(state.view==='challenges'&&key==='games'))?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
+ '<button class="pw-nav-btn pw-nav-web" data-pw-exit type="button" aria-label="Volver a Paquillo Events"><i aria-hidden="true">🏠</i><span>WEB</span></button>'+
+ chapters.map(([key,ico,label])=>'<button class="pw-nav-btn'+((state.view===key)?' on':'')+'" data-pw-view="'+key+'" type="button" aria-label="'+label+'" aria-current="'+(state.view===key?'page':'false')+'"><i aria-hidden="true">'+ico+'</i><span>'+label+'</span></button>').join('')+'</nav>';}
 function playerCard(){
  const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
  const pic=memberPhoto(m);
@@ -260,7 +260,6 @@ function neighborhoodView(){
  const pending=duels.filter(d=>d.opponent===state.uid&&d.status==='pending').length;
  return '<section class="pw-screen pw-panel pw-burgos-screen" data-pw-screen="neighborhood">'+
   '<div id="pwBurgosMap" aria-label="Mapa explorable ficticio de Burgos"></div>'+
-  '<details class="pwb-duels-drawer"><summary>⚔️ Retos del barrio '+(pending?'· '+pending+' sin responder':'· Ver mis partidas')+'</summary>'+duelRows()+'</details>'+
   '</section>';
 }
 function mountBurgos(){
@@ -328,7 +327,7 @@ function challengesView(){
  ['🏆','Rey de la isla','Consigue tres podios diarios en una semana','+100 XP']
  ];
  return '<section class="pw-screen pw-panel pw-challenges-screen" data-pw-screen="challenges">'+screenTitle('🏆 RETOS SEMANALES','Objetivos y recompensas propuestas')+
- '<div class="pw-surface">'+challenges.map(([icon,name,desc,xp])=>'<div class="pw-rank-row"><span>'+icon+'</span><div><b>'+name+'</b><p>'+desc+'</p></div><strong>'+xp+'</strong></div>').join('')+'</div>'+
+ '<div class="pw-surface">'+challenges.map(([icon,name,desc,xp])=>'<div class="pw-rank-row"><span>'+icon+'</span><div><b>'+name+'</b><p>'+desc+'</p></div><strong>'+xp+'</strong></div>').join('')+'</div>'+duelRows()+
  '<p class="pw-paged-hint">Retos definidos, pendientes de verificación y activación de recompensas en Supabase. No se acreditan XP automáticamente todavía.</p>'+
  '<button type="button" class="pw-action-button pw-challenges-games" data-pw-view="games">🎮 Ir a Juegos</button></section>';
 }
@@ -340,9 +339,9 @@ function renderShell(){
  clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
- '<header class="pw-head"><button type="button" class="pw-return" data-pw-exit title="Volver a la web de Paquillo Events"><span>🏠</span><span>WEB</span></button><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div>'+
+ '<header class="pw-head"><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div>'+
   (window.PaquilloLifePreview?.enabled?'<button type="button" class="pw-header-home-access" data-pw-life-open aria-label="Abrir mi casa" title="Entrar en mi casa">🏡 <span>Mi casa</span></button>':'')+
-  '<span class="pw-head-xp">⭐ NV '+lvl+' · '+points(state.xp)+' XP</span></header>'+
+  '<button type="button" class="pw-head-xp" data-pw-view="profile" aria-label="Abrir mi perfil y progreso">⭐ NV '+lvl+' · '+points(state.xp)+' XP</button></header>'+
  '<div class="pw-duel-badge" data-pw-duel-badge hidden></div><div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+neighborhoodView()+'</div>'+
  nav()+
  '<div class="pw-modal" id="pwModal" hidden><div class="pw-modal-card" id="pwModalCard" role="dialog" aria-modal="true" aria-label="Ventana de Paquillo World"></div></div>'+
@@ -370,7 +369,7 @@ function setView(view,scroll=true,remember=true){
  if(remember&&state.view!==view){viewHistory.push(state.view);if(viewHistory.length>20)viewHistory.shift();}
  state.view=view;
  root.querySelectorAll('[data-pw-screen]').forEach(x=>{x.hidden=x.dataset.pwScreen!==view});
- root.querySelectorAll('.pw-nav-btn[data-pw-view]').forEach(x=>{const yes=x.dataset.pwView===(view==='challenges'?'games':view);x.classList.toggle('on',yes);x.setAttribute('aria-current',yes?'page':'false')});
+ root.querySelectorAll('.pw-nav-btn[data-pw-view]').forEach(x=>{const yes=x.dataset.pwView===view;x.classList.toggle('on',yes);x.setAttribute('aria-current',yes?'page':'false')});
  if(scroll){const el=document.getElementById('pwScroll');if(el)el.scrollTop=0}
  if(view==='neighborhood')requestAnimationFrame(()=>window.PaquilloBurgosMap?.focusMyHome());
  clearReaction();
