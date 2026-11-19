@@ -1,0 +1,79 @@
+/* Paquillo World 2.0 · Mi base: juegos, barrio y visitas, sin tamagotchi visible. */
+#paquiLifePreview .pl-header-title b{font-size:clamp(1.05rem,3.3vw,1.4rem)}
+#paquiLifePreview .pl-base-foot{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ justify-content:flex-start!important;gap:8px!important;
+ min-height:0!important;max-height:min(54dvh,520px)!important;overflow-y:auto!important;
+ padding:12px max(12px,env(safe-area-inset-left,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-right,0px))!important;
+ background:linear-gradient(180deg,#241653,#180d3d)!important
+}
+#paquiLifePreview .pl-base-foot>*{flex:0 0 auto;min-width:0;width:100%;max-width:1180px!important;margin-left:auto!important;margin-right:auto!important}
+#paquiLifePreview .pl-base-intro{order:0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:transparent;padding:0 2px;text-align:left}
+#paquiLifePreview .pl-base-intro>div{display:grid;gap:2px}
+#paquiLifePreview .pl-base-intro small{font-size:.62rem;color:#ffdf87;font-weight:950;letter-spacing:.09em}
+#paquiLifePreview .pl-base-intro strong{font-size:clamp(.9rem,2.8vw,1.15rem);line-height:1.2;color:#fff}
+#paquiLifePreview .pl-base-intro>span{display:inline-flex;flex:0 0 auto;border:1px solid #ffd884;background:#60409b;border-radius:99px;padding:6px 10px;color:#ffeda5;font-size:.78rem;font-weight:950}
+#paquiLifePreview .pl-base-actions{order:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#paquiLifePreview .pl-base-actions>button{
+ min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+ min-height:77px;padding:9px 5px;border:2px solid #dfc9ff;border-radius:15px;
+ background:linear-gradient(145deg,#623aa4,#41277a);color:#fff;
+ box-shadow:0 4px 0 #251347,0 6px 16px #170b3685;cursor:pointer
+}
+#paquiLifePreview .pl-base-actions>button:nth-child(1){background:linear-gradient(145deg,#a343ad,#643baf);border-color:#f2b5ff}
+#paquiLifePreview .pl-base-actions>button:nth-child(2){background:linear-gradient(145deg,#186d94,#274c94);border-color:#a1e8ff}
+#paquiLifePreview .pl-base-actions>button:nth-child(3){background:linear-gradient(145deg,#b77149,#9a3d81);border-color:#ffe2a5}
+#paquiLifePreview .pl-base-actions>button span{font-size:25px;line-height:1.1}
+#paquiLifePreview .pl-base-actions>button b{font-size:.87rem;line-height:1.05}
+#paquiLifePreview .pl-base-actions>button small{font-size:.62rem;font-weight:750;color:#f2e4ff}
+#paquiLifePreview .pl-base-actions>button:active{transform:translateY(2px);box-shadow:0 1px 0 #251347}
+#paquiLifePreview .pl-daily-hub{order:2;margin:3px auto!important}
+#paquiLifePreview .pl-daily-hub .pwd-card{gap:8px;padding:11px}
+#paquiLifePreview .pl-daily-hub .pwd-tasks{display:none}
+#paquiLifePreview .pl-daily-hub .pwd-disclaimer{display:none}
+#paquiLifePreview .pl-daily-hub .pwd-kpis div{padding:7px 3px}
+#paquiLifePreview .pl-options{order:3!important;background:#2d1d58;border:1px solid #815eb5;border-radius:12px;overflow:hidden;padding:0!important}
+#paquiLifePreview .pl-options>summary{padding:11px 13px;font-size:.8rem;font-weight:900;cursor:pointer}
+#paquiLifePreview .pl-options .pl-options-content{padding:10px;border-top:1px solid #73539f}
+#paquiLifePreview .pl-options .pl-theme-picker{margin:0}
+#paquiLifePreview .pl-extras{
+ order:4;border:1px solid #6e509d;border-radius:12px;background:#211542;
+ padding:0;overflow:hidden
+}
+#paquiLifePreview .pl-extras>summary{padding:11px 13px;color:#e7d5ff;font-size:.78rem;font-weight:850;cursor:pointer}
+#paquiLifePreview .pl-extras>p{font-size:.7rem;color:#e3d0ed;margin:3px 13px 10px}
+#paquiLifePreview .pl-extras .pl-quick-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;padding:0 10px 11px}
+#paquiLifePreview .pl-extras .pl-quick-actions button{min-height:42px!important}
+#paquiLifePreview .pl-extras .pl-needs{padding:2px 11px 12px!important;margin:0!important}
+#paquiLifePreview .pl-base-foot #plStatus{order:5;color:#e9d3fa;font-size:.72rem}
+#paquiLifePreview .pl-base-foot [data-pl-persistence]{order:6;font-size:.64rem;color:#beaad7;text-align:center}
+#paquiLifePreview .pl-stage{border-bottom:3px solid #f5cd84}
+#paquiLifePreview .pl-floor-caption{bottom:11px}
+#paquiLifePreview .pl-sunbeam{opacity:.75}
+@media(min-width:800px){
+ #paquiLifePreview .pl-base-foot{max-height:min(40dvh,405px)!important}
+ #paquiLifePreview .pl-base-actions>button{min-height:83px}
+ #paquiLifePreview .pl-daily-hub .pwd-tasks{display:grid}
+ #paquiLifePreview .pl-daily-hub .pwd-disclaimer{display:block}
+ #paquiLifePreview .pl-daily-hub .pwd-card{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+ #paquiLifePreview .pl-daily-hub .pwd-heading{grid-column:1/-1}
+ #paquiLifePreview .pl-daily-hub .pwd-kpis{grid-column:1/2}
+ #paquiLifePreview .pl-daily-hub .pwd-reward{grid-column:2/3}
+ #paquiLifePreview .pl-daily-hub .pwd-tasks{grid-column:1/-1}
+ #paquiLifePreview .pl-daily-hub .pwd-disclaimer{grid-column:1/-1}
+}
+@media(max-width:480px){
+ #paquiLifePreview .pl-base-foot{max-height:53dvh!important;gap:7px!important;padding-top:9px!important}
+ #paquiLifePreview .pl-base-actions>button{min-height:67px;padding:7px 3px}
+ #paquiLifePreview .pl-base-actions>button b{font-size:.77rem}
+ #paquiLifePreview .pl-base-actions>button small{font-size:.55rem}
+ #paquiLifePreview .pl-daily-hub .pwd-heading h3{font-size:1.06rem}
+ #paquiLifePreview .pl-daily-hub .pwd-reward{padding:8px}
+ #paquiLifePreview .pl-daily-hub .pwd-reward button{min-height:38px;font-size:.66rem}
+}
+@media(max-height:610px){
+ #paquiLifePreview .pl-base-foot{max-height:59dvh!important}
+ #paquiLifePreview .pl-base-actions>button{min-height:59px}
+ #paquiLifePreview .pl-base-actions>button small{display:none}
+}
+@media(prefers-reduced-motion:reduce){#paquiLifePreview .pl-base-actions>button{transition:none}}
