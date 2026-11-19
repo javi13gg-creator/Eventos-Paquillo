@@ -220,13 +220,13 @@
     $('stickerDelete')?.addEventListener('click',removeSelected);
     $('stickerHiddenList')?.addEventListener('click',e=>{
       const btn=e.target.closest('[data-restore-sticker]');
-      if(btn)restoreSticker(btn.dataset.restoreSticker,btn);
+      if(btn)return restoreSticker(btn.dataset.restoreSticker,btn);
     });
   }
   function mount(context){
     if(!context?.client||!context?.user||!context?.items)return;
     client=context.client;user=context.user;role=context.role||'member';items=context.items;
-    originals=items.filter(s=>!s.uploaded);attach();
+    if(!originals.length)originals=items.filter(s=>!s.uploaded);attach();
     refresh().catch(err=>console.warn('No se pudo actualizar la galería:',err));
   }
   window.PaquilloStickers={mount,refresh,viewer};
