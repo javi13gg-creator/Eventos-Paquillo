@@ -8,7 +8,7 @@ const level=xp=>Math.floor(Math.max(0,Number(xp)||0)/250)+1;
 const nameInitial=s=>String(s||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
 const points=n=>Number(n||0).toLocaleString('es-ES');
 const actionNames={event_created:'Creaste un plan',attendance_confirmed:'Confirmaste asistencia',poll_created:'Creaste una encuesta',event_approved:'Plan validado por administración',daily_game:'Podio diario',weekly_challenge:'Reto semanal',daily_checkin:'Visita diaria'};
-const chapters=[['home','🌴','Inicio'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['challenges','⚔️','Retos'],['ranking','🏆','Ranking']];
+const chapters=[['home','<img class="pw-world-mark" src="paquillo-world-w.png?v=1" alt="" loading="eager" decoding="async">','Inicio'],['neighborhood','🏘️','Barrio'],['games','🎮','Juegos'],['challenges','⚔️','Retos'],['ranking','🏆','Ranking']];
 let dailyScores=[];let historicalScores=[]; const gameLabels={trivia:'🧠 Trivial',reflex:'⚡ Reflejos',memory:'🃏 Memoria',races:'🏁 Carreras'}; const madridDay=()=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v=k=>p.find(x=>x.type===k)?.value;return `${v('year')}-${v('month')}-${v('day')}`;};const scoreDay=v=>String(v||'').slice(0,10);let scoreError='';
 let state={view:'home',members:[],ranked:[],ledger:[],profiles:new Map(),mine:null,xp:0,ready:false,uid:null,loading:false,loaded:false,previewCharacters:true};
 let reaction={timer:null,armed:0,phase:'idle'};
@@ -320,7 +320,7 @@ function renderShell(){
  clearMemoryTimer();memory=null;trivia=null;
  const mine=state.mine||{display_name:'Paquillo'},lvl=level(state.xp);
  root.innerHTML='<div class="pw-shell">'+
- '<header class="pw-head"><div class="pw-head-brand"><span>👑</span><span>PAQUILLO <b>WORLD</b></span></div>'+
+ '<header class="pw-head"><div class="pw-head-brand"><span class="pw-head-mark"><img class="pw-world-mark" src="paquillo-world-w.png?v=1" alt="" loading="eager" decoding="async"></span><span>PAQUILLO <b>WORLD</b></span></div>'+
   '<button type="button" class="pw-head-xp" data-pw-view="profile" aria-label="Abrir mi perfil y progreso">⭐ NV '+lvl+' · '+points(state.xp)+' XP</button></header>'+
  '<div class="pw-duel-badge" data-pw-duel-badge hidden></div><div class="pw-scroll" id="pwScroll">'+homeView()+gamesView()+peopleView()+rankingView()+profileView()+challengesView()+neighborhoodView()+'</div>'+
  nav()+
