@@ -77,17 +77,12 @@ function playerCard(){
  '<span class="pw-xp-track"><i style="width:'+((progress/250)*100)+'%"></i></span></span><span class="pw-hero-chevron">›</span></button>';
 }
 function playerHero(){
- const m=state.mine||{display_name:'Paquillo'},lvl=level(state.xp),progress=state.xp%250;
- const pic=memberPhoto(m);
- return '<div class="pw-scene" aria-label="Isla tropical de Paquillo World">'+
- '<div class="pw-sun" aria-hidden="true"></div><div class="pw-cloud" aria-hidden="true"></div>'+
- '<div class="pw-palm pw-palm-left" aria-hidden="true">🌴</div><div class="pw-palm pw-palm-right" aria-hidden="true">🌴</div>'+
- '<div class="pw-mountain pw-mountain-left" aria-hidden="true"></div><div class="pw-mountain pw-mountain-right" aria-hidden="true"></div>'+
- '<div class="pw-wood-sign"><span class="pw-logo-crown">👑</span><strong><span>PAQUILLO</span><em>WORLD</em></strong><small>Tu grupo. Tus personajes. Tus piques.</small></div>'+
- '<img class="pw-scene-cast" src="paqui-world-cast.webp" alt="La pandilla Paquillo en estilo cartoon" onerror="this.hidden=true">'+
- playerCard()+
- '<button class="pw-quest-bubble" type="button" data-pw-view="challenges"><span>🌟</span><b>¡Sigue participando!</b><small>Descubre los próximos retos</small></button>'+
- '<span class="pw-island-ribbon" aria-hidden="true">¡PAQUILLO SIEMPRE! 💛</span>'+
+ return '<div class="pw-scene pw-scene-refresh" aria-label="Bienvenido al mundo Paquillo">'+
+ '<div class="pw-scene-sky" aria-hidden="true"><span class="pw-sky-sun"></span><span class="pw-sky-cloud cloud-one"></span><span class="pw-sky-cloud cloud-two"></span></div>'+
+ '<div class="pw-scene-heading"><span>🌴 EL MUNDO DE LA CUADRILLA</span><strong>PAQUILLO <em>WORLD</em></strong><small>Un mundo, mil historias juntos</small></div>'+
+ '<img class="pw-scene-cast" src="paqui-world-cast.webp" alt="Ilustración de la pandilla Paquillo" onerror="this.hidden=true">'+
+ '<div class="pw-scene-ground" aria-hidden="true"></div>'+
+ '<div class="pw-scene-footer"><span>✨ La aventura continúa</span><span>⭐ '+(state.ready?points(state.xp)+' XP':'Progreso en preparación')+'</span></div>'+
  '</div>';
 }
 function gameTiles(includePlanned=false){
@@ -104,38 +99,18 @@ function gameTiles(includePlanned=false){
 }
 function homeView(){
  const ranked=state.ready?state.ranked.slice(0,5):[];
- const myName=state.mine?.display_name||'Paquillo';
  const rankingRows=ranked.map((m,i)=>'<button class="pw-league-row" data-pw-view="ranking" type="button"><span class="pw-medal">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.')+'</span>'+
- (memberPhoto(m)?memberImage(m,'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
- '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
- return '<section class="pw-screen pw-lobby-screen" data-pw-screen="home"><div class="pw-lobby-land">'+
+  (memberPhoto(m)?memberImage(m,'',''):'<span class="pw-small-initial">'+esc(nameInitial(m.display_name))+'</span>')+
+  '<b>'+esc(m.display_name)+'</b><strong>'+points(m.xp)+' XP</strong></button>').join('');
+ return '<section class="pw-screen pw-lobby-screen pw-home-refreshed" data-pw-screen="home"><div class="pw-lobby-land">'+
  playerHero()+
- (window.PaquilloLifePreview?.enabled?
-  '<section class="pw-home-portal" aria-label="Tu casa en Paquillo World">'+
-   '<div class="pw-home-portal-art" aria-hidden="true"><span class="pw-home-portal-icon">🏡</span></div>'+
-   '<div class="pw-home-portal-info"><small>✨ TU RINCÓN EN WORLD</small>'+
-   '<h2>La casa de '+esc(myName)+'</h2><p>Tu personaje, tu decoración y nuevas aventuras. Entra a hacerla tuya.</p>'+
-   '<div class="pw-home-portal-chips"><span>⭐ Nivel '+level(state.xp)+'</span><span>🎨 Personalízala</span></div></div>'+
-   '<button type="button" class="pw-home-portal-enter" data-pw-life-open aria-label="Entrar en mi casa">ENTRAR <span aria-hidden="true">›</span></button>'+
-  '</section>':'')+
  '<div class="pw-daily-root" data-pw-daily-root></div>'+
- '<button type="button" class="pw-neighborhood-entry" data-pw-view="neighborhood">🗺️ BARRIO BURGOS · Explora el mapa y visita a tus vecinos ›</button>'+
- '<div class="pw-lobby-layout">'+
- '<aside class="pw-shortcut-rail" aria-label="Accesos del mundo">'+
- '<button type="button" data-pw-view="profile"><span>🦸</span>Mi personaje</button>'+
- '<button type="button" data-pw-view="people"><span>👥</span>Personajes</button>'+
- '<button type="button" data-pw-view="ranking"><span>🏆</span>Clasificación</button>'+
- '<button type="button" data-pw-view="challenges"><span>🎖️</span>Retos y logros</button>'+
- '<button type="button" data-pw-view="games"><span>🎮</span>Minijuegos</button></aside>'+
- '<div class="pw-hub-center"><h2 class="pw-island-section-title">🎮 ¡ELIGE TU AVENTURA!</h2>'+gameTiles()+
- '<div class="pw-stage-ticker"><span>🎉</span><b>¡Bienvenido a Paquillo World!</b><span>La aventura con tu grupo empieza aquí.</span></div></div>'+
- '<aside class="pw-lobby-right">'+
- '<section class="pw-league"><header><h2>🏆 Clasificación</h2><button type="button" data-pw-view="ranking">Ver todos ›</button></header>'+
- (rankingRows||'<p class="pw-awaiting">⏳ Clasificación disponible al activar los XP reales de Supabase.</p>')+'</section>'+
- '<section class="pw-achievements"><header><h2>🎖️ Tus logros</h2><button type="button" data-pw-view="challenges">Ver retos ›</button></header>'+
- '<div class="pw-medal-grid"><span>🏆</span><span>⭐</span><span>🎯</span><span>🌴</span><span>🚀</span><span>🎉</span></div>'+
- '<p>¡Los próximos logros están en preparación!</p><small>Desbloqueos todavía no disponibles</small></section>'+
- '</aside></div><div class="pw-lobby-foot"><span>🌴 Juntos es mejor</span><span>Paquillo siempre 💛</span></div>'+
+ '<div class="pw-home-dashboard">'+
+ '<section class="pw-home-welcome"><small>✨ TU UNIVERSO PAQUILLERO</small><h2>¡Bienvenido, '+esc(state.mine?.display_name||'Paquillo')+'!</h2><p>Tu aventura con el grupo sigue creciendo. Consulta la actividad de hoy y descubre quién lidera la clasificación.</p>'+
+ '<div class="pw-home-activity"><span>👥 '+state.members.length+' Paquillos</span><span>⭐ Nivel '+level(state.xp)+'</span></div></section>'+
+ '<section class="pw-league pw-home-league"><header><h2>🏆 Clasificación</h2><button type="button" data-pw-view="ranking">Ver todos ›</button></header>'+
+ (rankingRows||'<p class="pw-awaiting">La clasificación aparecerá cuando estén disponibles los XP reales.</p>')+'</section>'+
+ '</div><div class="pw-lobby-foot"><span>🌴 Juntos es mejor</span><span>Paquillo siempre 💛</span></div>'+
  '</div></section>';
 }
 function dailyRanking(){const day=madridDay();return '<section class="pw-surface"><h3>🏆 Rankings de hoy · '+day+'</h3><p>Clasificación compartida · sin premios XP hasta validar partidas</p>'+Object.entries(gameLabels).map(([id,label])=>{const rows=dailyScores.filter(x=>x.game===id&&scoreDay(x.day)===day).sort((a,b)=>(id==='reflex'||id==='memory'?a.score-b.score:b.score-a.score)||a.updated_at.localeCompare(b.updated_at)).slice(0,10);return '<h3>'+label+'</h3>'+(rows.length?rows.map((x,i)=>{const m=state.members.find(y=>y.auth_user_id===x.user_id);return '<div class="pw-rank-row"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span><b>'+esc(m?.display_name||'Paquillo')+'</b><strong>'+points(x.score)+'</strong></div>'}).join(''):'<p class="pw-muted">Sin puntuaciones compartidas todavía.</p>')}).join('')+'<p class="pw-local-note">Ranking global provisional: puntuaciones de jugadores, no verificadas contra trampas. Sin XP.</p></section>';}
@@ -327,12 +302,16 @@ function challengesView(){
  ['🎮','Todoterreno','Consigue una marca válida en los cuatro minijuegos en una semana','+80 XP'],
  ['🏆','Rey de la isla','Consigue tres podios diarios en una semana','+100 XP']
  ];
- return '<section class="pw-screen pw-panel pw-challenges-screen" data-pw-screen="challenges">'+screenTitle('🏆 RETOS SEMANALES','Objetivos y recompensas propuestas')+
- '<div class="pw-surface">'+challenges.map(([icon,name,desc,xp])=>'<div class="pw-rank-row"><span>'+icon+'</span><div><b>'+name+'</b><p>'+desc+'</p></div><strong>'+xp+'</strong></div>').join('')+'</div>'+duelRows()+
- '<p class="pw-paged-hint">Retos definidos, pendientes de verificación y activación de recompensas en Supabase. No se acreditan XP automáticamente todavía.</p>'+
- '<button type="button" class="pw-action-button pw-challenges-games" data-pw-view="games">🎮 Ir a Juegos</button></section>';
+ return '<section class="pw-screen pw-panel pw-challenges-screen pw-challenges-refreshed" data-pw-screen="challenges">'+
+ screenTitle('⚔️ RETOS','Compite con amigos o cumple objetivos individuales')+
+ '<section class="pw-challenge-group pw-duel-group"><header><span class="pw-group-symbol">⚔️</span><div><small>MULTIJUGADOR</small><h3>Desafíos entre amigos</h3><p>Invitaciones, partidas pendientes y resultados frente a otros Paquillos.</p></div></header>'+
+ duelRows()+
+ '<button type="button" class="pw-action-button" data-pw-view="neighborhood">🏘️ Visitar el barrio para desafiar a un amigo</button>'+
+ '<button type="button" class="pw-action-button pw-duel-refresh-action" data-pw-duel-refresh>🔄 Actualizar desafíos</button></section>'+
+ '<section class="pw-challenge-group pw-personal-group"><header><span class="pw-group-symbol">🎯</span><div><small>PROGRESIÓN PERSONAL · SEMANAL</small><h3>Misiones y objetivos</h3><p>Metas individuales para avanzar en World, independientes de los duelos.</p></div></header>'+
+ '<div class="pw-surface">'+challenges.map(([icon,name,desc,xp])=>'<div class="pw-rank-row"><span>'+icon+'</span><div><b>'+name+'</b><p>'+desc+'</p></div><strong>'+xp+'</strong></div>').join('')+'</div>'+
+ '<p class="pw-paged-hint">Misiones propuestas, pendientes de activación y validación en Supabase. Las recompensas aún no conceden XP.</p></section></section>';
 }
-
 function renderShell(){
  worldDailyWidget?.destroy();worldDailyWidget=null;
  window.PaquilloBurgosMap?.destroy();
@@ -671,7 +650,7 @@ root.addEventListener('click',e=>{
  }
  if(btn.hasAttribute('data-pw-house')){showHouse(Number(btn.dataset.pwHouse));return}
  if(btn.hasAttribute('data-pw-duel-notice')){markDuelsSeen();setView('games');return}
- if(btn.hasAttribute('data-pw-duel-refresh')){void loadDuels().then(()=>{const el=root.querySelector('[data-pw-screen="games"]');if(el)el.outerHTML=gamesView()});return}
+ if(btn.hasAttribute('data-pw-duel-refresh')){void loadDuels().then(()=>{const games=root.querySelector('[data-pw-screen="games"]');if(games)games.outerHTML=gamesView();const challenges=root.querySelector('[data-pw-screen="challenges"]');if(challenges)challenges.outerHTML=challengesView()});return}
  if(btn.hasAttribute('data-pw-house-visit')){
   const userId=btn.dataset.pwHouseVisit;
   const client=window.PaquilloWorldContext?.()?.client;
