@@ -252,6 +252,11 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 .event-quick-actions .attendance-choice.is-selected{background:#dff5e5;border-color:#16834a;color:#125b35;box-shadow:inset 0 0 0 2px #16834a}
 .attendance-panel{width:100%;margin-top:.65rem;padding:.8rem;border:1px solid var(--line,#ddd);border-radius:13px;background:var(--soft,rgba(127,127,127,.06))}
 .attendance-counts{display:flex;gap:.45rem .9rem;flex-wrap:wrap;font-size:.9rem}
+.attendance-count-button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line,#ddd);border-radius:10px;padding:.45rem .65rem;cursor:pointer;min-height:40px;touch-action:manipulation}
+.attendance-count-button.is-selected{border-color:var(--ink);background:var(--soft,rgba(127,127,127,.08));font-weight:800}
+.attendance-count-button:focus-visible{outline:3px solid #16834a;outline-offset:2px}
+.attendance-selected-list{margin-top:.65rem;padding:.25rem .65rem;border:1px solid var(--line,#ddd);border-radius:10px}
+.attendance-selected-list[hidden]{display:none}
 .attendance-mine{margin:.55rem 0 0;font-size:.88rem}
 .attendance-details{margin-top:.55rem}.attendance-details summary{cursor:pointer;font-weight:800}
 .attendance-name-group{display:grid;grid-template-columns:minmax(105px, .35fr) 1fr;gap:.6rem;padding:.45rem 0;border-top:1px solid var(--line,#ddd);font-size:.88rem}
@@ -2053,8 +2058,19 @@ showTab(location.hash.slice(1));
        const label={yes:'Voy',maybe:'Quizá',no:'No voy'};
        const count=(k)=>byStatus[k].length;
        const list=(title,items,emoji)=>'<div class="attendance-name-group"><b>'+emoji+' '+title+' ('+items.length+')</b><span>'+ (items.length?items.map(esc).join(' · '):'<span class="f6-muted">Nadie todavía</span>')+'</span></div>';
-       slot.innerHTML='<div class="attendance-counts"><span>✅ <b>'+count('yes')+'</b> van</span><span>🤔 <b>'+count('maybe')+'</b> quizá</span><span>❌ <b>'+count('no')+'</b> no van</span><span>⏳ <b>'+pending.length+'</b> sin responder</span></div>'+
-         '<details class="attendance-details"><summary>Ver quién va, quién no y quién falta</summary>'+list('Van',byStatus.yes,'✅')+list('Quizá',byStatus.maybe,'🤔')+list('No van',byStatus.no,'❌')+list('Sin responder',pending,'⏳')+'</details>';
+       const groups=[['yes','✅','Van',byStatus.yes],['maybe','🤔','Quizá',byStatus.maybe],['no','❌','No van',byStatus.no],['pending','⏳','Sin responder',pending]];
+       slot.innerHTML='<div class="attendance-counts">'+groups.map(([key,emoji,title,items])=>'<button type="button" class="attendance-count-button" data-attendance-show="'+key+'" aria-expanded="false" aria-label="Ver '+title.toLowerCase()+': '+items.length+' personas">'+emoji+' <b>'+items.length+'</b> '+(key==='yes'?'van':key==='no'?'no van':key==='maybe'?'quizá':'sin responder')+'</button>').join('')+'</div>'+
+         '<div class="attendance-selected-list" hidden aria-live="polite"></div>';
+       const selectedList=slot.querySelector('.attendance-selected-list');
+       slot.querySelectorAll('[data-attendance-show]').forEach(btn=>btn.addEventListener('click',()=>{
+         const key=btn.dataset.attendanceShow;
+         const closing=!selectedList.hidden&&btn.getAttribute('aria-expanded')==='true';
+         slot.querySelectorAll('[data-attendance-show]').forEach(b=>{b.setAttribute('aria-expanded','false');b.classList.remove('is-selected');});
+         if(closing){selectedList.hidden=true;selectedList.innerHTML='';return;}
+         const group=groups.find(g=>g[0]===key);
+         selectedList.innerHTML=list(group[2],group[3],group[1]);
+         selectedList.hidden=false;btn.setAttribute('aria-expanded','true');btn.classList.add('is-selected');
+       }));
        const card=slot.closest('.paqui-plan-card')||slot.closest('.ev-card');
        if(card){
          card.querySelectorAll('[data-attendance-choice]').forEach(btn=>{
