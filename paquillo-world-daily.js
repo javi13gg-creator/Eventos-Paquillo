@@ -21,7 +21,7 @@ function streak(rows){
 function mount(host,context){
  if(!host||!context?.client||!context.uid)return null;
  const old=[...instances].find(i=>i.host===host);old?.destroy();
- const ctx={host,config:context,disposed:false,loading:false,rows:[],ready:null,claimed:false,streak:0,awarded:null};
+ const ctx={host,config:context,disposed:false,loading:false,rows:[],ready:null,claimed:false,streak:0,awarded:null,visitsToday:0,visitsReady:false};
  instances.add(ctx);
  function info(){
   const today=madridDate(),done=ctx.rows.some(r=>r.day===today);
@@ -35,16 +35,19 @@ function mount(host,context){
     '<div><b>⚔️ '+pending+'</b><small>Retos pendientes</small></div>'+
     '<div><b>🎮 '+(played?'✓':'—')+'</b><small>Partida hoy*</small></div></div>'+
    '<div class="pwd-reward"><div><b>🎁 Tu visita diaria</b><small>'+
-     (ctx.ready===false?'Pendiente de activar en Supabase. Sin XP por ahora.':
+     (ctx.ready===null?'Comprobando si ya la has recogido…':
+      ctx.ready===false?'Pendiente de activar en Supabase. Sin XP por ahora.':
       done?'Recompensa ya recogida hoy. ¡Vuelve mañana!':'+5 XP por entrar hoy, validado por el servidor.')+
     '</small></div>'+
-    '<button type="button" data-pwd-claim '+(done||ctx.ready===false||ctx.loading?'disabled':'')+'>'+
-     (ctx.loading?'⏳ Guardando…':ctx.ready===false?'🔒 Pendiente':done?'✅ Recogido':'🎁 Recoger +5 XP')+
+    '<button type="button" data-pwd-claim '+(done||ctx.ready!==true||ctx.loading?'disabled':'')+'>'+
+     (ctx.loading||ctx.ready===null?'⏳ Comprobando…':ctx.ready===false?'🔒 Pendiente':done?'✅ Recogido':'🎁 Recoger +5 XP')+
     '</button></div>'+
    '<div class="pwd-tasks"><h4>🎯 ¿Qué hacemos hoy?</h4>'+
     '<div class="pwd-task"><span>🎮</span><div><b>'+(played?'Ya has registrado una partida':'Juega una partida')+'</b><small>Trivial, Reflejos, Memoria o Carreras</small></div>'+
     '<button type="button" data-pwd-go="games">Jugar ›</button></div>'+
-    '<div class="pwd-task"><span>🏘️</span><div><b>Visita a un vecino</b><small>Busca su casa en el mapa de Burgos</small></div>'+
+    '<div class="pwd-task"><span>🏘️</span><div><b>'+(ctx.visitsToday>=3?'¡Tres vecinos saludados!':'Visita casas del barrio')+'</b><small>'+
+      (ctx.visitsReady?'👋 '+ctx.visitsToday+'/3 visitas a vecinos hoy · sin XP':'Explora el mapa de Burgos; visitas pendientes de activar')+
+    '</small></div>'+
     '<button type="button" data-pwd-go="neighborhood">Explorar ›</button></div>'+
     '<div class="pwd-task"><span>⚔️</span><div><b>'+(pending?'¡'+pending+' reto'+(pending===1?'':'s')+' por responder!':active?'¡Tienes '+active+' partida'+(active===1?'':'s')+' en marcha!':'Lanza un pique')+'</b><small>Invita a tus amigos a competir</small></div>'+
     '<button type="button" data-pwd-go="duels">Ver retos ›</button></div></div>'+
@@ -57,13 +60,19 @@ function mount(host,context){
   if(ctx.disposed||ctx.loading)return;
   ctx.loading=true;
   try{
-   const {data,error}=await ctx.config.client.from('paqui_world_daily_checkins')
-    .select('day,claimed_at').eq('user_id',ctx.config.uid).order('day',{ascending:false}).limit(365);
+   const [checkins,visits]=await Promise.all([
+    ctx.config.client.from('paqui_world_daily_checkins')
+      .select('day,claimed_at').eq('user_id',ctx.config.uid).order('day',{ascending:false}).limit(365),
+    ctx.config.client.from('paqui_world_house_visits')
+      .select('home_owner,day').eq('visitor_id',ctx.config.uid).eq('day',madridDate()).limit(10)
+   ]);
    if(ctx.disposed)return;
-   ctx.ready=!error;
-   ctx.rows=error?[]:data||[];
-   ctx.message=error?'🧪 La visita diaria se activará al ejecutar paquillo-world-burgos-v2.sql.':'';
-  }catch(error){ctx.ready=false;ctx.message='No se pudo consultar la visita diaria: '+(error.message||error)}
+   ctx.ready=!checkins.error;
+   ctx.rows=checkins.error?[]:checkins.data||[];
+   ctx.visitsReady=!visits.error;
+   ctx.visitsToday=visits.error?0:(visits.data||[]).length;
+   ctx.message=checkins.error?'🧪 Visita diaria pendiente: ejecuta paquillo-world-burgos-v2.sql en Supabase.':'';
+  }catch(error){ctx.ready=false;ctx.visitsReady=false;ctx.message='No se pudo consultar la actividad: '+(error.message||error)}
   finally{ctx.loading=false;if(!ctx.disposed)info()}
  }
  async function claim(){
@@ -78,7 +87,7 @@ function mount(host,context){
    if(data?.day&&!ctx.rows.some(r=>r.day===data.day))ctx.rows.unshift({day:data.day});
    ctx.claimed=true;ctx.streak=streak(ctx.rows);
    ctx.config.onClaim?.(data);
-   window.dispatchEvent(new CustomEvent('paqui-world-daily-claimed',{detail:data}));
+   try{window.dispatchEvent(new CustomEvent('paqui-world-daily-claimed',{detail:data}))}catch(_){};
   }catch(error){ctx.message='⚠️ No se pudo recoger la visita: '+(error.message||error)}
   finally{ctx.loading=false;if(!ctx.disposed)info()}
  }
