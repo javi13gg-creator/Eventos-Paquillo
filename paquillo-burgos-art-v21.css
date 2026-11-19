@@ -12,11 +12,11 @@
  object-fit:contain;object-position:50% 50%;
  pointer-events:none;user-select:none;-webkit-user-drag:none
 }
-#p-world .pwb-app.pwb-art-ready .pwb-map-fallback{display:none}
-#p-world .pwb-app.pwb-art-missing .pwb-art-layer{display:none}
+#p-world .pwb-art-ready .pwb-map-fallback{display:none}
+#p-world .pwb-art-missing .pwb-art-layer{display:none}
 #p-world .pwb-map-grid-final{
  position:absolute;inset:0;z-index:3;pointer-events:none;
- opacity:.38;
+ opacity:.14;
  background-image:linear-gradient(to right,#ffffff9e 1px,transparent 1px),
  linear-gradient(to bottom,#ffffff9e 1px,transparent 1px);
  background-size:84px 84px;
@@ -87,3 +87,22 @@
  #p-world .pwb-landmark-detail p{font-size:.67rem}
 }
 @media(prefers-reduced-motion:reduce){#p-world .pwb-landmark-pin{transition:none}}
+
+/* Las restricciones solo destacan al desplazar una casa: no tapan el mapa al explorar. */
+#p-world .pwb-protected-layer,#p-world .pwb-occupied-layer{
+ position:absolute;inset:0;pointer-events:none;z-index:4;
+ opacity:0;visibility:hidden;transition:opacity .18s;
+}
+#p-world .pwb-occupied-layer{z-index:5}
+#p-world .pwb-is-placing .pwb-protected-layer,
+#p-world .pwb-is-placing .pwb-occupied-layer{opacity:1;visibility:visible}
+#p-world .pwb-protected-tile,#p-world .pwb-occupied-tile{
+ position:absolute;display:block;width:84px;height:84px;
+ background:repeating-linear-gradient(45deg,#bd364f83 0 7px,#f6b1bb5e 7px 14px);
+ border:1px solid #ff8f929e
+}
+#p-world .pwb-occupied-tile{
+ background:repeating-linear-gradient(45deg,#c0782a86 0 6px,#ffdf9f7e 6px 12px);
+ border:2px solid #ffd989a6
+}
+#p-world .pwb-is-placing .pwb-map-grid-final{opacity:.75}
