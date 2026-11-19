@@ -55,6 +55,16 @@ No se dan XP por resultados no validados de juegos ni por «visitar» indefinida
 
 **No implementado todavía:** muebles arrastrables en habitación, inventario cosmético persistente, chat/mural de casa, NPCs/cofres de exploración, ligas y misiones verificadas, directo multijugador. Se conservan como fases posteriores, sin anunciar como funcionalidades activas.
 
+## Barrio Burgos 2.1 · integración del mapa ilustrado aprobado (19/11/2026)
+
+- **Imagen definitiva:** `burgos-world-map-v1.avif`, 1672×941 px, ~220 KB. Basada directamente en la última ilustración aprobada por el usuario (G3 a la izquierda de Villímar). El archivo está versionado y servido por GitHub Pages; no se carga desde ChatGPT ni de un CDN privado.
+- **Composición:** tablero de 28×20, imagen centrada con `object-fit:contain` (sin estirarla), cuadrícula superpuesta que se intensifica al mover casas, puntos interactivos, casas y selección de parcela. Fondo procedural antiguo conservado como alternativa si el navegador no admite AVIF.
+- **Ubicaciones:** Catedral, Castillo, Plaza Mayor, Arco de Santa María, Espolón, Universidad, El Plantío, Coliseum, Fuentes Blancas, G3 y Villímar. La distribución visual es aproximada y fiel a las relaciones del mapa ilustrado, no es cartografía oficial.
+- **Gestión:** búsqueda y zoom siguen activos; se puede visitar la ficha de un monumento mediante un pin o un desplegable de «Lugares», y las casas con avatar se pintan por `tile_x/tile_y` encima del mapa.
+- **Parcelas:** G3 y Villímar concentran las nuevas casas provisionales para mostrar el potencial del barrio. Una casa real previamente guardada conserva su posición; si coincide con zona que ahora se protege, aparece una advertencia para trasladarla sin cambiar datos históricos.
+- **Migración adicional obligatoria para restricciones del servidor:** ejecutar `paquillo-burgos-landmarks-v21.sql` **después** de `paquillo-world-burgos-v2.sql`. Cambia únicamente el validador de parcelas, no recoloca ni borra casas. La validación del navegador ya está sincronizada.
+- **QA:** archivo AVIF verificado en GitHub por SHA `c1d31bf030233fe70303406b5e926c8a11339f46`; JS comprobado, pruebas de estructura y simulaciones de clic en casa, landmark, carga del fondo y modo colocación. Pendientes prueba visual real en iOS/Android y SQL ejecutado en Supabase.
+
 ## Lanzamiento gradual
 - **Fase 1:** mapa navegable, casas, modo simulación sin SQL, control de parcelas + hub. Código en GitHub.
 - **Fase 2:** aplicar la migración de A1/B1, probar en Supabase con Javi y otro usuario; confirmar permisos y colisiones; corregir bugs de móvil.
