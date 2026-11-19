@@ -260,3 +260,27 @@
 @media(prefers-reduced-motion:reduce){
  #paquiLifePreview{animation:none!important}
 }
+
+
+/* Navegación persistente de Paquillo World dentro de Mi casa. */
+#paquiLifePreview .pl-world-bottom-nav{
+ position:relative;z-index:30;flex:0 0 auto;width:100%;min-height:0;
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;
+ padding:6px max(4px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));
+ background:#240d57f5;border-top:2px solid #bb72f3;box-shadow:0 -5px 22px #240b5599;
+}
+#paquiLifePreview .pl-world-nav-btn{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+ min-width:0;min-height:46px;padding:4px 1px;
+ color:#ddd3fa;background:transparent;border:0;border-radius:12px;
+ font-family:inherit;font-size:.6rem;font-weight:850;line-height:1.1;cursor:pointer;
+}
+#paquiLifePreview .pl-world-nav-btn i{font-style:normal;font-size:1.28rem;line-height:1.1}
+#paquiLifePreview .pl-world-nav-btn span{white-space:nowrap}
+#paquiLifePreview .pl-world-nav-btn.on{color:#ffe15b;background:#7736c8}
+#paquiLifePreview .pl-world-nav-btn:first-child{color:#ffe7a1}
+#paquiLifePreview .pl-world-nav-btn:focus-visible{outline:2px solid #ffe68f;outline-offset:1px}
+@media(max-width:420px){
+ #paquiLifePreview .pl-world-nav-btn span{font-size:clamp(.47rem,1.85vw,.58rem);letter-spacing:-.15px}
+ #paquiLifePreview .pl-world-nav-btn i{font-size:1.19rem}
+}
