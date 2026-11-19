@@ -562,6 +562,15 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
 <link rel="stylesheet" href="paquillo-life-base-v25.css?v=1">
 <link rel="stylesheet" href="paquillo-life-home-v26.css?v=4">
 <link rel="stylesheet" href="paquillo-burgos-art-v21.css?v=4">
+
+<style id="paqui-world-logo-v1">
+/* Marca W oficial de Paquillo World, sin modificar el logo de Paquillo Events */
+#tabs .world-launch-icon{display:flex;align-items:center;justify-content:center;line-height:1}
+#tabs .world-launch-icon .paqui-world-w-icon{display:block;width:31px;height:31px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 2px 2px #270f57aa)}
+#paquiMobileNav [data-mobile-destination="world"] .paqui-mobile-icon{display:flex;align-items:center;justify-content:center;line-height:1}
+#paquiMobileNav [data-mobile-destination="world"] .paqui-world-w-icon{display:block;width:25px;height:25px;object-fit:contain;border-radius:50%}
+@media(max-width:430px){#tabs .world-launch-icon .paqui-world-w-icon{width:26px;height:26px}#paquiMobileNav [data-mobile-destination="world"] .paqui-world-w-icon{width:23px;height:23px}}
+</style>
 </head>
 <body>
 <nav class="tabs" id="tabs" aria-label="Navegación principal">
@@ -571,7 +580,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <span class="nav-current" id="navCurrent">Agenda</span>
   <div class="global-search"><input id="globalSearch" type="search" placeholder="🔎 Buscar planes o Paquillos" aria-label="Buscar planes o miembros"><div id="globalSearchResults" class="global-search-results" hidden></div></div>
   <button type="button" id="installAppButton" class="btn secondary" hidden>📲 Instalar</button>
-  <button type="button" id="worldLaunch" class="world-launch" data-t="world" title="Entrar a Paquillo World" aria-label="Entrar a Paquillo World"><span aria-hidden="true" class="world-launch-icon">🎮</span><span class="world-launch-name">PAQUILLO <b>WORLD</b></span><span aria-hidden="true" class="world-launch-play">▶</span></button>
+  <button type="button" id="worldLaunch" class="world-launch" data-t="world" title="Entrar a Paquillo World" aria-label="Entrar a Paquillo World"><span aria-hidden="true" class="world-launch-icon"><img class="paqui-world-w-icon" src="paquillo-world-w.png?v=1" alt="" loading="eager" decoding="async"></span><span class="world-launch-name">PAQUILLO <b>WORLD</b></span><span aria-hidden="true" class="world-launch-play">▶</span></button>
   <button type="button" id="newsBell" class="news-bell" aria-label="Novedades" aria-expanded="false" aria-controls="newsPanel" title="Novedades" hidden>🔔<span id="newsBellCount" class="news-bell-count" hidden>0</span></button>
   <div class="settings-wrap" id="settingsWrap">
     <button type="button" id="settingsToggle" class="settings-toggle" aria-label="Mi cuenta y ajustes" aria-controls="settingsPanel" aria-haspopup="true" aria-expanded="false" title="Cuenta y ajustes"><span aria-hidden="true">👤</span></button>
@@ -626,7 +635,7 @@ body.admin-mode>header.top,body.admin-mode>#userTools,body.admin-mode>nav.tabs,b
   <button type="button" class="paqui-mobile-destination active" data-mobile-destination="home" aria-label="Inicio" aria-current="page"><span class="paqui-mobile-icon" aria-hidden="true">🏠</span><span>Inicio</span></button>
   <button type="button" class="paqui-mobile-destination" data-mobile-destination="plans" aria-label="Planes"><span class="paqui-mobile-icon" aria-hidden="true">📅</span><span>Planes</span></button>
   <button type="button" class="paqui-mobile-destination" data-mobile-destination="polls" aria-label="Votaciones"><span class="paqui-mobile-icon" aria-hidden="true">🗳️</span><span>Votar</span></button>
-  <button type="button" class="paqui-mobile-destination" data-mobile-destination="world" aria-label="Paquillo World"><span class="paqui-mobile-icon" aria-hidden="true">🎮</span><span>World</span></button>
+  <button type="button" class="paqui-mobile-destination" data-mobile-destination="world" aria-label="Paquillo World"><span class="paqui-mobile-icon" aria-hidden="true"><img class="paqui-world-w-icon" src="paquillo-world-w.png?v=1" alt="" loading="eager" decoding="async"></span><span>World</span></button>
   <button type="button" class="paqui-mobile-destination" data-mobile-destination="more" aria-label="Más secciones" aria-controls="menuPanel"><span class="paqui-mobile-icon" aria-hidden="true">☰</span><span>Más</span></button>
 </nav>
 <div id="newsPanel" class="news-panel" hidden role="dialog" aria-label="Novedades de Paquillo Events">
