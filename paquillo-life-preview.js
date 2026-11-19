@@ -8,7 +8,7 @@
  // La URL ya no concede acceso: se verifica la identidad autenticada en cada apertura.
  const allowed=()=>window.PaquilloWorldContext?.()?.lifePreviewAllowed===true;
  let room=null,previousFocus=null,arcadeAction=null,memoryAction=null,neighborhoodAction=null;
- let model3d=null,modelRequest=0;
+ let model3d=null,modelRequest=0,lifeDaily=null;
  let actionSerial=0;
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
@@ -361,6 +361,7 @@
   },prefersLessMotion()?750:3000,serial);
  }
  function close(){
+  lifeDaily?.destroy();lifeDaily=null;
   modelRequest++;
   model3d?.destroy();model3d=null;
   cancelAction();
@@ -391,7 +392,7 @@
   room.setAttribute('aria-label','Mi hogar de Paquillo Life, vista de prueba');
   room.innerHTML='<header class="pl-header">'+
    '<button class="pl-back" type="button" data-pl-close aria-label="Volver a Paquillo World"><span aria-hidden="true">‹</span><span>World</span></button>'+
-   '<div class="pl-header-title"><small>🌴 PAQUILLO LIFE</small><b>Mi hogar <span class="pl-home-mood" data-pl-mood role="status" aria-live="polite" title="Estado emocional">😊</span></b></div>'+
+   '<div class="pl-header-title"><small>🎮 PAQUILLO WORLD</small><b>Mi base <span class="pl-home-mood" data-pl-mood role="status" aria-live="polite" title="Estado emocional">😊</span></b></div>'+
    '<button type="button" class="pl-neighborhood-top" data-pl-neighborhood>🏘️ Barrio</button>'+ 
    '<span class="pl-preview-tag" title="Animación de profundidad experimental">ALFA</span>'+
    '</header>'+
@@ -416,37 +417,32 @@
      '<div class="pl-floor-caption"><b id="plName"></b><small>Tu rincón en la isla</small></div>'+
     '</div>'+
    '</main>'+
-   '<footer class="pl-foot">'+
-   '<section class="pl-daily" aria-label="Rutina de hoy">'+
-    '<div class="pl-daily-title"><span>✨ Rutina de hoy</span><small>Local · sin XP</small></div>'+
-    '<strong class="pl-daily-count" data-pl-daily-count>0 / 4</strong>'+
-    '<div class="pl-daily-track"><span data-pl-daily-progress></span></div>'+
-    '<div class="pl-daily-checks" data-pl-daily-checks></div></section>'+
-   '<div class="pl-guidance"><div><b data-pl-recommend-title>Tu siguiente actividad</b><small data-pl-recommend-copy>Preparando…</small></div>'+
-    '<button type="button" data-pl-suggest="eat">▶ Hacerlo</button></div>'+
-   '<div class="pl-needs" aria-label="Necesidades de MiniPaquillo">'+
-    '<label>⚡ Energía <output data-pl-value="energy">75%</output><progress data-pl-need="energy" max="100" value="75"></progress></label>'+
-    '<label>😊 Ánimo <output data-pl-value="mood">75%</output><progress data-pl-need="mood" max="100" value="75"></progress></label>'+
-    '<label>💚 Bienestar <output data-pl-value="wellbeing">75%</output><progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div>'+
-   '<nav class="pl-quick-actions" aria-label="Acciones de MiniPaquillo">'+
-    '<button type="button" data-pl-place="eat">🥥 Comer</button>'+
-    '<button type="button" data-pl-place="shower">🚿 Ducha</button>'+
-    '<button type="button" data-pl-place="sleep">💤 Dormir</button>'+
-    '<button type="button" data-pl-place="play">🎮 Arcade</button></nav>'+
-   '<div class="pl-shortcuts"><button type="button" class="pl-memory-shortcut" data-pl-memory>🃏 Jugar Memoria</button>'+
-    '<button type="button" data-pl-neighborhood>🏘️ Visitar barrio</button></div>'+
-   '<details class="pl-options"><summary>🎨 Personalizar y ver logros</summary><div class="pl-options-content">'+
+   '<footer class="pl-foot pl-base-foot">'+
+   '<div class="pl-base-intro"><div><small>✨ TU BASE PERSONAL</small><strong>Tu punto de encuentro diario</strong></div><span>⭐ Nv '+lifeLevel+'</span></div>'+
+   '<div class="pl-daily-hub" data-pl-daily-hub></div>'+
+   '<nav class="pl-base-actions" aria-label="Acciones principales">'+
+    '<button type="button" data-pl-place="play"><span>🎮</span><b>Arcade</b><small>Juegos y récords</small></button>'+
+    '<button type="button" data-pl-memory><span>🃏</span><b>Memoria</b><small>Partida rápida</small></button>'+
+    '<button type="button" data-pl-open-decor><span>🎨</span><b>Decorar</b><small>Tu estilo</small></button></nav>'+
+   '<details class="pl-options" id="plDecorPanel"><summary>🖼️ Mi decoración y mis logros</summary><div class="pl-options-content">'+
     '<div class="pl-theme-picker" role="group" aria-label="Ambiente de mi hogar"><span>🎨 Ambiente · Nivel '+lifeLevel+'</span>'+
-    '<button type="button" data-pl-theme="island">🏝️ Isla</button>'+
-    '<button type="button" data-pl-theme="sunset">🌅 Atardecer</button>'+
+    '<button type="button" data-pl-theme="island">🏝️ Isla</button><button type="button" data-pl-theme="sunset">🌅 Atardecer</button>'+
     '<button type="button" data-pl-theme="night">🌙 Noche</button></div>'+
     '<div class="pl-decor-controls"><button type="button" class="pl-decor" data-pl-decor="lamp" aria-pressed="false">💡 Luces</button>'+
     '<button type="button" class="pl-decor" data-pl-decor="plant">🌴 Saludar palmera</button></div>'+
     '<details class="pl-achievements"><summary data-pl-achievements-summary>🏅 Logros · 0/4</summary>'+
-    '<div class="pl-achievements-grid" data-pl-achievements></div>'+
-    '<small>Logros locales, sin XP.</small></details></div></details>'+
-   '<p id="plStatus" role="status" aria-live="polite">Elige una actividad para empezar.</p>'+
-   '<small data-pl-persistence>⏳ Comprobando guardado de necesidades · sin XP</small></footer>';
+    '<div class="pl-achievements-grid" data-pl-achievements></div><small>Logros locales, sin XP.</small></details></div></details>'+
+   '<details class="pl-extras"><summary>🛁 Interacciones opcionales</summary>'+
+    '<p>Comer, ducharse y descansar son animaciones secundarias: no hacen falta para jugar.</p>'+
+    '<nav class="pl-quick-actions" aria-label="Interacciones">'+
+     '<button type="button" data-pl-place="eat">🥥 Comer</button><button type="button" data-pl-place="shower">🚿 Ducha</button>'+
+     '<button type="button" data-pl-place="sleep">💤 Descansar</button></nav>'+
+    '<div class="pl-needs" aria-label="Estado opcional">'+
+     '<label>⚡ Energía <output data-pl-value="energy">75%</output><progress data-pl-need="energy" max="100" value="75"></progress></label>'+
+     '<label>😊 Ánimo <output data-pl-value="mood">75%</output><progress data-pl-need="mood" max="100" value="75"></progress></label>'+
+     '<label>💚 Bienestar <output data-pl-value="wellbeing">75%</output><progress data-pl-need="wellbeing" max="100" value="75"></progress></label></div></details>'+
+   '<p id="plStatus" role="status" aria-live="polite">🎯 Juegos, amigos y nuevas actividades te esperan.</p>'+
+   '<small data-pl-persistence>⏳ Comprobando guardado de interacciones · sin XP</small></footer>';
   // Controles principales registrados antes de cargar sprites, necesidades o decoraciones.
   // Captura para que capas de escena o manejadores secundarios no bloqueen navegación.
   room.addEventListener('click',event=>{
@@ -463,6 +459,12 @@
      const cb=memoryAction;
      if(cb){close();cb();}else setStatus('Memoria no disponible.');
     }else interact(button.dataset.plSuggest);
+    return;
+   }
+   if(button.hasAttribute('data-pl-open-decor')){
+    event.stopImmediatePropagation();
+    const panel=room.querySelector('#plDecorPanel');
+    if(panel){panel.open=!panel.open;if(panel.open)panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
     return;
    }
    if(button.hasAttribute('data-pl-place')){
@@ -585,6 +587,18 @@
   needs={energy:75,mood:75,wellbeing:75};
    readDaily();
   document.body.appendChild(room);
+  const context=window.PaquilloWorldContext?.();
+  const daily=options.daily||{};
+  lifeDaily=window.PaquilloWorldDaily?.mount(room.querySelector('[data-pl-daily-hub]'),{
+   client:context?.client,uid:context?.currentAuthUser?.id,level:lifeLevel,
+   pendingDuels:daily.pendingDuels||0,activeDuels:daily.activeDuels||0,
+   playedToday:daily.playedToday||false,
+   navigate:activity=>{
+    if(activity==='games'||activity==='duels'){const cb=arcadeAction;close();cb?.();}
+    else if(activity==='neighborhood'){const cb=neighborhoodAction;close();cb?.();}
+   },
+   onClaim:result=>{if(Number(result?.xp_awarded)>0)setStatus('⭐ ¡+5 XP guardados!');}
+  })||null;
   renderNeeds();renderMood();
   loadAchievements();renderAchievements();
   let savedTheme='island';try{savedTheme=localStorage.getItem('paqui-life-theme-javi')||'island'}catch(_){}
