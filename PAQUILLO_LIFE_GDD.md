@@ -1,4 +1,16 @@
 # Paquillo World · Evolución hacia Paquillo Life
+
+## Revisión de experiencia · habitación v24 / barrio v44 (19/11/2026)
+
+- Corregido el problema de anchura: el escenario de Life ya no se limita a 510/680 px ni hereda el `max-width` del `main` de Events. La vista sigue a pantalla completa y dispone de un escenario SVG panorámico para escritorio y del SVG vertical existente para móviles.
+- Los cuatro botones flotantes sobre la escena se retiran para evitar que se descoloquen y tapen personajes; ahora comer, ducha, dormir y Arcade están reunidos en controles táctiles inferiores. Memoria y Barrio tienen accesos separados. Temas, luces, palmera y logros pasan a «Personalizar», desplegable.
+- El panel muestra porcentajes reales de energía, ánimo y bienestar, y recomienda una actividad según el valor más bajo si cae de 60; si no, propone la siguiente acción de la rutina.
+- Nueva rutina diaria local de cuatro hitos (comer, ducha, dormir, Memoria), con progreso guardado en `localStorage` por día de Madrid. **No acredita XP ni es un registro persistente en Supabase**; la persistencia de las necesidades sigue siendo la RPC `paqui_life_care`. Una interacción completa puede quedar marcada en la rutina incluso si falla la persistencia del cuidado, porque son estados independientes.
+- Barrio privado reorganizado: casas cartoon con retratos originales, buscador y filtro de usuarios retables, enlace a Mi casa y resumen de estadísticas reales (miembros, invitaciones pendientes y duelos activos). Los retos recibidos se presentan primero y los botones existentes de aceptar, jugar y retar siguen asociados a las RPC anteriores.
+- Archivos nuevos: `paquillo-life-room-wide.svg`, `paquillo-life-v24.css`, `paquillo-neighborhood-v44.css`. Se actualizan `paquillo-life-preview.js`, `paquillo-world.js` y versiones de caché en `index.html`.
+- Seguridad: se conserva el acceso privado Javi/admin de Life; no se amplía a usuarios generales ni se cambia RLS. Sin nuevas migraciones SQL ni modificación de las reglas XP o juegos.
+- Comprobaciones técnicas: JavaScript sintácticamente válido, HTML de escenas balanceado, SVG y CSS verificados estructuralmente, vínculos a assets presentes. **QA visual/táctil en iPhone/Android con sesión real pendiente**. No se ha certificado la apariencia en dispositivos físicos.
+
 Documento de diseño de juego y plan técnico. 18/11/2026.
 
 **Estado: habitación alfa animada e integración con Memoria bajo acceso privado Javi/admin; no es aún el modo Life completo.**
