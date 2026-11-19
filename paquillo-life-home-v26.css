@@ -239,3 +239,24 @@
 }
 #paquiLifePreview .pl-missions-panel[hidden],#paquiLifePreview .pl-decor-panel[hidden],#paquiLifePreview .pl-play-panel[hidden]{display:none!important}
 #paquiLifePreview .pl-missions-panel.is-active{display:block!important}
+
+/* Entrada a Mi Casa en primera pantalla, antes del muro diario; sin solapes con juegos. */
+#p-world .pw-lobby-screen .pw-lobby-layout{margin-top:9px!important}
+#p-world .pw-lobby-screen .pw-home-portal{position:relative;z-index:10}
+#p-world .pw-home-portal:hover .pw-home-portal-enter{filter:brightness(1.08)}
+#paquiLifePreview{animation:pl-room-arrival .32s cubic-bezier(.18,.9,.38,1) both}
+@keyframes pl-room-arrival{
+ from{opacity:.85;transform:translateY(18px) scale(.982)}
+ to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(max-width:450px){
+ #p-world .pw-head{gap:5px!important}
+ #p-world .pw-head-brand{font-size:clamp(.67rem,2.8vw,.89rem)!important;gap:4px!important}
+ #p-world .pw-header-home-access{padding:4px 6px!important;min-width:34px;justify-content:center}
+ #p-world .pw-head-xp{font-size:.57rem!important;padding:5px!important}
+ #p-world .pw-return{padding:5px 6px!important}
+ #p-world .pw-lobby-screen .pw-lobby-layout{margin-top:8px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #paquiLifePreview{animation:none!important}
+}
