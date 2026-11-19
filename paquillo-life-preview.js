@@ -13,6 +13,83 @@
  let careReady=false,careBusy=false,careSession=0;
  let moodMessage='';
  let lifeLevel=1,roomTheme='island';
+
+ // Habitación personal: decoración real pero exclusivamente cosmética, guardada en el dispositivo.
+ // No altera XP, monedas ni los objetos de otros usuarios; requiere habilitación de la preview.
+ const furnitureCatalog={
+  wall:[['none','Vacío','➖'],['poster','Póster','🖼️'],['neon','Neón','💜'],['trophy','Trofeo','🏆'],['clock','Reloj','🕒']],
+  floor:[['none','Vacío','➖'],['rug','Alfombra','🟣'],['pet','Mascota','🐕'],['flowers','Flores','💐'],['skate','Monopatín','🛹']],
+  shelf:[['none','Vacío','➖'],['plant','Maceta','🪴'],['globe','Globo','🌍'],['disco','Bola disco','🪩'],['medal','Medalla','🏅']]
+ };
+ const slotLabels={wall:'Pared',floor:'Suelo',shelf:'Rincón'};
+ const furnitureDefaults={wall:'poster',floor:'pet',shelf:'trophy'};
+ let furniture={...furnitureDefaults},furnitureSlot='wall',furnitureStorageKey='',roomTab='play';
+ const safeHTML=text=>String(text||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function loadFurniture(userId){
+  furnitureStorageKey='paqui-world-room-furniture-v1-'+String(userId||'preview');
+  furniture={...furnitureDefaults};
+  try{
+   const saved=JSON.parse(localStorage.getItem(furnitureStorageKey)||'null');
+   if(saved&&typeof saved==='object'){
+    for(const slot of Object.keys(furnitureCatalog)){
+     if(furnitureCatalog[slot].some(v=>v[0]===saved[slot]))furniture[slot]=saved[slot];
+    }
+   }
+  }catch(_){}
+ }
+ function renderFurniture(){
+  if(!room)return;
+  for(const slot of Object.keys(furnitureCatalog)){
+   const value=furniture[slot],item=furnitureCatalog[slot].find(v=>v[0]===value);
+   const host=room.querySelector('[data-pl-furniture-slot="'+slot+'"]');
+   if(host){
+    host.dataset.value=value;host.querySelector('span').textContent=value==='none'?'':item[2];
+    host.setAttribute('aria-label','Cambiar decoración de '+slotLabels[slot]+': '+item[1]);
+    host.title=item[1]+' · Toca para cambiar';
+   }
+  }
+  room.querySelectorAll('[data-pl-furn-slot]').forEach(button=>{
+   button.setAttribute('aria-pressed',String(button.dataset.plFurnSlot===furnitureSlot));
+  });
+  const options=room.querySelector('[data-pl-furn-options]');
+  if(options)options.innerHTML=furnitureCatalog[furnitureSlot].map(([id,label,icon])=>
+   '<button type="button" data-pl-furn-option="'+id+'" aria-pressed="'+String(furniture[furnitureSlot]===id)+'">'+
+   '<span class="pl-furn-icon" aria-hidden="true">'+icon+'</span>'+safeHTML(label)+'</button>'
+  ).join('');
+  const note=room.querySelector('[data-pl-furn-current]');
+  if(note)note.textContent='Editando: '+slotLabels[furnitureSlot]+' · Los cambios se guardan en este dispositivo';
+ }
+ function chooseFurniture(slot,value){
+  if(!allowed()||!room||!furnitureCatalog[slot]?.some(v=>v[0]===value))return;
+  furnitureSlot=slot;furniture[slot]=value;
+  try{localStorage.setItem(furnitureStorageKey,JSON.stringify(furniture))}catch(_){}
+  renderFurniture();
+  const item=furnitureCatalog[slot].find(v=>v[0]===value);
+  setStatus('🎨 '+slotLabels[slot]+': '+item[1]+' · guardado en este dispositivo');
+  if(value!=='none'&&!prefersLessMotion()){
+   room.querySelector('[data-pl-furniture-slot="'+slot+'"]')?.animate?.(
+    [{scale:'.7',opacity:.4},{scale:'1.12',opacity:1},{scale:'1',opacity:1}],{duration:330,easing:'ease-out'}
+   );
+  }
+ }
+ function setRoomTab(tab='play'){
+  if(!room||!['play','decor','missions'].includes(tab))return;
+  roomTab=tab;
+  room.classList.remove('pl-ui-minimized');
+  room.querySelectorAll('[data-pl-tab]').forEach(button=>{
+   const yes=button.dataset.plTab===tab;
+   button.setAttribute('aria-selected',String(yes));
+   button.tabIndex=yes?0:-1;
+  });
+  room.querySelectorAll('[data-pl-panel]').forEach(panel=>{
+   const yes=panel.dataset.plPanel===tab;
+   panel.classList.toggle('is-active',yes);
+   panel.hidden=!yes;
+  });
+  const toggle=room.querySelector('[data-pl-immersive]');
+  if(toggle)toggle.textContent='⤢ Ver habitación';
+ }
+
  // Actividad diaria en este dispositivo. No otorga XP ni simula logros de servidor.
  const dailyGoals=[['eat','🥥','Comer'],['shower','🚿','Ducha'],['sleep','💤','Descanso'],['memory','🃏','Memoria']];
  const todayMadrid=()=>new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());
