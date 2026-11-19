@@ -1202,3 +1202,8 @@ body.paqui-world-open main>section:not(#p-world){display:none!important}
  #p-world .pw-challenges-refreshed .pw-group-symbol{width:44px;height:44px;flex-basis:44px}
 }
 @media(prefers-reduced-motion:reduce){#p-world .pw-home-refreshed .pw-scene-cast{animation:none!important}}
+
+/* El botón WEB usa el mismo icono P + calendario que Paquillo Events. */
+#p-world .pw-nav-web .pw-events-icon{display:block;width:26px;height:26px;max-width:100%;object-fit:contain;border-radius:6px}
+#p-world .pw-nav-web i{display:flex;align-items:center;justify-content:center}
+@media(max-width:420px){#p-world .pw-nav-web .pw-events-icon{width:23px;height:23px}}
