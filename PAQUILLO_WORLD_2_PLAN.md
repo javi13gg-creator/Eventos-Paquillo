@@ -41,6 +41,20 @@ No se dan XP por resultados no validados de juegos ni por «visitar» indefinida
 - `paqui_world_daily_checkins`: visita única por jugador y fecha de Madrid; RPC protegida con XP simbólico y ledger auditable.
 - Etapas posteriores: `paqui_world_room_layout`, `paqui_world_house_visits`, `paqui_world_cosmetics`, `paqui_world_missions`, `paqui_world_guestbook` sujetos a revisión de privacidad y antifraude.
 
+## Implementación inicial publicada · 19/11/2026
+
+**Fase técnica A1/B1:** disponible en GitHub (pendiente de QA visual y migración en Supabase):
+- `paquillo-burgos-map.js/css`: mapa 28×20 con Burgos ilustrado, parrilla, zoom rueda/botones y pinza, desplazamiento táctil, buscador, casas con avatares y selección de parcela libre; lectura y colocación por Supabase RPC. Sin SQL, casas provisionales identificadas como demostración y movimientos no guardados.
+- `paquillo-world-burgos-v2.sql`: tablas de posiciones, visitas y rachas; un RPC para asignar parcela con exclusión y tiempo mínimo entre mudanzas; uno para registrar visitas sociales con límite de spam; uno para reclamar **+5 XP una sola vez al día** mediante ledger seguro.
+- `paquillo-world-daily.js/css`: racha real, objetivos breves, retos pendientes, partidas provisionales, visitas diarias y enlace a planes de Events. Ningún XP por minijuego ni por visitas.
+- `paquillo-life-preview.js` y `paquillo-life-base-v25.css`: «Mi base», nueva zona de juego con Arcade, Memoria, decoraciones y tarjetas diarias. Comer/ducha/descanso/barras quedan en un desplegable opcional.
+- `paquillo-world.js`: nueva pestaña **Barrio** en navegación inferior (Equipo permanece en accesos de Inicio), mapa para miembros autenticados, fichas y retos ya existentes, botón «Pasar por esta casa».
+- La **habitación aún sigue en piloto privado Javi/admin**, mientras que el mapa del Barrio es visible para todos los miembros de World.
+
+**Estado de verificación:** sintaxis JS/HTML/CSS comprobada, simulación de mapa con personajes y UI, simulación de racha +5 XP sin duplicado. NO se ha probado todavía con Supabase real ni en iOS/Android. Requiere aplicar la migración tras confirmar base XP.
+
+**No implementado todavía:** muebles arrastrables en habitación, inventario cosmético persistente, chat/mural de casa, NPCs/cofres de exploración, ligas y misiones verificadas, directo multijugador. Se conservan como fases posteriores, sin anunciar como funcionalidades activas.
+
 ## Lanzamiento gradual
 - **Fase 1:** mapa navegable, casas, modo simulación sin SQL, control de parcelas + hub. Código en GitHub.
 - **Fase 2:** aplicar la migración de A1/B1, probar en Supabase con Javi y otro usuario; confirmar permisos y colisiones; corregir bugs de móvil.
