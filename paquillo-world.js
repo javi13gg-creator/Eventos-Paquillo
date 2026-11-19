@@ -77,13 +77,14 @@ function playerCard(){
  '<span class="pw-xp-track"><i style="width:'+((progress/250)*100)+'%"></i></span></span><span class="pw-hero-chevron">›</span></button>';
 }
 function playerHero(){
- return '<div class="pw-scene pw-scene-refresh" aria-label="Bienvenido al mundo Paquillo">'+
- '<div class="pw-scene-sky" aria-hidden="true"><span class="pw-sky-sun"></span><span class="pw-sky-cloud cloud-one"></span><span class="pw-sky-cloud cloud-two"></span></div>'+
- '<div class="pw-scene-heading"><span>🌴 EL MUNDO DE LA CUADRILLA</span><strong>PAQUILLO <em>WORLD</em></strong><small>Un mundo, mil historias juntos</small></div>'+
- '<img class="pw-scene-cast" src="paqui-world-cast.webp" alt="Ilustración de la pandilla Paquillo" onerror="this.hidden=true">'+
- '<div class="pw-scene-ground" aria-hidden="true"></div>'+
- '<div class="pw-scene-footer"><span>✨ La aventura continúa</span><span>⭐ '+(state.ready?points(state.xp)+' XP':'Progreso en preparación')+'</span></div>'+
- '</div>';
+ return '<section class="pw-scene pw-scene-refresh pw-banner-v2" aria-label="Bienvenida a Paquillo World">'+
+  '<div class="pw-banner-copy"><span class="pw-banner-eyebrow">🌴 LA AVENTURA DE LA CUADRILLA</span>'+
+  '<h1>PAQUILLO <em>WORLD</em></h1>'+
+  '<p>Un universo para vivir planes, sumar experiencias y picarte con tus amigos.</p>'+
+  '<div class="pw-banner-info"><span>👥 '+state.members.length+' Paquillos</span><span>⭐ Nivel '+level(state.xp)+'</span></div></div>'+
+  '<div class="pw-banner-art"><img src="paqui-world-cast.webp" alt="Ilustración del grupo de Paquillos" loading="eager" decoding="async" onerror="this.hidden=true">'+
+  '<span class="pw-banner-art-caption">💛 ¡Paquillo siempre!</span></div>'+
+ '</section>';
 }
 function gameTiles(includePlanned=false){
  const games=[
@@ -350,7 +351,7 @@ function setView(view,scroll=true,remember=true){
  root.querySelectorAll('[data-pw-screen]').forEach(x=>{x.hidden=x.dataset.pwScreen!==view});
  root.querySelectorAll('.pw-nav-btn[data-pw-view]').forEach(x=>{const yes=x.dataset.pwView===view;x.classList.toggle('on',yes);x.setAttribute('aria-current',yes?'page':'false')});
  if(scroll){const el=document.getElementById('pwScroll');if(el)el.scrollTop=0}
- if(view==='neighborhood')requestAnimationFrame(()=>window.PaquilloBurgosMap?.focusMyHome());
+ if(view==='neighborhood')requestAnimationFrame(()=>window.PaquilloBurgosMap?.showOverview());
  clearReaction();
 }
 function goBack(){
