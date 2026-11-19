@@ -141,3 +141,10 @@
  #p-world .pwb-title.pwb-title-compact .pwb-beta{display:none}
  #p-world .pwb-app .pwb-command{grid-template-columns:minmax(0,1fr) 67px!important;gap:4px!important;padding-inline:6px!important}
 }
+
+/* Las restricciones de parcelas son lógicas, no marcas visuales:
+   no pintar rayas rojas/naranjas sobre la Catedral ni otros monumentos. */
+#p-world .pwb-protected-layer,
+#p-world .pwb-occupied-layer,
+#p-world .pwb-is-placing .pwb-protected-layer,
+#p-world .pwb-is-placing .pwb-occupied-layer{display:none!important}
