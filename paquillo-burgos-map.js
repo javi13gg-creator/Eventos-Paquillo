@@ -81,9 +81,15 @@ function classicBackdrop(){
  landmarks.map(z=>'<div class="pwb-landmark" style="'+pos(z.x,z.y)+'" title="'+esc(z.name)+'"><span>'+z.emoji+'</span><strong>'+esc(z.name)+'</strong></div>').join('');
 }
 function backdrop(){
+ const protectedTiles=[];
+ for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+  if(!VALID(x,y))protectedTiles.push('<span style="left:'+(x*CELL)+'px;top:'+(y*CELL)+'px" class="pwb-protected-tile"></span>');
+ }
  return '<div class="pwb-map-fallback" aria-hidden="true">'+classicBackdrop()+'</div>'+
   '<div class="pwb-art-layer"><img src="'+ART+'" class="pwb-map-illustration" data-pwb-art-image alt="Mapa ilustrado de Burgos, con Catedral, Castillo, G3 y Villímar" draggable="false"></div>'+
   '<div class="pwb-map-grid pwb-map-grid-final" aria-hidden="true"></div>'+
+  '<div class="pwb-protected-layer" aria-hidden="true">'+protectedTiles.join('')+'</div>'+
+  '<div class="pwb-occupied-layer" data-pwb-occupied aria-hidden="true"></div>'+
   landmarks.map((z,i)=>'<button type="button" class="pwb-landmark-pin '+(z.isNeighborhood?'is-neighborhood':'')+
    '" style="'+pos(z.x,z.y)+'" data-pwb-landmark="'+i+'" title="'+esc(z.name)+'" aria-label="Explorar '+esc(z.name)+'"><span aria-hidden="true">'+z.emoji+'</span></button>').join('');
 }
@@ -184,6 +190,10 @@ function create(root,config){
    '</span><span class="pwb-house-name">'+esc(h.name)+'</span>'+
    (h.user_id===config.uid?'<span class="pwb-own-label">'+(h.needsMove?'⚠️ REUBICAR':'TU CASA')+'</span>':'')+
    '</button>'
+  ).join('');
+  const occupied=$('[data-pwb-occupied]');
+  if(occupied)occupied.innerHTML=homes.filter(h=>h.user_id!==config.uid).map(h=>
+   '<span class="pwb-occupied-tile" style="left:'+(h.x*CELL)+'px;top:'+(h.y*CELL)+'px"></span>'
   ).join('');
   const count=$('[data-pwb-claimed]');if(count)count.textContent=backendReady?
    '📍 '+serverHomes.length+' parcelas elegidas':'🧭 Casas provisionales';
