@@ -19,7 +19,7 @@
  const furnitureCatalog={
   wall:[['none','Vacío','➖'],['poster','Póster','🖼️'],['neon','Neón','💜'],['trophy','Trofeo','🏆'],['clock','Reloj','🕒']],
   floor:[['none','Vacío','➖'],['rug','Alfombra','🟣'],['pet','Mascota','🐕'],['flowers','Flores','💐'],['skate','Monopatín','🛹']],
-  shelf:[['none','Vacío','➖'],['plant','Maceta','🪴'],['globe','Globo','🌍'],['disco','Bola disco','🪩'],['medal','Medalla','🏅']]
+  shelf:[['none','Vacío','➖'],['plant','Maceta','🪴'],['globe','Globo','🌍'],['disco','Bola disco','🪩'],['trophy','Trofeo','🏆'],['medal','Medalla','🏅']]
  };
  const slotLabels={wall:'Pared',floor:'Suelo',shelf:'Rincón'};
  const furnitureDefaults={wall:'poster',floor:'pet',shelf:'trophy'};
