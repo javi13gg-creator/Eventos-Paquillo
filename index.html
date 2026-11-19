@@ -2071,7 +2071,7 @@ showTab(location.hash.slice(1));
        const mine=rows.find(r=>r.member_id===currentMember?.id)?.status||'';
        const label={yes:'Voy',maybe:'Quizá',no:'No voy'};
        const count=(k)=>byStatus[k].length;
-       const list=(title,items,emoji)=>'<div class="attendance-name-group"><b>'+emoji+' '+title+' ('+items.length+')</b><span>'+ (items.length?items.map(esc).join(' · '):'<span class="f6-muted">Nadie todavía</span>')+'</span></div>';
+       const list=(title,items,emoji)=>'<div class="paqui-react-people-list">'+(items.length?items.map(name=>'<span class="paqui-react-person">'+emoji+' '+esc(name)+'</span>').join(''):'<span class="f6-muted">Nadie todavía</span>')+'</div>';
        const groups=[['yes','✅','Van',byStatus.yes],['maybe','🤔','Quizá',byStatus.maybe],['no','❌','No van',byStatus.no],['pending','⏳','Sin responder',pending]];
        slot.innerHTML='<div class="attendance-counts">'+groups.map(([key,emoji,title,items])=>'<button type="button" class="attendance-count-button" data-attendance-show="'+key+'" aria-expanded="false" aria-label="Ver '+title.toLowerCase()+': '+items.length+' personas">'+emoji+' <b>'+items.length+'</b> '+(key==='yes'?'van':key==='no'?'no van':key==='maybe'?'quizá':'sin responder')+'</button>').join('')+'</div>'+
          '<div class="attendance-selected-list" hidden aria-live="polite"></div>';
@@ -2429,7 +2429,7 @@ K: Inventa una regla nueva que dure una ronda.`;
 <script src="paquillo-social.js?v=7"></script>
 <script src="paquillo-ayuda.js?v=10"></script>
 <script src="paquillo-navigation.js?v=2"></script>
-<script src="paquillo-planes-compact.js?v=7"></script>
+<script src="paquillo-planes-compact.js?v=8"></script>
 <script src="paquillo-reacciones.js?v=9"></script>
 </body>
 </html>
