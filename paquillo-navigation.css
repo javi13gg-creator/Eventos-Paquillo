@@ -147,3 +147,16 @@
 @media(max-width:355px){
   #tabs .paqui-nav-logo{width:32px!important;height:32px!important;min-width:32px!important;flex:0 0 32px!important}
 }
+
+/* Inicio: cambia únicamente el pequeño emblema «P» por el icono oficial.
+   Conserva el resto del cartel «Donde nace el plan» sin rediseñarlo. */
+#paquiHomeBanner .paqui-brand-mark.paqui-home-mark-icon{
+ display:block;width:clamp(48px,9vw,72px);height:clamp(48px,9vw,72px);
+ flex:0 0 auto;object-fit:contain;object-position:center;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ padding:0!important;transform:none!important;border-radius:0!important;
+ filter:drop-shadow(0 2px 4px rgba(31,15,78,.14));
+}
+@media(max-width:700px){
+ #paquiHomeBanner .paqui-brand-mark.paqui-home-mark-icon{width:52px;height:52px}
+}
