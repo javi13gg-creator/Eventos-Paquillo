@@ -46,13 +46,13 @@
    if(!loaded){box.innerHTML='<p class="paqui-react-loading">Cargando reacciones…</p>';continue;}
    const disabled=busy.has(id)?' disabled':'';
    const open=openPickers.has(id);
-   const visibleEmoji=visiblePeople.get(id);
+   const showPeople=visiblePeople.has(id);
    const buttons=EMOJIS.map(e=>{
     const active=mine===e;
     return '<button type="button" class="paqui-react-option'+(active?' is-active':'')+'" data-paqui-react="'+e+'" data-paqui-react-event="'+escapeHtml(id)+'" aria-pressed="'+active+'" aria-label="'+(active?'Quitar mi reacción':'Reaccionar con')+' '+e+', '+counts[e]+' reacciones"'+disabled+'><span aria-hidden="true">'+e+'</span><b>'+counts[e]+'</b></button>';
    }).join('');
    const totals=EMOJIS.filter(e=>counts[e]>0).sort((a,b)=>counts[b]-counts[a]).map(e=>
-    '<button type="button" class="paqui-react-chip paqui-react-chip-button" data-paqui-react-people="'+escapeHtml(id)+'" data-paqui-react-emoji="'+e+'" aria-expanded="'+(visibleEmoji===e)+'" aria-label="Ver quién reaccionó con '+e+': '+counts[e]+'">'+e+' <b>'+counts[e]+'</b></button>'
+    '<button type="button" class="paqui-react-chip paqui-react-chip-button" data-paqui-react-people="'+escapeHtml(id)+'" data-paqui-react-emoji="'+e+'" aria-expanded="'+showPeople+'" aria-label="Ver quién reaccionó con '+e+': '+counts[e]+'">'+e+' <b>'+counts[e]+'</b></button>'
    ).join('');
    const people=rows.map(row=>{
     const name=namesByUser.get(row.user_id)||'Paquillo';
@@ -62,7 +62,7 @@
       '<button type="button" class="paqui-react-trigger'+(mine?' has-reacted':'')+'" data-paqui-react-toggle="'+escapeHtml(id)+'" aria-expanded="'+open+'" aria-label="'+(mine?'Cambiar o quitar mi reacción '+mine:'Reaccionar al plan')+'" title="'+(mine?'Cambiar o quitar reacción':'Añadir reacción')+'"'+disabled+'><span class="paqui-react-icon-stack" aria-hidden="true"><span class="paqui-react-icon-face">'+(mine||'😊')+'</span><span class="paqui-react-icon-plus">+</span></span></button>'+
       '<div class="paqui-react-totals" aria-live="polite">'+totals+'</div>'+
      '</div>'+
-     (visibleEmoji?'<div class="paqui-react-visible-people"><b>'+visibleEmoji+' · '+counts[visibleEmoji]+' reacciones</b><div class="paqui-react-people-list">'+(rows.filter(r=>r.emoji===visibleEmoji).map(r=>'<span class="paqui-react-person">'+escapeHtml(namesByUser.get(r.user_id)||'Paquillo')+'</span>').join('')||'<span>Nadie todavía</span>')+'</div></div>':'')+
+     (showPeople?'<div class="paqui-react-visible-people"><b>👥 Todas las reacciones ('+total+')</b><div class="paqui-react-people-list">'+people+'</div></div>':'')+
      '<div class="paqui-react-picker"'+(open?'':' hidden')+'><div class="paqui-react-choices" role="group" aria-label="Elige tu reacción">'+buttons+'</div><small>Un emoji por persona · toca el mismo para quitarlo.</small>'+
       (total?'<details class="paqui-react-people"><summary aria-label="Ver quién ha reaccionado">👥 Quién ha reaccionado ('+total+')</summary><div class="paqui-react-people-list">'+people+'</div></details>':'')+
      '</div>';
@@ -168,7 +168,7 @@
  }
  document.addEventListener('click',event=>{
   const peopleButton=event.target.closest('[data-paqui-react-people]');
-  if(peopleButton){event.preventDefault();const id=peopleButton.dataset.paquiReactPeople,emoji=peopleButton.dataset.paquiReactEmoji;visiblePeople.get(id)===emoji?visiblePeople.delete(id):visiblePeople.set(id,emoji);renderEvent(id);return;}
+  if(peopleButton){event.preventDefault();const id=peopleButton.dataset.paquiReactPeople,emoji=peopleButton.dataset.paquiReactEmoji;visiblePeople.has(id)?visiblePeople.delete(id):visiblePeople.set(id,true);renderEvent(id);return;}
   const toggle=event.target.closest('[data-paqui-react-toggle]');
   if(toggle){
    event.preventDefault();
