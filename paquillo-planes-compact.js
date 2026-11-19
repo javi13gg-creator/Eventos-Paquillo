@@ -112,7 +112,7 @@
    if(closing){voters.hidden=true;voters.dataset.open='';return;}
    trigger.click();
    const names=attendance.querySelector('.attendance-selected-list');
-   voters.innerHTML=names?.innerHTML||'<p>Sin respuestas todavía.</p>';
+   voters.innerHTML=names?.innerHTML||'<div class="paqui-react-people-list"><span>Nadie todavía</span></div>';
    voters.hidden=false;voters.dataset.open=key;counter.setAttribute('aria-expanded','true');
   }));
   card.addEventListener('paqui:reaction-people',event=>{
