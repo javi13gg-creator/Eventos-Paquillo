@@ -1715,7 +1715,7 @@ showTab(location.hash.slice(1));
      rows[7].forEach(x=>{
        if(x.user_id===currentAuthUser.id||!myPlans.has(String(x.event_id)))return;
        const person=reactionNames.get(x.user_id)||'Un Paquillo';
-       items.push({key:'reaction:'+x.event_id+':'+x.user_id,type:'reaction',icon:x.emoji,title:person+' ha reaccionado a tu plan',detail:myPlans.get(String(x.event_id))+' · '+x.emoji,date:x.updated_at,target:x.event_id,tab:'planes'});
+       items.push({key:'reaction:'+x.event_id+':'+x.user_id+':'+x.updated_at,type:'reaction',icon:x.emoji,title:person+' ha reaccionado a tu plan',detail:myPlans.get(String(x.event_id))+' · '+x.emoji,date:x.updated_at,target:x.event_id,tab:'planes'});
      });
      items.sort((a,b)=>new Date(b.date)-new Date(a.date));
      const {data:reads,error:readErr}=await client.from('paqui_news_reads').select('news_key').eq('user_id',currentAuthUser.id);if(readErr)throw readErr;
@@ -2425,7 +2425,7 @@ K: Inventa una regla nueva que dure una ronda.`;
 <script src="paquillo-social.js?v=7"></script>
 <script src="paquillo-ayuda.js?v=10"></script>
 <script src="paquillo-navigation.js?v=2"></script>
-<script src="paquillo-planes-compact.js?v=4"></script>
+<script src="paquillo-planes-compact.js?v=5"></script>
 <script src="paquillo-reacciones.js?v=6"></script>
 </body>
 </html>
