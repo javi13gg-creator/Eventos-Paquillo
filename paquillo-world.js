@@ -287,7 +287,7 @@ function profileView(){
  '<div><b>'+esc(m.display_name)+'</b><small>⭐ NIVEL '+level(xp)+' · '+points(xp)+' XP</small><p class="pw-muted">Próximo nivel: '+(250-progress)+' XP</p><div class="pw-xp-track"><i style="width:'+Math.round(progress/250*100)+'%"></i></div></div></div>'+
  '<p class="pw-profile-hint">🎭 Tu personaje Paquillero. Los avatares personalizados muestran sus gestos originales y se mueven suavemente.</p>':
  page===1?'<div class="pw-surface"><h3>⚡ Cómo ganar XP</h3><div class="pw-actions-grid">'+
- [['📅 Plan aprobado por Javi',100],['🙋 Confirmar asistencia',10],['🗳️ Crear encuesta',40],['🌅 Visita diaria validada',5]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div><p class="pw-profile-hint">Los podios diarios darán XP cuando se active la validación segura de resultados.</p>':
+ [['📅 Crear un plan',100],['🗳️ Crear encuesta',40],['🎨 Subir un sticker',20],['🙋 Confirmar asistencia',10],['🌅 Visita diaria validada',5]].map(([x,n])=>'<div class="pw-action-row"><span>'+x+'</span><b>+'+n+' XP</b></div>').join('')+'</div></div><p class="pw-profile-hint">Los podios diarios darán XP cuando se active la validación segura de resultados.</p>':
  '<div class="pw-surface"><h3>📜 Última actividad</h3>'+
  (actions.length?actions.map(x=>'<div class="pw-rank-row"><span>✨</span><b>'+esc(actionNames[x.action]||'Actividad')+'</b><strong>+'+x.points+' XP</strong></div>').join(''):'<p class="pw-muted">No hay puntos registrados todavía.</p>')+'</div>';
  return '<section class="pw-screen pw-panel pw-paged-screen pw-profile-screen" data-pw-screen="profile">'+screenTitle('⭐ MI PERSONAJE','Tu progreso en Paquillo World')+
