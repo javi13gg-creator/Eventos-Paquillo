@@ -2157,7 +2157,7 @@ showTab(location.hash.slice(1));
    if(push)push.remove();
    if(avatar)avatar.remove();
    const groups={
-     approvals:[],plans:[],members:[],activity:[],push:[],avatars:[],tools:[]
+     approvals:[],plans:[],members:[],accounts:[],activity:[],push:[],avatars:[],tools:[]
    };
    let kind='activity';
    for(const node of Array.from(target.children)){
@@ -2168,7 +2168,8 @@ showTab(location.hash.slice(1));
        else if(heading.includes('Gestión de miembros'))kind='members';
        node.remove();continue;
      }
-     groups[kind].push(node);
+     if(node.classList?.contains('paqui-account-admin'))groups.accounts.push(node);
+     else groups[kind].push(node);
    }
    if(push)groups.push.push(push);
    else{
@@ -2186,6 +2187,7 @@ showTab(location.hash.slice(1));
      ['approvals','📨','Propuestas pendientes','Aprobar planes nuevos'],
      ['plans','📅','Planes y eventos','Marcar como realizados o reabrir'],
      ['members','👥','Usuarios y miembros','Activar o desactivar miembros'],
+     ['accounts','🔐','Gestión de usuarios','Crear cuentas y restablecer contraseñas'],
      ['activity','📊','Actividad y estadísticas','Registros de acceso y últimas visitas'],
      ['push','🔔','Notificaciones push','Enviar avisos y consultar destinatarios'],
      ['avatars','🎭','Paquillo World · Avatares','Importar y asignar personajes'],
