@@ -41,7 +41,9 @@ Deno.serve(async (req:Request) => {
       if(!matching) return respond(404,{error:"No existe ese usuario"});
       const {error}=await admin.auth.admin.updateUserById(matching.user_id,{password});
       if(error) throw error;
-      return respond(200,{ok:true});
+      const {data:verified,error:verifyError}=await admin.auth.admin.getUserById(matching.user_id);
+      if(verifyError||!verified.user) return respond(500,{error:"No se ha podido verificar la cuenta en Supabase Auth"});
+      return respond(200,{ok:true,user_id:verified.user.id,auth_email:verified.user.email,project:new URL(url).hostname});
     }
     if(matching) return respond(409,{error:"Ese usuario ya existe"});
     const {data:created,error:createError}=await admin.auth.admin.createUser({email,password,email_confirm:true,user_metadata:{username}});
@@ -65,7 +67,9 @@ Deno.serve(async (req:Request) => {
       await admin.auth.admin.deleteUser(uid).catch(()=>{});
       return respond(400,{error:err instanceof Error?err.message:"No se pudo vincular el perfil"});
     }
-    return respond(200,{ok:true});
+    const {data:verified,error:verifyError}=await admin.auth.admin.getUserById(uid);
+    if(verifyError||!verified.user) return respond(500,{error:"La cuenta no se ha podido verificar en Supabase Auth"});
+    return respond(200,{ok:true,user_id:verified.user.id,auth_email:verified.user.email,project:new URL(url).hostname});
   }catch(err){
     console.error("Account management error",err);
     return respond(500,{error:err instanceof Error?err.message:"Error interno"});
