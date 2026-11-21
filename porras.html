@@ -1,0 +1,51 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>🎯 Porras Paquilleras</title><style>
+:root{font-family:system-ui,sans-serif;color-scheme:dark;background:#151238;color:#f8f5ff}*{box-sizing:border-box}body{margin:0;padding:16px 14px 90px;max-width:850px;margin-inline:auto}h1{font-size:1.9rem;margin:16px 0 5px}.muted{color:#bbb7db}.card{background:#252052;border:1px solid #514885;border-radius:20px;padding:18px;margin:15px 0;box-shadow:0 6px 24px #09072340}button,.btn{background:#ffce42;color:#251b43;border:0;border-radius:12px;padding:12px 15px;font-weight:800;cursor:pointer}button:disabled{opacity:.5}input,textarea,select{width:100%;background:#161336;color:white;border:1px solid #7167a3;border-radius:10px;padding:12px;margin:5px 0 12px;font:inherit}label{display:block;font-weight:650}.back{color:#ffd76a;text-decoration:none}.pill{font-size:.8rem;background:#554a87;border-radius:30px;padding:5px 10px;display:inline-block}.option{display:block;width:100%;text-align:left;margin:7px 0;background:#393269;color:white;border:1px solid #7569a6}.option.chosen{border:2px solid #ffce42}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.error{color:#ffadad}.ok{color:#75f0c3}small{color:#bbb7db}.hide{display:none}a{color:#ffd76a}</style></head><body>
+<a class="back" href="./index.html">← Volver a Paquillo Events</a><h1>🎯 Porras Paquilleras</h1><p class="muted">Aquí se apuesta una vez. Lo que elijas, se queda. 🔒</p><div id="status" role="status"></div>
+<div class="card"><button id="toggle">＋ Crear una porra</button><form id="create" class="hide"><h2>Nueva porra</h2><label>Pregunta<input id="title" maxlength="180" required placeholder="¿Quién llegará el último?"></label><label>Descripción (opcional)<textarea id="description" rows="2"></textarea></label><label>Opciones (una por línea)<textarea id="options" rows="5" required placeholder="Javi&#10;Laura&#10;Rodri"></textarea></label><label>Plan relacionado (opcional)<select id="event"><option value="">Independiente</option></select></label><label>Fecha límite<input id="deadline" type="datetime-local" required></label><label>Premio o castigo (opcional)<input id="prize" placeholder="El perdedor paga las patatas"></label><label><input id="hiddenVotes" type="checkbox" style="width:auto"> Ocultar apuestas ajenas hasta el cierre</label><button type="submit">Publicar porra</button></form></div>
+<div class="row"><button id="all">Todas</button><button id="open">Abiertas</button><button id="finished">Finalizadas</button></div><div id="list"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
+(()=>{'use strict';
+const db=window.supabase.createClient('https://uljwhumngqrkdwqixuqq.supabase.co','sb_publishable_2JmZ2drUB2TbuY09ZDkZrQ_r4tLLUve');
+const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let uid=null,filter='all',rows=[],votes=[];
+function notice(s,error=false){$('status').innerHTML='<p class="'+(error?'error':'ok')+'">'+esc(s)+'</p>'}
+function closed(p){return new Date(p.closes_at)<=new Date()}
+function render(){
+ const selected=rows.filter(p=>filter==='all'||(filter==='open'?!closed(p):!!p.resolved_at));
+ $('list').innerHTML=selected.map(p=>{
+ const mine=votes.find(v=>v.porra_id===p.id&&v.user_id===uid), visible=!p.reveal_after_close||closed(p), pv=votes.filter(v=>v.porra_id===p.id);
+ const opts=p.options.map((o,i)=>'<button class="option '+(mine?.option_index===i?'chosen':'')+'" data-vote="'+esc(p.id)+'" data-index="'+i+'" '+(mine||closed(p)?'disabled':'')+'>'+esc(o)+(visible?' · '+pv.filter(v=>v.option_index===i).length+' votos':'')+(mine?.option_index===i?' ✓ Tu apuesta':'')+(p.winner_index===i?' 🏆':'')+'</button>').join('');
+ const resolve=closed(p)&&!p.resolved_at&&p.created_by===uid?'<div><label>Resultado correcto<select data-result="'+esc(p.id)+'">'+p.options.map((o,i)=>'<option value="'+i+'">'+esc(o)+'</option>').join('')+'</select></label><button data-resolve="'+esc(p.id)+'">Resolver porra</button></div>':'';
+ return '<article class="card"><span class="pill">'+(p.resolved_at?'🏆 Resuelta':closed(p)?'🔒 Cerrada':'🟢 Abierta')+'</span><h2>'+esc(p.title)+'</h2><p>'+esc(p.description)+'</p><small>Cierre: '+new Date(p.closes_at).toLocaleString('es-ES')+'</small><p>'+esc(p.prize?'🎁 '+p.prize:'')+'</p>'+opts+(mine?'<p class="ok">🔒 Tu apuesta está registrada y no se puede cambiar.</p>':'')+(visible?'<small>'+pv.length+' apuestas registradas</small>':'<small>Las apuestas se mostrarán al cerrar</small>')+resolve+'<p><button data-share="'+esc(p.id)+'">📲 Compartir</button></p></article>';
+ }).join('')||'<p class="muted">No hay porras en esta categoría.</p>';
+}
+async function load(){
+ const [a,b]=await Promise.all([db.from('paqui_porras').select('*').order('created_at',{ascending:false}),db.from('paqui_porra_votes').select('*')]);
+ if(a.error){notice('Falta activar la base de datos de porras en Supabase: '+a.error.message,true);return}
+ rows=a.data||[];votes=b.data||[];render();
+}
+async function init(){
+ const {data:{user}}=await db.auth.getUser();if(!user){notice('Inicia sesión primero desde Paquillo Events.',true);$('toggle').disabled=true;return}uid=user.id;
+ const {data:events}=await db.from('group_events').select('id,title').order('event_date',{ascending:false}).limit(100);
+ (events||[]).forEach(e=>{const o=document.createElement('option');o.value=e.id;o.textContent=e.title;$('event').append(o)});
+ await load();
+ const id=new URLSearchParams(location.search).get('porra');if(id){setTimeout(()=>document.querySelector('[data-vote="'+CSS.escape(id)+'"]')?.closest('article')?.scrollIntoView(),100)}
+}
+$('toggle').onclick=()=>$('create').classList.toggle('hide');
+$('create').onsubmit=async e=>{
+ e.preventDefault();const options=$('options').value.split('\n').map(x=>x.trim()).filter(Boolean);
+ if(options.length<2||options.length>20){notice('Introduce entre 2 y 20 opciones.',true);return}
+ const closes_at=new Date($('deadline').value).toISOString();if(new Date(closes_at)<=new Date()){notice('La fecha límite debe ser futura.',true);return}
+ const payload={title:$('title').value.trim(),description:$('description').value.trim(),options,event_id:$('event').value?Number($('event').value):null,closes_at,prize:$('prize').value.trim(),reveal_after_close:$('hiddenVotes').checked,created_by:uid};
+ const {error}=await db.from('paqui_porras').insert(payload);if(error){notice(error.message,true);return}notice('Porra creada');$('create').reset();$('create').classList.add('hide');await load();
+};
+$('list').onclick=async e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.vote){const p=rows.find(p=>p.id===t.dataset.vote);const index=Number(t.dataset.index);if(!confirm('¿Confirmas "'+p.options[index]+'"? No podrás cambiar tu apuesta.'))return;const {error}=await db.from('paqui_porra_votes').insert({porra_id:p.id,user_id:uid,option_index:index});notice(error?error.message:'¡Apuesta registrada!',!!error);await load()}
+ if(t.dataset.resolve){const id=t.dataset.resolve,index=Number(document.querySelector('[data-result="'+id+'"]').value);if(!confirm('¿Confirmar resultado definitivo?'))return;const {error}=await db.from('paqui_porras').update({winner_index:index,resolved_at:new Date().toISOString()}).eq('id',id);notice(error?error.message:'Porra resuelta',!!error);await load()}
+ if(t.dataset.share){const p=rows.find(p=>p.id===t.dataset.share),url=location.origin+location.pathname+'?porra='+p.id,msg='🎯 Porra Paquillera: '+p.title+'\n'+url;if(navigator.share)navigator.share({text:msg}).catch(()=>{});else{navigator.clipboard.writeText(msg);notice('Enlace copiado')}}
+};
+for(const f of ['all','open','finished'])$(f).onclick=()=>{filter=f;render()};
+init();
+})();
+</script></body></html>
