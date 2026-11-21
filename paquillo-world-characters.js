@@ -77,6 +77,7 @@ function art(id,person){
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 const APPROVED={
+ andres:'paquillo-world-art/andres-avatar.png',
  adri:'paquillo-world-art/adri-cutout-v34.webp',
  carla:'paquillo-world-art/carla-cutout-v27.webp',
  david:'paquillo-world-art/david-cutout-v27.webp',
@@ -111,7 +112,7 @@ const imageFor=name=>{
 };
 window.PaquilloWorldCharacters={
  imageFor,has:name=>!!(APPROVED[normSlug(name)]||R[normSlug(name)]),
- names:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
+ names:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén','Andrés'],
  approvedNames:[...Object.values(R).map(x=>x[0]),'Sandra','Santi','Sofía','Rubén'],
  isPreview:false
 };
