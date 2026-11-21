@@ -24,7 +24,17 @@ async function init(){try{
  const params=new URLSearchParams(location.search);
  const requested=params.get('event');
  if(requested&&plans.some(p=>String(p.id)===requested)){sel.value=sessions.find(s=>String(s.event_id)===requested)?.id||'plan:'+requested}
- else if(sessions.length)sel.value=sessions[0].id;
+ else {
+  // Priorizar el plan de hoy, aunque ya existan sesiones de otros días.
+  const now=new Date();
+  const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+  const datePart=value=>String(value||'').slice(0,10);
+  const todayPlan=plans.find(p=>datePart(p.event_date)===today);
+  const todaySession=sessions.find(s=>datePart(s.session_date)===today);
+  if(todayPlan)sel.value=sessions.find(s=>String(s.event_id)===String(todayPlan.id))?.id||'plan:'+todayPlan.id;
+  else if(todaySession)sel.value=todaySession.id;
+  else if(sessions.length)sel.value=sessions[0].id;
+ }
  await refresh();status('🍀 Registro personal y compartido. Sin premios por cantidad.');
  }catch(e){errorMessage(e)}}
 async function ensureSession(){const v=$('session').value;if(!v)throw Error('Selecciona un plan o crea una sesión.');
