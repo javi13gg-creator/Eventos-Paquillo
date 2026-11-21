@@ -2258,7 +2258,7 @@ showTab(location.hash.slice(1));
    const accountAction=async(formId,action,msgId)=>{
     const form=$id(formId);form.onsubmit=async e=>{e.preventDefault();const msg=$id(msgId),btn=form.querySelector('button[type="submit"]');const fd=new FormData(form);btn.disabled=true;msg.textContent='Procesando…';
      try{const {data,error}=await client.functions.invoke('paqui-manage-users',{body:{action,username:String(fd.get('username')||'').trim(),password:String(fd.get('password')||'')}});if(error)throw error;if(!data?.ok)throw new Error(data?.error||'No se pudo completar la operación.');msg.textContent='✅ '+(action==='create'?'Cuenta creada correctamente.':'Contraseña actualizada.');form.reset();activeMembersCache=[];}
-     catch(err){msg.textContent='❌ '+(err.message||'Error al conectar con la función. Comprueba que está desplegada en Supabase.');}finally{btn.disabled=false;}
+     catch(err){let detail=err?.message||'Error al conectar con la función.';try{if(err?.context?.json){const body=await err.context.json();detail=body?.error||body?.message||detail;}}catch(_){}msg.textContent='❌ '+detail;console.error('Paquillo gestión de cuentas',err);}finally{btn.disabled=false;}
     };
    };
    accountAction('paquiCreateAccount','create','paquiCreateAccountMsg');
@@ -2682,7 +2682,7 @@ showTab(location.hash.slice(1));
    const username=$id('loginUser').value.trim(),password=$id('loginPass').value;
    if(!username||!paquiUsernameSlug(username)){$id('loginError').textContent='Introduce tu usuario.';return;}
    const {data,error}=await client.auth.signInWithPassword({email:emailFor(username),password});
-   if(error||!data.user){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
+   if(error||!data?.user){console.warn('Paquillo Auth: error de acceso', {code:error?.code,status:error?.status,message:error?.message,username});$id('loginError').textContent=error?.code==='email_not_confirmed'?'Cuenta pendiente de confirmar en Supabase Auth.':error?.code==='invalid_credentials'?'Usuario o contraseña incorrectos. Comprueba el nombre y la contraseña inicial.':('No se pudo iniciar sesión: '+(error?.message||'Respuesta de autenticación vacía.'));return;}
    try{const profile=await loadProfile(data.user);if(paquiUsernameSlug(profile.username)!==paquiUsernameSlug(username))throw new Error('El usuario no coincide con el perfil.');$id('loginError').textContent='';await enter(data.user,profile);}
    catch(err){await client.auth.signOut();$id('loginError').textContent=err.message||'No se pudo cargar tu perfil.';}
  });
