@@ -1030,7 +1030,8 @@ showTab(location.hash.slice(1));
  const names=$id('memberNames');
  names.innerHTML=people.map(n=>'<option value="'+n.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"></option>').join('');
  const slugFor = name => { const p=PEOPLE.find(x=>x.n===name); return p ? p.s : ''; };
- const emailFor = name => slugFor(name)+'@paquillo-events.com';
+ const paquiUsernameSlug = name => String(name||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ const emailFor = name => (slugFor(name)||paquiUsernameSlug(name))+'@paquillo-events.com';
  const loginGate=$id('loginGate');
  const client = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY) : null;
  let currentProfile=null;
@@ -2251,6 +2252,15 @@ showTab(location.hash.slice(1));
    const total=(data||[]).length;
    target.innerHTML='<div class="admin-top"><div><b>📊 Actividad de los miembros</b><p class="admin-note">'+total+' registros de actividad acumulados entre todos los dispositivos. Se registra al entrar, volver a la pestaña o interactuar, con un máximo de una escritura cada 2 minutos.</p></div><button class="btn" type="button" id="refreshStats">Actualizar</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Usuario</th><th>Registros</th><th>Última actividad</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="admin-note">Los datos se consultan en Supabase. Esta sección solo se muestra a la cuenta de Javi.</p>';
    $id('refreshStats').onclick=renderAdmin;
+   target.insertAdjacentHTML('afterbegin', '<section class="paqui-account-admin" style="padding:1rem;border:1px solid var(--ln);border-radius:14px;margin-bottom:1rem"><h3>👥 Gestión de usuarios</h3><p class="admin-note">Crea cuentas sin correo electrónico y cambia contraseñas olvidadas. Solo el administrador puede usar estas acciones.</p><form id="paquiCreateAccount" class="f6-form"><label>Nombre de usuario<input name="username" required maxlength="60" autocomplete="off" placeholder="Ej. Rubén"></label><label>Contraseña inicial<input name="password" type="password" required minlength="10" autocomplete="new-password"></label><button class="btn" type="submit">➕ Crear usuario</button><p id="paquiCreateAccountMsg" role="status"></p></form><details style="margin-top:1rem"><summary>🔑 Restablecer contraseña de un usuario</summary><form id="paquiResetAccount" class="f6-form" style="margin-top:1rem"><label>Usuario<input name="username" required placeholder="Nombre exacto"></label><label>Nueva contraseña<input name="password" type="password" required minlength="10" autocomplete="new-password"></label><button class="btn" type="submit">Cambiar contraseña</button><p id="paquiResetAccountMsg" role="status"></p></form></details></section>');
+   const accountAction=async(formId,action,msgId)=>{
+    const form=$id(formId);form.onsubmit=async e=>{e.preventDefault();const msg=$id(msgId),btn=form.querySelector('button[type="submit"]');const fd=new FormData(form);btn.disabled=true;msg.textContent='Procesando…';
+     try{const {data,error}=await client.functions.invoke('paqui-manage-users',{body:{action,username:String(fd.get('username')||'').trim(),password:String(fd.get('password')||'')}});if(error)throw error;if(!data?.ok)throw new Error(data?.error||'No se pudo completar la operación.');msg.textContent='✅ '+(action==='create'?'Cuenta creada correctamente.':'Contraseña actualizada.');form.reset();activeMembersCache=[];}
+     catch(err){msg.textContent='❌ '+(err.message||'Error al conectar con la función. Comprueba que está desplegada en Supabase.');}finally{btn.disabled=false;}
+    };
+   };
+   accountAction('paquiCreateAccount','create','paquiCreateAccountMsg');
+   accountAction('paquiResetAccount','reset','paquiResetAccountMsg');
    const {data:events}=await client.from('group_events').select('id,title,event_date,status,created_by').order('event_date',{ascending:true,nullsFirst:false});
    target.innerHTML+='<h3 style="margin-top:2rem">📨 Propuestas pendientes</h3>'+((events||[]).filter(ev=>ev.status==='draft').map(ev=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(ev.title)+'</b><br><small>'+esc(ev.event_date||'Fecha pendiente')+'</small></span><button class="btn approve-event-btn" type="button" data-event="'+ev.id+'">Aprobar propuesta</button></div>').join('')||'<p>No hay propuestas pendientes.</p>')+'<h3 style="margin-top:2rem">📅 Estado de los planes</h3><p class="admin-note">Marca como realizado solo cuando el evento haya ocurrido. Los confirmados y los realizados cuentan para el TOP.</p>'+((events||[]).map(ev=>'<div class="admin-top" style="padding:.55rem 0;border-bottom:1px solid var(--ln)"><span><b>'+esc(ev.title)+'</b><br><small>'+esc(ev.event_date||'Fecha pendiente')+' · '+esc(ev.status)+'</small></span><button class="btn event-status-btn" type="button" data-event="'+ev.id+'" data-status="'+(ev.status==='completed'?'planned':'completed')+'">'+(ev.status==='completed'?'Reabrir':'Marcar realizado')+'</button><button class="btn secondary" type="button" data-admin-category="'+ev.id+'" data-next-category="'+(EV.find(x=>String(x.dbId)===String(ev.id))?.category==='trip'?'plan':'trip')+'">'+(EV.find(x=>String(x.dbId)===String(ev.id))?.category==='trip'?'📅 Pasar a plan':'🧳 Pasar a viaje')+'</button></div>').join('')||'<p>No hay planes.</p>');
    const {data:members}=await client.from('group_members').select('id,display_name,is_active,auth_user_id,avatar_url').order('display_name');
@@ -2537,6 +2547,18 @@ showTab(location.hash.slice(1));
       (originalAvatar?'Quitar foto personalizada (volver a la original)':'Quitar mi foto de perfil')+'</label>'+
     '<button class="btn" type="submit">Guardar mi perfil</button>'+
     '<p class="form-msg" id="profileMsg" aria-live="polite"></p></form>';
+   target.insertAdjacentHTML('beforeend','<section style="margin-top:1.25rem;padding:1rem;border:1px solid var(--ln);border-radius:14px"><h3>🔐 Seguridad de la cuenta</h3><form id="paquiChangePassword" class="f6-form"><label>Contraseña actual<input type="password" name="current" required autocomplete="current-password"></label><label>Nueva contraseña<input type="password" name="next" required minlength="10" autocomplete="new-password"></label><label>Repetir contraseña<input type="password" name="confirm" required minlength="10" autocomplete="new-password"></label><button class="btn" type="submit">Actualizar contraseña</button><p id="paquiChangePasswordMsg" role="status"></p></form></section>');
+   $id('paquiChangePassword').onsubmit=async e=>{
+    e.preventDefault();const f=e.currentTarget,msg=$id('paquiChangePasswordMsg'),btn=f.querySelector('button[type="submit"]'),fd=new FormData(f),current=String(fd.get('current')||''),next=String(fd.get('next')||'');
+    if(next!==fd.get('confirm')){msg.textContent='Las nuevas contraseñas no coinciden.';return;}
+    if(next.length<10){msg.textContent='La contraseña debe tener al menos 10 caracteres.';return;}
+    btn.disabled=true;msg.textContent='Comprobando contraseña actual…';
+    try{
+     const {error:verifyError}=await client.auth.signInWithPassword({email:emailFor(currentProfile.username),password:current});if(verifyError)throw new Error('La contraseña actual no es correcta.');
+     const {error:changeError}=await client.auth.updateUser({password:next});if(changeError)throw changeError;
+     f.reset();msg.textContent='✅ Contraseña actualizada.';
+    }catch(err){msg.textContent='❌ '+(err.message||'No se pudo cambiar la contraseña.');}finally{btn.disabled=false;}
+   };
    const form=$id('myProfileForm'),fileInput=$id('avatarFile'),preview=$id('avatarPreview');
    const restoreButton=$id('restoreOriginalAvatar');
    let selectedAvatar=null,previewObjectUrl=null;
@@ -2656,10 +2678,10 @@ showTab(location.hash.slice(1));
    e.preventDefault();
    if(!client){$id('loginError').textContent='Falta configurar Supabase. Sigue los pasos de instalación incluidos en el ZIP.';return;}
    const username=$id('loginUser').value.trim(),password=$id('loginPass').value;
-   if(!people.includes(username)){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
+   if(!username||!paquiUsernameSlug(username)){$id('loginError').textContent='Introduce tu usuario.';return;}
    const {data,error}=await client.auth.signInWithPassword({email:emailFor(username),password});
    if(error||!data.user){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
-   try{const profile=await loadProfile(data.user);if(profile.username!==username)throw new Error('El usuario no coincide con el perfil.');$id('loginError').textContent='';await enter(data.user,profile);}
+   try{const profile=await loadProfile(data.user);if(paquiUsernameSlug(profile.username)!==paquiUsernameSlug(username))throw new Error('El usuario no coincide con el perfil.');$id('loginError').textContent='';await enter(data.user,profile);}
    catch(err){await client.auth.signOut();$id('loginError').textContent=err.message||'No se pudo cargar tu perfil.';}
  });
  document.body.classList.add('auth-locked');
