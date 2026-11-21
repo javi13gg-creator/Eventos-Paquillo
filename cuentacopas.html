@@ -55,8 +55,9 @@ function avatar(m){
  // Admitir nombres compuestos y variantes de los miembros nuevos.
  const aliases=[name];
  if(/^andres(?: |$)/.test(normalized))aliases.push('Andrés');
+ // MariaG es una persona distinta de María: nunca cruzar sus avatares.
  if(/^(?:maria g|mariag)(?: |$)/.test(normalized))aliases.push('MariaG');
- if(/^maria(?: |$)/.test(normalized))aliases.push('María');
+ else if(/^maria(?: |$)/.test(normalized))aliases.push('María');
  const sources=[...new Set([...aliases.map(n=>characters?.imageFor(n)),m?.avatar_url].filter(Boolean))];
  const img=node('img');img.alt='Avatar de '+(name||'Paquillo');img.loading='lazy';
  let index=0;
